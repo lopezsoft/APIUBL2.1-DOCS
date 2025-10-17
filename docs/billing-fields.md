@@ -1228,4 +1228,87 @@ La estructura del objeto dentro de este arreglo varía si el impuesto es porcent
     - Cantidad de unidades base a la que se aplica la tarifa per_unit_amount. Este campo es obligatorio y 
     - aplica únicamente para impuestos de valor fijo por unidad (**códigos 21, 22, 23, 24**).
     - Generalmente su valor es 1 (numérico), indicando que la tarifa en per_unit_amount es 
-    por una unidad de la medida especificada en quantity_units_id.
+por una unidad de la medida especificada en quantity_units_id.
+
+## `additional_document_reference` (Referencia a Documento Adicional)
+
+Grupo de campos para información que describen un documento referenciado por esta factura. **Obligatorio para facturas tipo 03 (Contingencia) y 04 (Contingencia)**.
+
+**Ubicación en XPath:** `/Invoice/cac:AdditionalDocumentReference`
+
+**Normativa:** Resolución No. 000165 (01/NOV/2023) - DIAN
+
+### Estructura
+
+```json
+{
+  "additional_document_reference": {
+    "number": "LZT2119",
+    "code": "01",
+    "date": "2025-08-18",
+    "uuid": "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567",
+    "scheme_name": "CUFE-SHA384"
+  }
+}
+```
+
+### Campos
+
+- #### `number`
+  - **Requerido:** Sí
+  - **Tipo:** String
+  - **Longitud máxima:** 20 caracteres
+  - **Descripción:** Prefijo y número del documento referenciado (factura de talonario o papel).
+  - **Ejemplo:** "LZT2119"
+  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:ID`
+
+- #### `code`
+  - **Requerido:** Sí
+  - **Tipo:** String
+  - **Longitud máxima:** 2 caracteres
+  - **Descripción:** Identificador del tipo de documento de referencia (codificación propia de la empresa).
+  - **Ejemplo:** "01"
+  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:DocumentTypeCode`
+
+- #### `date`
+  - **Requerido:** Sí (para facturas tipo 03)
+  - **Tipo:** String (Formato: YYYY-MM-DD)
+  - **Descripción:** Fecha de emisión del documento referenciado. Corresponde a la fecha de generación de la factura de talonario o papel.
+  - **Ejemplo:** "2025-08-18"
+  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:IssueDate`
+
+- #### `uuid`
+  - **Requerido:** Sí
+  - **Tipo:** String
+  - **Longitud máxima:** 96 caracteres
+  - **Descripción:** CUFE o CUDE del documento referenciado. Se debe informar CUFE o CUDE del documento original.
+  - **Ejemplo:** "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567"
+  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:ID/UUID`
+
+- #### `scheme_name`
+  - **Requerido:** Sí
+  - **Tipo:** String
+  - **Longitud máxima:** 11 caracteres
+  - **Descripción:** Identificador del esquema de identificación del UUID. Debe corresponder a un valor válido según la DIAN.
+  - **Valores válidos:**
+    - `CUFE-SHA384` - Código Único de Factura Electrónica con SHA384
+    - `CUDE-SHA384` - Código Único de Documento Equivalente con SHA384
+  - **Ejemplo:** "CUFE-SHA384"
+  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:ID/UUID/@schemeName`
+
+### Notas Importantes
+
+- Este campo es **obligatorio** para facturas de tipo:
+  - **03** (Factura de Contingencia - Talonario o Papel)
+  - **04** (Factura de Contingencia - Manual)
+
+- La DIAN realizará rechazo si:
+  - No se informa el ID del documento relacionado
+  - No se informa el CUFE o CUDE del documento referenciado
+  - El esquema de identificación (`scheme_name`) no corresponde a un valor válido
+  - No se informa fecha para facturas tipo 03
+
+- El `uuid` debe ser el **CUFE o CUDE válido** del documento original que se referencia.
+
+- Para facturas de contingencia, el documento referenciado es la factura original emitida en papel o talonario.
+```

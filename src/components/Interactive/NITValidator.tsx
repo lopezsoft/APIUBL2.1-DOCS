@@ -4,8 +4,10 @@ import styles from './NITValidator.module.css';
 /**
  * Componente para validar el dígito verificador de un NIT colombiano
  * 
+ * En Colombia: NIT = 10 dígitos base + 1 dígito verificador (total 11)
+ * 
  * Algoritmo:
- * 1. Multiplicar cada dígito por su peso (3,7,13,17,19,23,29,37,41,43)
+ * 1. Multiplicar cada uno de los 10 dígitos por su peso (6,3,7,13,17,19,23,29,37,41)
  * 2. Sumar los resultados
  * 3. Dividir entre 11
  * 4. El dígito verificador = 11 - resto
@@ -19,32 +21,29 @@ export default function NITValidator() {
   const [showSteps, setShowSteps] = useState(false);
   const [steps, setSteps] = useState([]);
 
-  const weights = [3, 7, 13, 17, 19, 23, 29, 37, 41, 43];
+  const weights = [6, 3, 7, 13, 17, 19, 23, 29, 37, 41];
 
   const calculateCheckDigit = (nitNumber) => {
     let nitStr = nitNumber.toString();
     const calculationSteps = [];
 
-    // Validar que tenga 9 o 10 dígitos
-    if (!/^\d{9,10}$/.test(nitStr)) {
+    // Validar que tenga 10 o 11 dígitos
+    if (!/^\d{10,11}$/.test(nitStr)) {
       return {
         valid: false,
-        message: '❌ El NIT debe tener 9 dígitos (sin verificador) o 10 dígitos (con verificador)',
+        message: '❌ El NIT debe tener 10 dígitos (sin verificador) o 11 dígitos (con verificador)',
         steps: []
       };
     }
 
-    // Si tiene 10 dígitos, extraer los 9 primeros (el 10º es el verificador)
-    if (nitStr.length === 10) {
-      nitStr = nitStr.substring(0, 9);
-    } else {
-      // Si tiene 9 dígitos, asegurar que esté padded correctamente
-      nitStr = nitStr.padStart(9, '0');
+    // Si tiene 11 dígitos, extraer los 10 primeros (el 11º es el verificador)
+    if (nitStr.length === 11) {
+      nitStr = nitStr.substring(0, 10);
     }
 
-    // Paso 1: Multiplicar por pesos
+    // Paso 1: Multiplicar por pesos (10 posiciones)
     let sum = 0;
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 10; i++) {
       const digit = parseInt(nitStr[i]);
       const weight = weights[i];
       const product = digit * weight;
@@ -119,10 +118,10 @@ export default function NITValidator() {
         <div className={styles.inputGroup}>
           <input
             type="text"
-            placeholder="Ingresa 9 dígitos (sin verificador) o 10 (con verificador)"
+            placeholder="Ingresa 10 dígitos (sin verificador) o 11 (con verificador)"
             value={nit}
             onChange={handleInputChange}
-            maxLength={10}
+            maxLength={11}
             className={styles.input}
           />
           <button onClick={handleValidate} className={styles.buttonPrimary}>
@@ -249,11 +248,11 @@ export default function NITValidator() {
         <div className={styles.infoBox}>
           <h4>ℹ️ Información</h4>
           <ul>
-            <li>El NIT colombiano tiene 9 dígitos + 1 dígito verificador (total 10)</li>
+            <li>El NIT colombiano tiene 10 dígitos + 1 dígito verificador (total 11)</li>
             <li>El dígito verificador se calcula usando pesos específicos</li>
             <li>Este validador usa el mismo algoritmo de la DIAN</li>
-            <li>Puedes ingresar: 9 dígitos (sin verificador) o 10 dígitos (con verificador)</li>
-            <li>El validador extraerá automáticamente los 9 dígitos base para calcular</li>
+            <li>Puedes ingresar: 10 dígitos (sin verificador) o 11 dígitos (con verificador)</li>
+            <li>El validador extrae automáticamente los 10 dígitos base para calcular</li>
           </ul>
         </div>
       </div>

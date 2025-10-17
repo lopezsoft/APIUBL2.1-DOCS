@@ -484,6 +484,6 @@ curl -X POST https://api.matias-app.com/api/invoices/12345/send-email \
 
 ---
 
-**Última actualización**: Octubre 2024
+**Última actualización**: Octubre 2025
 **Tiempo estimado**: 15 minutos
 **Nivel de dificultad**: ⭐ Principiante

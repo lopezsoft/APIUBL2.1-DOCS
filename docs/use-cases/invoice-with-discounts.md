@@ -340,6 +340,6 @@ En `allowance_charge_reason` usa uno de estos valores:
 
 ---
 
-**Última actualización**: Octubre 2024
+**Última actualización**: Octubre 2025
 **Tiempo estimado**: 20 minutos
 **Nivel de dificultad**: ⭐⭐ Intermedio

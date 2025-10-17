@@ -341,6 +341,6 @@ curl -X POST https://api.matias-app.com/api/invoices \
 
 ---
 
-**Última actualización**: Octubre 2024
+**Última actualización**: Octubre 2025
 **Tiempo estimado**: 25 minutos
 **Nivel de dificultad**: ⭐⭐⭐ Avanzado

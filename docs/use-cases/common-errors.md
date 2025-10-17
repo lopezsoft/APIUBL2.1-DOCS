@@ -562,5 +562,5 @@ Compara tu JSON con los ejemplos en:
 
 ---
 
-**Última actualización**: Octubre 2024
+**Última actualización**: Octubre 2025
 **Próximos pasos**: [Herramientas Interactivas](/docs/interactive-tools)

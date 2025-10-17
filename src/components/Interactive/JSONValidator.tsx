@@ -27,22 +27,133 @@ export default function JSONValidator() {
       }
     },
     {
-      id: 'totals',
-      name: 'Cálculo de Totales',
+      id: 'legal_monetary_totals',
+      name: 'legal_monetary_totals',
       check: (data) => {
-        if (!data.lines || !data.legal_monetary_totals) return { pass: false, message: '❌ Datos incompletos' };
-        
-        const lineExtension = data.lines.reduce((sum, line) => sum + (parseFloat(line.line_extension_amount) || 0), 0);
-        const calculatedTotal = lineExtension;
-        const reportedTotal = parseFloat(data.legal_monetary_totals.tax_inclusive_amount || 0);
-        
-        const match = Math.abs(calculatedTotal - reportedTotal) < 0.01;
-        
+        if (!data.lines || !data.legal_monetary_totals) {
+          return { pass: false, message: '❌ Faltan datos de líneas o totales' };
+        }
+
+        const lmt = data.legal_monetary_totals;
+        const errors = [];
+
+        // 1. Calcular line_extension_amount (suma de todas las líneas)
+        const calculatedLineExtension = data.lines.reduce((sum, line) => 
+          sum + parseFloat(line.line_extension_amount || 0), 0
+        );
+        const reportedLineExtension = parseFloat(lmt.line_extension_amount || 0);
+
+        if (Math.abs(calculatedLineExtension - reportedLineExtension) > 0.01) {
+          errors.push(`line_extension_amount: esperado ${calculatedLineExtension.toFixed(2)}, recibido ${reportedLineExtension.toFixed(2)}`);
+        }
+
+        // 2. Calcular tax_exclusive_amount (suma de bases gravables)
+        let calculatedTaxExclusive = 0;
+        data.lines.forEach(line => {
+          if (line.tax_totals && Array.isArray(line.tax_totals)) {
+            line.tax_totals.forEach(tax => {
+              calculatedTaxExclusive += parseFloat(tax.taxable_amount || 0);
+            });
+          }
+        });
+        const reportedTaxExclusive = parseFloat(lmt.tax_exclusive_amount || 0);
+
+        if (Math.abs(calculatedTaxExclusive - reportedTaxExclusive) > 0.01) {
+          errors.push(`tax_exclusive_amount: esperado ${calculatedTaxExclusive.toFixed(2)}, recibido ${reportedTaxExclusive.toFixed(2)}`);
+        }
+
+        // 3. Calcular tax_inclusive_amount (line_extension_amount + impuestos)
+        let totalTaxes = 0;
+        if (data.tax_totals && Array.isArray(data.tax_totals)) {
+          totalTaxes = data.tax_totals.reduce((sum, tax) => 
+            sum + parseFloat(tax.tax_amount || 0), 0
+          );
+        }
+        const calculatedTaxInclusive = calculatedLineExtension + totalTaxes;
+        const reportedTaxInclusive = parseFloat(lmt.tax_inclusive_amount || 0);
+
+        if (Math.abs(calculatedTaxInclusive - reportedTaxInclusive) > 0.01) {
+          errors.push(`tax_inclusive_amount: esperado ${calculatedTaxInclusive.toFixed(2)}, recibido ${reportedTaxInclusive.toFixed(2)}`);
+        }
+
+        // 4. Calcular payable_amount
+        const totalCharges = parseFloat(lmt.total_charges || 0);
+        const totalAllowance = parseFloat(lmt.total_allowance || 0);
+        const calculatedPayable = calculatedTaxInclusive + totalCharges - totalAllowance;
+        const reportedPayable = parseFloat(lmt.payable_amount || 0);
+
+        if (Math.abs(calculatedPayable - reportedPayable) > 0.01) {
+          errors.push(`payable_amount: esperado ${calculatedPayable.toFixed(2)}, recibido ${reportedPayable.toFixed(2)}`);
+        }
+
         return {
-          pass: match,
-          message: match
-            ? `✅ Totales correctos`
-            : `❌ Total no coincide. Esperado: ${calculatedTotal.toFixed(2)}, Recibido: ${reportedTotal.toFixed(2)}`
+          pass: errors.length === 0,
+          message: errors.length === 0 
+            ? '✅ legal_monetary_totals correcto'
+            : `❌ Errores: ${errors.join(' | ')}`
+        };
+      }
+    },
+    {
+      id: 'tax_totals_global',
+      name: 'tax_totals (Global)',
+      check: (data) => {
+        if (!data.lines) {
+          return { pass: false, message: '❌ Faltan líneas' };
+        }
+
+        // Agrupar impuestos por tax_id desde las líneas
+        const taxesByType = {};
+        
+        data.lines.forEach(line => {
+          if (line.tax_totals && Array.isArray(line.tax_totals)) {
+            line.tax_totals.forEach(tax => {
+              const taxId = tax.tax_id;
+              if (!taxesByType[taxId]) {
+                taxesByType[taxId] = {
+                  tax_amount: 0,
+                  taxable_amount: 0,
+                  percent: tax.percent
+                };
+              }
+              taxesByType[taxId].tax_amount += parseFloat(tax.tax_amount || 0);
+              taxesByType[taxId].taxable_amount += parseFloat(tax.taxable_amount || 0);
+            });
+          }
+        });
+
+        // Verificar que tax_totals global coincida
+        if (!data.tax_totals || !Array.isArray(data.tax_totals)) {
+          if (Object.keys(taxesByType).length > 0) {
+            return { pass: false, message: '❌ Falta tax_totals global pero hay impuestos en líneas' };
+          }
+          return { pass: true, message: '✅ Sin impuestos (correcto)' };
+        }
+
+        const errors = [];
+        data.tax_totals.forEach(globalTax => {
+          const taxId = globalTax.tax_id;
+          const expected = taxesByType[taxId];
+
+          if (!expected) {
+            errors.push(`tax_id ${taxId} en global pero no en líneas`);
+            return;
+          }
+
+          if (Math.abs(parseFloat(globalTax.tax_amount) - expected.tax_amount) > 0.01) {
+            errors.push(`tax_id ${taxId}: tax_amount esperado ${expected.tax_amount.toFixed(2)}, recibido ${globalTax.tax_amount}`);
+          }
+
+          if (Math.abs(parseFloat(globalTax.taxable_amount) - expected.taxable_amount) > 0.01) {
+            errors.push(`tax_id ${taxId}: taxable_amount esperado ${expected.taxable_amount.toFixed(2)}, recibido ${globalTax.taxable_amount}`);
+          }
+        });
+
+        return {
+          pass: errors.length === 0,
+          message: errors.length === 0
+            ? `✅ tax_totals global correcto (${data.tax_totals.length} impuesto(s))`
+            : `❌ ${errors.join(' | ')}`
         };
       }
     },
@@ -60,14 +171,19 @@ export default function JSONValidator() {
           const priceAmount = parseFloat(line.price_amount || 0);
           const lineExtension = parseFloat(line.line_extension_amount || 0);
           
-          // Calcular esperado considerando descuentos
+          // Calcular esperado considerando descuentos y cargos
           let expectedAmount = invoicedQty * priceAmount;
           
-          // Restar descuentos si existen
+          // Aplicar allowance_charges si existen
           if (line.allowance_charges && Array.isArray(line.allowance_charges)) {
-            for (const discount of line.allowance_charges) {
-              if (discount.charge_indicator === false) {
-                expectedAmount -= parseFloat(discount.amount || 0);
+            for (const ac of line.allowance_charges) {
+              const amount = parseFloat(ac.amount || 0);
+              if (ac.charge_indicator === true) {
+                // Es un cargo, se suma
+                expectedAmount += amount;
+              } else if (ac.charge_indicator === false) {
+                // Es un descuento, se resta
+                expectedAmount -= amount;
               }
             }
           }
@@ -75,8 +191,26 @@ export default function JSONValidator() {
           if (Math.abs(expectedAmount - lineExtension) > 0.01) {
             return {
               pass: false,
-              message: `❌ Línea ${i + 1}: cantidad × precio - descuentos (${expectedAmount.toFixed(2)}) ≠ line_extension_amount (${lineExtension.toFixed(2)})`
+              message: `❌ Línea ${i + 1}: line_extension_amount esperado ${expectedAmount.toFixed(2)}, recibido ${lineExtension.toFixed(2)}`
             };
+          }
+
+          // Validar tax_totals de la línea si existen
+          if (line.tax_totals && Array.isArray(line.tax_totals)) {
+            for (const tax of line.tax_totals) {
+              const taxAmount = parseFloat(tax.tax_amount || 0);
+              const taxableAmount = parseFloat(tax.taxable_amount || 0);
+              const percent = parseFloat(tax.percent || 0);
+
+              // Verificar que tax_amount = taxable_amount * (percent / 100)
+              const expectedTaxAmount = taxableAmount * (percent / 100);
+              if (Math.abs(taxAmount - expectedTaxAmount) > 0.01) {
+                return {
+                  pass: false,
+                  message: `❌ Línea ${i + 1}: tax_amount esperado ${expectedTaxAmount.toFixed(2)} (${taxableAmount} × ${percent}%), recibido ${taxAmount.toFixed(2)}`
+                };
+              }
+            }
           }
         }
         

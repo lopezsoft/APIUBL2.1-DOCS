@@ -1,0 +1,347 @@
+{
+    "dataRecords": {
+        "data": [
+            {
+                "id": 1,
+                "document_id": 5,
+                "code": "1",
+                "description": "Devolución parcial de los bienes y/o no aceptación parcial del servicio",
+                "document": {
+                    "id": 5,
+                    "code": "91",
+                    "voucher_name": "Nota crédito",
+                    "cufe_algorithm": "CUDE-SHA384",
+                    "prefix": "nc",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 0,
+                    "active": 1
+                }
+            },
+            {
+                "id": 2,
+                "document_id": 5,
+                "code": "2",
+                "description": "Anulación de factura electrónica",
+                "document": {
+                    "id": 5,
+                    "code": "91",
+                    "voucher_name": "Nota crédito",
+                    "cufe_algorithm": "CUDE-SHA384",
+                    "prefix": "nc",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 0,
+                    "active": 1
+                }
+            },
+            {
+                "id": 3,
+                "document_id": 5,
+                "code": "3",
+                "description": "Rebaja o descuento parcial o total",
+                "document": {
+                    "id": 5,
+                    "code": "91",
+                    "voucher_name": "Nota crédito",
+                    "cufe_algorithm": "CUDE-SHA384",
+                    "prefix": "nc",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 0,
+                    "active": 1
+                }
+            },
+            {
+                "id": 4,
+                "document_id": 5,
+                "code": "4",
+                "description": "Ajuste de precio",
+                "document": {
+                    "id": 5,
+                    "code": "91",
+                    "voucher_name": "Nota crédito",
+                    "cufe_algorithm": "CUDE-SHA384",
+                    "prefix": "nc",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 0,
+                    "active": 1
+                }
+            },
+            {
+                "id": 5,
+                "document_id": 5,
+                "code": "5",
+                "description": "Descuento comercial por pronto pago",
+                "document": {
+                    "id": 5,
+                    "code": "91",
+                    "voucher_name": "Nota crédito",
+                    "cufe_algorithm": "CUDE-SHA384",
+                    "prefix": "nc",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 0,
+                    "active": 1
+                }
+            },
+            {
+                "id": 6,
+                "document_id": 4,
+                "code": "1",
+                "description": "Intereses",
+                "document": {
+                    "id": 4,
+                    "code": "92",
+                    "voucher_name": "Nota débito",
+                    "cufe_algorithm": "CUDE-SHA384",
+                    "prefix": "nd",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 0,
+                    "active": 1
+                }
+            },
+            {
+                "id": 7,
+                "document_id": 4,
+                "code": "2",
+                "description": "Gastos por cobrar",
+                "document": {
+                    "id": 4,
+                    "code": "92",
+                    "voucher_name": "Nota débito",
+                    "cufe_algorithm": "CUDE-SHA384",
+                    "prefix": "nd",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 0,
+                    "active": 1
+                }
+            },
+            {
+                "id": 8,
+                "document_id": 4,
+                "code": "3",
+                "description": "Cambio del valor",
+                "document": {
+                    "id": 4,
+                    "code": "92",
+                    "voucher_name": "Nota débito",
+                    "cufe_algorithm": "CUDE-SHA384",
+                    "prefix": "nd",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 0,
+                    "active": 1
+                }
+            },
+            {
+                "id": 9,
+                "document_id": 4,
+                "code": "4",
+                "description": "Otros",
+                "document": {
+                    "id": 4,
+                    "code": "92",
+                    "voucher_name": "Nota débito",
+                    "cufe_algorithm": "CUDE-SHA384",
+                    "prefix": "nd",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 0,
+                    "active": 1
+                }
+            },
+            {
+                "id": 10,
+                "document_id": 15,
+                "code": "1",
+                "description": "Devolución parcial de los bienes y/o no aceptación parcial del servicio",
+                "document": {
+                    "id": 15,
+                    "code": "95",
+                    "voucher_name": "Nota de ajuste documento soporte",
+                    "cufe_algorithm": "CUDS-SHA384",
+                    "prefix": "nas",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 1,
+                    "active": 1
+                }
+            },
+            {
+                "id": 11,
+                "document_id": 15,
+                "code": "2",
+                "description": "Anulación del documento soporte en adquisiciones efectuadas a sujetos no obligados a expedir factura de",
+                "document": {
+                    "id": 15,
+                    "code": "95",
+                    "voucher_name": "Nota de ajuste documento soporte",
+                    "cufe_algorithm": "CUDS-SHA384",
+                    "prefix": "nas",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 1,
+                    "active": 1
+                }
+            },
+            {
+                "id": 12,
+                "document_id": 15,
+                "code": "3",
+                "description": "Rebaja o descuento parcial o total",
+                "document": {
+                    "id": 15,
+                    "code": "95",
+                    "voucher_name": "Nota de ajuste documento soporte",
+                    "cufe_algorithm": "CUDS-SHA384",
+                    "prefix": "nas",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 1,
+                    "active": 1
+                }
+            },
+            {
+                "id": 13,
+                "document_id": 15,
+                "code": "4",
+                "description": "Ajuste de precio",
+                "document": {
+                    "id": 15,
+                    "code": "95",
+                    "voucher_name": "Nota de ajuste documento soporte",
+                    "cufe_algorithm": "CUDS-SHA384",
+                    "prefix": "nas",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 1,
+                    "active": 1
+                }
+            },
+            {
+                "id": 14,
+                "document_id": 15,
+                "code": "5",
+                "description": "Otros",
+                "document": {
+                    "id": 15,
+                    "code": "95",
+                    "voucher_name": "Nota de ajuste documento soporte",
+                    "cufe_algorithm": "CUDS-SHA384",
+                    "prefix": "nas",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 1,
+                    "active": 1
+                }
+            },
+            {
+                "id": 15,
+                "document_id": 94,
+                "code": "1",
+                "description": "Devolución parcial de los bienes y/o no aceptación parcial del servicio",
+                "document": {
+                    "id": 94,
+                    "code": "94",
+                    "voucher_name": "Nota crédito P.O.S Electrónico",
+                    "cufe_algorithm": "CUDE-SHA384",
+                    "prefix": "ndac",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 0,
+                    "active": 1
+                }
+            },
+            {
+                "id": 16,
+                "document_id": 94,
+                "code": "2",
+                "description": "Anulación del documento equivalente electrónico",
+                "document": {
+                    "id": 94,
+                    "code": "94",
+                    "voucher_name": "Nota crédito P.O.S Electrónico",
+                    "cufe_algorithm": "CUDE-SHA384",
+                    "prefix": "ndac",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 0,
+                    "active": 1
+                }
+            },
+            {
+                "id": 17,
+                "document_id": 94,
+                "code": "3",
+                "description": "Rebaja o descuento parcial o total",
+                "document": {
+                    "id": 94,
+                    "code": "94",
+                    "voucher_name": "Nota crédito P.O.S Electrónico",
+                    "cufe_algorithm": "CUDE-SHA384",
+                    "prefix": "ndac",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 0,
+                    "active": 1
+                }
+            },
+            {
+                "id": 18,
+                "document_id": 94,
+                "code": "4",
+                "description": "Ajuste de precio",
+                "document": {
+                    "id": 94,
+                    "code": "94",
+                    "voucher_name": "Nota crédito P.O.S Electrónico",
+                    "cufe_algorithm": "CUDE-SHA384",
+                    "prefix": "ndac",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 0,
+                    "active": 1
+                }
+            },
+            {
+                "id": 19,
+                "document_id": 94,
+                "code": "5",
+                "description": "Otros",
+                "document": {
+                    "id": 94,
+                    "code": "94",
+                    "voucher_name": "Nota crédito P.O.S Electrónico",
+                    "cufe_algorithm": "CUDE-SHA384",
+                    "prefix": "ndac",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 0,
+                    "active": 1
+                }
+            },
+            {
+                "id": 20,
+                "document_id": 5,
+                "code": "6",
+                "description": "Descuento comercial por volumen de ventas",
+                "document": {
+                    "id": 5,
+                    "code": "91",
+                    "voucher_name": "Nota crédito",
+                    "cufe_algorithm": "CUDE-SHA384",
+                    "prefix": "nc",
+                    "electronic": 1,
+                    "apply_notes": 0,
+                    "invoice": 0,
+                    "active": 1
+                }
+            }
+        ]
+    },
+    "success": true
+}

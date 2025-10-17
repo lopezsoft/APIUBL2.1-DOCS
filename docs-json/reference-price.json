@@ -1,0 +1,25 @@
+{
+    "dataRecords": {
+        "data": [
+            {
+                "id": 1,
+                "code": "01",
+                "description": "Valor comercial",
+                "active": 1
+            },
+            {
+                "id": 2,
+                "code": "02",
+                "description": "Valor en inventarios",
+                "active": 1
+            },
+            {
+                "id": 3,
+                "code": "03",
+                "description": "Otro valor",
+                "active": 1
+            }
+        ]
+    },
+    "success": true
+}

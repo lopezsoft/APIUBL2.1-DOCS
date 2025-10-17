@@ -1,0 +1,151 @@
+{
+    "dataRecords": {
+        "data": [
+            {
+                "id": 1,
+                "code": "13",
+                "document_name": "Cédula de Ciudadanía",
+                "abbreviation": "CC",
+                "scheme_name": "salud_identificación.gc",
+                "active": 1
+            },
+            {
+                "id": 2,
+                "code": "22",
+                "document_name": "Cédula de Extranjeria",
+                "abbreviation": "CE",
+                "scheme_name": "salud_identificación.gc",
+                "active": 1
+            },
+            {
+                "id": 3,
+                "code": "31",
+                "document_name": "NIT",
+                "abbreviation": "NIT",
+                "scheme_name": "salud_identificación.gc",
+                "active": 1
+            },
+            {
+                "id": 6,
+                "code": "11",
+                "document_name": "Registro civil de nacimiento",
+                "abbreviation": "RC",
+                "scheme_name": "salud_identificación.gc",
+                "active": 1
+            },
+            {
+                "id": 7,
+                "code": "12",
+                "document_name": "Tarjeta de identidad",
+                "abbreviation": "TI",
+                "scheme_name": "salud_identificación.gc",
+                "active": 1
+            },
+            {
+                "id": 8,
+                "code": "21",
+                "document_name": "Tarjeta de extranjería",
+                "abbreviation": "TE",
+                "scheme_name": "salud_identificación.gc",
+                "active": 1
+            },
+            {
+                "id": 9,
+                "code": "41",
+                "document_name": "Pasaporte",
+                "abbreviation": "PA",
+                "scheme_name": "salud_identificación.gc",
+                "active": 1
+            },
+            {
+                "id": 10,
+                "code": "42",
+                "document_name": "Documento de identificación extranjero",
+                "abbreviation": "DE",
+                "scheme_name": "salud_identificación.gc",
+                "active": 1
+            },
+            {
+                "id": 11,
+                "code": "50",
+                "document_name": "NIT de otro país",
+                "abbreviation": "",
+                "scheme_name": "salud_identificación.gc",
+                "active": 1
+            },
+            {
+                "id": 12,
+                "code": "91",
+                "document_name": "NUIP",
+                "abbreviation": "NUIP",
+                "scheme_name": "salud_identificación.gc",
+                "active": 1
+            },
+            {
+                "id": 13,
+                "code": "48",
+                "document_name": "PPT (Permiso Protección Temporal)",
+                "abbreviation": "PP",
+                "scheme_name": "salud_identificación.gc",
+                "active": 1
+            },
+            {
+                "id": 14,
+                "code": "47",
+                "document_name": "PEP (Permiso Especial de Permanencia)",
+                "abbreviation": "PE",
+                "scheme_name": "salud_identificación.gc",
+                "active": 1
+            },
+            {
+                "id": 15,
+                "code": "SC",
+                "document_name": "Salvoconducto",
+                "abbreviation": "SC",
+                "scheme_name": "salud_identificación.gc",
+                "active": 1
+            },
+            {
+                "id": 16,
+                "code": "CN",
+                "document_name": "Certificado de nacido vivo",
+                "abbreviation": "CN",
+                "scheme_name": "salud_identificación.gc",
+                "active": 1
+            },
+            {
+                "id": 17,
+                "code": "AS",
+                "document_name": "Adulto sin identificar",
+                "abbreviation": "AS",
+                "scheme_name": "salud_identificación.gc",
+                "active": 1
+            },
+            {
+                "id": 18,
+                "code": "MS",
+                "document_name": "Menor sin identificar",
+                "abbreviation": "MS",
+                "scheme_name": "salud_identificación.gc",
+                "active": 1
+            },
+            {
+                "id": 19,
+                "code": "SI",
+                "document_name": "Sin identificación",
+                "abbreviation": "SI",
+                "scheme_name": "salud_identificación.gc",
+                "active": 1
+            },
+            {
+                "id": 20,
+                "code": "CD",
+                "document_name": "Carné diplomático",
+                "abbreviation": "CD",
+                "scheme_name": "salud_identificación.gc",
+                "active": 1
+            }
+        ]
+    },
+    "success": true
+}

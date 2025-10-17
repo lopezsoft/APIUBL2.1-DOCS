@@ -1,0 +1,19 @@
+{
+    "dataRecords": {
+        "data": [
+            {
+                "id": 1,
+                "code": "00",
+                "description": "Descuento no condicionado, es para los descuentos a nivel de línea.",
+                "active": 1
+            },
+            {
+                "id": 2,
+                "code": "01",
+                "description": "Descuento condicionado, son los descuentos a nivel de pie de factura.",
+                "active": 1
+            }
+        ]
+    },
+    "success": true
+}

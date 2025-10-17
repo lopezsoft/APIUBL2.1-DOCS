@@ -1232,11 +1232,15 @@ por una unidad de la medida especificada en quantity_units_id.
 
 ## `additional_document_reference` (Referencia a Documento Adicional)
 
-Grupo de campos para información que describen un documento referenciado por esta factura. **Obligatorio para facturas tipo 03 (Contingencia) y 04 (Contingencia)**.
+Grupo de campos para información que describen un documento referenciado por esta factura. **Obligatorio SOLO para facturas tipo 03 (Contingencia)**. Para otros tipos de documento, este grupo no se valida.
 
 **Ubicación en XPath:** `/Invoice/cac:AdditionalDocumentReference`
 
-**Normativa:** Resolución No. 000165 (01/NOV/2023) - DIAN
+**Normativa:** Resolución No. 000165 (01/NOV/2023) - DIAN - Página 389
+
+**Obligatoriedad:** 
+- ✅ **Obligatorio** si `InvoiceTypeCode = "03"` (Factura de Contingencia)
+- ❌ No aplica para otros tipos de documentos
 
 ### Estructura
 
@@ -1244,71 +1248,145 @@ Grupo de campos para información que describen un documento referenciado por es
 {
   "additional_document_reference": {
     "number": "LZT2119",
-    "code": "01",
-    "date": "2025-08-18",
     "uuid": "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567",
-    "scheme_name": "CUFE-SHA384"
+    "scheme_name": "CUFE-SHA384",
+    "date": "2025-08-18",
+    "code": "01"
   }
 }
 ```
 
-### Campos
+### Campos Obligatorios
 
-- #### `number`
-  - **Requerido:** Sí
+- #### `number` (FAI02)
+  - **Etiqueta XML:** `cbc:ID`
+  - **Requerido:** Sí (cuando AdditionalDocumentReference existe)
   - **Tipo:** String
-  - **Longitud máxima:** 20 caracteres
-  - **Descripción:** Prefijo y número del documento referenciado (factura de talonario o papel).
+  - **Descripción:** Prefijo y Número del documento referenciado.
   - **Ejemplo:** "LZT2119"
+  - **Validación DIAN:** ID de Documento de referencia no relacionado
   - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:ID`
 
-- #### `code`
-  - **Requerido:** Sí
-  - **Tipo:** String
-  - **Longitud máxima:** 2 caracteres
-  - **Descripción:** Identificador del tipo de documento de referencia (codificación propia de la empresa).
-  - **Ejemplo:** "01"
-  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:DocumentTypeCode`
-
-- #### `date`
-  - **Requerido:** Sí (para facturas tipo 03)
-  - **Tipo:** String (Formato: YYYY-MM-DD)
-  - **Descripción:** Fecha de emisión del documento referenciado. Corresponde a la fecha de generación de la factura de talonario o papel.
-  - **Ejemplo:** "2025-08-18"
-  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:IssueDate`
-
-- #### `uuid`
-  - **Requerido:** Sí
+- #### `uuid` (FAI03) ⚠️ CRÍTICO
+  - **Etiqueta XML:** `cbc:ID/UUID`
+  - **Requerido:** Sí (cuando AdditionalDocumentReference existe)
   - **Tipo:** String
   - **Longitud máxima:** 96 caracteres
-  - **Descripción:** CUFE o CUDE del documento referenciado. Se debe informar CUFE o CUDE del documento original.
+  - **Descripción:** CUFE o CUDE del documento referenciado.
   - **Ejemplo:** "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567"
+  - **Validación DIAN:** "No fue informado el CUFE o CUDE del documento referenciado"
+  - **Rechazo:** Si no se informa CUFE o CUDE
   - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:ID/UUID`
 
-- #### `scheme_name`
-  - **Requerido:** Sí
+- #### `scheme_name` (FAI04)
+  - **Etiqueta XML:** `@schemeName` (atributo)
+  - **Requerido:** No (pero recomendado)
   - **Tipo:** String
-  - **Longitud máxima:** 11 caracteres
-  - **Descripción:** Identificador del esquema de identificación del UUID. Debe corresponder a un valor válido según la DIAN.
+  - **Descripción:** Identificador del esquema de identificación del UUID.
   - **Valores válidos:**
-    - `CUFE-SHA384` - Código Único de Factura Electrónica con SHA384
-    - `CUDE-SHA384` - Código Único de Documento Equivalente con SHA384
+    - `CUFE-SHA384` - Código Único de Factura Electrónica con algoritmo SHA384
+    - `CUDE-SHA384` - Código Único de Documento Equivalente con algoritmo SHA384
+    - Otros algoritmos permitidos por DIAN
   - **Ejemplo:** "CUFE-SHA384"
-  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:ID/UUID/@schemeName`
+  - **Validación DIAN:** "No fue utilizado o informado uno de los algoritmos permitidos para el cálculo del CUFE o CUDE"
+  - **Rechazo:** Si se utiliza algoritmo no permitido
+  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:UUID/@schemeName`
+
+### Campos Opcionales
+
+- #### `date` (FAI05)
+  - **Etiqueta XML:** `cbc:IssueDate`
+  - **Requerido:** No
+  - **Tipo:** String (Formato: YYYY-MM-DD)
+  - **Descripción:** Fecha de emisión del documento referenciado.
+  - **Ejemplo:** "2025-08-18"
+  - **Validación DIAN:** "No se informó la fecha de emisión del documento referenciado"
+  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:IssueDate`
+
+- #### `code` (FAI06)
+  - **Etiqueta XML:** `cbc:DocumentTypeCode`
+  - **Requerido:** No
+  - **Tipo:** String
+  - **Descripción:** Identificador del tipo de documento de referencia (codificación propia de la empresa).
+  - **Ejemplo:** "01"
+  - **Validación DIAN:** "No está informado el tipo de documento referenciado"
+  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:DocumentTypeCode`
+
+### Reglas de Validación DIAN
+
+| ID | Elemento | Tipo | Descripción | Regla | Mensaje de Rechazo | XPath |
+|-----|----------|------|-------------|-------|-------------------|-------|
+| FAI01 | AdditionalDocumentReference | **R** | Valida que exista grupo de referencia para factura tipo 03 | Solo obligatorio si `InvoiceTypeCode = "03"` | "El grupo AdditionalDocumentReference no está informado para factura tipo 03" | `/Invoice/cac:AdditionalDocumentReference` |
+| FAI02 | ID | **R** | Prefijo y Número del documento referenciado | Requerido cuando existe AdditionalDocumentReference | "ID de Documento de referencia no relacionado" | `/Invoice/cac:AdditionalDocumentReference/cbc:ID` |
+| FAI03 | UUID | **R** | CUFE o CUDE del documento referenciado | Requerido cuando existe AdditionalDocumentReference | "No fue informado el CUFE o CUDE del documento referenciado" | `/Invoice/cac:AdditionalDocumentReference/cbc:ID/UUID` |
+| FAI04 | @schemeName | **N** | Identificador del esquema de identificación | Debe ser algoritmo permitido | "No fue utilizado o informado uno de los algoritmos permitidos para el cálculo del CUFE o CUDE" | `/Invoice/cac:AdditionalDocumentReference/cbc:UUID/@schemeName` |
+| FAI05 | IssueDate | **N** | Fecha de emisión del documento referenciado | Opcional | "No se informó la fecha de emisión del documento referenciado" | `/Invoice/cac:AdditionalDocumentReference/cbc:IssueDate` |
+| FAI06 | DocumentTypeCode | **N** | Identificador del tipo de documento de referencia | Opcional | "No está informado el tipo de documento referenciado" | `/Invoice/cac:AdditionalDocumentReference/cbc:DocumentTypeCode` |
+
+**Leyenda de Tipo:**
+- **R** = Rechazo (campo obligatorio cuando grupo existe)
+- **N** = Notificación (campo opcional, genera advertencia si falta)
 
 ### Notas Importantes
 
-- Este campo es **obligatorio** para facturas de tipo:
-  - **03** (Factura de Contingencia - Talonario o Papel)
-  - **04** (Factura de Contingencia - Manual)
+- ✅ `additional_document_reference` es **OBLIGATORIO solo para InvoiceTypeCode = "03"** (Factura de Contingencia)
+- ✅ Para otros tipos de documentos, este grupo **NO se valida**
+- ✅ Si `type_document_id = 9` (tipo 03), el grupo es obligatorio
+- ✅ `number` (ID) y `uuid` son críticos - DIAN rechaza si faltan
+- ✅ `scheme_name` debe ser un algoritmo válido (típicamente CUFE-SHA384)
+- ✅ `date` e `code` son opcionales pero recomendados para trazabilidad
 
-- La DIAN realizará rechazo si:
-  - No se informa el ID del documento relacionado
-  - No se informa el CUFE o CUDE del documento referenciado
-  - El esquema de identificación (`scheme_name`) no corresponde a un valor válido
-  - No se informa fecha para facturas tipo 03
+### Ejemplos de Rechazo
 
-- El `uuid` debe ser el **CUFE o CUDE válido** del documento original que se referencia.
+**❌ Rechazo 1: Falta AdditionalDocumentReference para tipo 03**
+```
+InvoiceTypeCode = "03"
+AdditionalDocumentReference = NO INFORMADO
+→ RECHAZO: El grupo AdditionalDocumentReference no está informado para factura tipo 03
+```
 
-- Para facturas de contingencia, el documento referenciado es la factura original emitida en papel o talonario.
+**❌ Rechazo 2: Falta UUID (CUFE)**
+```
+AdditionalDocumentReference informado
+UUID = NO INFORMADO
+→ RECHAZO: No fue informado el CUFE o CUDE del documento referenciado
+```
+
+**❌ Rechazo 3: Esquema inválido**
+```
+@schemeName = "HASH-MD5" (no permitido)
+→ RECHAZO: No fue utilizado o informado uno de los algoritmos permitidos
+```
+
+### Ejemplo Correcto - JSON
+
+```json
+{
+  "additional_document_reference": {
+    "number": "LZT2119",
+    "uuid": "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567",
+    "scheme_name": "CUFE-SHA384",
+    "date": "2025-08-18",
+    "code": "01"
+  }
+}
+```
+
+### Ejemplo Correcto - XML
+
+```xml
+<AdditionalDocumentReference>
+  <cbc:ID>LZT2119</cbc:ID>
+  <cbc:IssueDate>2025-08-18</cbc:IssueDate>
+  <cbc:DocumentTypeCode>01</cbc:DocumentTypeCode>
+  <cbc:UUID schemeName="CUFE-SHA384">0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567</cbc:UUID>
+</AdditionalDocumentReference>
+```
+
+### Referencias DIAN
+
+- **Resolución:** No. 000165 (01/NOV/2023)
+- **Página:** 389 de 753
+- **Dirección de Gestión de Impuestos**
+- **Documento:** Anexo Técnico de Facturación Electrónica v2.1
 ```

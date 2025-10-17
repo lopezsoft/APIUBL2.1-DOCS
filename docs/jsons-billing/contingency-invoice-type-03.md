@@ -10,8 +10,8 @@ Factura electrónica emitida como respaldo de un documento en papel o talonario 
 
 - **Tipo de Documento:** 03
 - **Descripción:** Factura de Contingencia (Talonario o Papel)
-- **Campo Requerido:** `additional_document_reference` (obligatorio)
-- **Normativa:** Resolución No. 000165 (01/NOV/2023) - DIAN
+- **Campo Requerido:** `additional_document_reference` ⚠️ **OBLIGATORIO PARA ESTE TIPO**
+- **Normativa:** Resolución No. 000165 (01/NOV/2023) - DIAN - Página 389
 - **Casos de Uso:**
   - Facturación de contingencia por fallo del sistema
   - Regularización de facturas emitidas en papel previamente

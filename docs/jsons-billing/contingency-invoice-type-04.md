@@ -4,14 +4,14 @@ sidebar_position: 23
 
 # Factura de Contingencia Tipo 04 (Manual)
 
-Factura electrónica emitida como respaldo de un documento generado manualmente o mediante proceso manual. Similar a la tipo 03, pero aplicable a documentos generados por procesos manuales o alternativos.
+Factura electrónica emitida como respaldo de un documento generado manualmente o mediante proceso manual. Similar a la tipo 03, pero sin la obligatoriedad de `additional_document_reference`.
 
 ## Información General
 
 - **Tipo de Documento:** 04
 - **Descripción:** Factura de Contingencia (Manual)
-- **Campo Requerido:** `additional_document_reference` (opcional en este tipo)
-- **Normativa:** Resolución No. 000165 (01/NOV/2023) - DIAN
+- **Campo Requerido:** `additional_document_reference` ⚠️ **OPCIONAL para este tipo** (Obligatorio SOLO para tipo 03)
+- **Normativa:** Resolución No. 000165 (01/NOV/2023) - DIAN - Página 389
 - **Casos de Uso:**
   - Facturación manual de documentos no sistematizados
   - Respaldo de facturas generadas mediante procesos alternativos

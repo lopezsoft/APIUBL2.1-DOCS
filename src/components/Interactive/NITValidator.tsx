@@ -2,17 +2,18 @@ import React, { useState } from 'react';
 import styles from './NITValidator.module.css';
 
 /**
- * Componente para validar el dígito verificador de un NIT colombiano
+ * Componente para validar el dígito verificador de un NIT/documento colombiano
  * 
- * En Colombia: NIT = 10 dígitos base + 1 dígito verificador (total 11)
+ * En Colombia: Los números de documento pueden tener hasta 10 dígitos
+ * El algoritmo se adapta a la longitud del número ingresado
  * 
  * Algoritmo:
- * 1. Multiplicar cada uno de los 10 dígitos por su peso (6,3,7,13,17,19,23,29,37,41)
- * 2. Sumar los resultados
- * 3. Dividir entre 11
- * 4. El dígito verificador = 11 - resto
- * Si resultado es 11 → dígito es 0
- * Si resultado es 10 → dígito es 9
+ * 1. Usar vector de pesos según la longitud: [3, 7, 13, 17, 19, 23, 29, 37, 41, 43, 47, 53, 59, 67, 71]
+ * 2. Multiplicar cada dígito por el peso correspondiente (de atrás hacia adelante)
+ * 3. Sumar todos los productos
+ * 4. Calcular residuo = suma % 11
+ * 5. Si residuo > 1 → dígito verificador = 11 - residuo
+ *    Si residuo ≤ 1 → dígito verificador = residuo
  */
 
 export default function NITValidator() {
@@ -21,65 +22,69 @@ export default function NITValidator() {
   const [showSteps, setShowSteps] = useState(false);
   const [steps, setSteps] = useState([]);
 
-  const weights = [6, 3, 7, 13, 17, 19, 23, 29, 37, 41];
+  const weights = [3, 7, 13, 17, 19, 23, 29, 37, 41, 43, 47, 53, 59, 67, 71];
 
   const calculateCheckDigit = (nitNumber) => {
-    let nitStr = nitNumber.toString();
+    const nitStr = nitNumber.toString().trim();
     const calculationSteps = [];
 
-    // Validar que tenga 10 o 11 dígitos
-    if (!/^\d{10,11}$/.test(nitStr)) {
+    // Validar que solo contenga dígitos
+    if (!/^\d+$/.test(nitStr)) {
       return {
         valid: false,
-        message: '❌ El NIT debe tener 10 dígitos (sin verificador) o 11 dígitos (con verificador)',
+        message: '❌ Solo se permiten dígitos',
         steps: []
       };
     }
 
-    // Si tiene 11 dígitos, extraer los 10 primeros (el 11º es el verificador)
-    if (nitStr.length === 11) {
-      nitStr = nitStr.substring(0, 10);
+    // Validar longitud (1 a 10 dígitos para el número base)
+    const length = nitStr.length;
+    if (length < 1 || length > 10) {
+      return {
+        valid: false,
+        message: '❌ El documento debe tener entre 1 y 10 dígitos',
+        steps: []
+      };
     }
 
-    // Paso 1: Multiplicar por pesos (10 posiciones)
-    let sum = 0;
-    for (let i = 0; i < 10; i++) {
-      const digit = parseInt(nitStr[i]);
-      const weight = weights[i];
+    // Calcular el dígito verificador usando el algoritmo colombiano
+    let accumulator = 0;
+    
+    for (let i = 0; i < length; i++) {
+      const digit = parseInt(nitStr.charAt(i));
+      const weight = weights[length - i]; // Los pesos van de atrás hacia adelante
       const product = digit * weight;
-      sum += product;
+      accumulator += product;
 
       calculationSteps.push({
         step: i + 1,
         digit,
         weight,
         product,
-        cumulative: sum
+        cumulative: accumulator
       });
     }
 
-    // Paso 2: Dividir entre 11
-    const remainder = sum % 11;
-    const checkDigitCalc = 11 - remainder;
-
-    // Paso 3: Ajustes especiales
-    let checkDigit = checkDigitCalc;
-    if (checkDigitCalc === 11) {
-      checkDigit = 0;
-    } else if (checkDigitCalc === 10) {
-      checkDigit = 9;
+    // Calcular el residuo
+    const residue = accumulator % 11;
+    
+    // Determinar el dígito verificador
+    let checkDigit;
+    if (residue > 1) {
+      checkDigit = 11 - residue;
+    } else {
+      checkDigit = residue;
     }
 
-    const fullNIT = nitStr + checkDigit;
+    const fullNumber = nitStr + checkDigit;
 
     return {
       valid: true,
       nit: nitStr,
-      sum,
-      remainder,
-      checkDigitCalc,
+      accumulator,
+      residue,
       checkDigit,
-      fullNIT,
+      fullNumber,
       steps: calculationSteps
     };
   };
@@ -88,7 +93,7 @@ export default function NITValidator() {
     if (!nit.trim()) {
       setResult({
         valid: false,
-        message: '⚠️ Por favor ingresa un NIT'
+        message: '⚠️ Por favor ingresa un documento'
       });
       return;
     }
@@ -118,10 +123,10 @@ export default function NITValidator() {
         <div className={styles.inputGroup}>
           <input
             type="text"
-            placeholder="Ingresa 10 dígitos (sin verificador) o 11 (con verificador)"
+            placeholder="Ingresa el documento (1-10 dígitos)"
             value={nit}
             onChange={handleInputChange}
-            maxLength={11}
+            maxLength={10}
             className={styles.input}
           />
           <button onClick={handleValidate} className={styles.buttonPrimary}>
@@ -137,11 +142,11 @@ export default function NITValidator() {
             {result.valid ? (
               <>
                 <div className={`${styles.resultBox} ${styles.success}`}>
-                  <h3>✅ NIT Válido</h3>
+                  <h3>✅ Documento Válido</h3>
                   
                   <div className={styles.resultContent}>
                     <div className={styles.resultItem}>
-                      <strong>NIT sin dígito:</strong>
+                      <strong>Documento sin dígito:</strong>
                       <code>{result.nit}</code>
                     </div>
                     
@@ -151,8 +156,8 @@ export default function NITValidator() {
                     </div>
                     
                     <div className={styles.resultItem}>
-                      <strong>NIT Completo:</strong>
-                      <code className={styles.fullNIT}>{result.fullNIT}</code>
+                      <strong>Documento Completo:</strong>
+                      <code className={styles.fullNIT}>{result.fullNumber}</code>
                     </div>
                   </div>
 
@@ -160,11 +165,11 @@ export default function NITValidator() {
                     <button
                       className={styles.buttonCopy}
                       onClick={() => {
-                        navigator.clipboard.writeText(result.fullNIT);
-                        alert('NIT copiado al portapapeles');
+                        navigator.clipboard.writeText(result.fullNumber);
+                        alert('Documento copiado al portapapeles');
                       }}
                     >
-                      📋 Copiar NIT Completo
+                      📋 Copiar Documento Completo
                     </button>
                   </div>
 
@@ -210,24 +215,19 @@ export default function NITValidator() {
 
                       <div className={styles.calculationSteps}>
                         <div className={styles.step}>
-                          <strong>Suma Total:</strong> {result.sum}
+                          <strong>Acumulador Total:</strong> {result.accumulator}
                         </div>
                         <div className={styles.step}>
-                          <strong>División entre 11:</strong> {result.sum} ÷ 11 = {Math.floor(result.sum / 11)} con resto {result.remainder}
+                          <strong>Módulo 11:</strong> {result.accumulator} % 11 = {result.residue}
                         </div>
                         <div className={styles.step}>
-                          <strong>Dígito inicial:</strong> 11 - {result.remainder} = {result.checkDigitCalc}
+                          <strong>Dígito Verificador:</strong>
+                          {result.residue > 1 ? (
+                            <span> 11 - {result.residue} = <strong className={styles.highlightDigit}>{result.checkDigit}</strong></span>
+                          ) : (
+                            <span> {result.residue} (residuo ≤ 1) = <strong className={styles.highlightDigit}>{result.checkDigit}</strong></span>
+                          )}
                         </div>
-                        {result.checkDigitCalc === 11 && (
-                          <div className={styles.step}>
-                            <strong>Ajuste:</strong> 11 → 0 (cambio especial)
-                          </div>
-                        )}
-                        {result.checkDigitCalc === 10 && (
-                          <div className={styles.step}>
-                            <strong>Ajuste:</strong> 10 → 9 (cambio especial)
-                          </div>
-                        )}
                         <div className={styles.step}>
                           <strong>Dígito Verificador Final:</strong> <span className={styles.highlightDigit}>{result.checkDigit}</span>
                         </div>
@@ -248,11 +248,11 @@ export default function NITValidator() {
         <div className={styles.infoBox}>
           <h4>ℹ️ Información</h4>
           <ul>
-            <li>El NIT colombiano tiene 10 dígitos + 1 dígito verificador (total 11)</li>
-            <li>El dígito verificador se calcula usando pesos específicos</li>
-            <li>Este validador usa el mismo algoritmo de la DIAN</li>
-            <li>Puedes ingresar: 10 dígitos (sin verificador) o 11 dígitos (con verificador)</li>
-            <li>El validador extrae automáticamente los 10 dígitos base para calcular</li>
+            <li>Los documentos colombianos tienen hasta 10 dígitos (pueden tener menos)</li>
+            <li>El dígito verificador se calcula usando pesos específicos (3, 7, 13, 17, 19, 23, 29, 37, 41, 43...)</li>
+            <li>El algoritmo se adapta automáticamente a la longitud del documento</li>
+            <li>Este validador usa el mismo algoritmo oficial de Colombia (DIAN)</li>
+            <li>Si residuo {'>'} 1: DV = 11 - residuo | Si residuo ≤ 1: DV = residuo</li>
           </ul>
         </div>
       </div>

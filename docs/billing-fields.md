@@ -1356,6 +1356,64 @@ Estos documentos representan acciones comerciales y mercantiles que amparan o so
 - ✅ Los códigos (`code`) son de asignación libre del facturador (no están estandarizados por DIAN)
 - ❌ Los documentos XML adoptados por DIAN NO deben incluirse aquí
 
+### ⚠️ Nota sobre API MATIAS (Comportamiento Automático)
+
+**Para facturas tipo 03 (Contingencia):**
+
+Si el cliente **no proporciona `additional_document_reference`** en la solicitud, el **API de MATIAS agregará automáticamente** los datos por defecto del **documento procesado** (la factura que se está generando):
+
+```json
+{
+  "additional_document_reference": [
+    {
+      "number": "[PREFIX]-[DOCUMENT_NUMBER]",
+      "uuid": "[CUFE_DEL_DOCUMENTO_GENERADO]",
+      "scheme_name": "CUFE-SHA384",
+      "date": "[FECHA_DE_EMISION_DEL_DOCUMENTO]",
+      "code": "01"
+    }
+  ]
+}
+```
+
+**Ejemplo automático del API:**
+
+Si genera factura tipo 03 con:
+- Prefijo: `LCON`
+- Número: `2`
+- Fecha: `2025-08-18`
+- CUFE: `0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567`
+
+El API agregará automáticamente:
+```json
+{
+  "additional_document_reference": [
+    {
+      "number": "LCON2",
+      "uuid": "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567",
+      "scheme_name": "CUFE-SHA384",
+      "date": "2025-08-18",
+      "code": "01"
+    }
+  ]
+}
+```
+
+**Opciones de cliente:**
+
+| Opción | Comportamiento |
+|--------|----------------|
+| No envía `additional_document_reference` | API agrega valores por defecto del documento |
+| Envía `additional_document_reference` vacío `[]` | API agrega valores por defecto del documento |
+| Envía `additional_document_reference` con datos | API utiliza los datos proporcionados |
+| Envía múltiples referencias en el array | API procesa todas las referencias |
+
+**Casos de uso:**
+
+- ✅ **Contingencia simple:** No enviar `additional_document_reference`, el API lo genera automáticamente
+- ✅ **Contingencia con referencia a otro documento:** Proporcionar explícitamente el `additional_document_reference`
+- ✅ **Múltiples referencias:** Enviar array con varias referencias comerciales/de soporte
+
 ### Ejemplo 1: Una Referencia - JSON
 
 ```json

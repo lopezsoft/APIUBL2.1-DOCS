@@ -156,10 +156,10 @@ app.get('/health', async (req, res) => {
     try {
         res.json({
             status: 'ok',
-            service: 'OpenAI GPT-4 Turbo',
+            service: 'OpenAI GPT-4o Mini',
             timestamp: new Date().toISOString(),
             environment: {
-                model: 'gpt-4-turbo',
+                model: 'gpt-4o-mini',
                 hasApiKey: !!process.env.OPENAI_API_KEY,
             },
         });
@@ -277,7 +277,7 @@ app.listen(PORT, () => {
     console.log(`
 ╔════════════════════════════════════════════════════════╗
 ║                                                        ║
-║  🚀 Servidor OpenAI GPT-4 Turbo iniciado              ║
+║  🚀 Servidor OpenAI GPT-4o Mini iniciado              ║
 ║                                                        ║
 ║  🌐 URL: http://localhost:${PORT}                          ║
 ║  ✅ Health Check: http://localhost:${PORT}/health       ║

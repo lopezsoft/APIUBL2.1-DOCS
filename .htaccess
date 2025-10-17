@@ -7,17 +7,19 @@
   RewriteEngine On
   RewriteBase /
   
-  # NO reescribir si es un archivo real
+  # Si el archivo existe, sirve directamente
   RewriteCond %{REQUEST_FILENAME} -f
   RewriteRule ^ - [L]
   
-  # NO reescribir si es un directorio real
+  # Si el directorio existe, sirve directamente
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
   
-  # NO reescribir directorios específicos de Docusaurus
-  RewriteCond %{REQUEST_URI} ^/(docs|blog|api|assets|img|static)(/|$)
-  RewriteRule ^ - [L]
+  # Si existe archivo .html con ese nombre, sirve el HTML
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME}.html -f
+  RewriteRule ^(.+)$ $1.html [L]
   
   # TODO lo demás → index.html (para SPA)
   RewriteRule ^ /index.html [L]

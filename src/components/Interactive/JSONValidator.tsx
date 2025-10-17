@@ -16,7 +16,7 @@ export default function JSONValidator() {
       id: 'structure',
       name: 'Estructura',
       check: (data) => {
-        const required = ['prefix', 'document_number', 'date', 'issuer', 'customer', 'lines', 'totals'];
+        const required = ['prefix', 'document_number', 'type_document_id', 'operation_type_id', 'customer', 'lines', 'legal_monetary_totals', 'payments'];
         const missing = required.filter(field => !data[field]);
         return {
           pass: missing.length === 0,
@@ -30,18 +30,19 @@ export default function JSONValidator() {
       id: 'totals',
       name: 'Cálculo de Totales',
       check: (data) => {
-        if (!data.lines || !data.totals) return { pass: false, message: '❌ Datos incompletos' };
+        if (!data.lines || !data.legal_monetary_totals) return { pass: false, message: '❌ Datos incompletos' };
         
-        const subtotal = data.lines.reduce((sum, line) => sum + (line.line_extension_amount || 0), 0);
-        const expectedTotal = subtotal - (data.totals.total_discount || 0) + (data.totals.total_tax || 0);
+        const lineExtension = data.lines.reduce((sum, line) => sum + (parseFloat(line.line_extension_amount) || 0), 0);
+        const calculatedTotal = lineExtension;
+        const reportedTotal = parseFloat(data.legal_monetary_totals.tax_inclusive_amount || 0);
         
-        const match = Math.abs(expectedTotal - (data.totals.payable_amount || 0)) < 0.01;
+        const match = Math.abs(calculatedTotal - reportedTotal) < 0.01;
         
         return {
           pass: match,
           message: match
-            ? `✅ Totales correctos (${expectedTotal.toLocaleString()})`
-            : `❌ Total no coincide. Esperado: ${expectedTotal.toLocaleString()}, Recibido: ${data.totals.payable_amount || 0}`
+            ? `✅ Totales correctos`
+            : `❌ Total no coincide. Esperado: ${calculatedTotal.toFixed(2)}, Recibido: ${reportedTotal.toFixed(2)}`
         };
       }
     },
@@ -55,15 +56,26 @@ export default function JSONValidator() {
         
         for (let i = 0; i < data.lines.length; i++) {
           const line = data.lines[i];
-          const quantity = line.quantity || 0;
-          const unitPrice = line.unit_price || 0;
-          const expected = quantity * unitPrice;
-          const actual = line.line_extension_amount || 0;
+          const invoicedQty = parseFloat(line.invoiced_quantity || 0);
+          const priceAmount = parseFloat(line.price_amount || 0);
+          const lineExtension = parseFloat(line.line_extension_amount || 0);
           
-          if (Math.abs(expected - actual) > 0.01) {
+          // Calcular esperado considerando descuentos
+          let expectedAmount = invoicedQty * priceAmount;
+          
+          // Restar descuentos si existen
+          if (line.allowance_charges && Array.isArray(line.allowance_charges)) {
+            for (const discount of line.allowance_charges) {
+              if (discount.charge_indicator === false) {
+                expectedAmount -= parseFloat(discount.amount || 0);
+              }
+            }
+          }
+          
+          if (Math.abs(expectedAmount - lineExtension) > 0.01) {
             return {
               pass: false,
-              message: `❌ Línea ${i + 1}: quantity × unit_price (${expected.toFixed(2)}) ≠ line_extension_amount (${actual.toFixed(2)})`
+              message: `❌ Línea ${i + 1}: cantidad × precio - descuentos (${expectedAmount.toFixed(2)}) ≠ line_extension_amount (${lineExtension.toFixed(2)})`
             };
           }
         }
@@ -88,29 +100,12 @@ export default function JSONValidator() {
       }
     },
     {
-      id: 'issuer',
-      name: 'Datos del Emisor',
-      check: (data) => {
-        if (!data.issuer) return { pass: false, message: '❌ Falta información del emisor' };
-        
-        const required = ['tax_id', 'name', 'address', 'city'];
-        const missing = required.filter(field => !data.issuer[field]);
-        
-        return {
-          pass: missing.length === 0,
-          message: missing.length === 0
-            ? '✅ Datos del emisor completos'
-            : `❌ Campos del emisor faltantes: ${missing.join(', ')}`
-        };
-      }
-    },
-    {
       id: 'customer',
       name: 'Datos del Cliente',
       check: (data) => {
         if (!data.customer) return { pass: false, message: '❌ Falta información del cliente' };
         
-        const required = ['identity_document_id', 'document_number', 'company_name', 'city'];
+        const required = ['country_id', 'city_id', 'identity_document_id', 'company_name', 'dni', 'email'];
         const missing = required.filter(field => !data.customer[field]);
         
         return {
@@ -119,6 +114,23 @@ export default function JSONValidator() {
             ? '✅ Datos del cliente completos'
             : `❌ Campos del cliente faltantes: ${missing.join(', ')}`
         };
+      }
+    },
+    {
+      id: 'payments',
+      name: 'Información de Pago',
+      check: (data) => {
+        if (!data.payments || !Array.isArray(data.payments) || data.payments.length === 0) {
+          return { pass: false, message: '❌ Debe tener al menos 1 forma de pago' };
+        }
+        
+        for (const payment of data.payments) {
+          if (!payment.payment_method_id || !payment.value_paid) {
+            return { pass: false, message: '❌ Falta payment_method_id o value_paid en pagos' };
+          }
+        }
+        
+        return { pass: true, message: `✅ ${data.payments.length} forma(s) de pago válida(s)` };
       }
     }
   ];
@@ -147,40 +159,77 @@ export default function JSONValidator() {
 
   const handleLoadExample = () => {
     const example = {
+      "resolution_number": "18764074347312",
       "prefix": "FEV",
-      "document_number": 2001,
+      "document_number": "2001",
       "date": "2024-10-17",
-      "time": "14:30:00",
-      "currency_id": 170,
-      "issuer": {
-        "tax_id": "9001234567",
-        "name": "MI EMPRESA SAS",
-        "address": "Carrera 10 #25-50",
-        "city": "Bogotá",
-        "country_id": "169"
-      },
+      "type_document_id": 7,
+      "operation_type_id": 1,
+      "graphic_representation": 0,
+      "send_email": 1,
+      
       "customer": {
+        "country_id": "45",
+        "city_id": "76",
         "identity_document_id": "2",
-        "document_number": "8001234567",
+        "type_organization_id": 2,
+        "tax_regime_id": 2,
+        "tax_level_id": 5,
         "company_name": "CLIENTE EMPRESA LTDA",
-        "city": "Medellín",
-        "country_id": "169"
+        "dni": "8001234567",
+        "email": "compras@cliente.com",
+        "mobile": "3043965204",
+        "address": "CALLE 22 NRO. 32 29",
+        "postal_code": "050001"
       },
+      
       "lines": [
         {
-          "description": "PRODUCTO A",
-          "quantity": 2,
-          "unit_price": 50000,
-          "line_extension_amount": 100000,
-          "taxes": [{"tax_type_id": 1, "tax_percentage": 19, "tax_amount": 19000}]
+          "invoiced_quantity": "1",
+          "quantity_units_id": "1093",
+          "line_extension_amount": "100000.00",
+          "free_of_charge_indicator": false,
+          "description": "PRODUCTO O SERVICIO",
+          "code": "A50824",
+          "type_item_identifications_id": "4",
+          "reference_price_id": "1",
+          "price_amount": "100000.00",
+          "base_quantity": "1",
+          
+          "tax_totals": [
+            {
+              "tax_id": "1",
+              "tax_amount": 19000.00,
+              "taxable_amount": 100000.00,
+              "percent": 19
+            }
+          ]
         }
       ],
-      "totals": {
-        "subtotal": 100000,
-        "total_discount": 0,
-        "total_tax": 19000,
-        "payable_amount": 119000
-      }
+      
+      "legal_monetary_totals": {
+        "line_extension_amount": "100000.00",
+        "tax_exclusive_amount": "100000.00",
+        "tax_inclusive_amount": "119000.00",
+        "payable_amount": 119000.00
+      },
+      
+      "tax_totals": [
+        {
+          "tax_id": "1",
+          "tax_amount": 19000.00,
+          "taxable_amount": 100000.00,
+          "percent": 19
+        }
+      ],
+      
+      "payments": [
+        {
+          "payment_method_id": 1,
+          "means_payment_id": 10,
+          "value_paid": "119000.00"
+        }
+      ]
     };
     
     setJsonInput(JSON.stringify(example, null, 2));

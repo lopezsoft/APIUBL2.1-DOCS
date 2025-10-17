@@ -262,7 +262,39 @@ const sidebars: SidebarsConfig = {
     },
 
     // ============================================
-    // SECCIÓN 5: CAMPOS Y REFERENCIAS
+    // SECCIÓN 5: GUÍAS DE CASO DE USO
+    // ============================================
+    {
+      type: 'category',
+      label: '🎓 Guías de Caso de Uso',
+      collapsible: true,
+      collapsed: false,
+      items: [
+        {
+          type: 'doc',
+          id: 'use-cases/simple-invoice',
+          label: '✨ Factura Simple (Principiante)',
+        },
+        {
+          type: 'doc',
+          id: 'use-cases/invoice-with-discounts',
+          label: '💰 Factura con Descuentos',
+        },
+        {
+          type: 'doc',
+          id: 'use-cases/export-scenarios',
+          label: '✈️ Escenarios de Exportación',
+        },
+        {
+          type: 'doc',
+          id: 'use-cases/common-errors',
+          label: '🐛 Errores Comunes y Soluciones',
+        },
+      ],
+    },
+
+    // ============================================
+    // SECCIÓN 6: CAMPOS Y REFERENCIAS
     // ============================================
     {
       type: 'category',

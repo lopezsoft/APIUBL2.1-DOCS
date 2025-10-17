@@ -1,0 +1,9 @@
+{
+  "label": "Guías de Caso de Uso",
+  "description": "Guías paso a paso para implementar diferentes escenarios de facturación",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "Aprende cómo implementar diferentes casos de uso con la API de MATIAS"
+  }
+}

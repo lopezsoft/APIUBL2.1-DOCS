@@ -22,11 +22,65 @@ const sidebars: SidebarsConfig = {
     },
 
     // ============================================
-    // SECCIÓN 2: INTEGRACIÓN API
+    // SECCIÓN 2: INICIO RÁPIDO - GUÍAS DE CASO DE USO
     // ============================================
     {
       type: 'category',
-      label: '📡 Guía de Integración',
+      label: '🎓 Guías de Caso de Uso',
+      collapsible: true,
+      collapsed: false,
+      items: [
+        {
+          type: 'doc',
+          id: 'use-cases/simple-invoice',
+          label: '✨ Factura Simple (Principiante)',
+        },
+        {
+          type: 'doc',
+          id: 'use-cases/invoice-with-discounts',
+          label: '💰 Factura con Descuentos',
+        },
+        {
+          type: 'doc',
+          id: 'use-cases/export-scenarios',
+          label: '✈️ Escenarios de Exportación',
+        },
+        {
+          type: 'doc',
+          id: 'use-cases/common-errors',
+          label: '🐛 Errores Comunes y Soluciones',
+        },
+      ],
+    },
+
+    // ============================================
+    // SECCIÓN 3: REFERENCIA TÉCNICA
+    // ============================================
+    {
+      type: 'category',
+      label: '� Referencia Técnica',
+      collapsible: true,
+      collapsed: false,
+      items: [
+        {
+          type: 'doc',
+          id: 'billing-fields',
+          label: '🔧 Campos de Documentos',
+        },
+        {
+          type: 'doc',
+          id: 'glossary',
+          label: '📚 Glosario Técnico',
+        },
+      ],
+    },
+
+    // ============================================
+    // SECCIÓN 4: INTEGRACIÓN API
+    // ============================================
+    {
+      type: 'category',
+      label: '📡 Integración API',
       collapsible: true,
       collapsed: false,
       items: [
@@ -44,13 +98,22 @@ const sidebars: SidebarsConfig = {
     },
 
     // ============================================
-    // SECCIÓN 3: DOCUMENTOS ELECTRÓNICOS
+    // SECCIÓN 5: HERRAMIENTAS INTERACTIVAS
+    // ============================================
+    {
+      type: 'doc',
+      id: 'interactive-tools',
+      label: '⚙️ Herramientas Interactivas',
+    },
+
+    // ============================================
+    // SECCIÓN 6: DOCUMENTOS ELECTRÓNICOS
     // ============================================
     {
       type: 'category',
-      label: '📄 Documentos Electrónicos',
+      label: '📄 Ejemplos de Documentos',
       collapsible: true,
-      collapsed: false,
+      collapsed: true,
       items: [
         {
           type: 'category',
@@ -156,13 +219,13 @@ const sidebars: SidebarsConfig = {
     },
 
     // ============================================
-    // SECCIÓN 4: MARCO REGULATORIO DIAN
+    // SECCIÓN 7: MARCO REGULATORIO DIAN
     // ============================================
     {
       type: 'category',
       label: '🏛️ Marco Regulatorio DIAN',
       collapsible: true,
-      collapsed: false,
+      collapsed: true,
       items: [
         {
           type: 'doc',
@@ -259,73 +322,6 @@ const sidebars: SidebarsConfig = {
           ],
         },
       ],
-    },
-
-    // ============================================
-    // SECCIÓN 5: GUÍAS DE CASO DE USO
-    // ============================================
-    {
-      type: 'category',
-      label: '🎓 Guías de Caso de Uso',
-      collapsible: true,
-      collapsed: false,
-      items: [
-        {
-          type: 'doc',
-          id: 'use-cases/simple-invoice',
-          label: '✨ Factura Simple (Principiante)',
-        },
-        {
-          type: 'doc',
-          id: 'use-cases/invoice-with-discounts',
-          label: '💰 Factura con Descuentos',
-        },
-        {
-          type: 'doc',
-          id: 'use-cases/export-scenarios',
-          label: '✈️ Escenarios de Exportación',
-        },
-        {
-          type: 'doc',
-          id: 'use-cases/common-errors',
-          label: '🐛 Errores Comunes y Soluciones',
-        },
-      ],
-    },
-
-    // ============================================
-    // SECCIÓN 6: CAMPOS Y REFERENCIAS
-    // ============================================
-    {
-      type: 'category',
-      label: '📊 Referencia Técnica',
-      collapsible: true,
-      collapsed: true,
-      items: [
-        {
-          type: 'doc',
-          id: 'billing-fields',
-          label: '🔧 Campos de Documentos',
-        },
-      ],
-    },
-
-    // ============================================
-    // SECCIÓN 7: GLOSARIO
-    // ============================================
-    {
-      type: 'doc',
-      id: 'glossary',
-      label: '📚 Glosario Técnico',
-    },
-
-    // ============================================
-    // SECCIÓN 8: HERRAMIENTAS INTERACTIVAS
-    // ============================================
-    {
-      type: 'doc',
-      id: 'interactive-tools',
-      label: '⚙️ Herramientas Interactivas',
     },
   ],
 };

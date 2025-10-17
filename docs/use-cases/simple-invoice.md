@@ -293,62 +293,141 @@ curl -X POST https://api.matias-app.com/api/invoices \
 ### Respuesta Exitosa
 ```json
 {
-  "id": 12345,
-  "document_id": "FEV-2001",
-  "cufe": "f8e5c3a9b2d1e6f4g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3",
-  "status_id": 1,
-  "status_name": "Registrada",
-  "message": "Factura creada exitosamente",
-  "created_at": "2024-10-17T14:30:00"
+  "message": "El documento ha sido procesado por la DIAN.",
+  "send_to_queue": 0,
+  "XmlDocumentKey": "d45f3b2ed042ce0e075891591c3b3a7ae3a9c176ca191dab1bd23e5cdd3b48b8c548a088dfcbe20ee7baa2bed2dccd48",
+  "response": {
+    "ErrorMessage": {
+      "string": []
+    },
+    "IsValid": "true",
+    "StatusCode": "00",
+    "StatusDescription": "Procesado Correctamente.",
+    "StatusMessage": "La Factura electrónica FEV2001, ha sido autorizada.",
+    "XmlBase64Bytes": "",
+    "XmlBytes": {
+      "_attributes": {
+        "nil": "true"
+      }
+    },
+    "XmlDocumentKey": "d45f3b2ed042ce0e075891591c3b3a7ae3a9c176ca191dab1bd23e5cdd3b48b8c548a088dfcbe20ee7baa2bed2dccd48",
+    "XmlFileName": "fv09010914030002500000095"
+  },
+  "XmlBase64Bytes": "",
+  "AttachedDocument": {
+    "pathZip": "1/ad/z09010914030002500000042.zip",
+    "path": "1/ad/ad09010914030002500000041.xml",
+    "url": "https://api-v2.matias-api.com/attachments/1/ad/ad09010914030002500000041.xml",
+    "data": ""
+  },
+  "qr": {
+    "qrDian": "",
+    "url": "",
+    "path": "1/fv09010914030002500000095.png",
+    "data": ""
+  },
+  "pdf": {
+    "path": "1/fv09010914030002500000095.pdf",
+    "url": "https://api-v2.matias-api.com/pdf/1/fv09010914030002500000095.pdf",
+    "data": ""
+  },
+  "success": true
 }
 ```
 
 :::info
-**Status posibles:**
-- `1` = Registrada (guardada localmente)
-- `2` = Enviada (enviada a DIAN)
-- `3` = Aceptada (validada por DIAN)
-- `4` = Rechazada (DIAN encontró errores)
+**Campos Clave en la Respuesta:**
+- `message`: Mensaje genérico del API
+- `XmlDocumentKey` (CUFE): Identificador único del documento en DIAN
+- `response.IsValid`: "true" = documento válido
+- `response.StatusCode`: "00" = procesado correctamente
+- `response.StatusMessage`: Confirmación de autorización
+- `XmlFileName`: Nombre del documento en portal DIAN
+- `success`: true = operación exitosa
+- `pdf.url`: Enlace para descargar el PDF
+- `AttachedDocument.url`: Enlace del XML
 :::
 
 ### Si Hay Errores
 ```json
 {
-  "error": true,
-  "message": "Error en validación",
-  "errors": [
-    {
-      "field": "dni",
-      "message": "NIT con dígito verificador inválido"
-    }
-  ]
+  "success": false,
+  "message": "El documento (Factura electrónica) con numero FEV2001, ya se encuentra validado"
 }
 ```
 
-## Paso 6: Monitorear el Estado en DIAN
+:::warning
+**Códigos de Error Comunes:**
+- Documento duplicado
+- Datos de cliente inválidos
+- Cálculos de totales incorrectos
+- NIT sin dígito verificador o incorrecto
+- Resolución no válida o vencida
+:::
 
-Consulta el estado de tu factura:
+## Paso 6: Consultar Detalles del Documento
+
+Para obtener los detalles completos de tu factura después de haberla creado:
 
 ```bash
-curl -X GET https://api.matias-app.com/api/invoices/12345 \
+curl -X GET "https://api.matias-app.com/api/invoices/FEV-2001" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
 ### Respuesta
 ```json
 {
-  "id": 12345,
-  "document_id": "FEV-2001",
-  "cufe": "f8e5c3a9b2d1e6f4g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3",
-  "status_id": 3,
-  "status_name": "Aceptada",
-  "dian_status": "ACEPTADA",
-  "dian_response": {
-    "status_code": 0,
-    "message": "Factura aceptada por DIAN"
-  }
+  "message": "El documento ha sido procesado por la DIAN.",
+  "send_to_queue": 0,
+  "XmlDocumentKey": "d45f3b2ed042ce0e075891591c3b3a7ae3a9c176ca191dab1bd23e5cdd3b48b8c548a088dfcbe20ee7baa2bed2dccd48",
+  "response": {
+    "ErrorMessage": {
+      "string": []
+    },
+    "IsValid": "true",
+    "StatusCode": "00",
+    "StatusDescription": "Procesado Correctamente.",
+    "StatusMessage": "La Factura electrónica FEV2001, ha sido autorizada.",
+    "XmlBase64Bytes": "",
+    "XmlBytes": {
+      "_attributes": {
+        "nil": "true"
+      }
+    },
+    "XmlDocumentKey": "d45f3b2ed042ce0e075891591c3b3a7ae3a9c176ca191dab1bd23e5cdd3b48b8c548a088dfcbe20ee7baa2bed2dccd48",
+    "XmlFileName": "fv09010914030002500000095"
+  },
+  "XmlBase64Bytes": "",
+  "AttachedDocument": {
+    "pathZip": "1/ad/z09010914030002500000042.zip",
+    "path": "1/ad/ad09010914030002500000041.xml",
+    "url": "https://api-v2.matias-api.com/attachments/1/ad/ad09010914030002500000041.xml",
+    "data": ""
+  },
+  "qr": {
+    "qrDian": "",
+    "url": "",
+    "path": "1/fv09010914030002500000095.png",
+    "data": ""
+  },
+  "pdf": {
+    "path": "1/fv09010914030002500000095.pdf",
+    "url": "https://api-v2.matias-api.com/pdf/1/fv09010914030002500000095.pdf",
+    "data": ""
+  },
+  "success": true
 }
 ```
+
+:::success
+**¡Tu factura está lista!**
+
+Con los datos de la respuesta puedes:
+- 📥 **Descargar el PDF**: Usa `pdf.url`
+- 📄 **Obtener el XML**: Usa `AttachedDocument.url`
+- 📱 **Compartir el QR**: Usa `qr.url`
+- ✅ **Verificar**: El CUFE (`XmlDocumentKey`) es único e irrepetible
+:::
 
 **Tiempo estimado de validación DIAN**: 30 minutos a 2 horas
 

@@ -75,18 +75,18 @@ curl -X POST https://api.matias-app.com/api/invoices \
 **HTTP Status**: 400 - Bad Request
 
 **Causa común - JSON inválido:**
-// INCORRECTO - Falta cierre de llaves
+
+Ejemplo de JSON malformado (falta cierre de llave):
+```json
 {
   "resolution_number": "18764074347312",
   "prefix": "FEV",
   "document_number": "2001"
-  // Falta cierre }
 }
 ```
 
 **Solución:**
 ```json
-// CORRECTO
 {
   "resolution_number": "18764074347312",
   "prefix": "FEV",
@@ -271,13 +271,16 @@ payable_amount = tax_inclusive_amount
   "tax_totals": [
     {
       "tax_id": "1",
-      "tax_amount": 19.00,              // ✓ CORRECTO: 100 × 0.19 = 19.00
+      "tax_amount": 19.00,
       "taxable_amount": 100.00,
       "percent": 19
     }
   ]
 }
 ```
+:::info
+**Cálculo Correcto**: 100 × 0.19 = 19.00
+:::
 
 **Fórmula:**
 ```
@@ -319,13 +322,16 @@ tax_amount = taxable_amount × (percent / 100)
 {
   "allowance_charges": [
     {
-      "amount": "50.00",                // ✓ CORRECTO: Menor o igual a base
+      "amount": "50.00",
       "base_amount": "100.00",
       "charge_indicator": false
     }
   ]
 }
 ```
+:::info
+**Validación**: El monto debe ser ≤ al monto base (50 ≤ 100) ✓
+:::
 
 ---
 
@@ -477,18 +483,22 @@ curl -X GET "https://api.matias-app.com/api/invoices?prefix=FEV&document_number=
     {
       "tax_id": "1",
       "tax_amount": 19.00,
-      "percent": 19  // ❌ No permitido en exportación
+      "percent": 19
     }
   ]
 }
 ```
 
+❌ **INCORRECTO**: Los documentos de exportación no pueden tener impuestos
+
 **Correcto:**
 ```json
 {
-  "tax_totals": []  // ✓ Array vacío
+  "tax_totals": []
 }
 ```
+
+✓ **CORRECTO**: Array vacío para exportaciones
 
 ---
 

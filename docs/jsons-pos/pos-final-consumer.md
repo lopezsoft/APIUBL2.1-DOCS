@@ -1,5 +1,5 @@
 ---
-sidebar_position: 11.1
+sidebar_position: 2
 ---
 # P.O.S consumidor final
 

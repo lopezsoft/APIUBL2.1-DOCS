@@ -136,42 +136,55 @@ Si todo ✅ → Ejecuta `install-plesk.sh`
 
 ---
 
-## 📋 Arquitectura: Docusaurus Completo en Node.js
+## 📋 Arquitectura: Frontend + Backend separados
 
 ```
-Cliente → Node.js (Puerto 443)
-  ├─ /docs      → Documentación Docusaurus
-  ├─ /api/*     → APIs (búsqueda, chat, etc)
-  └─ Static     → Assets compilados
+docs.matias-api.com
+  ├─ Cliente (SPA estática, Apache)
+  └─ Llama a APIs en api-docs.matias-api.com
+
+api-docs.matias-api.com
+  ├─ Node.js Backend
+  ├─ /api/search
+  ├─ /api/chat
+  └─ /api/health
 ```
 
-**Nota:** Apache sirve solo archivos estáticos del build/. Node.js maneja todo.
-
-Archivo: `.htaccess` (básico, solo SPA routing)
-- ✅ Reescribe URLs para Docusaurus SPA
-- ✅ Sirve archivos estáticos correctamente
-- ✅ Sin proxy (evita conflictos)
+**Configuración:**
+- `.htaccess` → Apache sirve documentación estática
+- Subdominio `api-docs.matias-api.com` → Backend Node.js
+- CORS habilitado entre dominios
 
 ---
 
 ## 📋 Paso Final: Configurar en Panel Plesk
 
-Después de ejecutar el script, configurar Node.js en Plesk:
+### Frontend (docs.matias-api.com)
+Ya está configurado. Apache sirve los archivos estáticos.
 
-1. **Panel Plesk** → Tu dominio `docs.matias-api.com`
-2. **Node.js** → **Agregar Aplicación**
-3. Rellena:
-   ```
-   Nombre: matias-docs
-   Ruta: /var/www/vhosts/docs.matias-api.com/applications/matias-docs
-   Versión: 18.x o superior
-   Puerto: 3000
-   Script: server.js
-   Ambiente: production
-   ```
-4. **OK** y espera a que se reinicie
+### Backend (api-docs.matias-api.com)
 
-El `.htaccess` se aplicará automáticamente para archivos estáticos.
+1. **Crear subdominio** en Plesk
+   - Panel → Dominios → matias-api.com
+   - Agregar subdominio: `api-docs`
+
+2. **Configurar Node.js** en `api-docs.matias-api.com`
+   - Seleccionar dominio `api-docs.matias-api.com`
+   - **Node.js** → **Agregar Aplicación**
+   - Rellena:
+     ```
+     Nombre: matias-api-backend
+     Ruta: /var/www/vhosts/api-docs.matias-api.com/applications/backend
+     Versión: 18.x o superior
+     Puerto: 3000
+     Script: server.js
+     Ambiente: production
+     ```
+   - **OK** y espera a que se reinicie
+
+3. **Verificar separación:**
+   - Frontend: `https://docs.matias-api.com`
+   - Backend: `https://api-docs.matias-api.com/api/health`
 
 ---
 

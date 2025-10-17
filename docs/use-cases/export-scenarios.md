@@ -260,17 +260,38 @@ curl -X POST https://api.matias-app.com/api/invoices \
   -d @factura-exportacion.json
 ```
 
-### Respuesta
+### Respuesta Exitosa
 ```json
 {
-  "id": 12347,
-  "document_id": "LZT-2055",
-  "cufe": "f8e5c3a9b2d1e6f4g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3",
-  "status_id": 1,
-  "status_name": "Registrada",
-  "message": "Factura de exportación creada exitosamente"
+  "message": "El documento ha sido procesado por la DIAN.",
+  "send_to_queue": 0,
+  "XmlDocumentKey": "c56g4c3fe153df1f186902602d4c4b8bf4b0d287db202ebc2ce34f6dee4c59c9d659b199ecgdf31ff8cbb3cfe3eddde59",
+  "response": {
+    "ErrorMessage": {
+      "string": []
+    },
+    "IsValid": "true",
+    "StatusCode": "00",
+    "StatusDescription": "Procesado Correctamente.",
+    "StatusMessage": "La Factura electrónica LZT2055, ha sido autorizada.",
+    "XmlDocumentKey": "c56g4c3fe153df1f186902602d4c4b8bf4b0d287db202ebc2ce34f6dee4c59c9d659b199ecgdf31ff8cbb3cfe3eddde59",
+    "XmlFileName": "fv09010914030002500000097"
+  },
+  "AttachedDocument": {
+    "path": "1/ad/ad09010914030002500000043.xml",
+    "url": "https://api-v2.matias-api.com/attachments/1/ad/ad09010914030002500000043.xml"
+  },
+  "pdf": {
+    "path": "1/fv09010914030002500000097.pdf",
+    "url": "https://api-v2.matias-api.com/pdf/1/fv09010914030002500000097.pdf"
+  },
+  "success": true
 }
 ```
+
+:::success
+**Exportación Registrada**: El documento está en el sistema de DIAN y en proceso de validación
+:::
 
 ## Documentación Requerida para DIAN
 

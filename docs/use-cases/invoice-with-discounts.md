@@ -261,17 +261,38 @@ curl -X POST https://api.matias-app.com/api/invoices \
   -d @factura-descuento.json
 ```
 
-### Respuesta
+### Respuesta Exitosa
 ```json
 {
-  "id": 12346,
-  "document_id": "FEV-2005",
-  "cufe": "101413670038274165",
-  "status_id": 1,
-  "status_name": "Registrada",
-  "message": "Factura creada exitosamente"
+  "message": "El documento ha sido procesado por la DIAN.",
+  "send_to_queue": 0,
+  "XmlDocumentKey": "d45f3b2ed042ce0e075891591c3b3a7ae3a9c176ca191dab1bd23e5cdd3b48b8c548a088dfcbe20ee7baa2bed2dccd48",
+  "response": {
+    "ErrorMessage": {
+      "string": []
+    },
+    "IsValid": "true",
+    "StatusCode": "00",
+    "StatusDescription": "Procesado Correctamente.",
+    "StatusMessage": "La Factura electrónica FEV2005, ha sido autorizada.",
+    "XmlDocumentKey": "d45f3b2ed042ce0e075891591c3b3a7ae3a9c176ca191dab1bd23e5cdd3b48b8c548a088dfcbe20ee7baa2bed2dccd48",
+    "XmlFileName": "fv09010914030002500000096"
+  },
+  "AttachedDocument": {
+    "path": "1/ad/ad09010914030002500000042.xml",
+    "url": "https://api-v2.matias-api.com/attachments/1/ad/ad09010914030002500000042.xml"
+  },
+  "pdf": {
+    "path": "1/fv09010914030002500000096.pdf",
+    "url": "https://api-v2.matias-api.com/pdf/1/fv09010914030002500000096.pdf"
+  },
+  "success": true
 }
 ```
+
+:::info
+**Éxito**: La respuesta incluye el CUFE (`XmlDocumentKey`), URLs de PDF y XML, y `success: true`
+:::
 
 ## Paso 5: Razones de Descuento Válidas
 

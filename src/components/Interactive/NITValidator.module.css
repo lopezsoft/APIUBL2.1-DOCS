@@ -1,0 +1,271 @@
+.container {
+  width: 100%;
+  padding: 20px 0;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  margin: 20px 0;
+}
+
+.card h2 {
+  margin-top: 0;
+  color: #2c3e50;
+  border-bottom: 3px solid #007bff;
+  padding-bottom: 15px;
+}
+
+.inputGroup {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.input {
+  flex: 1;
+  min-width: 200px;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  transition: border-color 0.3s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.buttonPrimary {
+  background-color: #007bff;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.buttonPrimary:hover {
+  background-color: #0056b3;
+}
+
+.buttonPrimary:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.buttonSecondary {
+  background-color: #6c757d;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.buttonSecondary:hover {
+  background-color: #5a6268;
+}
+
+.buttonDetails {
+  background-color: #17a2b8;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 15px;
+  width: 100%;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.buttonDetails:hover {
+  background-color: #138496;
+}
+
+.buttonCopy {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.buttonCopy:hover {
+  background-color: #218838;
+}
+
+.resultSection {
+  margin-top: 20px;
+}
+
+.resultBox {
+  border-left: 4px solid #ddd;
+  padding: 20px;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+  margin: 15px 0;
+}
+
+.resultBox h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.resultBox.success {
+  border-left-color: #28a745;
+  background-color: #f0f8f4;
+}
+
+.resultBox.error {
+  border-left-color: #dc3545;
+  background-color: #fef3f4;
+  color: #842029;
+}
+
+.resultContent {
+  background-color: white;
+  padding: 15px;
+  border-radius: 4px;
+  margin: 10px 0;
+}
+
+.resultItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.resultItem:last-child {
+  border-bottom: none;
+}
+
+.resultItem strong {
+  color: #2c3e50;
+  min-width: 180px;
+}
+
+.resultItem code {
+  background-color: #f1f3f5;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  color: #e83e8c;
+  font-weight: 600;
+}
+
+.highlightDigit {
+  background-color: #ffc107 !important;
+  color: black !important;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 8px 12px !important;
+}
+
+.fullNIT {
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.copySection {
+  margin: 15px 0;
+}
+
+.stepsContainer {
+  margin-top: 20px;
+  background-color: white;
+  padding: 15px;
+  border-radius: 4px;
+}
+
+.stepsContainer h4 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+.stepsTable {
+  overflow-x: auto;
+  margin: 15px 0;
+}
+
+.stepsTable table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.stepsTable th,
+.stepsTable td {
+  padding: 8px;
+  text-align: right;
+  border-bottom: 1px solid #ddd;
+}
+
+.stepsTable th {
+  background-color: #f1f3f5;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.stepsTable tr:hover {
+  background-color: #f9f9f9;
+}
+
+.calculationSteps {
+  background-color: white;
+  padding: 15px;
+  border-left: 3px solid #007bff;
+  border-radius: 4px;
+  margin-top: 15px;
+}
+
+.step {
+  padding: 8px 0;
+  font-family: 'Courier New', monospace;
+  color: #2c3e50;
+}
+
+.step strong {
+  color: #007bff;
+}
+
+.infoBox {
+  background-color: #e7f3ff;
+  border: 2px solid #007bff;
+  border-radius: 4px;
+  padding: 15px;
+  margin-top: 20px;
+  color: #004085;
+}
+
+.infoBox h4 {
+  margin-top: 0;
+  color: #004085;
+}
+
+.infoBox ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.infoBox li {
+  margin: 5px 0;
+}

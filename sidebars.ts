@@ -309,6 +309,24 @@ const sidebars: SidebarsConfig = {
         },
       ],
     },
+
+    // ============================================
+    // SECCIÓN 7: GLOSARIO
+    // ============================================
+    {
+      type: 'doc',
+      id: 'glossary',
+      label: '📚 Glosario Técnico',
+    },
+
+    // ============================================
+    // SECCIÓN 8: HERRAMIENTAS INTERACTIVAS
+    // ============================================
+    {
+      type: 'doc',
+      id: 'interactive-tools',
+      label: '⚙️ Herramientas Interactivas',
+    },
   ],
 };
 

@@ -1,0 +1,203 @@
+.container {
+  width: 100%;
+  padding: 20px 0;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  margin: 20px 0;
+}
+
+.card h2 {
+  margin-top: 0;
+  color: #2c3e50;
+  border-bottom: 3px solid #28a745;
+  padding-bottom: 15px;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.buttonPrimary {
+  background-color: #007bff;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.buttonPrimary:hover {
+  background-color: #0056b3;
+}
+
+.buttonSecondary {
+  background-color: #6c757d;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.buttonSecondary:hover {
+  background-color: #5a6268;
+}
+
+.editorSection {
+  margin: 20px 0;
+}
+
+.editorSection label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.textarea {
+  width: 100%;
+  height: 300px;
+  padding: 15px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  resize: vertical;
+  transition: border-color 0.3s;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.resultSection {
+  margin-top: 20px;
+}
+
+.resultHeader {
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.resultHeader h3 {
+  margin: 0;
+  color: white;
+}
+
+.resultHeader.success {
+  background-color: #28a745;
+}
+
+.resultHeader.error {
+  background-color: #dc3545;
+}
+
+.errorBox {
+  background-color: #fef3f4;
+  color: #842029;
+  border: 1px solid #f5c6cb;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-family: 'Courier New', monospace;
+}
+
+.validationsList {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.validationItem {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  gap: 15px;
+}
+
+.validationItem:last-child {
+  border-bottom: none;
+}
+
+.validationItem.pass {
+  background-color: #f0f8f4;
+  border-left: 4px solid #28a745;
+}
+
+.validationItem.fail {
+  background-color: #fef3f4;
+  border-left: 4px solid #dc3545;
+}
+
+.validationName {
+  font-weight: 600;
+  min-width: 150px;
+  color: #2c3e50;
+}
+
+.validationMessage {
+  flex: 1;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: #495057;
+}
+
+.successBox {
+  background-color: #f0f8f4;
+  border: 1px solid #28a745;
+  border-radius: 4px;
+  padding: 15px;
+  color: #155724;
+  margin-top: 15px;
+}
+
+.successBox p {
+  margin: 5px 0;
+}
+
+.disclaimer {
+  font-size: 12px;
+  color: #666;
+  margin-top: 10px;
+}
+
+.infoBox {
+  background-color: #e7f3ff;
+  border: 2px solid #007bff;
+  border-radius: 4px;
+  padding: 15px;
+  margin-top: 20px;
+  color: #004085;
+}
+
+.infoBox h4 {
+  margin-top: 0;
+  color: #004085;
+}
+
+.infoBox ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.infoBox li {
+  margin: 5px 0;
+}

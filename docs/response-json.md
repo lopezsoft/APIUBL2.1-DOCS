@@ -2,46 +2,13 @@
 sidebar_position: 3
 ---
 
-# Respuestas de la API
+# Respuestas de la API.
 
 La API de facturación emite respuestas en formato JSON. Estas respuestas contienen información sobre el estado de la solicitud y los documentos generados por la DIAN.
 
-## Tabla de Contenidos
+## Estructura de la respuesta, cuando se genera un documento de forma exitosa.
 
-- [Quick Reference](#quick-reference) - Resumen rápido de códigos HTTP
-- [Respuestas Exitosas](#respuestas-exitosas-200-201) - Documentos procesados correctamente
-- [Errores del Cliente](#errores-del-cliente-4xx) - Errores en tu solicitud (400-422)
-- [Demoras en tiempos de respuesta](#demoras-en-los-tiempos-de-respuesta) - Estrategia para timeouts
-- [Flujo de procesamiento](#flujo-de-procesamiento-de-documentos) - Diagrama ASCII del ciclo de vida
-- [Referencias Rápidas](#referencias-rápidas) - StatusCode 98 y tabla de códigos
-- [Errores del Servidor](#500---internal-server-error) - Problemas en DIAN (500-508)
-- [Mejores Prácticas](#mejores-prácticas-y-recomendaciones) - Tips de timeouts, reintentos, webhooks
-- [FAQ](#preguntas-frecuentes-faq) - Respuestas a preguntas comunes
-
----
-
-## Quick Reference
-
-| Código | Significado | Acción Recomendada |
-|--------|------------|-------------------|
-| 200 | OK | Descarga resultados (PDF, XML, QR) |
-| 201 | Created | Documento creado exitosamente |
-| 400 | Bad Request | Verifica estructura JSON |
-| 401 | Unauthorized | Verifica credenciales |
-| 402 | Payment Required | Realiza pago |
-| 403 | Forbidden | Verifica permisos |
-| 404 | Not Found | Verifica ID |
-| 422 | Validación fallida | Lee ErrorMessage y corrige |
-| 500 | Server Error | Espera 5 min, reintenta |
-| 503 | Service Unavailable | DIAN en mantenimiento |
-| 504 | Gateway Timeout | Usa Contingencia Tipo 04 |
-| 507 | Storage Full | Contacta soporte |
-| 508 | Loop Detected | Verifica estructura |
-| 98 | En Proceso | Espera, revisa estado |
-
----
-
-## Respuestas Exitosas (200, 201)
+A continuación se muestra un ejemplo de un JSON que representa una respuesta de la API de facturación.
 
 
 ```json title="response.json"
@@ -91,24 +58,37 @@ La API de facturación emite respuestas en formato JSON. Estas respuestas contie
 }
 ```
 
-### Descripción de campos (Respuesta 200 - OK)
+### Descripción de los campos
 
-| Campo | Descripción |
-|-------|-------------|
-| `message` | Mensaje genérico del API |
-| `send_to_queue` | 0 = procesado inmediatamente, 1 = en cola |
-| `XmlDocumentKey` | CUFE, CUDE o CUNE del documento (identificador único) |
-| `success` | true = operación exitosa |
-| `response` | Respuesta emitida por la DIAN |
-| `response.ErrorMessage` | Array de errores de validación |
-| `response.IsValid` | "true" = documento válido |
-| `response.StatusCode` | "00" = procesado correctamente |
-| `response.StatusDescription` | Descripción legible del estado |
-| `response.StatusMessage` | Mensaje detallado de la DIAN |
-| `response.XmlFileName` | Nombre del documento en portal DIAN |
-| `AttachedDocument` | Contenedor con XML del documento |
-| `qr` | Código QR del documento |
-| `pdf` | PDF representativo del documento |
+- `message`:  Mesaje generico generado por el API
+- `send_to_queue`: Indicador de si el documento fue enviado a procesar en segundo plano(**En desarrollo**)
+- `XmlDocumentKey`: CUFE, CUDE O CUNE DEL DOCUMENTO
+- `response`: Respuesta emitida por la DIAN
+  - `ErrorMessage`: Mensajes de error
+  - `IsValid`: Indica si el documento es válido
+  - `StatusCode`: Código de estado
+  - `StatusDescription`: Descripción del estado
+  - `StatusMessage`: Mensaje del estado
+  - `XmlBase64Bytes`: Application response generado por la DIAN, en base64
+  - `XmlBytes`: Documento en base64 generado por la DIAN
+  - `XmlDocumentKey`: CUFE, CUDE O CUNE DEL DOCUMENTO
+  - `XmlFileName`: Nombre del documento en el portal de la DIAN
+- `AttachedDocument`: Contenedor de documentos
+  - `pathZip`: Ruta del contenedor de documentos
+  - `path`: Ruta del contenedor de documentos
+  - `url`: URL del contenedor de documentos
+  - `data`: El contenedor de documentos en base64
+- `qr`: Contiene el la representación gráfica del documento
+  - `qrDian`: URL del QR en el portal de la DIAN
+  - `url`: URL del QR
+  - `path`: Ruta del QR
+  - `data`: El QR en base64
+- `pdf`: Contiene el la representación gráfica del documento
+  - `path`: Ruta del PDF
+  - `url`: URL del PDF
+  - `data`: El PDF en base64
+- `success`: Indica si la respuesta fue exitosa
+- ``StatusCode``: 200 (OK)
 
 ## Estructura de la respuesta, cuando se intenta generar un documento que ya fue procesado o validado por la DIAN.
 
@@ -119,124 +99,31 @@ La API de facturación emite respuestas en formato JSON. Estas respuestas contie
         "message": "El documento (Factura electrónica) con numero LZT224, ya se encuentra validado"
     }
     ```
+### Descripción de los campos
 
----
+- `success`: Indica si la respuesta fue exitosa
+- `message`: Mensaje de error
+- `StatusCode`: 400 (Bad Request)
 
-## Errores del Cliente (4xx)
+## Códigos de estado y descripción de posibles respuestas.
 
-Estas respuestas indican que hay un error en tu solicitud.
+A continuación se muestra una tabla con los códigos de estado y su descripción.
 
-### 400 - Bad Request
+### `200` - OK
+### `201` - Created
+### `400` - Bad Request
+### `401` - Unauthorized
+### `402` - Payment Required
+### `403` - Forbidden
+### `404` - Not Found
+### `422` - Unprocessable Entity
+### `500` - Internal Server Error
+### `503` - Service Unavailable
+### `504` - Gateway Timeout
+### `507` - Insufficient Storage
+### `508` - Loop Detected
 
-**Causa:** JSON malformado o campos faltantes
-
-**Solución:** Valida JSON y confirma todos los campos requeridos
-
-#### Ejemplo de respuesta
-
-```json title="response.json"
-{
-    "success": false,
-    "message": "Error 400: Bad Request. El JSON es inválido o faltan campos requeridos.",
-    "errors": {
-        "document": "Document object is required",
-        "document.billTo": "Customer information is required"
-    }
-}
-```
-
-### 401 - Unauthorized
-
-**Causa:** API key o credenciales inválidas
-
-**Solución:** Verifica tu API key, regenera token si es necesario
-
-#### Ejemplo de respuesta
-
-```json title="response.json"
-{
-    "success": false,
-    "message": "Error 401: Unauthorized. Las credenciales no son válidas.",
-    "error": "Invalid API key or authentication token expired"
-}
-```
-
-### 402 - Payment Required
-
-**Causa:** Suscripción vencida o sin crédito
-
-**Solución:** Realiza el pago en tu panel de control
-
-#### Ejemplo de respuesta
-
-```json title="response.json"
-{
-    "success": false,
-    "message": "Error 402: Payment Required. Tu suscripción ha vencido.",
-    "details": {
-        "subscription_status": "expired",
-        "renewal_date": "2025-02-15",
-        "action": "Renew subscription in dashboard"
-    }
-}
-```
-
-### 403 - Forbidden
-
-**Causa:** No tienes permisos para este recurso
-
-**Solución:** Verifica permisos, contacta a soporte
-
-#### Ejemplo de respuesta
-
-```json title="response.json"
-{
-    "success": false,
-    "message": "Error 403: Forbidden. No tienes permisos para este recurso.",
-    "error": "Your account does not have access to this feature"
-}
-```
-
-### 404 - Not Found
-
-**Causa:** El documento o recurso no existe
-
-**Solución:** Verifica el ID del documento
-
-#### Ejemplo de respuesta
-
-```json title="response.json"
-{
-    "success": false,
-    "message": "Error 404: Not Found. El documento no existe.",
-    "document_id": "123456789"
-}
-```
-
-### 422 - Unprocessable Entity
-
-**Causa:** Validación DIAN fallida (datos no cumplen reglas)
-
-**Solución:** Lee `ErrorMessage`, corrige los datos según las reglas DIAN
-
-#### Ejemplo de respuesta
-
-```json title="response.json"
-{
-    "success": false,
-    "message": "Error 422: Unprocessable Entity. Validación DIAN fallida.",
-    "validation_errors": {
-        "invoice_number": "Invoice number must be sequential",
-        "document.lineItems": "At least one line item is required",
-        "document.allowanceCharge": "Discount percentage cannot exceed 50%"
-    },
-    "dian_error": "DIAN validation rules not met"
-}
-```
-
----
-
-## Errores del Servidor (5xx)
+### Tabla de códigos de estado y descripción
 | Código de estado | Descripción           | Posibles causas                                                   | Acciones recomendadas                                                                            |
 |------------------|-----------------------|-------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
 | 200              | OK                    | La solicitud se ha procesado correctamente.                       | -                                                                                                |
@@ -275,79 +162,36 @@ A continuación se muestra una lista de posibles errores generados por la DIAN y
 - Reenviar las solicitudes que generen errores de la DIAN, en caso de que el error persista, se recomienda esperar 5 minutos y volver a intentar.
 - Si el error persiste, se recomienda contactar al soporte técnico de la DIAN.
 
-### Demoras en los tiempos de respuesta (Resolución DIAN 165/2023)
+### 12.4 Demoras en los tiempos de respuesta en los servicios de facturación electrónica de la DIAN
+Eventualmente en el uso de los servicios del sistema de factura electrónica con validación previa se pueden presentar algunas demoras en los tiempos respuesta debido a situaciones normales informáticas.
+Se define por demora cuando la respuesta ante una solicitud a uno de los servicios del sistema de factura electrónica con validación previa toma más de 1 minuto. En la demora se mantienen activos los servicios del sistema de factura electrónica con validación previa. La demora no genera la respuesta de los código del numeral 12.2.1. Mensajes de error, ante esta situación los proveedores tecnológicos y/o facturador electrónico deberán:
+- 1. A manera informativa notificar a la DIAN la demora en la respuesta de los servicios.
+- 2. Si durante la transmisión de los documentos electrónicos a los servicios del sistema de factura electrónica con validación previa recibe el mensaje de “Time out” como se entenderá que es una demora declarada por el sistema.
+- 3. Una vez a sucedido la demora declarada, transcurrido 2 minutos deberá transmitir nuevamente los documentos electrónicos. Si persiste el error, se deben realizar cuatro (4) intentos más, cada uno en intervalo de 2 minutos.
+   Resolución No. 000165 (01/NOV/2023)
+   Dirección de Gestión de Impuestos
+   Carrera 8 Nº 6C-38 piso 6º PBX 607 9999 – 382 4500 Ext. 905101
+   Código postal 111711
+   www.dian.gov.co
+   Formule su petición, queja, sugerencia o reclamo en el Sistema PQSR de la DIAN
+   Página 682 de 753
+- 4. Si el problema persiste a pesar de los 5 intentos, se declara la contingencia tipo 04. Donde deberá mantener y archivar las evidencias de las demoras en los servicios
+- 5. En la contingencia tipo 04 deberá generar la factura electrónica de venta cambiando el contenido referenciado en la etiqueta InvoiceTypeCode con el valor 04 según el numeral 6.1.3. manteniendo el mismo prefijo y número de factura, volver a firmar la factura electrónica, incluir la factura electrónica sin ApplicationResponse (validación de la DIAN) en un AttachedDocument y entregar al adquiriente.
+- 6. Monitorear la conexión y los servicios web de sistema de factura electrónica con validación previa a los 30 minutos después de haber realizado la última transmisión informado en el punto 3 del numeral 12.3.
 
-#### Qué es una demora
-
-Una demora ocurre cuando la respuesta ante una solicitud tarda **más de 1 minuto**. Durante la demora, los servicios DIAN permanecen activos, pero la respuesta se retrasa. No se recibe ninguno de los códigos de error normales (solo timeout/504).
-
-#### Estrategia de reintentos
-
-Cuando recibas error **504 (timeout)**, implementa esta estrategia:
-
-| Intento | Acción | Espera después |
-|---------|--------|-----------------|
-| 1 | Transmite documento | - |
-| 2 | Reintenta | 2 minutos |
-| 3 | Reintenta | 2 minutos |
-| 4 | Reintenta | 2 minutos |
-| 5 | Reintenta | 2 minutos |
-| Fallido | Declara Contingencia Tipo 04 | - |
-
-#### Contingencia Tipo 04
-
-Si después de 5 intentos DIAN sigue sin responder:
-
-**Paso 1: Modifica el documento**
-- Cambia `InvoiceTypeCode` de `"01"` a `"04"`
-- Mantén el mismo prefijo y número de factura
-- Mantén todos los demás datos del documento
-
-**Paso 2: Firma nuevamente**
-- Firma el documento con tu certificado digital
-
-**Paso 3: Adjunta evidencia**
-- Incluye el XML original (sin respuesta DIAN) en `AttachedDocument`
-- Adjunta registro de los 5 intentos con horarios exactos
-
-**Paso 4: Entrega al cliente**
-- Número del intento que falló
-- Horarios de cada intento realizado
-- Documento con InvoiceTypeCode "04" firmado
-
-#### Documentos sin contingencia
-
-Los siguientes documentos **NO tienen esquema de contingencia** y deben generarse/transmitirse normalmente:
-
-- **CreditNote** (Nota Crédito)
-- **DebitNote** (Nota Débito)
-- **ApplicationResponse** (Eventos/Respuestas)
-- Otros documentos electrónicos
-
-#### Monitoreo post-contingencia
-
-Monitorea la conexión con DIAN cada **30 minutos** después del último intento para reintentarla.
-
-> **Fuente:** Resolución No. 000165 (01/NOV/2023) - Dirección de Gestión de Impuestos DIAN
-
----
+Se informa que los documentos CreditNote, DebitNote, ApplicationResponse (Eventos) y otros documentos electrónicos no tienen esquemas de contingencia, por tanto, se deberán generar, transmitir
 
 ### 500 - Internal Server Error
 
-**Descripción:** Error interno en los servidores de DIAN
+**Description**: Error 500: Internal Server Error. Ocurrió un problema en el servidor de la DIAN.
 
-**Posibles Causas:**
-- Problema temporal en la infraestructura DIAN
-- Procesamiento de una solicitud muy compleja
-- Error de configuración temporal en DIAN
+**Possibles Causas**:
+- El servidor de la DIAN experimentó un error inesperado.
+- La solicitud puede estar malformada o puede haber un problema temporal en el servidor.
 
-**Acciones Recomendadas:**
-1. Espera 5 minutos antes de reintentar
-2. Reintenta hasta 5 veces con espacios de 2 minutos
-3. Si persiste, contacta soporte DIAN
-4. Guarda el ID de solicitud para referencia
-
-**Nota:** No es un error en tu solicitud, es un problema del servidor DIAN.
+**Recommended Actions**:
+- Intente nuevamente más tarde.
+- Si el problema persiste, contacte al soporte técnico.
 
 #### Ejemplo de respuesta
 
@@ -362,21 +206,14 @@ Monitorea la conexión con DIAN cada **30 minutos** después del último intento
 
 ### 503 - Service Unavailable
 
-**Descripción:** Servicio DIAN no disponible
+**Description**: Error 503: Service Unavailable. El servicio de la DIAN no está disponible en este momento.
 
-**Posibles Causas:**
-- Mantenimiento programado o emergente
-- Sobrecarga temporal de servidores
-- Corte de conectividad temporal
-- Actualización de sistemas DIAN
+**Possibles Causas**:
+- El servicio puede estar temporalmente fuera de línea debido a mantenimiento o alta demanda.
 
-**Acciones Recomendadas:**
-1. Verifica el estado en https://www.dian.gov.co
-2. Espera 10-15 minutos
-3. Reintenta la transmisión
-4. Si sigue unavailable > 30 min, usa Contingencia Tipo 04
-
-**Nota:** Es un problema en DIAN, no en tu solicitud. Tu documento no se perdió.
+**Recommended Actions**:
+- Intente nuevamente después de unos minutos.
+- Consulte el estado del servicio en el sitio web de la DIAN.
 
 #### Ejemplo de respuesta
 
@@ -391,19 +228,14 @@ Monitorea la conexión con DIAN cada **30 minutos** después del último intento
 
 ### 507 - Insufficient Storage
 
-**Descripción:** Almacenamiento del servidor DIAN agotado
+**Description**: Error 507: Insufficient Storage. El servidor de la DIAN no tiene suficiente espacio.
 
-**Posibles Causas:**
-- Base de datos DIAN llegó a capacidad máxima (raro)
-- Problema de configuración de disco (raro)
+**Possibles Causas**:
+- El servidor de la DIAN ha alcanzado su capacidad máxima de almacenamiento.
 
-**Acciones Recomendadas:**
-1. Este es un error **muy poco frecuente**
-2. Espera 30 minutos
-3. Reintenta
-4. Si persiste, contacta DIAN directamente
-
-**Nota:** Generalmente indica un problema crítico en infraestructura DIAN.
+**Recommended Actions**:
+- Intente nuevamente más tarde.
+- Contacte al soporte técnico si el problema persiste.
 
 #### Ejemplo de respuesta
 
@@ -418,20 +250,15 @@ Monitorea la conexión con DIAN cada **30 minutos** después del último intento
 
 ### 508 - Loop Detected
 
-**Descripción:** Bucle detectado en procesamiento DIAN
+**Description**: Error 508: Loop Detected. Se ha detectado un bucle en el servidor de la DIAN.
 
-**Posibles Causas:**
-- Referencia circular en documento (muy raro)
-- Error temporal en procesamiento DIAN
-- Malformación extrema en XML (después de firma)
+**Possibles Causas**:
+- La solicitud ha generado un bucle infinito en el servidor.
 
-**Acciones Recomendadas:**
-1. Verifica la estructura del XML generado
-2. Compara con factura anterior exitosa
-3. Reintenta tras 5 minutos
-4. Si persiste, contacta soporte DIAN
+**Recommended Actions**:
+- Verifique la estructura de la solicitud.
+- Contacte al soporte técnico para obtener más ayuda.
 
-**Nota:** Indica un problema muy poco común. Conserva evidencia para análisis.
 
 #### Ejemplo de respuesta
 
@@ -489,130 +316,6 @@ Por favor, intente nuevamente. Si el problema persiste, contacte a soporte técn
 
 
 -----
-
-## Referencias Rápidas
-
-### StatusCode 98: En Proceso
-
-Cuando DIAN recibe tu documento, lo coloca en una cola de procesamiento. Durante este tiempo, devuelve StatusCode **98** que significa "En Proceso".
-
-**Qué significa:**
-- El documento está en la cola de DIAN
-- Se está validando según reglas DIAN
-- Debes reintentarPOLLING cada cierto tiempo
-
-**Acciones:**
-- NO reintentar inmediatamente
-- Realizar polling cada 30-60 segundos
-- Guardar el XmlDocumentKey para seguimiento
-
-#### Ejemplo de respuesta
-
-```json title="response.json"
-{
-    "success": true,
-    "message": "Solicitud procesada por la DIAN.",
-    "response": {
-        "IsValid": "false",
-        "StatusCode": "98",
-        "StatusDescription": "En Proceso"
-    }
-}
-```
-
----
-
-### Tabla de Códigos de Estado
-
-| Código | Tipo | Descripción | Acción |
-|--------|------|-------------|--------|
-| 00 | Éxito | Aceptado | Guardar resultado |
-| 01 | Éxito | Documento válido | Guardar resultado |
-| 02 | Éxito | Duplicado | Verificar intención |
-| 03 | Rechazo | Documento rechazado | Revisar errores |
-| 04 | Especial | Contingencia tipo 04 | Ver sección 12.4 |
-| 98 | En proceso | En validación | Hacer polling |
-| 200 | HTTP | OK | Documento procesado |
-| 400 | HTTP | Bad Request | Revisar formato JSON |
-| 401 | HTTP | Unauthorized | Verificar credenciales |
-| 402 | HTTP | Payment Required | Renovar suscripción |
-| 403 | HTTP | Forbidden | Verificar permisos |
-| 404 | HTTP | Not Found | Verificar URL |
-| 422 | HTTP | Unprocessable | Revisar validaciones DIAN |
-| 500 | HTTP | Server Error | Esperar e intentar |
-| 503 | HTTP | Unavailable | Mantenimiento DIAN |
-| 504 | HTTP | Gateway Timeout | Ver sección de demoras |
-
----
-
-### Flujo de procesamiento de documentos
-
-El siguiente diagrama muestra el ciclo de vida de un documento desde su envío hasta su respuesta:
-
-```
-PROVEEDOR TECNOLOGICO
-     |
-     v
-[1. Crear documento XML firmado]
-     |
-     v
-[2. Enviar a DIAN con credenciales]
-     |
-     +----> (Espera respuesta)
-     |
-     +---> Caso A: Respuesta RÁPIDA (< 1 min)
-     |         |
-     |         v
-     |     [HTTP 200/201]
-     |         |
-     |     ¿Es StatusCode 00, 01?
-     |     YES: Documento aceptado
-     |     NO:  Ver StatusCode específico (02, 03, 04)
-     |
-     +---> Caso B: DEMORA (timeout > 1 min)
-              |
-              v
-          [HTTP 504 Gateway Timeout]
-              |
-          [Implementar reintentos]
-              |
-        +---------+---------+
-        |         |         |
-    Intento   Intento   Intento
-      1-4       1-4       5
-        |         |         |
-    Espera    Espera      |
-    2 min     2 min      Logró?
-        |         |     /      \
-        v         v    YES      NO
-   Reintenta   [100% OK] v      v
-        |              EXITO  CONTINGENCIA
-        |                      TIPO 04
-    ¿Logró?
-     /   \
-   YES   NO
-    |     |
-    v     v
- EXITO  CONTINUAR
- LOG   REINTENTOS
-```
-
-**Flujo de decisión resumido:**
-
-1. **Envía documento** a DIAN
-2. **¿Respuesta rápida?** (< 1 minuto)
-   - SI -> Procesa resultado según StatusCode
-   - NO -> Ve a paso 3
-
-3. **¿Recibiste timeout (504)?**
-   - SI -> Implementa reintentos (5 intentos, 2 min entre intentos)
-   - NO -> Contacta soporte
-
-4. **¿Los 5 reintentos fallaron?**
-   - SI -> Declara Contingencia Tipo 04
-   - NO -> Retorna a paso 1 para reintentar
-
----
 
 ### Error genérico
 *** Description**: Error HTTP ``statusCode`` : Ha ocurrido un error en la solicitud a la DIAN.
@@ -713,181 +416,4 @@ PROVEEDOR TECNOLOGICO
     }
   }
 }
-
----
-
-## Mejores Prácticas y Recomendaciones
-
-### Gestión de Timeouts
-
-- **Establece timeouts apropiados:**
-  - Lectura: 30 segundos
-  - Conexión: 10 segundos
-  - Total: 60 segundos máximo
-
-- **No reintentar inmediatamente:**
-  - Espera mínimo 2 minutos entre intentos
-  - Máximo 5 intentos para el mismo documento
-
-- **Logging detallado:**
-  - Guarda cada intento con timestamp exacto
-  - Registra duración de respuesta
-  - Almacena el error HTTP y StatusCode DIAN
-
-### Gestión de Reintentos
-
-- **Estrategia exponencial:**
-  ```
-  Intento 1: sin espera
-  Intento 2: espera 2 minutos
-  Intento 3: espera 4 minutos
-  Intento 4: espera 6 minutos
-  Intento 5: espera 8 minutos
-  ```
-
-- **Persiste los reintentos:**
-  - Guarda en base de datos cada intento
-  - No pierdas intentos si falla tu servidor
-  - Permite recuperación post-fallo
-
-### Manejo de Respuestas
-
-- **Valida StatusCode primero:**
-  - Códigos 00-04 y 98: respuestas válidas
-  - Otros códigos: error del servidor
-
-- **Almacena XmlDocumentKey:**
-  - Necesario para tracking y troubleshooting
-  - Incluye en logs y reportes
-
-- **Notifica cambios de estado:**
-  - Cuando pasas de "En Proceso" (98) a otro
-  - Incluye timestamp y StatusDescription
-
-### Manejo de Duplicados
-
-**Si recibes StatusCode 02 (Duplicado):**
-
-1. Verifica que sea duplicado genuino
-2. Compara fechas y cantidades
-3. Consulta al cliente antes de descartar
-4. Guarda evidencia de duplicidad
-
-**Nunca rechaces sin verificación manual.**
-
-### Contingencias
-
-**Si debes usar Contingencia Tipo 04:**
-
-1. Conserva evidencia de todos los intentos
-2. Guarda en archivo separado por mes
-3. Notifica al cliente la situación
-4. Mantén por 5 años según normativa DIAN
-
-**Archivos a conservar:**
-- XML original
-- Respuesta DIAN (si la hay)
-- Logs de intentos
-- Contingencia generada
-
-### Seguridad
-
-- **Nunca expongas credenciales** en logs
-- **Encripta en tránsito:** HTTPS obligatorio
-- **Valida certificados digitales** de cliente
-- **Audit trail:** quién y cuándo transmitió cada documento
-
-### Monitoreo
-
-**Métricas clave:**
-- % de documentos exitosos (00, 01)
-- % de timeouts (504)
-- % de rechazos DIAN (03)
-- Tiempo promedio de respuesta
-- Frecuencia de contingencias
-
-**Alertas recomendadas:**
-- Cuando % timeouts > 5%
-- Cuando % rechazos DIAN > 2%
-- Cuando respuesta > 30 segundos
-- Cuando se usa contingencia Tipo 04
-
-### Integración con Webhooks (Opcional)
-
-Si implementas webhooks para notificaciones:
-
-```json
-{
-  "event": "document_processed",
-  "timestamp": "2025-01-15T10:30:45Z",
-  "document": {
-    "type": "Invoice",
-    "number": "FV-2025-000001",
-    "customer": "900.000.000-0"
-  },
-  "status": {
-    "http_code": 200,
-    "dian_code": "00",
-    "description": "Documento válido"
-  },
-  "xml_key": "1234567890abcdef"
-}
-```
-
-**Reintentá los webhooks:**
-- 3 intentos con 5 minutos de intervalo
-- Guarda registro de fallidos para revisión
-
----
-
-## Preguntas Frecuentes (FAQ)
-
-### ¿Por qué falla mi documento si el JSON parece correcto?
-
-Posibles causas:
-- **Dominio incorrecto** en el cliente
-- **Certificado digital expirado** o incorrecto
-- **Fecha del servidor desincronizada** (crítico para firmas digitales)
-- **Estructura XML malformada** (después de firma)
-- **Campo requerido incompleto** o con formato inválido
-
-**Solución:** Revisa los errores detallados en la respuesta DIAN (ErrorDescription)
-
-### ¿Cómo sé si mi documento está realmente siendo procesado?
-
-En StatusCode 98 ("En Proceso"):
-- Realiza polling cada 30-60 segundos
-- Guarda el XmlDocumentKey
-- Después de 5 minutos sin respuesta, implementa contingencia
-
-### ¿Qué diferencia hay entre CreditNote y DocumentNote?
-
-- **CreditNote:** Para reducir valor total (devoluciones)
-- **DebitNote:** Para aumentar valor (cargos adicionales)
-- **Ambas:** Referencian una factura previa por su CUFE
-
-### ¿Puedo reutilizar el mismo número de factura?
-
-**NO.** La DIAN rechaza duplicados por:
-- Mismo Prefijo + Número + Cliente en 24 horas
-
-Si necesitas anular, usa CreditNote (anulación comercial) o Contingencia Tipo 04.
-
-### ¿Cómo genero una Contingencia Tipo 04?
-
-1. Mantén el mismo número y prefijo
-2. Cambia `InvoiceTypeCode` a `"04"`
-3. Adjunta XML original en `AttachedDocument`
-4. Firma nuevamente
-5. Transmite normalmente
-6. Guarda evidencia de intentos fallidos
-
-### ¿Qué pasa si mi servidor cae durante un reintento?
-
-- La factura NO se pierde (DIAN la tiene)
-- Consulta el estado usando XmlDocumentKey
-- Continúa con reintentos desde donde quedó
-- Usa StatusCode 98 para verificar estado
-
----
 ```

@@ -1,153 +1,147 @@
 ---
 sidebar_position: 2
-description: "Guía paso a paso para facturas con descuentos"
+description: "Guía paso a paso para facturas con descuentos comerciales"
 ---
 
 # Guía: Factura con Descuentos
 
 ## Introducción
 
-Esta guía te enseñará cómo emitir una factura electrónica con descuentos comerciales. Los descuentos son muy comunes en operaciones mayoristas, promociones o clientes especiales.
+Esta guía te enseñará cómo emitir una factura electrónica **con descuentos comerciales**. Los descuentos se aplican a nivel de línea y reducen la base imponible para el cálculo de impuestos.
 
 ## ¿Cuándo usar esta guía?
 
 ✅ Cliente mayorista con descuento
-✅ Descuento por volumen
-✅ Promoción especial
-✅ Descuento comercial o por pronto pago
-✅ Operación con rebaja
+✅ Descuento por volumen o promoción
+✅ Descuento comercial o rebaja
+✅ Operación con incentivo al cliente
+✅ Necesitas reducir el precio sin cambiar el unitario
 
 :::warning
-Los descuentos se aplican ANTES de calcular impuestos.
+**Punto Crítico**: En el API MATIAS, los descuentos se aplican usando `allowance_charges` dentro de cada línea, NO como campo separado global.
 :::
 
-## Tipos de Descuentos
+## Estructura de Descuentos en el API
 
-### 1. Descuento en Línea
-Aplicado a cada línea de factura individualmente.
-
-```json
-{
-  "line_items": [
-    {
-      "description": "PRODUCTO A",
-      "unit_price": 100000.00,
-      "quantity": 2,
-      "line_extension_amount": 200000.00,
-      "discount_percentage": 10,
-      "discount_amount": 20000.00,
-      "line_amount": 180000.00  // Después del descuento
-    }
-  ]
-}
-```
-
-### 2. Descuento Global
-Aplicado al total de la factura.
+En MATIAS API, los descuentos se manejan así:
 
 ```json
-{
-  "totals": {
-    "subtotal": 200000.00,
-    "total_discount": 20000.00,  // 10% global
-    "taxable_base": 180000.00,
-    "total_tax": 34200.00,
-    "payable_amount": 214200.00
+"allowance_charges": [
+  {
+    "amount": "VALOR_DESCUENTO",
+    "base_amount": "VALOR_ORIGINAL",
+    "charge_indicator": false,
+    "allowance_charge_reason": "Promocion"
   }
-}
+]
 ```
 
-## Paso 1: Calcular Correctamente
+**Campos:**
+- `amount`: Valor del descuento en dinero
+- `base_amount`: Valor original (price_amount × quantity)
+- `charge_indicator`: `false` para descuento, `true` para cargo
+- `allowance_charge_reason`: Motivo del descuento
+
+## La Matemática de Descuentos
 
 La fórmula correcta es:
 
 ```
-SUBTOTAL (sin descuento)
-    ↓
-MENOS: Descuentos
-    ↓
-BASE IMPONIBLE (sobre la que se calculan impuestos)
-    ↓
-PLUS: Impuestos calculados sobre BASE IMPONIBLE
-    ↓
-TOTAL PAGADERO
+PRECIO UNITARIO × CANTIDAD = SUBTOTAL
+            ↓
+SUBTOTAL - DESCUENTO = VALOR FINAL
+            ↓
+VALOR FINAL × TASA IVA = IMPUESTO
+            ↓
+VALOR FINAL + IMPUESTO = TOTAL
 ```
 
-### ❌ Error Común
+### Ejemplo
+
 ```
-Subtotal: 100000
-Descuento: 10000
-Impuesto sobre 90000: 17100
-PERO reportar Total: 107100 ✓ CORRECTO
+Precio unitario: $220.00
+Cantidad: 1
+Subtotal: $220.00
+
+Descuento: $22.00 (10%)
+Valor final: $198.00
+
+Impuesto (0% exento): $0.00
+Total: $198.00
 ```
 
-### ✅ Correcto
-```
-Subtotal: 100000
-Descuento: 10% = 10000
-Base Imponible: 90000
-Impuesto (19%): 17100
-Total: 107100
-```
+## Paso 1: Ejemplo Real del API
 
-## Paso 2: Estructura JSON con Descuento
+Este es el JSON **real** que acepta MATIAS API:
 
-```json
+```json title="factura-con-descuento.json"
 {
   "resolution_number": "18764074347312",
   "prefix": "FEV",
-  "document_number": 2002,
-  "type_document_id": 7,
+  "notes": "Factura con descuento comercial",
+  "document_number": "2005",
+  "graphic_representation": 0,
+  "send_email": 1,
   "operation_type_id": 1,
+  "type_document_id": 7,
   
-  "date": "2024-10-17",
-  "time": "14:45:00",
-  "currency_id": 170,
-  
-  "issuer": {
-    "tax_id": "9001234567",
-    "name": "MI EMPRESA SAS",
-    "address": "Carrera 10 #25-50",
-    "city": "Bogotá",
-    "country_id": "169",
-    "tax_regime_id": 1
-  },
+  "payments": [
+    {
+      "payment_method_id": 1,
+      "means_payment_id": 10,
+      "value_paid": "198.00"
+    }
+  ],
   
   "customer": {
-    "identity_document_id": "2",
-    "document_number": "8001234567",
-    "company_name": "CLIENTE MAYORISTA",
-    "address": "Calle 15 #8-30",
-    "city": "Medellín",
-    "country_id": "169"
+    "country_id": "45",
+    "city_id": "1041",
+    "identity_document_id": "3",
+    "type_organization_id": 2,
+    "tax_regime_id": 2,
+    "tax_level_id": 5,
+    "company_name": "CONSUMIDOR FINAL",
+    "dni": "222222222222",
+    "mobile": "3043965204",
+    "email": "compras@cliente.com",
+    "address": "CALLE 22 NRO. 32 29",
+    "postal_code": "76834"
   },
   
-  // === LÍNEAS CON DESCUENTO ===
   "lines": [
     {
-      "description": "PRODUCTO MAYORISTA A - 100 unidades",
-      "code": "PRD-001",
-      "quantity": 100,
+      "invoiced_quantity": "1",
       "quantity_units_id": "1093",
-      "unit_price": 10000.00,
-      "line_extension_amount": 1000000.00,
+      "line_extension_amount": "198.00",
+      "free_of_charge_indicator": false,
+      "description": "CALZADO OSIRIS D3 2001",
+      "code": "A50824",
+      "type_item_identifications_id": "4",
+      "reference_price_id": "1",
+      "price_amount": "220.00",
+      "base_quantity": "1",
       
-      // === DESCUENTO POR LÍNEA ===
-      "discount_percentage": 15,           // 15% de descuento
-      "discount_amount": 150000.00,        // 1000000 × 0.15
-      "line_amount": 850000.00,            // Después del descuento
-      
-      "taxes": [
+      "allowance_charges": [
         {
-          "tax_type_id": 1,
-          "tax_percentage": 19,
-          "tax_amount": 161500.00           // 850000 × 0.19
+          "amount": "22.00",
+          "base_amount": "220.00",
+          "charge_indicator": false,
+          "allowance_charge_reason": "Promocion"
         }
       ]
-    },
-    {
-      "description": "PRODUCTO MAYORISTA B - 50 unidades",
-      "code": "PRD-002",
+    }
+  ],
+  
+  "legal_monetary_totals": {
+    "line_extension_amount": "198.00",
+    "tax_exclusive_amount": "0.00",
+    "tax_inclusive_amount": "198.00",
+    "payable_amount": 198.00
+  }
+}
+```
+
+## Paso 2: Entender la Estructura
       "quantity": 50,
       "unit_price": 20000.00,
       "line_extension_amount": 1000000.00,
@@ -187,134 +181,177 @@ Total: 107100
 }
 ```
 
-## Paso 3: Validar Cálculos
+Analicemos el JSON línea por línea:
 
-Verifica estos cálculos antes de enviar:
+| Campo | Valor | Explicación |
+|-------|-------|-------------|
+| `price_amount` | 220.00 | Precio SIN descuento |
+| `base_amount` | 220.00 | SIEMPRE = price_amount × quantity |
+| `amount` (descuento) | 22.00 | 220.00 × 0.10 (10% descuento) |
+| `line_extension_amount` | 198.00 | 220.00 - 22.00 |
+| `charge_indicator` | false | `false` = descuento, `true` = cargo |
 
-```javascript
-// JavaScript para validar
-const subtotal = 2000000;
-const discount = 300000;
-const discountPercentage = (discount / subtotal) * 100;  // 15%
-
-const taxableBase = subtotal - discount;  // 1700000
-
-const taxAmount = taxableBase * 0.19;     // 323000
-
-const total = taxableBase + taxAmount;    // 2023000
-
-console.assert(total === 2023000, "Total no coincide");
-console.log("✓ Validación exitosa");
-```
-
-## Paso 4: Casos Especiales de Descuentos
-
-### Descuento por Pronto Pago
+## Paso 3: Caso Mayorista con Múltiples Descuentos
 
 ```json
 {
-  "discounts": [
-    {
-      "type": "PROMPT_PAYMENT",
-      "description": "2% por pago en 7 días",
-      "percentage": 2,
-      "days": 7,
-      "amount": 40000.00
-    }
-  ]
-}
-```
-
-### Descuento Escalonado
-
-```json
-{
+  "resolution_number": "18764074347312",
+  "prefix": "FEV",
+  "document_number": "2006",
+  "operation_type_id": 1,
+  "type_document_id": 7,
+  "graphic_representation": 0,
+  "send_email": 1,
+  
+  "customer": {
+    "country_id": "45",
+    "city_id": "76",
+    "identity_document_id": "2",
+    "type_organization_id": 2,
+    "tax_regime_id": 1,
+    "tax_level_id": 5,
+    "company_name": "CLIENTE MAYORISTA",
+    "dni": "8001234567",
+    "email": "compras@mayorista.com",
+    "address": "Calle 100 #50-80",
+    "postal_code": "050001"
+  },
+  
   "lines": [
     {
-      "quantity": 100,
-      "unit_price": 10000,
-      "line_extension_amount": 1000000,
+      "invoiced_quantity": "100",
+      "quantity_units_id": "1093",
+      "price_amount": "10000.00",
+      "line_extension_amount": "850000.00",
+      "description": "PRODUCTO A - 100 unidades",
+      "code": "PRD-A",
+      "type_item_identifications_id": "4",
+      "reference_price_id": "1",
+      "base_quantity": "100",
       
-      // Descuento progresivo
-      "discounts": [
+      "allowance_charges": [
         {
-          "reason": "Volumen 100+ unidades",
-          "percentage": 5,
-          "amount": 50000
-        },
-        {
-          "reason": "Cliente Clase A",
-          "percentage": 10,
-          "amount": 100000
+          "amount": "150000.00",
+          "base_amount": "1000000.00",
+          "charge_indicator": false,
+          "allowance_charge_reason": "Descuento volumen 15%"
         }
       ],
       
-      "total_discount": 150000,
-      "line_amount": 850000
+      "tax_totals": [
+        {
+          "tax_id": "1",
+          "tax_amount": 161500.00,
+          "taxable_amount": 850000.00,
+          "percent": 19
+        }
+      ]
+    }
+  ],
+  
+  "legal_monetary_totals": {
+    "line_extension_amount": "850000.00",
+    "tax_exclusive_amount": "850000.00",
+    "tax_inclusive_amount": "1011500.00",
+    "payable_amount": 1011500.00
+  },
+  
+  "tax_totals": [
+    {
+      "tax_id": "1",
+      "tax_amount": 161500.00,
+      "taxable_amount": 850000.00,
+      "percent": 19
+    }
+  ],
+  
+  "payments": [
+    {
+      "payment_method_id": 1,
+      "means_payment_id": 10,
+      "value_paid": "1011500.00"
     }
   ]
 }
 ```
 
-## Paso 5: Enviar a la API
+**Cálculos:**
+```
+Precio unitario: $10,000.00
+Cantidad: 100
+Subtotal: $1,000,000.00
+
+Descuento (15%): $150,000.00
+Valor final: $850,000.00
+
+IVA (19%): $161,500.00
+Total: $1,011,500.00
+```
+
+## Paso 4: Enviar a la API
 
 ```bash
-curl -X POST https://api.matias.com/api/invoices/create \
+curl -X POST https://api.matias-app.com/api/invoices \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d @factura-descuento.json
 ```
 
-## Validaciones Específicas para Descuentos
-
-La API validará que:
-
-✅ El descuento no exceda el subtotal
-✅ Los descuentos estén antes de impuestos
-✅ El porcentaje sea válido (0-100)
-✅ Los totales sean consistentes
-
-## Checklist de Validación
-
-- [ ] Subtotal calculado correctamente
-- [ ] Descuento calculado correctamente
-- [ ] Base imponible = subtotal - descuento
-- [ ] Impuesto sobre base imponible
-- [ ] Total = base imponible + impuesto
-- [ ] Descuento ≤ Subtotal
-- [ ] Campos de descuento en cada línea O en totales (no ambos sin coordinar)
-
-## Errores Comunes
-
-### ❌ Error: "Descuento excede el monto"
+### Respuesta
 ```json
-// INCORRECTO
 {
-  "subtotal": 100000,
-  "discount": 150000,  // Mayor que subtotal
-  "line_amount": -50000  // Negativo
+  "id": 12346,
+  "document_id": "FEV-2005",
+  "cufe": "101413670038274165",
+  "status_id": 1,
+  "status_name": "Registrada",
+  "message": "Factura creada exitosamente"
 }
 ```
 
-**Solución**: Verifica que descuento ≤ subtotal
+## Paso 5: Razones de Descuento Válidas
 
-### ❌ Error: "Impuesto no corresponde"
-```json
-// INCORRECTO - IVA sobre subtotal completo
-{
-  "subtotal": 100000,
-  "discount": 20000,
-  "tax": 19000.00  // 100000 × 0.19 ❌
-}
-```
+En `allowance_charge_reason` usa uno de estos valores:
 
-**Solución**: Calcula impuesto sobre base imponible (80000 × 0.19 = 15200)
+| Razón | Descripción |
+|-------|-------------|
+| `Promocion` | Descuento promocional |
+| `Volumen` | Descuento por cantidad |
+| `Pronto pago` | Descuento por pago inmediato |
+| `Bonificacion` | Bonificación especial |
+| `Rebaja` | Rebaja comercial |
+
+## Validaciones Críticas
+
+✅ Verificar ANTES de enviar:
+
+- [ ] `allowance_charges[].amount` ≤ `allowance_charges[].base_amount`
+- [ ] `line_extension_amount` = `price_amount` × `quantity` - descuentos
+- [ ] `tax_amount` = `taxable_amount` × (`percent` / 100)
+- [ ] `tax_exclusive_amount` = suma de `line_extension_amount`
+- [ ] `tax_inclusive_amount` = `tax_exclusive_amount` + suma de impuestos
+- [ ] `payable_amount` = `tax_inclusive_amount`
+- [ ] `charge_indicator` = `false` para descuentos
+
+## Troubleshooting
+
+### ❌ "allowance_charges amount exceeds base amount"
+**Causa**: El descuento es mayor al precio original  
+**Solución**: Verifica que `amount` ≤ `base_amount`
+
+### ❌ "Tax calculated on wrong amount"
+**Causa**: Impuesto calculado sobre el precio SIN descuento  
+**Solución**: Calcula impuesto sobre `line_extension_amount` (después del descuento)
+
+### ❌ "Total mismatch"
+**Causa**: Los totales no coinciden  
+**Solución**: Usa la herramienta TotalCalculator para validar
 
 ## Próximos Pasos
 
-- 📖 [Guía: Factura de Exportación](/docs/use-cases/export-scenarios)
-- 📖 [Guía: Factura Simple](/docs/use-cases/simple-invoice)
-- 📋 [Ver Validaciones](/docs/regulatory-framework/factura-electronica/anexo-tecnico/validaciones)
+- 📖 [Exportación Internacional](/docs/use-cases/export-scenarios)
+- 📖 [Casos de Error Común](/docs/use-cases/common-errors)
+- ⚙️ [Calculadora Interactiva](/docs/interactive-tools)
 
 ---
 

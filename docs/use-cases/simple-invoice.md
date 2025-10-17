@@ -61,236 +61,338 @@ Guarda este `access_token`, lo usarás en todos los próximos pasos.
 
 Reúne la información necesaria:
 
-### 📝 Información del Emisor
-```json
-{
-  "tax_id": "9001234567",
-  "name": "MI EMPRESA SAS",
-  "address": "Carrera 10 #25-50",
-  "city": "Bogotá",
-  "country": "Colombia"
-}
-```
-
-### 📝 Información del Cliente
-```json
-{
-  "document_type": "NIT",
-  "document_number": "8001234567",
-  "company_name": "CLIENTE EMPRESA LTDA",
-  "address": "Calle 15 #8-30",
-  "city": "Medellín",
-  "email": "compras@cliente.com"
-}
-```
-
 ### 📝 Información del Documento
 ```json
 {
   "resolution_number": "18764074347312",
   "prefix": "FEV",
-  "document_number": 2001,
+  "document_number": "2001",
   "date": "2024-10-17",
   "time": "14:30:00"
 }
 ```
 
+### 📝 Información del Cliente (Comprador)
+```json
+{
+  "country_id": "45",
+  "city_id": "76",
+  "identity_document_id": "2",
+  "type_organization_id": 2,
+  "tax_regime_id": 1,
+  "tax_level_id": 5,
+  "company_name": "CLIENTE EMPRESA LTDA",
+  "dni": "8001234567",
+  "email": "compras@cliente.com",
+  "address": "Calle 15 #8-30",
+  "postal_code": "050001"
+}
+```
+
+:::info
+**Nota Importante:** El emisor (tu empresa) NO se envía en el JSON. La API identifica al emisor por el **token de autenticación**. Solo debes enviar información del cliente (comprador).
+:::
+
 ## Paso 3: Crear la Estructura JSON de la Factura
 
-Monta el JSON completo con la siguiente estructura:
+Monta el JSON completo usando la estructura real del API:
 
 ```json
 {
-  // === Identificación ===
   "resolution_number": "18764074347312",
   "prefix": "FEV",
-  "document_number": 2001,
-  "type_document_id": 7,
+  "notes": "Factura de venta electrónica",
+  "document_number": "2001",
+  "graphic_representation": 0,
+  "send_email": 1,
   "operation_type_id": 1,
+  "type_document_id": 7,
   
-  // === Fechas ===
-  "date": "2024-10-17",
-  "time": "14:30:00",
+  "payments": [
+    {
+      "payment_method_id": 1,
+      "means_payment_id": 10,
+      "value_paid": "119000.00"
+    }
+  ],
   
-  // === Moneda ===
-  "currency_id": 170,
-  
-  // === Emisor ===
-  "issuer": {
-    "tax_id": "9001234567",
-    "name": "MI EMPRESA SAS",
-    "address": "Carrera 10 #25-50",
-    "city": "Bogotá",
-    "country_id": "169",
-    "tax_regime_id": 1,
-    "phone": "3101234567",
-    "email": "ventas@miempresa.com"
-  },
-  
-  // === Cliente ===
   "customer": {
+    "country_id": "45",
+    "city_id": "76",
     "identity_document_id": "2",
-    "document_number": "8001234567",
+    "type_organization_id": 2,
+    "tax_regime_id": 1,
+    "tax_level_id": 5,
     "company_name": "CLIENTE EMPRESA LTDA",
+    "dni": "8001234567",
+    "mobile": "3001234567",
+    "email": "compras@cliente.com",
     "address": "Calle 15 #8-30",
-    "city": "Medellín",
-    "country_id": "169",
-    "email": "compras@cliente.com"
+    "postal_code": "050001"
   },
   
-  // === Líneas de Producto ===
   "lines": [
     {
+      "invoiced_quantity": "1",
+      "quantity_units_id": "1093",
+      "line_extension_amount": "100000.00",
+      "free_of_charge_indicator": false,
       "description": "PRODUCTO O SERVICIO",
       "code": "PRD-001",
-      "quantity": 1,
-      "quantity_units_id": "1093",
-      "unit_price": 100000.00,
-      "line_extension_amount": 100000.00,
-      "taxes": [
+      "type_item_identifications_id": "4",
+      "reference_price_id": "1",
+      "price_amount": "100000.00",
+      "base_quantity": "1",
+      "tax_totals": [
         {
-          "tax_type_id": 1,
-          "tax_percentage": 19,
-          "tax_amount": 19000.00
+          "tax_id": "1",
+          "tax_amount": 19000.00,
+          "taxable_amount": 100000.00,
+          "percent": 19
         }
       ]
     }
   ],
   
-  // === Totales ===
-  "totals": {
-    "subtotal": 100000.00,
-    "total_tax": 19000.00,
+  "legal_monetary_totals": {
+    "line_extension_amount": "100000.00",
+    "tax_exclusive_amount": "100000.00",
+    "tax_inclusive_amount": "119000.00",
     "payable_amount": 119000.00
   },
   
-  // === Formas de Pago ===
-  "payments": [
+  "tax_totals": [
     {
-      "payment_method_id": "10",
-      "means_payment_id": "42",
-      "value_paid": 119000.00
-    }
-  ],
-  
-  "notes": "Factura de venta electrónica"
-}
-```
-
-## Paso 4: Validar la Factura
-
-Antes de enviarla, valida que la estructura sea correcta:
-
-```bash
-curl -X POST https://api.matias.com/api/validate/invoice \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d @factura.json
-```
-
-### Respuesta Exitosa
-```json
-{
-  "valid": true,
-  "errors": [],
-  "warnings": [],
-  "message": "Factura válida"
-}
-```
-
-### Si Hay Errores
-```json
-{
-  "valid": false,
-  "errors": [
-    {
-      "code": "VAL-TOTAL-004",
-      "message": "Total no coincide con suma de líneas"
+      "tax_id": "1",
+      "tax_amount": 19000.00,
+      "taxable_amount": 100000.00,
+      "percent": 19
     }
   ]
 }
 ```
 
 :::warning
-Si hay errores, corrígelos antes de continuar.
+**Puntos Importantes:**
+- `type_document_id: 7` → Factura de venta
+- `operation_type_id: 1` → Estándar
+- `line_extension_amount` = `invoiced_quantity` × `price_amount`
+- `tax_inclusive_amount` = `tax_exclusive_amount` + suma de `tax_totals.tax_amount`
+- El `customer.dni` NO incluye dígito verificador en este caso
 :::
+
+## Paso 4: Validar la Factura Localmente
+
+Antes de enviarla a la API, verifica:
+
+✅ **Identificación**
+- `resolution_number` válida
+- `prefix` registrada en DIAN
+- `document_number` no duplicado
+- `type_document_id: 7` (Factura de venta)
+- `operation_type_id: 1` (Operación estándar)
+
+✅ **Cliente**
+- `dni` válido y formateado correctamente
+- `company_name` no vacío
+- `email` con formato correcto
+- `country_id: 45` (Colombia)
+
+✅ **Líneas**
+- `invoiced_quantity` > 0
+- `price_amount` > 0
+- `line_extension_amount` = `invoiced_quantity` × `price_amount`
+- `tax_totals` calcular correctamente
+
+✅ **Totales**
+- `tax_exclusive_amount` = suma de `line_extension_amount`
+- `tax_inclusive_amount` = `tax_exclusive_amount` + impuestos
+- `payable_amount` = `tax_inclusive_amount`
+
+✅ **Pagos**
+- `value_paid` = `payable_amount`
+- `payment_method_id` válido
+- `means_payment_id` válido
 
 ## Paso 5: Enviar la Factura a la API
 
-Una vez validada, envía la factura:
+Una vez validada localmente, envía la factura:
 
 ```bash
-curl -X POST https://api.matias.com/api/invoices/create \
+curl -X POST https://api.matias-app.com/api/invoices \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
-  -d @factura.json
+  -d '{
+  "resolution_number": "18764074347312",
+  "prefix": "FEV",
+  "document_number": "2001",
+  "type_document_id": 7,
+  "operation_type_id": 1,
+  "graphic_representation": 0,
+  "send_email": 1,
+  "customer": {
+    "country_id": "45",
+    "city_id": "76",
+    "identity_document_id": "2",
+    "type_organization_id": 2,
+    "tax_regime_id": 1,
+    "tax_level_id": 5,
+    "company_name": "CLIENTE EMPRESA LTDA",
+    "dni": "8001234567",
+    "mobile": "3001234567",
+    "email": "compras@cliente.com",
+    "address": "Calle 15 #8-30",
+    "postal_code": "050001"
+  },
+  "lines": [
+    {
+      "invoiced_quantity": "1",
+      "quantity_units_id": "1093",
+      "line_extension_amount": "100000.00",
+      "free_of_charge_indicator": false,
+      "description": "PRODUCTO O SERVICIO",
+      "code": "PRD-001",
+      "type_item_identifications_id": "4",
+      "reference_price_id": "1",
+      "price_amount": "100000.00",
+      "base_quantity": "1",
+      "tax_totals": [
+        {
+          "tax_id": "1",
+          "tax_amount": 19000.00,
+          "taxable_amount": 100000.00,
+          "percent": 19
+        }
+      ]
+    }
+  ],
+  "legal_monetary_totals": {
+    "line_extension_amount": "100000.00",
+    "tax_exclusive_amount": "100000.00",
+    "tax_inclusive_amount": "119000.00",
+    "payable_amount": 119000.00
+  },
+  "tax_totals": [
+    {
+      "tax_id": "1",
+      "tax_amount": 19000.00,
+      "taxable_amount": 100000.00,
+      "percent": 19
+    }
+  ],
+  "payments": [
+    {
+      "payment_method_id": 1,
+      "means_payment_id": 10,
+      "value_paid": "119000.00"
+    }
+  ]
+}'
 ```
 
 ### Respuesta Exitosa
 ```json
 {
-  "success": true,
-  "invoice_id": 12345,
-  "cufe": "101413670038274164",
-  "status": "sent",
-  "message": "Factura creada y enviada exitosamente",
-  "pdf_url": "https://cdn.matias.com/invoices/12345.pdf",
-  "xml_url": "https://cdn.matias.com/invoices/12345.xml"
+  "id": 12345,
+  "document_id": "FEV-2001",
+  "cufe": "f8e5c3a9b2d1e6f4g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3",
+  "status_id": 1,
+  "status_name": "Registrada",
+  "message": "Factura creada exitosamente",
+  "created_at": "2024-10-17T14:30:00"
 }
 ```
 
-## Paso 6: Validar Recepción en DIAN
+:::info
+**Status posibles:**
+- `1` = Registrada (guardada localmente)
+- `2` = Enviada (enviada a DIAN)
+- `3` = Aceptada (validada por DIAN)
+- `4` = Rechazada (DIAN encontró errores)
+:::
 
-La DIAN validará tu factura y te enviará un correo con:
+### Si Hay Errores
+```json
+{
+  "error": true,
+  "message": "Error en validación",
+  "errors": [
+    {
+      "field": "dni",
+      "message": "NIT con dígito verificador inválido"
+    }
+  ]
+}
+```
 
-- ✅ Número de validación
-- ✅ Estado de aceptación
-- ✅ Cualquier error o advertencia
+## Paso 6: Monitorear el Estado en DIAN
 
-Este proceso toma generalmente **30 minutos a 2 horas**.
+Consulta el estado de tu factura:
+
+```bash
+curl -X GET https://api.matias-app.com/api/invoices/12345 \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+### Respuesta
+```json
+{
+  "id": 12345,
+  "document_id": "FEV-2001",
+  "cufe": "f8e5c3a9b2d1e6f4g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3",
+  "status_id": 3,
+  "status_name": "Aceptada",
+  "dian_status": "ACEPTADA",
+  "dian_response": {
+    "status_code": 0,
+    "message": "Factura aceptada por DIAN"
+  }
+}
+```
+
+**Tiempo estimado de validación DIAN**: 30 minutos a 2 horas
 
 ## Paso 7: Enviar Comprobante al Cliente
 
-Una vez que la DIAN acepta la factura:
+Si configuraste `send_email: 1`, la API enviará automáticamente. Para enviar nuevamente:
 
 ```bash
-curl -X POST https://api.matias.com/api/invoices/{invoice_id}/send-email \
+curl -X POST https://api.matias-app.com/api/invoices/12345/send-email \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "recipient_email": "compras@cliente.com",
-    "include_pdf": true,
-    "include_xml": true
+    "email": "compras@cliente.com"
   }'
 ```
 
-## Checklist Final
+## Checklist de Éxito
 
-Antes de considerar completado este proceso:
-
-- [ ] Token obtenido exitosamente
-- [ ] Datos del emisor verificados
-- [ ] Datos del cliente correctos
-- [ ] JSON creado sin errores
-- [ ] Validación pasada sin problemas
-- [ ] Factura enviada a API
-- [ ] Respuesta OK recibida
-- [ ] DIAN validó la factura
-- [ ] Cliente recibió correo
+- [x] JSON coincide con estructura del API
+- [x] Todos los campos requeridos presentes
+- [x] Cálculos de totales e impuestos correctos
+- [x] NIT del cliente válido
+- [x] Respuesta HTTP 200 o 201
+- [x] `status_id: 1` o superior en respuesta
+- [x] CUFE generado correctamente
+- [x] Cliente recibió email
 
 ## Troubleshooting
 
-### ❌ "Token inválido"
-**Solución**: Verifica que el `access_token` no ha expirado. Obtén uno nuevo si es necesario.
+### ❌ "invalid_json"
+**Causa**: JSON malformado o campos extras  
+**Solución**: Usa la estructura exacta del ejemplo. Revisa la documentación de campos obligatorios.
 
-### ❌ "NIT con dígito verificador incorrecto"
-**Solución**: Calcula correctamente el dígito verificador del NIT del cliente.
+### ❌ "NIT verificador inválido"
+**Causa**: El dígito verificador del NIT es incorrecto  
+**Solución**: Usa el validador NITValidator en herramientas interactivas
 
-### ❌ "Total no coincide"
-**Solución**: Verifica que `subtotal + taxes = payable_amount`
+### ❌ "Duplicate document"
+**Causa**: Ya existe una factura con el mismo `prefix` y `document_number`  
+**Solución**: Incrementa el `document_number` o usa diferente `prefix`
 
-### ❌ "Factura duplicada"
-**Solución**: El número de factura ya fue usado. Incrementa el consecutivo.
+### ❌ "tax_amount calculation error"
+**Causa**: Los impuestos no se calculan correctamente  
+**Solución**: `tax_amount` = `taxable_amount` × (`percent` / 100)
 
 ## Próximos Pasos
 

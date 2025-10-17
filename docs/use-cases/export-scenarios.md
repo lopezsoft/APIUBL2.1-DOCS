@@ -1,327 +1,322 @@
 ---
 sidebar_position: 3
-description: "Guía para ventas internacionales y exportaciones"
+description: "Guía paso a paso para ventas internacionales y exportaciones"
 ---
 
-# Guía: Escenarios de Exportación
+# Guía: Exportaciones e Internacionalización
 
 ## Introducción
 
-Esta guía te enseñará cómo emitir facturas de exportación según los requisitos de la DIAN. Las facturas de exportación tienen características especiales que debes conocer.
+Esta guía te enseñará cómo emitir facturas de **exportación**. Las facturas de exportación tienen características especiales: cliente en el exterior, moneda extranjera, y están exentas de IVA.
 
 ## ¿Cuándo usar esta guía?
 
 ✅ Venta a cliente en el exterior
-✅ Transacción en moneda extranjera (USD, EUR, etc.)
-✅ Necesitas especificar INCOTERM
+✅ Transacción en moneda extranjera (USD, EUR)
 ✅ Productos salen de Colombia
 ✅ Cliente no tiene NIT colombiano
+✅ Necesitas especificar tasa de cambio
 
-## Características de Facturas de Exportación
+:::warning
+**Punto Crítico**: En API MATIAS, la exportación se marca con `type_document_id: 8` y `operation_type_id: 1` (NO `operation_type_id: 2`).
+:::
 
-### 📌 Tipo de Documento
-```
-type_document_id: 2  // Factura de Exportación
-```
+## Características Clave de Exportación
 
-### 📌 Operación
-```
-operation_type_id: 2  // Exportación
-```
+| Característica | Valor |
+|---|---|
+| **Tipo de Documento** | `type_document_id: 8` |
+| **Operación** | `operation_type_id: 1` |
+| **Moneda** | `currency_id: 272` (USD) |
+| **IVA** | Exento (0%) |
+| **Cliente** | País diferente de Colombia |
+| **Tasa de Cambio** | Especificar con `payment_exchange_rate` |
 
-### 📌 Moneda
-```
-currency_id: 840  // USD (no es COP)
-```
-
-### 📌 IVA
-```
-// Las exportaciones están EXENTAS de IVA
-tax_percentage: 0
-```
-
-## Paso 1: Información de Cliente Exterior
+## Paso 1: Información del Cliente Exterior
 
 El cliente debe ser de otro país:
 
 ```json
 {
-  "customer": {
-    "identity_document_id": "3",           // 3 = Pasaporte
-    "document_number": "AB12345678",       // Número de pasaporte
-    "company_name": "ABC DISTRIBUTORS INC",
-    "address": "123 Main Street, Floor 5",
-    "city": "New York",
-    "country_id": "226",                   // USA
-    "email": "buyer@abcdistributors.us",
-    "phone": "+1-212-555-0123"
+  "country_id": "239",
+  "identity_document_id": "10",
+  "type_organization_id": 1,
+  "company_name": "AMAZON",
+  "dni": "444444055",
+  "address": "NORTE DE VIRGINIA H10",
+  "city_name": "VIRGINIA",
+  "postal_code": "110121"
+}
+```
+
+### Códigos de País Comunes
+
+| País | country_id |
+|------|-----------|
+| Estados Unidos | 239 |
+| México | 137 |
+| Brasil | 37 |
+| Panamá | 155 |
+| Ecuador | 70 |
+| Canadá | 41 |
+| España | 217 |
+
+### identity_document_id para Extranjeros
+
+| Código | Tipo |
+|--------|------|
+| `10` | Pasaporte |
+| `3` | Cédula Extranjería |
+| `12` | NIT Extranjero |
+
+## Paso 2: Configurar Moneda y Tasa de Cambio
+
+```json
+{
+  "currency_id": 272,
+  "payment_exchange_rate": {
+    "exchange_rate": "4243.80",
+    "base_rate": "4243.80",
+    "rate_date": "2025-05-05",
+    "currency_id": 188
   }
 }
 ```
 
-### Códigos de Países Comunes
+**Campos:**
+- `currency_id: 272` → Dólares USD
+- `exchange_rate` → TRM del día (pesos por dólar)
+- `rate_date` → Fecha de la transacción
 
-| País | Código | Código ISO |
-|------|--------|-----------|
-| Estados Unidos | 226 | US |
-| México | 137 | MX |
-| Brasil | 37 | BR |
-| Panamá | 155 | PA |
-| Ecuador | 70 | EC |
-| Perú | 156 | PE |
-| Canadá | 41 | CA |
-| España | 217 | ES |
+### Códigos de Moneda Comunes
 
-## Paso 2: Especificar INCOTERM
+| Moneda | currency_id |
+|--------|-------------|
+| USD (Dólar) | 272 |
+| EUR (Euro) | 273 |
+| COP (Peso) | 170 |
+| MXN (Peso Mexicano) | 274 |
+| BRL (Real) | 275 |
 
-El INCOTERM define quién paga transporte y seguros:
+## Paso 3: Ejemplo Real de Exportación
 
-```json
+```json title="factura-exportacion.json"
 {
-  "export_information": {
-    "incoterm_code": "FOB",                // Free on Board
-    "incoterm_location": "Puerto de Buenaventura",
-    "exchange_rate": 4000.00,              // TRM del día
-    "reference_currency": 170              // Referencia a COP
-  }
-}
-```
-
-### INCOTERMS Comunes
-
-| Código | Término | Significado | Riesgo |
-|--------|---------|-------------|--------|
-| **FOB** | Free on Board | Libre a bordo | Hasta el puerto |
-| **CIF** | Cost, Insurance & Freight | Costo, seguro y flete | Incluye todo |
-| **DDP** | Delivered Duty Paid | Entrega con derechos pagos | El vendedor paga todo |
-| **EXW** | Ex Works | En fábrica | El comprador paga todo |
-| **FCA** | Free Carrier | Franco transportista | Similar a FOB |
-| **CPT** | Carriage Paid To | Porte pagado | Sin seguro |
-
-## Paso 3: Estructura JSON Completa - Exportación
-
-```json
-{
-  // === IDENTIFICACIÓN ===
   "resolution_number": "18764074347312",
-  "prefix": "FEV",
-  "document_number": 2010,
-  "type_document_id": 2,                   // 2 = Exportación
-  "operation_type_id": 2,                  // 2 = Exportación
+  "prefix": "LZT",
+  "document_number": "2055",
+  "operation_type_id": 1,
+  "type_document_id": 8,
+  "currency_id": 272,
+  "graphic_representation": 0,
+  "send_email": 1,
   
-  // === FECHAS ===
-  "date": "2024-10-17",
-  "time": "15:30:00",
-  
-  // === MONEDA EXTRANJERA ===
-  "currency_id": 840,                      // USD
-  
-  // === EMISOR ===
-  "issuer": {
-    "tax_id": "9001234567",
-    "name": "EXPORTADORA COLOMBIANA SAS",
-    "address": "Calle 72 #50-40",
-    "city": "Medellín",
-    "country_id": "169",
-    "tax_regime_id": 1,
-    "email": "exports@exportadora.com.co"
-  },
-  
-  // === CLIENTE EXTERIOR ===
-  "customer": {
-    "identity_document_id": "3",
-    "document_number": "AB12345678",
-    "company_name": "ABC DISTRIBUTORS INC",
-    "address": "123 Main Street",
-    "city": "New York",
-    "country_id": "226",                   // USA
-    "email": "buyer@abcdist.us"
-  },
-  
-  // === INFORMACIÓN DE EXPORTACIÓN ===
-  "export_information": {
-    "incoterm_code": "FOB",
-    "incoterm_location": "Puerto de Buenaventura",
-    "exchange_rate": 4000.00,
-    "reference_currency": 170,
-    "customs_declaration": "2024100001234",
-    "transport_method": "SEA"               // SEA, AIR, LAND, RAIL
-  },
-  
-  // === LÍNEAS DE PRODUCTOS ===
-  "lines": [
-    {
-      "description": "COFFEE BEANS - 100% COLOMBIAN ARABICA",
-      "code": "COFFEE-001",
-      "quantity": 1000,
-      "quantity_units_id": "1115",          // kg (kilogramos)
-      "unit_price": 50.00,                  // USD
-      "line_extension_amount": 50000.00,
-      
-      // === IVA EN EXPORTACIÓN: 0% ===
-      "taxes": [
-        {
-          "tax_type_id": 1,
-          "tax_percentage": 0,              // EXENTO
-          "tax_amount": 0.00
-        }
-      ]
-    },
-    {
-      "description": "FLOWER ARRANGEMENTS - FRESH CUT",
-      "code": "FLOWER-001",
-      "quantity": 500,
-      "quantity_units_id": "1093",          // Unidad
-      "unit_price": 15.00,
-      "line_extension_amount": 7500.00,
-      
-      "taxes": [
-        {
-          "tax_type_id": 1,
-          "tax_percentage": 0,              // EXENTO
-          "tax_amount": 0.00
-        }
-      ]
-    }
-  ],
-  
-  // === TOTALES ===
-  "totals": {
-    "subtotal": 57500.00,                  // En USD
-    "total_discount": 0.00,
-    "total_tax": 0.00,                     // Sin impuestos
-    "payable_amount": 57500.00,            // En USD
-    
-    // === REFERENCIA EN COP ===
-    "payable_amount_cop": 230000000.00     // 57500 × 4000
-  },
-  
-  // === FORMA DE PAGO ===
   "payments": [
     {
-      "payment_method_id": "10",           // Transferencia
-      "means_payment_id": "42",
-      "currency_id": 840,                  // USD
-      "value_paid": 57500.00,
-      "payment_due_date": "2024-11-17"     // 30 días
+      "payment_method_id": 1,
+      "means_payment_id": 42,
+      "value_paid": "4243.80"
     }
   ],
   
-  "notes": "Exportación a USA - FOB Puerto de Buenaventura"
+  "payment_exchange_rate": {
+    "exchange_rate": "4243.80",
+    "base_rate": "4243.80",
+    "rate_date": "2025-05-05",
+    "currency_id": 188
+  },
+  
+  "customer": {
+    "country_id": "239",
+    "identity_document_id": "10",
+    "type_organization_id": 1,
+    "company_name": "AMAZON",
+    "dni": "444444055",
+    "address": "NORTE DE VIRGINIA H10",
+    "city_name": "VIRGINIA",
+    "postal_code": "110121"
+  },
+  
+  "lines": [
+    {
+      "invoiced_quantity": "1.00",
+      "quantity_units_id": "1093",
+      "line_extension_amount": "4243.80",
+      "free_of_charge_indicator": false,
+      "description": "HONORARIOS REPRESENTACION LEGAL",
+      "code": "999-001",
+      "type_item_identifications_id": "4",
+      "reference_price_id": "1",
+      "price_amount": "4243.80",
+      "base_quantity": 1.00
+    }
+  ],
+  
+  "legal_monetary_totals": {
+    "line_extension_amount": "4243.80",
+    "tax_exclusive_amount": "0.00",
+    "tax_inclusive_amount": "4243.80",
+    "payable_amount": 4243.80
+  }
 }
 ```
 
-## Paso 4: Certificados y Documentos
+**Cálculos:**
+```
+Precio unitario: $4,243.80 USD
+Cantidad: 1
+Subtotal: $4,243.80 USD
 
-Para exportación, posiblemente necesites:
+Impuesto: $0.00 (Exento)
+Total: $4,243.80 USD
 
-### Certificados de Origen
-- ✅ Certificado de Origen (CO)
-- ✅ Certificado Fitosanitario (si aplica)
-- ✅ Análisis de Calidad
+TRM: 4,243.80 COP/USD
+Equivalente en COP: $18,000,000 aprox
+```
+
+## Paso 4: Exportación con Múltiples Líneas
 
 ```json
 {
-  "certificates": [
+  "resolution_number": "18764074347312",
+  "prefix": "EXP",
+  "document_number": "2100",
+  "operation_type_id": 1,
+  "type_document_id": 8,
+  "currency_id": 272,
+  "graphic_representation": 0,
+  "send_email": 1,
+  
+  "payments": [
     {
-      "type": "ORIGIN",
-      "number": "CO-2024-123456",
-      "issuer": "CÁMARA DE COMERCIO"
+      "payment_method_id": 1,
+      "means_payment_id": 42,
+      "value_paid": "12500.00"
+    }
+  ],
+  
+  "payment_exchange_rate": {
+    "exchange_rate": "4243.80",
+    "base_rate": "4243.80",
+    "rate_date": "2025-05-05",
+    "currency_id": 188
+  },
+  
+  "customer": {
+    "country_id": "137",
+    "city_id": "100001",
+    "identity_document_id": "10",
+    "type_organization_id": 2,
+    "company_name": "GRUPO COMERCIAL MEXICO",
+    "dni": "AAA123456789",
+    "mobile": "+52-555-1234567",
+    "email": "compras@grupocomercial.com.mx",
+    "address": "Avenida Paseo de la Reforma 505",
+    "postal_code": "06500"
+  },
+  
+  "lines": [
+    {
+      "invoiced_quantity": "100",
+      "quantity_units_id": "1093",
+      "line_extension_amount": "7500.00",
+      "free_of_charge_indicator": false,
+      "description": "TEXTILES - Tela de algodón 100%",
+      "code": "TEX-001",
+      "type_item_identifications_id": "4",
+      "reference_price_id": "1",
+      "price_amount": "75.00",
+      "base_quantity": "100"
     },
     {
-      "type": "PHYTOSANITARY",
-      "number": "ICA-2024-789012",
-      "issuer": "INSTITUTO COLOMBIANO AGROPECUARIO"
+      "invoiced_quantity": "50",
+      "quantity_units_id": "1093",
+      "line_extension_amount": "5000.00",
+      "free_of_charge_indicator": false,
+      "description": "TEXTILES - Hilo de poliéster",
+      "code": "TEX-002",
+      "type_item_identifications_id": "4",
+      "reference_price_id": "1",
+      "price_amount": "100.00",
+      "base_quantity": "50"
     }
-  ]
+  ],
+  
+  "legal_monetary_totals": {
+    "line_extension_amount": "12500.00",
+    "tax_exclusive_amount": "0.00",
+    "tax_inclusive_amount": "12500.00",
+    "payable_amount": 12500.00
+  }
 }
 ```
 
-## Paso 5: Validaciones Especiales
-
-La API validará:
-
-✅ Moneda ≠ COP (170)
-✅ Cliente es del exterior
-✅ IVA = 0%
-✅ INCOTERM especificado
-✅ TRM válido y actual
-
-## Comparativa: Nacional vs Exportación
-
-| Aspecto | Nacional | Exportación |
-|---------|----------|------------|
-| **Tipo Doc** | 7 | 2 |
-| **Operación** | 1 | 2 |
-| **Moneda** | COP (170) | USD (840), EUR (978), etc. |
-| **IVA** | 19% | 0% (Exento) |
-| **INCOTERM** | No aplica | Obligatorio |
-| **Cliente** | Colombia | Exterior |
-| **Forma Pago** | Diversas | Generalmente a plazo |
-
-## Paso 6: Validar y Enviar
+## Paso 5: Enviar a la API
 
 ```bash
-# Validar
-curl -X POST https://api.matias.com/api/validate/invoice \
+curl -X POST https://api.matias-app.com/api/invoices \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
-  -d @exportacion.json
-
-# Enviar
-curl -X POST https://api.matias.com/api/invoices/create \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d @exportacion.json
+  -d @factura-exportacion.json
 ```
 
-## Errores Comunes en Exportación
-
-### ❌ Error: "Moneda debe ser diferente de COP"
+### Respuesta
 ```json
-// INCORRECTO
 {
-  "currency_id": 170,  // COP en exportación
-  "customer.country_id": "226"  // USA
+  "id": 12347,
+  "document_id": "LZT-2055",
+  "cufe": "f8e5c3a9b2d1e6f4g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3",
+  "status_id": 1,
+  "status_name": "Registrada",
+  "message": "Factura de exportación creada exitosamente"
 }
 ```
 
-**Solución**: Especifica USD (840) o EUR (978)
+## Documentación Requerida para DIAN
 
-### ❌ Error: "IVA debe ser 0%"
-```json
-// INCORRECTO
-{
-  "taxes": [
-    {
-      "tax_percentage": 19  // No se aplica IVA
-    }
-  ]
-}
-```
+- ✅ Certificado de origen (si aplica)
+- ✅ Documentos de aduanas
+- ✅ Declaración de exportación
+- ✅ Comprobante de cambio de moneda
+- ✅ Comprobante de envío internacional
 
-**Solución**: Especifica 0% para exportaciones
+## Validaciones Críticas
 
-### ❌ Error: "INCOTERM no especificado"
-**Solución**: Agrega campo `incoterm_code`
+✅ Verificar ANTES de enviar:
 
-## Checklist de Exportación
+- [ ] `country_id` ≠ 45 (No es Colombia)
+- [ ] `identity_document_id` es de extranjero (10, 3, 12)
+- [ ] `type_document_id: 8` (Exportación)
+- [ ] `currency_id: 272` (USD) u otra moneda válida
+- [ ] `payment_exchange_rate` completado
+- [ ] IVA = 0% (exento)
+- [ ] Totales = suma de líneas
+- [ ] `payable_amount` = `tax_inclusive_amount`
 
-- [ ] Cliente en país diferente a Colombia
-- [ ] Currency_id ≠ 170
-- [ ] Type_document_id = 2
-- [ ] Operation_type_id = 2
-- [ ] IVA = 0%
-- [ ] INCOTERM especificado
-- [ ] TRM registrado
-- [ ] Documentos certificados adjuntos
-- [ ] Forma de pago internacional
+## Troubleshooting
+
+### ❌ "Invalid country for export"
+**Causa**: country_id es 45 (Colombia)  
+**Solución**: Especifica un country_id válido del exterior
+
+### ❌ "Currency mismatch"
+**Causa**: Moneda no coincide entre línea y total  
+**Solución**: Usa `currency_id: 272` en todo el documento
+
+### ❌ "Exchange rate required"
+**Causa**: payment_exchange_rate no está definido  
+**Solución**: Añade `payment_exchange_rate` con TRM del día
+
+### ❌ "Tax not allowed for exports"
+**Causa**: Se incluyó IVA en una exportación  
+**Solución**: Establece todos los tax_totals en vacío: `[]`
 
 ## Próximos Pasos
 
-- 📖 [Guía: Factura Simple](/docs/use-cases/simple-invoice)
-- 📖 [Guía: Con Descuentos](/docs/use-cases/invoice-with-discounts)
-- 📋 [Códigos DIAN](/docs/reference-tables/overview)
+- 📖 [Factura Simple](/docs/use-cases/simple-invoice)
+- 📖 [Factura con Descuentos](/docs/use-cases/invoice-with-discounts)
+- 📖 [Casos de Error Común](/docs/use-cases/common-errors)
+- 📚 [Marco Regulatorio DIAN](/docs/regulatory-framework/overview)
 
 ---
 

@@ -1,23 +1,50 @@
 # 📚 Índice de Documentación - GPT-4o Mini
 
 **Última actualización:** Octubre 17, 2025  
-**Versión:** 1.0  
+**Versión:** 2.0  
 **Estado:** ✅ Producción
 
 ---
 
-## 📖 Guías Principales
+## 🎯 Guías para Empezar
 
-### 1. **INICIO_RAPIDO.md** ⚡
+### 1. **GUIA_INICIO_RAPIDO.md** 🚀 ← COMIENZA AQUÍ
+- **Duración:** 10 minutos
+- **Para:** Levantar el sistema (Frontend + Backend)
+- **Contenido:**
+  - Configuración de `.env.local`
+  - Cómo ejecutar Docusaurus (puerto 3000)
+  - Cómo ejecutar Backend OpenAI (puerto 3001)
+  - Tests de verificación
+  - Troubleshooting
+- **Cuándo leer:** PRIMERO - antes de cualquier otra cosa
+
+### 2. **SERVIDOR_CONFIGURACION.md** ⚙️
+- **Duración:** 15 minutos
+- **Para:** Entender configuración avanzada del servidor
+- **Contenido:**
+  - Variables de entorno (dev vs prod)
+  - Endpoints disponibles
+  - Scripts npm
+  - Docker (opcional)
+  - Monitoreo en producción
+  - Salida esperada de cada comando
+- **Cuándo leer:** SEGUNDO - después de lograr que el sistema funcione
+
+### 3. **INICIO_RAPIDO.md** ⚡
 - **Duración:** 5 minutos
-- **Para:** Quién quiere empezar YA
+- **Para:** Quién quiere empezar YA (versión antigua)
 - **Contenido:**
   - Setup rápido
   - Verificación de conexión
   - Test básico
-- **Cuándo leer:** Primero
+- **Estado:** Archivado (usar GUIA_INICIO_RAPIDO.md en su lugar)
 
-### 2. **OPENAI_IMPLEMENTATION.md** 📝
+---
+
+## 📖 Documentación Técnica
+
+### 4. **OPENAI_IMPLEMENTATION.md** 📝
 - **Duración:** 20 minutos
 - **Para:** Entender la arquitectura completa
 - **Contenido:**
@@ -27,7 +54,7 @@
   - Configuración detallada
 - **Cuándo leer:** Para entender la implementación
 
-### 3. **GPT4O_MINI_MIGRATION.md** 📊
+### 5. **GPT4O_MINI_MIGRATION.md** 📊
 - **Duración:** 15 minutos
 - **Para:** Entender la migración de Turbo a Mini
 - **Contenido:**
@@ -38,7 +65,7 @@
   - Monitoreo
 - **Cuándo leer:** Para justificar el cambio
 
-### 4. **TESTING_GPT4O_MINI.md** 🧪
+### 6. **TESTING_GPT4O_MINI.md** 🧪
 - **Duración:** 30 minutos (testing) + 20 minutos (análisis)
 - **Para:** Verificar que todo funciona
 - **Contenido:**
@@ -48,6 +75,53 @@
   - Troubleshooting
   - Métricas de éxito
 - **Cuándo leer:** Antes de usar en producción
+
+---
+
+## 🤖 Entendimiento del Sistema Prompt
+
+### 7. **SYSTEM_PROMPT_EXPLICADO.md** 🧠
+- **Duración:** 20 minutos
+- **Para:** Entender cómo el modelo procesa el contexto
+- **Contenido:**
+  - Arquitectura del system prompt
+  - 3 componentes del contexto
+  - Token accounting detallado
+  - Flujo completo de una conversación
+  - Opciones arquitectónicas (RAG, Fine-tuning)
+  - Ejemplos paso-a-paso
+- **Cuándo leer:** Para personalizar o extender el sistema
+
+### 8. **SYSTEM_PROMPT_v2_MEJORAS.md** ✨
+- **Duración:** 10 minutos
+- **Para:** Entender qué cambió en la v2.0
+- **Contenido:**
+  - Comparativa antes/después
+  - Mejoras implementadas
+  - Impacto en las respuestas
+  - Estructura markdown
+- **Cuándo leer:** Para entender la evolución del prompt
+
+### 9. **DIAGRAMA_CONTEXTO.md** 📊
+- **Duración:** 15 minutos
+- **Para:** Ver el flujo de forma visual
+- **Contenido:**
+  - 7 diagramas ASCII detallados
+  - Flujo de mensajes
+  - Estructura de datos
+  - Procesamiento interno
+  - Iteraciones multi-turn
+- **Cuándo leer:** Para visualizar la arquitectura
+
+### 10. **QUICK_REFERENCE.md** 📋
+- **Duración:** 5 minutos
+- **Para:** Referencia rápida de componentes
+- **Contenido:**
+  - Tabla de 3 componentes
+  - Token accounting visual
+  - 8-step flow summary
+  - Ejemplo de conversación turno por turno
+- **Cuándo leer:** Para consultas rápidas
 
 ### 5. **SYSTEM_PROMPT_EXPLICADO.md** 🧠 (NUEVO)
 - **Duración:** 25 minutos

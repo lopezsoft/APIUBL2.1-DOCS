@@ -13,7 +13,10 @@
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
     "typecheck": "tsc",
-    "ai-server": "ts-node server.ts"
+    "ai-server": "ts-node server.ts",
+    "ai-server:dev": "NODE_ENV=development ts-node server.ts",
+    "ai-server:prod": "NODE_ENV=production node server.js",
+    "ai-server:build": "npx tsc server.ts --target es2020 --module commonjs --lib es2020,dom --esModuleInterop --skipLibCheck --strict"
   },
   "dependencies": {
     "@docusaurus/core": "^3.8.1",

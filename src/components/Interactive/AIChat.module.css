@@ -54,7 +54,7 @@
 
 .actionButton:focus,
 .closeError:focus {
-  outline: 2px solid #667eea;
+  outline: 2px solid #3c6ab2;
   outline-offset: 2px;
 }
 
@@ -191,7 +191,7 @@
 }
 
 .message.user .text {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3c6ab2 0%, #2556a3 100%);
   color: white;
 }
 
@@ -291,8 +291,8 @@
 
 .input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #3c6ab2;
+  box-shadow: 0 0 0 3px rgba(60, 106, 178, 0.1);
 }
 
 .input:disabled {
@@ -302,7 +302,7 @@
 }
 
 .sendButton {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3c6ab2 0%, #2556a3 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -318,7 +318,7 @@
 
 .sendButton:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 8px rgba(60, 106, 178, 0.4);
 }
 
 .sendButton:active:not(:disabled) {
@@ -331,7 +331,7 @@
 }
 
 .sendButton:focus {
-  outline: 2px solid #667eea;
+  outline: 2px solid #3c6ab2;
   outline-offset: 2px;
 }
 

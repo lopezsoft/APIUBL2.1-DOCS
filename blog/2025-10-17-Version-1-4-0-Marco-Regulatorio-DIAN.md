@@ -1,7 +1,7 @@
 ---
 slug: version-1-4-0-marco-regulatorio-dian
 title: "Versión 1.4.0 - Marco Regulatorio DIAN Completo"
-authors: [matias]
+authors: [lewis]
 tags: [dian, regulatorio, factura-electronica, nomina, radian, documento-soporte]
 date: 2025-10-17
 ---

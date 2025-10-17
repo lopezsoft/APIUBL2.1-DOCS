@@ -232,104 +232,17 @@ Se define demora cuando la respuesta toma más de **1 minuto**. Los servicios pe
 ---
 
 ### 503 - Service Unavailable
-- Intente nuevamente más tarde.
-- Si el problema persiste, contacte al soporte técnico.
 
-#### Ejemplo de respuesta
-
-```json title="response.json"
-{
-    "success": false,
-    "message": "Error 500: Internal Server Error. Ocurrió un problema en el servidor de la DIAN."
-}
-```
-
----
-
-### 503 - Service Unavailable
-
-**Description**: Error 503: Service Unavailable. El servicio de la DIAN no está disponible en este momento.
-
-**Possibles Causas**:
-- El servicio puede estar temporalmente fuera de línea debido a mantenimiento o alta demanda.
-
-**Recommended Actions**:
-- Intente nuevamente después de unos minutos.
-- Consulte el estado del servicio en el sitio web de la DIAN.
-
-#### Ejemplo de respuesta
+| Atributo | Valor |
+|----------|-------|
+| **Descripción** | Servicio de la DIAN no disponible |
+| **Causa** | Mantenimiento programado o alta demanda |
+| **Acción** | Intente después de unos minutos |
 
 ```json title="response.json"
 {
     "success": false,
-    "message": "Error 503: Service Unavailable. El servicio de la DIAN no está disponible en este momento."
-}
-```
-
----
-
-### 507 - Insufficient Storage
-
-**Description**: Error 507: Insufficient Storage. El servidor de la DIAN no tiene suficiente espacio.
-
-**Possibles Causas**:
-- El servidor de la DIAN ha alcanzado su capacidad máxima de almacenamiento.
-
-**Recommended Actions**:
-- Intente nuevamente más tarde.
-- Contacte al soporte técnico si el problema persiste.
-
-#### Ejemplo de respuesta
-
-```json title="response.json"
-{
-    "success": false,
-    "message": "Error 507: Insufficient Storage. El servidor de la DIAN no tiene suficiente espacio."
-}
-```
-
----
-
-### 508 - Loop Detected
-
-**Description**: Error 508: Loop Detected. Se ha detectado un bucle en el servidor de la DIAN.
-
-**Possibles Causas**:
-- La solicitud ha generado un bucle infinito en el servidor.
-
-**Recommended Actions**:
-- Verifique la estructura de la solicitud.
-- Contacte al soporte técnico para obtener más ayuda.
-
-
-#### Ejemplo de respuesta
-
-```json title="response.json"
-{
-    "success": false,
-    "message": "Error 508: Loop Detected. Se ha detectado un bucle en el servidor de la DIAN."
-}
-```
----
-
-### 403 - Site Disabled
-
-**Description**: Error 403: Site Disabled. El sitio de la DIAN está deshabilitado.
-
-**Possibles Causas**:
-- El servicio de la DIAN está deshabilitado temporalmente, posiblemente por mantenimiento o problemas técnicos.
-
-**Recommended Actions**:
-- Verifique que el servicio esté habilitado.
-- Intente nuevamente más tarde o consulte el estado del servicio en el sitio web de la DIAN.
-- Si el problema persiste, contacte al soporte técnico.
-
-#### Ejemplo de respuesta
-
-```json title="response.json"
-{
-    "success": false,
-    "message": "Error 403: Site Disabled. El sitio de la DIAN está deshabilitado."
+    "message": "Error 503: Service Unavailable"
 }
 ```
 
@@ -337,125 +250,107 @@ Se define demora cuando la respuesta toma más de **1 minuto**. Los servicios pe
 
 ### 504 - Gateway Timeout
 
-**Description**: Error 504: Gateway Timeout. La conexión con la DIAN está tardando más de lo esperado.
-Por favor, intente nuevamente. Si el problema persiste, contacte a soporte técnico.
-
-**Possibles Causas**:
-- El servidor de la DIAN está tardando mucho en responder **(más de 20 segundos)**, posiblemente debido a alta demanda o problemas de conectividad.
-
-**Recommended Actions**:
-- Intente nuevamente más tarde.
-- Verifique su conexión a internet.
-
-#### Ejemplo de respuesta
+| Atributo | Valor |
+|----------|-------|
+| **Descripción** | Timeout en conexión con DIAN |
+| **Causa** | Respuesta tardía del servidor (>1 minuto) |
+| **Acción** | Ver sección contingencias 12.4 |
 
 ```json title="response.json"
 {
     "success": false,
-    "message": "Error 504: Gateway Timeout. La conexión con la DIAN está tardando más de lo esperado."
+    "message": "Error 504: Gateway Timeout"
 }
 ```
 
+---
 
------
+### 507 - Insufficient Storage
 
-### Error genérico
-*** Description**: Error HTTP ``statusCode`` : Ha ocurrido un error en la solicitud a la DIAN.
-**Possibles Causas**:
-- Ocurrió un error inesperado en el servidor de la DIAN.
-- La solicitud puede estar malformada o puede haber un problema temporal en el servidor.
-
-
-### Posibles respuestas del API por los errores de la DIAN
+| Atributo | Valor |
+|----------|-------|
+| **Descripción** | Almacenamiento insuficiente en servidor |
+| **Causa** | Servidor ha alcanzado capacidad máxima |
+| **Acción** | Intente más tarde o contacte soporte |
 
 ```json title="response.json"
 {
     "success": false,
-    "message": "Error HTTP statusCode : Ha ocurrido un error en la solicitud a la DIAN."
+    "message": "Error 507: Insufficient Storage"
 }
 ```
+
+---
+
+### 508 - Loop Detected
+
+| Atributo | Valor |
+|----------|-------|
+| **Descripción** | Se detectó bucle en servidor |
+| **Causa** | Estructura circular en solicitud |
+| **Acción** | Revise estructura XML y contacte soporte |
+
+```json title="response.json"
+{
+    "success": false,
+    "message": "Error 508: Loop Detected"
+}
+```
+
+```json title="response.json"
+{
+    "success": false,
+    "message": "Error 508: Loop Detected"
+}
+```
+
+---
+
+## Secciones Especiales
+
+### 98 - En Proceso
+
+| Atributo | Valor |
+|----------|-------|
+| **Código** | 98 |
+| **Descripción** | Solicitud en procesamiento |
+| **Significado** | El documento está siendo procesado por la DIAN |
+| **Acción** | Consultar estado después de algunos minutos |
+
+Cuando el estado es **98** (En Proceso), significa que su documento fue recibido pero aún está siendo procesado por los servidores de la DIAN.
+
+#### Ejemplo de respuesta - StatusCode 98
 
 ```json title="response.json"
 {
   "message": "Solicitud procesada por la DIAN.",
-  "send_to_queue": {
-    "_attributes": {
-      "nil": "true"
-    }
-  },
-  "XmlDocumentKey": {
-    "_attributes": {
-      "nil": "true"
-    }
-  },
   "response": {
-    "ErrorMessage": {
-      "_attributes": {
-        "nil": "true"
-      }
-    },
-    "IsValid": "false",
-    "StatusCode": "500",
-    "StatusDescription": "Ha ocurrido un error. Por favor inténtelo de nuevo.",
-    "StatusMessage": {
-      "_attributes": {
-        "nil": "true"
-      }
-    },
-    "xmlBase64Bytes": {
-      "_attributes": {
-        "nil": "true"
-      }
-    },
-    "xmlBytes": {
-      "_attributes": {
-        "nil": "true"
-      }
-    },
-    "xmlDocumentKey": {
-      "_attributes": {
-        "nil": "true"
-      }
-    },
-    "xmlFileName": ""
-  },
-  "xmlBase64Bytes": ""
-}
-```
-
-```json title="response.json"
-{
-  "message": "Solicitud procesada por la DIAN.",
-  "send_to_queue": {
-    "_attributes": {
-      "nil": "true"
-    }
-  },
-  "XmlDocumentKey": {
-    "_attributes": {
-      "nil": "true"
-    }
-  },
-  "response":  {
-    "ErrorMessage": {},
-    "StatusMessage": {
-      "_attributes": {
-        "nil": "true"
-      }
-    },
     "IsValid": "false",
     "StatusCode": "98",
     "StatusDescription": "En Proceso",
-    "XmlDocumentKey": {
-      "_attributes": {
-        "nil": "true"
-      }
-    },
-    "XmlFileName": {
-      "_attributes": {
-        "nil": "true"
-      }
-    }
+    "XmlDocumentKey": null
   }
 }
 ```
+
+---
+
+## Preguntas Frecuentes (FAQ)
+
+### ¿Qué debo hacer si recibo un error 504?
+En caso de timeout (error 504), siga el procedimiento de contingencia descrito en la sección **12.4**. Debe reintentar después de 2 minutos, hasta 5 veces máximo.
+
+### ¿Puedo omitir campos requeridos en la solicitud?
+No. Todos los campos marcados como requeridos en la documentación deben estar presentes. Revisar el errorMessage de la respuesta para identificar campos faltantes.
+
+### ¿Cuánto tiempo tarda el procesamiento de un documento?
+Normalmente, entre 1-5 minutos. Si recibe StatusCode 98, el documento está en proceso. Use el endpoint de consulta de estado para verificar progreso.
+
+### ¿Qué significan los caracteres nil="true" en la respuesta?
+Indica que ese campo es null/vacío en esa particular respuesta. Es normal en ciertos estados de procesamiento.
+
+### ¿Debo reintentar automáticamente ante errores?
+Sí, pero con cuidado. Use backoff exponencial: espere 2-5 segundos entre reintentos. Para error 504, ver sección de contingencias.
+
+### ¿Cómo consulto el estado de un documento después de 98?
+Use el endpoint de consulta con el `XmlDocumentKey` (CUFE/CUDE/CUNE) retornado. Continúe consultando hasta recibir status 200 o 201.

@@ -434,6 +434,75 @@ Cuando DIAN recibe tu documento, lo coloca en una cola de procesamiento. Durante
 
 ---
 
+### Flujo de procesamiento de documentos
+
+El siguiente diagrama muestra el ciclo de vida de un documento desde su envío hasta su respuesta:
+
+```
+PROVEEDOR TECNOLOGICO
+     |
+     v
+[1. Crear documento XML firmado]
+     |
+     v
+[2. Enviar a DIAN con credenciales]
+     |
+     +----> (Espera respuesta)
+     |
+     +---> Caso A: Respuesta RÁPIDA (< 1 min)
+     |         |
+     |         v
+     |     [HTTP 200/201]
+     |         |
+     |     ¿Es StatusCode 00, 01?
+     |     YES: Documento aceptado
+     |     NO:  Ver StatusCode específico (02, 03, 04)
+     |
+     +---> Caso B: DEMORA (timeout > 1 min)
+              |
+              v
+          [HTTP 504 Gateway Timeout]
+              |
+          [Implementar reintentos]
+              |
+        +---------+---------+
+        |         |         |
+    Intento   Intento   Intento
+      1-4       1-4       5
+        |         |         |
+    Espera    Espera      |
+    2 min     2 min      Logró?
+        |         |     /      \
+        v         v    YES      NO
+   Reintenta   [100% OK] v      v
+        |              EXITO  CONTINGENCIA
+        |                      TIPO 04
+    ¿Logró?
+     /   \
+   YES   NO
+    |     |
+    v     v
+ EXITO  CONTINUAR
+ LOG   REINTENTOS
+```
+
+**Flujo de decisión resumido:**
+
+1. **Envía documento** a DIAN
+2. **¿Respuesta rápida?** (< 1 minuto)
+   - SI -> Procesa resultado según StatusCode
+   - NO -> Ve a paso 3
+
+3. **¿Recibiste timeout (504)?**
+   - SI -> Implementa reintentos (5 intentos, 2 min entre intentos)
+   - NO -> Contacta soporte
+
+4. **¿Los 5 reintentos fallaron?**
+   - SI -> Declara Contingencia Tipo 04
+   - NO -> Retorna a paso 1 para reintentar
+
+---
+
 ### Error genérico
 *** Description**: Error HTTP ``statusCode`` : Ha ocurrido un error en la solicitud a la DIAN.
 **Possibles Causas**:
@@ -533,4 +602,181 @@ Cuando DIAN recibe tu documento, lo coloca en una cola de procesamiento. Durante
     }
   }
 }
+
+---
+
+## Mejores Prácticas y Recomendaciones
+
+### Gestión de Timeouts
+
+- **Establece timeouts apropiados:**
+  - Lectura: 30 segundos
+  - Conexión: 10 segundos
+  - Total: 60 segundos máximo
+
+- **No reintentar inmediatamente:**
+  - Espera mínimo 2 minutos entre intentos
+  - Máximo 5 intentos para el mismo documento
+
+- **Logging detallado:**
+  - Guarda cada intento con timestamp exacto
+  - Registra duración de respuesta
+  - Almacena el error HTTP y StatusCode DIAN
+
+### Gestión de Reintentos
+
+- **Estrategia exponencial:**
+  ```
+  Intento 1: sin espera
+  Intento 2: espera 2 minutos
+  Intento 3: espera 4 minutos
+  Intento 4: espera 6 minutos
+  Intento 5: espera 8 minutos
+  ```
+
+- **Persiste los reintentos:**
+  - Guarda en base de datos cada intento
+  - No pierdas intentos si falla tu servidor
+  - Permite recuperación post-fallo
+
+### Manejo de Respuestas
+
+- **Valida StatusCode primero:**
+  - Códigos 00-04 y 98: respuestas válidas
+  - Otros códigos: error del servidor
+
+- **Almacena XmlDocumentKey:**
+  - Necesario para tracking y troubleshooting
+  - Incluye en logs y reportes
+
+- **Notifica cambios de estado:**
+  - Cuando pasas de "En Proceso" (98) a otro
+  - Incluye timestamp y StatusDescription
+
+### Manejo de Duplicados
+
+**Si recibes StatusCode 02 (Duplicado):**
+
+1. Verifica que sea duplicado genuino
+2. Compara fechas y cantidades
+3. Consulta al cliente antes de descartar
+4. Guarda evidencia de duplicidad
+
+**Nunca rechaces sin verificación manual.**
+
+### Contingencias
+
+**Si debes usar Contingencia Tipo 04:**
+
+1. Conserva evidencia de todos los intentos
+2. Guarda en archivo separado por mes
+3. Notifica al cliente la situación
+4. Mantén por 5 años según normativa DIAN
+
+**Archivos a conservar:**
+- XML original
+- Respuesta DIAN (si la hay)
+- Logs de intentos
+- Contingencia generada
+
+### Seguridad
+
+- **Nunca expongas credenciales** en logs
+- **Encripta en tránsito:** HTTPS obligatorio
+- **Valida certificados digitales** de cliente
+- **Audit trail:** quién y cuándo transmitió cada documento
+
+### Monitoreo
+
+**Métricas clave:**
+- % de documentos exitosos (00, 01)
+- % de timeouts (504)
+- % de rechazos DIAN (03)
+- Tiempo promedio de respuesta
+- Frecuencia de contingencias
+
+**Alertas recomendadas:**
+- Cuando % timeouts > 5%
+- Cuando % rechazos DIAN > 2%
+- Cuando respuesta > 30 segundos
+- Cuando se usa contingencia Tipo 04
+
+### Integración con Webhooks (Opcional)
+
+Si implementas webhooks para notificaciones:
+
+```json
+{
+  "event": "document_processed",
+  "timestamp": "2025-01-15T10:30:45Z",
+  "document": {
+    "type": "Invoice",
+    "number": "FV-2025-000001",
+    "customer": "900.000.000-0"
+  },
+  "status": {
+    "http_code": 200,
+    "dian_code": "00",
+    "description": "Documento válido"
+  },
+  "xml_key": "1234567890abcdef"
+}
+```
+
+**Reintentá los webhooks:**
+- 3 intentos con 5 minutos de intervalo
+- Guarda registro de fallidos para revisión
+
+---
+
+## Preguntas Frecuentes (FAQ)
+
+### ¿Por qué falla mi documento si el JSON parece correcto?
+
+Posibles causas:
+- **Dominio incorrecto** en el cliente
+- **Certificado digital expirado** o incorrecto
+- **Fecha del servidor desincronizada** (crítico para firmas digitales)
+- **Estructura XML malformada** (después de firma)
+- **Campo requerido incompleto** o con formato inválido
+
+**Solución:** Revisa los errores detallados en la respuesta DIAN (ErrorDescription)
+
+### ¿Cómo sé si mi documento está realmente siendo procesado?
+
+En StatusCode 98 ("En Proceso"):
+- Realiza polling cada 30-60 segundos
+- Guarda el XmlDocumentKey
+- Después de 5 minutos sin respuesta, implementa contingencia
+
+### ¿Qué diferencia hay entre CreditNote y DocumentNote?
+
+- **CreditNote:** Para reducir valor total (devoluciones)
+- **DebitNote:** Para aumentar valor (cargos adicionales)
+- **Ambas:** Referencian una factura previa por su CUFE
+
+### ¿Puedo reutilizar el mismo número de factura?
+
+**NO.** La DIAN rechaza duplicados por:
+- Mismo Prefijo + Número + Cliente en 24 horas
+
+Si necesitas anular, usa CreditNote (anulación comercial) o Contingencia Tipo 04.
+
+### ¿Cómo genero una Contingencia Tipo 04?
+
+1. Mantén el mismo número y prefijo
+2. Cambia `InvoiceTypeCode` a `"04"`
+3. Adjunta XML original en `AttachedDocument`
+4. Firma nuevamente
+5. Transmite normalmente
+6. Guarda evidencia de intentos fallidos
+
+### ¿Qué pasa si mi servidor cae durante un reintento?
+
+- La factura NO se pierde (DIAN la tiene)
+- Consulta el estado usando XmlDocumentKey
+- Continúa con reintentos desde donde quedó
+- Usa StatusCode 98 para verificar estado
+
+---
 ```

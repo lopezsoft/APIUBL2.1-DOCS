@@ -10,10 +10,13 @@ La API de facturación emite respuestas en formato JSON. Estas respuestas contie
 
 - [Quick Reference](#quick-reference) - Resumen rápido de códigos HTTP
 - [Respuestas Exitosas](#respuestas-exitosas-200-201) - Documentos procesados correctamente
-- [Errores del Cliente](#errores-del-cliente-4xx) - Errores en tu solicitud
-- [Errores del Servidor](#errores-del-servidor-5xx) - Problemas en DIAN
-- [Contingencias](#contingencias-tipo-04) - Qué hacer ante timeouts
-- [Códigos de Estado](#códigos-de-estado-http) - Tabla completa de referencias
+- [Errores del Cliente](#errores-del-cliente-4xx) - Errores en tu solicitud (400-422)
+- [Demoras en tiempos de respuesta](#demoras-en-los-tiempos-de-respuesta) - Estrategia para timeouts
+- [Flujo de procesamiento](#flujo-de-procesamiento-de-documentos) - Diagrama ASCII del ciclo de vida
+- [Referencias Rápidas](#referencias-rápidas) - StatusCode 98 y tabla de códigos
+- [Errores del Servidor](#500---internal-server-error) - Problemas en DIAN (500-508)
+- [Mejores Prácticas](#mejores-prácticas-y-recomendaciones) - Tips de timeouts, reintentos, webhooks
+- [FAQ](#preguntas-frecuentes-faq) - Respuestas a preguntas comunes
 
 ---
 
@@ -129,11 +132,34 @@ Estas respuestas indican que hay un error en tu solicitud.
 
 **Solución:** Valida JSON y confirma todos los campos requeridos
 
+#### Ejemplo de respuesta
+
+```json title="response.json"
+{
+    "success": false,
+    "message": "Error 400: Bad Request. El JSON es inválido o faltan campos requeridos.",
+    "errors": {
+        "document": "Document object is required",
+        "document.billTo": "Customer information is required"
+    }
+}
+```
+
 ### 401 - Unauthorized
 
 **Causa:** API key o credenciales inválidas
 
 **Solución:** Verifica tu API key, regenera token si es necesario
+
+#### Ejemplo de respuesta
+
+```json title="response.json"
+{
+    "success": false,
+    "message": "Error 401: Unauthorized. Las credenciales no son válidas.",
+    "error": "Invalid API key or authentication token expired"
+}
+```
 
 ### 402 - Payment Required
 
@@ -141,11 +167,35 @@ Estas respuestas indican que hay un error en tu solicitud.
 
 **Solución:** Realiza el pago en tu panel de control
 
+#### Ejemplo de respuesta
+
+```json title="response.json"
+{
+    "success": false,
+    "message": "Error 402: Payment Required. Tu suscripción ha vencido.",
+    "details": {
+        "subscription_status": "expired",
+        "renewal_date": "2025-02-15",
+        "action": "Renew subscription in dashboard"
+    }
+}
+```
+
 ### 403 - Forbidden
 
 **Causa:** No tienes permisos para este recurso
 
 **Solución:** Verifica permisos, contacta a soporte
+
+#### Ejemplo de respuesta
+
+```json title="response.json"
+{
+    "success": false,
+    "message": "Error 403: Forbidden. No tienes permisos para este recurso.",
+    "error": "Your account does not have access to this feature"
+}
+```
 
 ### 404 - Not Found
 
@@ -153,11 +203,36 @@ Estas respuestas indican que hay un error en tu solicitud.
 
 **Solución:** Verifica el ID del documento
 
+#### Ejemplo de respuesta
+
+```json title="response.json"
+{
+    "success": false,
+    "message": "Error 404: Not Found. El documento no existe.",
+    "document_id": "123456789"
+}
+```
+
 ### 422 - Unprocessable Entity
 
 **Causa:** Validación DIAN fallida (datos no cumplen reglas)
 
 **Solución:** Lee `ErrorMessage`, corrige los datos según las reglas DIAN
+
+#### Ejemplo de respuesta
+
+```json title="response.json"
+{
+    "success": false,
+    "message": "Error 422: Unprocessable Entity. Validación DIAN fallida.",
+    "validation_errors": {
+        "invoice_number": "Invoice number must be sequential",
+        "document.lineItems": "At least one line item is required",
+        "document.allowanceCharge": "Discount percentage cannot exceed 50%"
+    },
+    "dian_error": "DIAN validation rules not met"
+}
+```
 
 ---
 
@@ -257,6 +332,25 @@ Monitorea la conexión con DIAN cada **30 minutos** después del último intento
 
 ---
 
+### 500 - Internal Server Error
+
+**Descripción:** Error interno en los servidores de DIAN
+
+**Posibles Causas:**
+- Problema temporal en la infraestructura DIAN
+- Procesamiento de una solicitud muy compleja
+- Error de configuración temporal en DIAN
+
+**Acciones Recomendadas:**
+1. Espera 5 minutos antes de reintentar
+2. Reintenta hasta 5 veces con espacios de 2 minutos
+3. Si persiste, contacta soporte DIAN
+4. Guarda el ID de solicitud para referencia
+
+**Nota:** No es un error en tu solicitud, es un problema del servidor DIAN.
+
+#### Ejemplo de respuesta
+
 ```json title="response.json"
 {
     "success": false,
@@ -268,14 +362,21 @@ Monitorea la conexión con DIAN cada **30 minutos** después del último intento
 
 ### 503 - Service Unavailable
 
-**Description**: Error 503: Service Unavailable. El servicio de la DIAN no está disponible en este momento.
+**Descripción:** Servicio DIAN no disponible
 
-**Possibles Causas**:
-- El servicio puede estar temporalmente fuera de línea debido a mantenimiento o alta demanda.
+**Posibles Causas:**
+- Mantenimiento programado o emergente
+- Sobrecarga temporal de servidores
+- Corte de conectividad temporal
+- Actualización de sistemas DIAN
 
-**Recommended Actions**:
-- Intente nuevamente después de unos minutos.
-- Consulte el estado del servicio en el sitio web de la DIAN.
+**Acciones Recomendadas:**
+1. Verifica el estado en https://www.dian.gov.co
+2. Espera 10-15 minutos
+3. Reintenta la transmisión
+4. Si sigue unavailable > 30 min, usa Contingencia Tipo 04
+
+**Nota:** Es un problema en DIAN, no en tu solicitud. Tu documento no se perdió.
 
 #### Ejemplo de respuesta
 
@@ -290,14 +391,19 @@ Monitorea la conexión con DIAN cada **30 minutos** después del último intento
 
 ### 507 - Insufficient Storage
 
-**Description**: Error 507: Insufficient Storage. El servidor de la DIAN no tiene suficiente espacio.
+**Descripción:** Almacenamiento del servidor DIAN agotado
 
-**Possibles Causas**:
-- El servidor de la DIAN ha alcanzado su capacidad máxima de almacenamiento.
+**Posibles Causas:**
+- Base de datos DIAN llegó a capacidad máxima (raro)
+- Problema de configuración de disco (raro)
 
-**Recommended Actions**:
-- Intente nuevamente más tarde.
-- Contacte al soporte técnico si el problema persiste.
+**Acciones Recomendadas:**
+1. Este es un error **muy poco frecuente**
+2. Espera 30 minutos
+3. Reintenta
+4. Si persiste, contacta DIAN directamente
+
+**Nota:** Generalmente indica un problema crítico en infraestructura DIAN.
 
 #### Ejemplo de respuesta
 
@@ -312,15 +418,20 @@ Monitorea la conexión con DIAN cada **30 minutos** después del último intento
 
 ### 508 - Loop Detected
 
-**Description**: Error 508: Loop Detected. Se ha detectado un bucle en el servidor de la DIAN.
+**Descripción:** Bucle detectado en procesamiento DIAN
 
-**Possibles Causas**:
-- La solicitud ha generado un bucle infinito en el servidor.
+**Posibles Causas:**
+- Referencia circular en documento (muy raro)
+- Error temporal en procesamiento DIAN
+- Malformación extrema en XML (después de firma)
 
-**Recommended Actions**:
-- Verifique la estructura de la solicitud.
-- Contacte al soporte técnico para obtener más ayuda.
+**Acciones Recomendadas:**
+1. Verifica la estructura del XML generado
+2. Compara con factura anterior exitosa
+3. Reintenta tras 5 minutos
+4. Si persiste, contacta soporte DIAN
 
+**Nota:** Indica un problema muy poco común. Conserva evidencia para análisis.
 
 #### Ejemplo de respuesta
 

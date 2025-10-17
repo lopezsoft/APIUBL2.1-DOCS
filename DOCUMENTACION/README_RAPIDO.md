@@ -70,6 +70,8 @@ Deberías ver:
 ╚════════════════════════════════════════════════════════╝
 ```
 
+✅ **Funciona en Windows, macOS y Linux**
+
 ---
 
 ### Opción B: Una Terminal (Windows PowerShell)

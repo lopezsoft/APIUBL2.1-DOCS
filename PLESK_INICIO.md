@@ -136,6 +136,24 @@ Si todo ✅ → Ejecuta `install-plesk.sh`
 
 ---
 
+## 📋 Arquitectura: Front + Backend
+
+```
+Cliente → Apache (Puerto 80/443)
+  ├─ /           → Docusaurus (SPA estática)
+  ├─ /api/*      → ProxyPass → Node.js (Puerto 3000)
+  └─ /* (SPA)    → RewriteRule → /index.html
+```
+
+**Archivo:** `.htaccess` (ya configurado)
+- ✅ Proxy automático para `/api/*` a Node.js
+- ✅ SPA routing para Docusaurus
+- ✅ Headers de seguridad
+- ✅ Compresión gzip
+- ✅ Caché de assets
+
+---
+
 ## 📋 Paso Final: Configurar en Panel Plesk
 
 Después de ejecutar el script, configurar Node.js en Plesk:
@@ -152,6 +170,10 @@ Después de ejecutar el script, configurar Node.js en Plesk:
    Ambiente: production
    ```
 4. **OK** y espera a que se reinicie
+
+**Verificar Apache:**
+- Asegúrate que `mod_proxy` y `mod_rewrite` estén habilitados
+- El `.htaccess` ya está configurado correctamente
 
 ---
 

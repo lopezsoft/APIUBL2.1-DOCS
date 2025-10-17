@@ -1,43 +1,46 @@
 # Apache Configuration - docs.matias-api.com
-# Solo sirve archivos estáticos (build/)
-# Backend está en: api-docs.matias-api.com
+# Frontend estático (SPA)
+# Backend en: api-docs.matias-api.com
 
+# Redirige todas las solicitudes al archivo index.html, excepto para los recursos existentes
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
-  
-  # NO reescribir si es un archivo real
-  RewriteCond %{REQUEST_FILENAME} -f
-  RewriteRule ^ - [L]
-  
-  # NO reescribir si es un directorio real
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
-  
-  # TODO lo demás → index.html (para SPA)
   RewriteRule ^ /index.html [L]
 </IfModule>
 
-# HTTPS Redirect
+# Deshabilita el listado de directorios
+Options -Indexes
+
+# Encabezados de seguridad
+<IfModule mod_headers.c>
+  # Protege contra ataques XSS
+  Header set X-XSS-Protection "1; mode=block"
+
+  # Evita que el contenido sea incrustado en un iframe
+  Header always append X-Frame-Options SAMEORIGIN
+
+  # Protege contra ataques de tipo MIME sniffing
+  Header set X-Content-Type-Options nosniff
+
+  # Establece la Política de Seguridad de Contenido (CSP)
+  Header set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';"
+
+  # Habilita HSTS (HTTP Strict Transport Security)
+  Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+  # Controla permisos del navegador
+  Header set Permissions-Policy "geolocation=(self), microphone=()"
+
+  # Política de referencia
+  Header set Referrer-Policy "no-referrer-when-downgrade"
+</IfModule>
+
+# Fuerza el uso de HTTPS
 <IfModule mod_rewrite.c>
   RewriteCond %{HTTPS} !=on
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>
-
-# Security Headers
-<IfModule mod_headers.c>
-  Header set X-XSS-Protection "1; mode=block"
-  Header always append X-Frame-Options SAMEORIGIN
-  Header set X-Content-Type-Options nosniff
-  Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-</IfModule>
-
-# CORS para Backend en api-docs.matias-api.com
-<IfModule mod_headers.c>
-  Header set Access-Control-Allow-Origin "https://api-docs.matias-api.com"
-  Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-  Header set Access-Control-Allow-Headers "Content-Type, Authorization"
-</IfModule>
-
-# Disable Directory Listing
-Options -Indexes

@@ -1,0 +1,9 @@
+{
+  "label": "Factura Electrónica (FE)",
+  "description": "Guía completa de facturación electrónica conforme a la DIAN",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Aprende todo sobre la emisión de facturas electrónicas según la Resolución 000165"
+  }
+}

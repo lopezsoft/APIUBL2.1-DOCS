@@ -136,21 +136,21 @@ Si todo ✅ → Ejecuta `install-plesk.sh`
 
 ---
 
-## 📋 Arquitectura: Front + Backend
+## 📋 Arquitectura: Docusaurus Completo en Node.js
 
 ```
-Cliente → Apache (Puerto 80/443)
-  ├─ /           → Docusaurus (SPA estática)
-  ├─ /api/*      → ProxyPass → Node.js (Puerto 3000)
-  └─ /* (SPA)    → RewriteRule → /index.html
+Cliente → Node.js (Puerto 443)
+  ├─ /docs      → Documentación Docusaurus
+  ├─ /api/*     → APIs (búsqueda, chat, etc)
+  └─ Static     → Assets compilados
 ```
 
-**Archivo:** `.htaccess` (ya configurado)
-- ✅ Proxy automático para `/api/*` a Node.js
-- ✅ SPA routing para Docusaurus
-- ✅ Headers de seguridad
-- ✅ Compresión gzip
-- ✅ Caché de assets
+**Nota:** Apache sirve solo archivos estáticos del build/. Node.js maneja todo.
+
+Archivo: `.htaccess` (básico, solo SPA routing)
+- ✅ Reescribe URLs para Docusaurus SPA
+- ✅ Sirve archivos estáticos correctamente
+- ✅ Sin proxy (evita conflictos)
 
 ---
 
@@ -164,16 +164,14 @@ Después de ejecutar el script, configurar Node.js en Plesk:
    ```
    Nombre: matias-docs
    Ruta: /var/www/vhosts/docs.matias-api.com/applications/matias-docs
-   Versión: 18.x
+   Versión: 18.x o superior
    Puerto: 3000
    Script: server.js
    Ambiente: production
    ```
 4. **OK** y espera a que se reinicie
 
-**Verificar Apache:**
-- Asegúrate que `mod_proxy` y `mod_rewrite` estén habilitados
-- El `.htaccess` ya está configurado correctamente
+El `.htaccess` se aplicará automáticamente para archivos estáticos.
 
 ---
 

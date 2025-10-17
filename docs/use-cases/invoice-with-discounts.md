@@ -142,44 +142,8 @@ Este es el JSON **real** que acepta MATIAS API:
 ```
 
 ## Paso 2: Entender la Estructura
-      "quantity": 50,
-      "unit_price": 20000.00,
-      "line_extension_amount": 1000000.00,
-      
-      "discount_percentage": 15,
-      "discount_amount": 150000.00,
-      "line_amount": 850000.00,
-      
-      "taxes": [
-        {
-          "tax_type_id": 1,
-          "tax_percentage": 19,
-          "tax_amount": 161500.00
-        }
-      ]
-    }
-  ],
-  
-  // === TOTALES (incluyendo descuentos) ===
-  "totals": {
-    "subtotal": 2000000.00,                // Suma de líneas ANTES descuento
-    "total_discount": 300000.00,           // 150000 + 150000
-    "taxable_base": 1700000.00,            // 2000000 - 300000
-    "total_tax": 323000.00,                // 161500 + 161500
-    "payable_amount": 2023000.00           // 1700000 + 323000
-  },
-  
-  "payments": [
-    {
-      "payment_method_id": "10",
-      "means_payment_id": "42",
-      "value_paid": 2023000.00
-    }
-  ],
-  
-  "notes": "Venta mayorista con descuento comercial 15%"
-}
-```
+
+Los campos clave para un descuento son:
 
 Analicemos el JSON línea por línea:
 

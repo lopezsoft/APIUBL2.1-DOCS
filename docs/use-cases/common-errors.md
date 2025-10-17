@@ -101,10 +101,10 @@ curl -X POST https://api.matias-app.com/api/invoices \
 | `document_number` | string | "2001" |
 | `type_document_id` | int | 7 |
 | `operation_type_id` | int | 1 |
-| `customer` | object | {...} |
-| `lines` | array | [...] |
-| `legal_monetary_totals` | object | {...} |
-| `payments` | array | [...] |
+| `customer` | object | `{ }` |
+| `lines` | array | `[ ]` |
+| `legal_monetary_totals` | object | `{ }` |
+| `payments` | array | `[ ]` |
 
 ---
 

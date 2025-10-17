@@ -1,55 +1,49 @@
+"use strict";
 /**
  * Servidor Express para integración con OpenAI GPT-4 Turbo
- * 
+ *
  * Propósito:
  * - Proporcionar endpoint seguro para chat con IA
  * - Mantener contexto de conversación
  * - Especializado en APIUBL2.1 y facturación electrónica colombiana
- * 
+ *
  * Uso:
  * npm install openai dotenv express cors
  * npx ts-node server.ts
  */
-
-import express, { Request, Response, NextFunction } from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import OpenAI from 'openai';
-
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
+const dotenv_1 = __importDefault(require("dotenv"));
+const openai_1 = __importDefault(require("openai"));
 // ============================================================================
 // CONFIGURACIÓN
 // ============================================================================
-
-dotenv.config({ path: '.env.local' });
-
-const app = express();
+dotenv_1.default.config({ path: '.env.local' });
+const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
-
 // Middleware
-app.use(cors());
-app.use(express.json({ limit: '10mb' }));
-
+app.use((0, cors_1.default)());
+app.use(express_1.default.json({ limit: '10mb' }));
 // ============================================================================
 // VALIDACIÓN DE CONFIGURACIÓN
 // ============================================================================
-
 if (!process.env.OPENAI_API_KEY) {
-  console.error('❌ Error: OPENAI_API_KEY no está configurada en .env.local');
-  process.exit(1);
+    console.error('❌ Error: OPENAI_API_KEY no está configurada en .env.local');
+    process.exit(1);
 }
-
 // ============================================================================
 // INICIALIZACIÓN DE CLIENTE OPENAI
 // ============================================================================
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+const openai = new openai_1.default({
+    apiKey: process.env.OPENAI_API_KEY,
 });
-
 // ============================================================================
 // PROMPTS Y CONFIGURACIÓN
 // ============================================================================
-
 const SYSTEM_PROMPT = `Eres un asistente técnico experto en APIUBL2.1 y facturación electrónica en Colombia.
 Tu objetivo es ayudar a los desarrolladores a comprender y usar correctamente el API de MATIAS para emisión de facturas electrónicas.
 
@@ -113,74 +107,46 @@ INSTRUCCIONES DE RESPUESTA:
 - Enfócate en solucionar problemas del usuario
 - Sugiere validaciones y buenas prácticas
 - Evita información especulativa o incorrecta`;
-
-// ============================================================================
-// TIPOS
-// ============================================================================
-
-interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
-interface ChatRequest {
-  message: string;
-  conversationHistory?: Message[];
-}
-
-interface ChatResponse {
-  response: string;
-  error?: string;
-  usage?: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-  };
-}
-
 // ============================================================================
 // ERROR HANDLING MIDDLEWARE
 // ============================================================================
-
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error('Error no manejado:', err);
-  res.status(500).json({
-    error: 'Error interno del servidor',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Por favor intenta de nuevo',
-  });
+app.use((err, req, res, next) => {
+    console.error('Error no manejado:', err);
+    res.status(500).json({
+        error: 'Error interno del servidor',
+        message: process.env.NODE_ENV === 'development' ? err.message : 'Por favor intenta de nuevo',
+    });
 });
-
 // ============================================================================
 // RUTAS
 // ============================================================================
-
 /**
  * Health Check
  * Verifica que el servidor y OpenAI estén disponibles
  */
-app.get('/health', async (req: Request, res: Response) => {
-  try {
-    res.json({
-      status: 'ok',
-      service: 'OpenAI GPT-4 Turbo',
-      timestamp: new Date().toISOString(),
-      environment: {
-        model: 'gpt-4-turbo',
-        hasApiKey: !!process.env.OPENAI_API_KEY,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: 'error',
-      message: error instanceof Error ? error.message : 'Error desconocido',
-    });
-  }
+app.get('/health', async (req, res) => {
+    try {
+        res.json({
+            status: 'ok',
+            service: 'OpenAI GPT-4 Turbo',
+            timestamp: new Date().toISOString(),
+            environment: {
+                model: 'gpt-4-turbo',
+                hasApiKey: !!process.env.OPENAI_API_KEY,
+            },
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            status: 'error',
+            message: error instanceof Error ? error.message : 'Error desconocido',
+        });
+    }
 });
-
 /**
  * Endpoint de Chat Principal
  * POST /api/openai/chat
- * 
+ *
  * Body:
  * {
  *   "message": "Tu pregunta aquí",
@@ -190,114 +156,97 @@ app.get('/health', async (req: Request, res: Response) => {
  *   ]
  * }
  */
-app.post('/api/openai/chat', async (req: Request, res: Response) => {
-  try {
-    const { message, conversationHistory = [] }: ChatRequest = req.body;
-
-    // Validación de entrada
-    if (!message || typeof message !== 'string') {
-      return res.status(400).json({
-        error: 'Campo "message" es requerido y debe ser un string',
-      });
-    }
-
-    if (message.trim().length === 0) {
-      return res.status(400).json({
-        error: 'El mensaje no puede estar vacío',
-      });
-    }
-
-    if (message.length > 4000) {
-      return res.status(400).json({
-        error: 'El mensaje es demasiado largo (máximo 4000 caracteres)',
-      });
-    }
-
-    // Validar histórico de conversación
-    if (!Array.isArray(conversationHistory)) {
-      return res.status(400).json({
-        error: 'conversationHistory debe ser un array',
-      });
-    }
-
-    // Limitar histórico a últimos 20 mensajes para optimizar costos
-    const limitedHistory = conversationHistory.slice(-20);
-
-    // Construir mensajes para OpenAI
-    const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-      { role: 'system', content: SYSTEM_PROMPT },
-      ...limitedHistory,
-      { role: 'user', content: message.trim() },
-    ] as OpenAI.Chat.ChatCompletionMessageParam[];
-
-    // Llamar a OpenAI API
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4-turbo',
-      messages: messages,
-      max_tokens: 2048,
-      temperature: 0.7,
-      top_p: 0.9,
-    });
-
-    // Extraer respuesta
-    const assistantMessage = response.choices[0]?.message?.content;
-
-    if (!assistantMessage) {
-      return res.status(500).json({
-        error: 'No se recibió respuesta de OpenAI',
-      });
-    }
-
-    // Respuesta exitosa
-    const chatResponse: ChatResponse = {
-      response: assistantMessage,
-      usage: {
-        prompt_tokens: response.usage?.prompt_tokens || 0,
-        completion_tokens: response.usage?.completion_tokens || 0,
-        total_tokens: response.usage?.total_tokens || 0,
-      },
-    };
-
-    res.json(chatResponse);
-  } catch (error) {
-    console.error('Error en /api/openai/chat:', error);
-
-    if (error instanceof Error) {
-      if (error.message.includes('API key')) {
-        return res.status(401).json({
-          error: 'Error de autenticación: verifica tu API key de OpenAI',
+app.post('/api/openai/chat', async (req, res) => {
+    try {
+        const { message, conversationHistory = [] } = req.body;
+        // Validación de entrada
+        if (!message || typeof message !== 'string') {
+            return res.status(400).json({
+                error: 'Campo "message" es requerido y debe ser un string',
+            });
+        }
+        if (message.trim().length === 0) {
+            return res.status(400).json({
+                error: 'El mensaje no puede estar vacío',
+            });
+        }
+        if (message.length > 4000) {
+            return res.status(400).json({
+                error: 'El mensaje es demasiado largo (máximo 4000 caracteres)',
+            });
+        }
+        // Validar histórico de conversación
+        if (!Array.isArray(conversationHistory)) {
+            return res.status(400).json({
+                error: 'conversationHistory debe ser un array',
+            });
+        }
+        // Limitar histórico a últimos 20 mensajes para optimizar costos
+        const limitedHistory = conversationHistory.slice(-20);
+        // Construir mensajes para OpenAI
+        const messages = [
+            { role: 'system', content: SYSTEM_PROMPT },
+            ...limitedHistory,
+            { role: 'user', content: message.trim() },
+        ];
+        // Llamar a OpenAI API
+        const response = await openai.chat.completions.create({
+            model: 'gpt-4-turbo',
+            messages: messages,
+            max_tokens: 2048,
+            temperature: 0.7,
+            top_p: 0.9,
         });
-      }
-
-      if (error.message.includes('rate_limit')) {
-        return res.status(429).json({
-          error: 'Límite de solicitudes alcanzado, intenta más tarde',
-        });
-      }
-
-      return res.status(500).json({
-        error: error.message,
-      });
+        // Extraer respuesta
+        const assistantMessage = response.choices[0]?.message?.content;
+        if (!assistantMessage) {
+            return res.status(500).json({
+                error: 'No se recibió respuesta de OpenAI',
+            });
+        }
+        // Respuesta exitosa
+        const chatResponse = {
+            response: assistantMessage,
+            usage: {
+                prompt_tokens: response.usage?.prompt_tokens || 0,
+                completion_tokens: response.usage?.completion_tokens || 0,
+                total_tokens: response.usage?.total_tokens || 0,
+            },
+        };
+        res.json(chatResponse);
     }
-
-    res.status(500).json({
-      error: 'Error desconocido al procesar la solicitud',
-    });
-  }
+    catch (error) {
+        console.error('Error en /api/openai/chat:', error);
+        if (error instanceof Error) {
+            if (error.message.includes('API key')) {
+                return res.status(401).json({
+                    error: 'Error de autenticación: verifica tu API key de OpenAI',
+                });
+            }
+            if (error.message.includes('rate_limit')) {
+                return res.status(429).json({
+                    error: 'Límite de solicitudes alcanzado, intenta más tarde',
+                });
+            }
+            return res.status(500).json({
+                error: error.message,
+            });
+        }
+        res.status(500).json({
+            error: 'Error desconocido al procesar la solicitud',
+        });
+    }
 });
-
 // Para compatibilidad con cliente antiguo (AIAssistant.tsx)
-app.post('/api/bedrock/chat', async (req: Request, res: Response) => {
-  // Redirigir a nuevo endpoint
-  res.redirect(307, '/api/openai/chat');
+app.post('/api/bedrock/chat', async (req, res) => {
+    // Redirigir a nuevo endpoint
+    res.redirect(307, '/api/openai/chat');
 });
-
 // ============================================================================
 // INICIO DEL SERVIDOR
 // ============================================================================
-
 app.listen(PORT, () => {
-  console.log(`
+    console.log(`
 ╔════════════════════════════════════════════════════════╗
 ║                                                        ║
 ║  🚀 Servidor OpenAI GPT-4 Turbo iniciado              ║
@@ -312,5 +261,4 @@ app.listen(PORT, () => {
 ╚════════════════════════════════════════════════════════╝
   `);
 });
-
-export default app;
+exports.default = app;

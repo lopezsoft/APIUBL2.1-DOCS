@@ -48,11 +48,15 @@ export default function NITValidator() {
     }
 
     // Calcular el dígito verificador usando el algoritmo colombiano
+    // basado en: vector[NValue - i] donde NValue es la longitud
     let accumulator = 0;
     
     for (let i = 0; i < length; i++) {
       const digit = parseInt(nitStr.charAt(i));
-      const weight = weights[length - i]; // Los pesos van de atrás hacia adelante
+      // El índice del peso: weights está en índice 0, pero el algoritmo usa índice 1
+      // Para una longitud N: primer dígito usa weights[N-1], segundo usa weights[N-2], etc.
+      const weightIndex = length - i; // índice del vector (1-based en el algoritmo original)
+      const weight = weights[weightIndex - 1]; // convertir a 0-based
       const product = digit * weight;
       accumulator += product;
 

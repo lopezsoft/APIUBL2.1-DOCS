@@ -13,6 +13,40 @@ Este glosario contiene los términos técnicos, normativas, acrónimos y concept
 
 ## A
 
+### Additional Document Reference (Documento Adicional de Referencia)
+**Definición**: Grupo de datos que contiene referencias a documentos comerciales o de soporte adicionales.
+
+**Uso Obligatorio**: Solo en facturas tipo 03 (Factura de Contingencia).
+
+**Estructura**:
+- `number`: Identificador del documento referenciado
+- `uuid`: CUFE o CUDE del documento
+- `scheme_name`: Algoritmo de generación (CUFE-SHA384)
+- `date`: Fecha del documento referenciado
+- `code`: Código de tipo de referencia (asignado por facturador)
+
+**Características**:
+- ✅ Es un ARRAY (puede contener múltiples referencias)
+- ✅ Los códigos son de asignación libre del facturador
+- ✅ DIAN valida con reglas FAI01-FAI06
+
+**Ejemplo**:
+```json
+{
+  "additional_document_reference": [
+    {
+      "number": "LCON2",
+      "uuid": "0bd41b047f40dbca...",
+      "scheme_name": "CUFE-SHA384",
+      "date": "2025-08-18",
+      "code": "01"
+    }
+  ]
+}
+```
+
+---
+
 ### Ambiente de Destino
 **Definición**: El entorno al cual se envía la factura electrónica.
 
@@ -65,11 +99,15 @@ IVA (19%): 17,100
 ### CUFE
 **Definición**: Código Único de Factura Electrónica.
 
-**Significado**: Identificador único generado por la DIAN para cada factura.
+**Significado**: Identificador único generado para cada factura electrónica.
 
 **Formato**: Secuencia alfanumérica de 44 caracteres.
 
 **Cálculo**: SHA256 de: NIT_EMISOR + PREFIJO + NUMERO + FECHA + MONTO_TOTAL + NIT_CLIENTE + IVA + ICA + FIRMA
+
+**Vs. CUDE**: CUFE es para facturas, CUDE es para documentos equivalentes (notas).
+
+**Uso en Contingencia**: Se referencia en `additional_document_reference.uuid` para facturas tipo 03.
 
 **Ejemplo**:
 ```
@@ -89,6 +127,36 @@ CUFE: f8e5c3a9b2d1e6f4g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3
 **Tipos**:
 - Certificado A1 (en software)
 - Certificado A3 (en token/tarjeta)
+
+---
+
+### Contingencia
+**Definición**: Situación de carácter extraordinario o excepcional que impide la operación normal de facturación.
+
+**Tipos según DIAN**:
+- **Tipo 03**: Factura de Contingencia (cuando falla conexión con DIAN)
+- **Tipo 04**: Factura de Contingencia Alternativa (protocolo especial)
+
+**Características**:
+- ✅ Documentos válidos ante DIAN
+- ✅ Requieren referencia a documento original o soporte
+- ✅ Obligatorio campo `additional_document_reference` para tipo 03
+- ✅ Deben enviarse a DIAN cuando se restaure conexión
+
+**Referencia**: Ver [Factura de Contingencia](#factura-de-contingencia)
+
+---
+
+### CUDE
+**Definición**: Código Único de Documento Equivalente.
+
+**Similitud con CUFE**: Identificador único para documentos equivalentes (notas crédito/débito).
+
+**Formato**: Secuencia alfanumérica de 44 caracteres (como CUFE).
+
+**Cálculo**: SHA256 con variables del documento equivalente.
+
+**Vs. CUFE**: CUFE es para facturas, CUDE es para notas crédito/débito.
 
 ---
 
@@ -137,6 +205,25 @@ CUFE: f8e5c3a9b2d1e6f4g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3
 - ✅ Validez probatoria
 - ✅ Integridad garantizada
 - ✅ Trazabilidad
+
+---
+
+### Documento de Soporte
+**Definición**: Documento comercial que respalda una transacción (orden de compra, remisión, póliza, etc.).
+
+**Usos**:
+- ✅ Referencia en `additional_document_reference` de facturas tipo 03
+- ✅ Trazabilidad y auditoría
+- ✅ Justificación de transacciones
+
+**Tipos Comunes**:
+- Orden de Compra
+- Remisión
+- Póliza de Transporte
+- Contrato
+- Acta de Entrega
+
+**Nota**: Los documentos XML adoptados por DIAN NO se incluyen en `additional_document_reference`.
 
 ---
 
@@ -190,6 +277,36 @@ CUFE: f8e5c3a9b2d1e6f4g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3
 - ✅ Aceptación DIAN necesaria
 
 **Normativa**: Resolución 000165 de 2024
+
+**Tipos Especiales**: Ver [Contingencia](#contingencia) y [Factura de Contingencia](#factura-de-contingencia)
+
+---
+
+### Factura de Contingencia
+**Definición**: Factura emitida en situaciones extraordinarias cuando falla la conexión normal con DIAN.
+
+**Tipos DIAN**:
+
+| Tipo | Código | Uso | Referencia Obligatoria |
+|------|--------|-----|------------------------|
+| Contingencia Estándar | 03 | Falla de conexión a DIAN | ✅ Sí (additional_document_reference) |
+| Contingencia Alternativa | 04 | Protocolo especial DIAN | ❌ Opcional |
+
+**Características Tipo 03**:
+- ✅ Requiere `additional_document_reference` OBLIGATORIO
+- ✅ Debe referenciar documento original o soporte
+- ✅ API auto-completa si no se proporciona referencia
+- ✅ Válida legalmente ante autoridades
+
+**Características Tipo 04**:
+- ✅ Protocolo alternativo especial
+- ✅ `additional_document_reference` opcional
+- ✅ `document_signature` generalmente más importante
+- ✅ Requiere documento original o soporte
+
+**Envío a DIAN**: Deben reportarse a DIAN cuando se restaure conexión normal.
+
+**Referencia**: Ver [Additional Document Reference](#additional-document-reference-documento-adicional-de-referencia) y [Contingencia](#contingencia)
 
 ---
 
@@ -647,12 +764,14 @@ Esta letra no tiene términos específicos en facturación electrónica.
 ## Tablas de Referencia Rápida
 
 ### Códigos de Documentos
-| Código | Tipo | Normativa |
-|--------|------|-----------|
-| 1 | Factura de Venta | Res. 165 |
-| 2 | Factura de Exportación | Res. 165 |
-| 91 | Nota Crédito | Res. 165 |
-| 92 | Nota Débito | Res. 165 |
+| Código | Tipo | Normativa | Notas |
+|--------|------|-----------|-------|
+| 1 | Factura de Venta | Res. 165 | Documento estándar |
+| 2 | Factura de Exportación | Res. 165 | Para operaciones con exterior |
+| 3 | Factura de Contingencia Tipo 03 | Res. 165 | Requiere additional_document_reference |
+| 4 | Factura de Contingencia Tipo 04 | Res. 165 | Protocolo alternativo |
+| 91 | Nota Crédito | Res. 165 | Genera CUDE |
+| 92 | Nota Débito | Res. 165 | Genera CUDE |
 
 ### Tipos de Identificación
 | Código | Tipo |
@@ -683,7 +802,7 @@ Esta letra no tiene términos específicos en facturación electrónica.
 
 ---
 
-**Última actualización**: Octubre 2024
-**Versión**: 1.0
-**Términos**: 100+ definiciones
-**Cobertura**: Facturación, impuestos, DIAN, operaciones
+**Última actualización**: Octubre 2025
+**Versión**: 1.1
+**Términos**: 120+ definiciones
+**Cobertura**: Facturación, impuestos, DIAN, operaciones, contingencia

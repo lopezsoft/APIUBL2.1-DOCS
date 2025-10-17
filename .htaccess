@@ -11,17 +11,18 @@
   RewriteCond %{REQUEST_FILENAME} -f
   RewriteRule ^ - [L]
   
-  # Si el directorio existe, sirve directamente
+  # Si el directorio existe, sirve index.html de esa carpeta
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
   
-  # Si existe archivo .html con ese nombre, sirve el HTML
+  # Busca index.html en la carpeta si no existe el archivo/directorio
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_FILENAME}.html -f
-  RewriteRule ^(.+)$ $1.html [L]
+  RewriteRule ^(.*)$ $1/index.html [L]
   
-  # TODO lo demás → index.html (para SPA)
+  # Si todo falla, sirve index.html raíz (SPA)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule ^ /index.html [L]
 </IfModule>
 

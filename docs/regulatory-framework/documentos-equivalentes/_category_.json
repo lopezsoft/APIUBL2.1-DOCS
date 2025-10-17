@@ -1,0 +1,8 @@
+{
+  "label": "Documentos Equivalentes",
+  "description": "Guía de documentos equivalentes según DIAN",
+  "position": 3,
+  "link": {
+    "type": "generated-index"
+  }
+}

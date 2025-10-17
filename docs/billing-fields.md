@@ -7,6 +7,18 @@ sidebar_position: 4
 En esta sección se describen los campos que se deben de considerar para la generación de la factura electrónica,
 nota de crédito y nota de débito, documento soporte y documento equivalente, con sus respectivas notas de ajuste.
 
+## 📑 Tabla de Contenidos
+
+- [Ejemplo Completo de Factura](#ejemplo-completo)
+- [Descripción de los campos](#descripción-de-los-campos)
+- [Referencia Rápida de Tipos de Documento](#referencia-rápida-de-tipos-de-documento)
+- [Compatibilidad de Campos por Tipo](#compatibilidad-de-campos-por-tipo)
+- [Uso de los campos](#uso-de-los-campos)
+- [Additional Document Reference](#additional_document_reference-referencia-a-documento-adicional)
+- [Ejemplo Mínimo Requerido](#ejemplo-mínimo-requerido)
+
+---
+
 ```json
 {
   "resolution_number": "18760000001",
@@ -329,6 +341,47 @@ nota de crédito y nota de débito, documento soporte y documento equivalente, c
 }
 ```
 
+## Referencia Rápida de Tipos de Documento
+
+| Código | Tipo | Descripción | Normativa | Notas |
+|--------|------|-------------|-----------|-------|
+| 1 | Factura de Venta | Documento estándar de venta | Res. 165 | Uso general |
+| 2 | Factura de Exportación | Factura para operaciones con exterior | Res. 165 | Regulación especial |
+| 3 | Factura de Contingencia Tipo 03 | Emitida cuando falla conexión DIAN | Res. 165 | ⚠️ Requiere `additional_document_reference` |
+| 4 | Factura de Contingencia Tipo 04 | Protocolo alternativo especial | Res. 165 | Opcional `additional_document_reference` |
+| 7 | Documento Soporte | Para servicios y operaciones especiales | Res. 165 | Uso específico |
+| 9 | Documento Equivalente POS | Factura de Punto de Venta | Res. 165 | Requiere datos POS |
+| 91 | Nota Crédito | Devolución o descuento | Res. 165 | Genera CUDE |
+| 92 | Nota Débito | Ajuste por aumento | Res. 165 | Genera CUDE |
+
+---
+
+## Compatibilidad de Campos por Tipo
+
+| Campo | Factura (1,2) | Contingencia (3,4) | Documento Soporte (7) | POS (9) | Nota Crédito (91) | Nota Débito (92) |
+|-------|:---:|:---:|:---:|:---:|:---:|:---:|
+| `resolution_number` | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 |
+| `prefix` | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 |
+| `date` | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 |
+| `document_number` | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 |
+| `operation_type_id` | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 |
+| `type_document_id` | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 |
+| `payments` | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 |
+| `customer` | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 |
+| `legal_monetary_totals` | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 |
+| `lines` | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 |
+| `additional_document_reference` | 🟢 | 🔴 | 🟢 | 🟢 | 🟢 | 🟢 |
+| `point_of_sale` | 🟢 | 🟢 | 🟢 | 🔴 | 🟢 | 🟢 |
+| `billing_reference` | 🟢 | 🟢 | 🟢 | 🟢 | 🔴 | 🔴 |
+| `order_reference` | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 |
+
+**Leyenda:**
+- 🔴 **Obligatorio**
+- 🟢 **Opcional**
+- 🟡 **Condicional**
+
+---
+
 ## Descripción de los campos
 
 A continuación se describen los campos que se deben de considerar para la generación de la factura electrónica.
@@ -517,63 +570,73 @@ A continuación se describen los campos que se deben de considerar para la gener
 A continuación se describe el uso de los campos de la factura electrónica, nota de crédito y nota de débito,
 documento soporte y documento equivalente, con sus respectivas notas de ajuste.
 
-### `resolution_number`
+### `resolution_number` 🔴
 
 Número de resolución del documento, este valor debe ser el mismo que se configura en el portal web. *Este campo es obligatorio* para todos los documentos.
 
-### `prefix`
+### `prefix` 🟡
 
 Prefijo de la resolución del documento. *Este campo es obligatorio* cuando se tiene más de una resolución y debe ser un string.
 
-### `date`
+### `date` 🟢
 
 Fecha de emisión del documento. *Este campo es opcional* y en caso de enviarlo debe ser un string en formato **`YYYY-MM-DD`**. Si no envía este campo, la API tomará la fecha actual.
 
-### `expiration_date`
+### `expiration_date` 🟢
 
 Fecha de vencimiento del documento equivalente electrónico debe estar asociada con las fechas negociadas o acordadas según los registros de los campos **cac:PaymentTerms/cbc:PaymentDueDate**.
 
-### `time`
+### `time` 🟢
 
 Hora de emisión del documento. *Este campo es opcional* y en caso de enviarlo y debe ser un string en formato **`H:i:s`**. Si no envía este campo, la API tomará la hora actual
 
-### `notes`
+### `notes` 🟢
 
 Si desea enviar información adicional sobre el documento, puede enviar este campo, el cual es opcional para algunos documentos y debe ser un string.
 
-### `document_number`
+### `document_number` 🔴
 
 Número consecutivo del documento, sin prefijos. *Este campo es obligatorio* para todos los documentos y debe ser un entero encerrado entre `""` sin prefijos.
 
-### `operation_type_id`
+### `operation_type_id` 🔴
+
+Se refiere al tipo de operación que afecta al documento, en la mayoría de los documentos es 1 (Estándar). *Este campo es obligatorio* para todos los documentos y debe ser un entero.
 
 - #### Ejemplo
 
   ```json
-    "operation_type_id" : 1
+    "operation_type_id": 1
   ```
 
-Se refiere al tipo de operación que afecta al documento, en la mayoría de los documentos es 1 (Estandar). Puede consultar
-los diferentes tipos de operación en el **ENDPOINT** `{{url}}/operation-type`. *Este campo es obligatorio* para todos los documentos y debe ser un entero.
+### `type_document_id` 🔴
 
-### `type_document_id`
+Se refiere al tipo de documento que se está enviando a la DIAN. *Este campo es obligatorio* para todos los documentos y debe ser un entero.
 
-Se refiere al tipo de documento que se está enviando a la DIAN, puede consultar cada tipo de documento en el **ENDPOINT**
-`{{url}}/document-type`. *Este campo es obligatorio* para todos los documentos y debe ser un entero.
+**Valores permitidos:**
+- `1` - Factura de Venta
+- `2` - Factura de Exportación
+- `3` - Factura de Contingencia Tipo 03 (requiere [`additional_document_reference`](#additional_document_reference-referencia-a-documento-adicional))
+- `4` - Factura de Contingencia Tipo 04
+- `7` - Documento Soporte
+- `9` - Documento Equivalente POS (requiere [`point_of_sale`](#point_of_sale))
+- `91` - Nota Crédito
+- `92` - Nota Débito
 
-### `graphic_representation`
+**Consultar también:** [Referencia Rápida de Tipos de Documento](#referencia-rápida-de-tipos-de-documento) | [Glosario: Contingencia](/docs/glossary#contingencia)
 
-Indicador de representación gráfica. *Este campo es opcional*, se debe enviar cuado se espera que la API genere el PDF de la representación gráfica.
+### `graphic_representation` 🟢
 
-- ### Ejemplo 
+Indicador de representación gráfica. *Este campo es opcional*, se debe enviar cuando se espera que la API genere el PDF de la representación gráfica.
 
-  ```josn 
+- #### Ejemplo
+
+  ```json
     "graphic_representation": 1
   ```
 
-### `send_email`
+### `send_email` 🟢
 
-Indicador de envío de email. *Este campo es opcional*, se debe enviar cuado se espera que la API envíe el email al cliente del documento.
+Indicador de envío de email. *Este campo es opcional*, se debe enviar cuando se espera que la API envíe el email al cliente del documento.
 
 - #### Ejemplo
 
@@ -581,12 +644,16 @@ Indicador de envío de email. *Este campo es opcional*, se debe enviar cuado se 
 "send_email": 1
 ```
 
-### `currency_id`
+### `currency_id` 🟢
 
-Hace referencia a la moneda del documento. Puede consultar la lista de monedas disponibles en el **ENDPOINT** `{{url}}/currencies`.
-Este campo es opcional, solo se debe enviar cuando es una moneda extranjera y debe ser un entero.
+Hace referencia a la moneda del documento. Este campo es opcional, solo se debe enviar cuando es una moneda extranjera y debe ser un entero.
 
-### `payments`
+**Valores comunes:**
+- `170` - Peso Colombiano (COP) - Predeterminado
+- `188` - Dólar Estadounidense (USD)
+- `978` - Euro (EUR)
+
+### `payments` 🔴
 
 Lista de pagos. *Este campo es obligatorio* para todos los documentos y debe ser un arreglo de objetos.
 
@@ -693,7 +760,7 @@ Información de la firma del documento. *Este campo es opcional* y debe ser un o
   - #### `seller`
     Nombre del vendedor(a). *Este campo es opcional* y debe ser un string.
 
-### `payment_exchange_rate`
+### `payment_exchange_rate` 🟡
 
 Tasa de cambio para el pago. *Este campo es obligatorio* solo para los documentos en moneda extranjera y debe ser un objeto.
 
@@ -716,9 +783,9 @@ Tasa de cambio para el pago. *Este campo es obligatorio* solo para los documento
     Tasa base. *Este campo es obligatorio* solo para los documentos en moneda extranjera y debe ser un string.
     Base monetaria de la divisa COP que se deberá convertir a moneda extranjera, ejemplo: si es USD el valor a informar es el valor equivalente de un dólar en pesos.
 
-### `point_of_sale`
+### `point_of_sale` 🟡
 
-Información del punto de venta. *Este campo es obligatorio* solo para los documentos de tipo **P.O.S ELECTRÓNICO** y debe ser un objeto.
+Información del punto de venta. *Este campo es obligatorio* solo para los documentos de tipo **P.O.S ELECTRÓNICO** (`type_document_id = 9`) y debe ser un objeto.
 
 - #### Ejemplo
 
@@ -746,9 +813,9 @@ Información del punto de venta. *Este campo es obligatorio* solo para los docum
   - #### `sub_total`
     Subtotal de la venta, total venta sin IVA. *Este campo es obligatorio* solo para los documentos de tipo **P.O.S ELECTRÓNICO** y debe ser un string.
 
-### `software_manufacturer`
+### `software_manufacturer` 🟡
 
-Información del fabricante del software. *Este campo es obligatorio* solo para los documentos equivalentes P.O.S y debe ser un objeto.
+Información del fabricante del software. *Este campo es obligatorio* solo para los documentos equivalentes P.O.S (`type_document_id = 9`) y debe ser un objeto.
 
 - #### Ejemplo
 
@@ -767,9 +834,13 @@ Información del fabricante del software. *Este campo es obligatorio* solo para 
   - #### `software_name`
     Nombre del software. *Este campo es obligatorio* solo para los documentos equivalentes P.O.S y debe ser un string.
 
-### order_reference
+### `order_reference` 🟢
 
-Referencia de la orden. *Este campo es opcional* debe ser usado de acuerdo al giro del documento y debe ser un objeto.
+Referencia de la orden de compra. *Este campo es opcional* y debe ser usado de acuerdo al giro del documento. Debe ser un objeto.
+
+**Diferencia con `additional_document_reference`:**
+- Use `order_reference` para **UNA SOLA** orden de compra
+- Use [`additional_document_reference`](#additional_document_reference-referencia-a-documento-adicional) para **MÚLTIPLES** documentos de referencia
 
 - #### Ejemplo
 
@@ -785,9 +856,9 @@ Referencia de la orden. *Este campo es opcional* debe ser usado de acuerdo al gi
   - #### `reference_date`
     Fecha de referencia. *Este campo es opcional* debe ser usado de acuerdo al giro del documento y debe ser un string.
 
-### health
+### `health` 🟢
 
-Información del sector salud. *Este campo es opcional* debe ser usado de acuerdo al giro del documento y debe ser un objeto.
+Información del sector salud. *Este campo es opcional* y debe ser usado de acuerdo al giro del documento. Debe ser un objeto.
 
 - #### `operation_type`
   Tipo de operación. *Este campo es opcional* debe ser usado de acuerdo al giro del documento y debe ser un string.
@@ -834,7 +905,9 @@ Información del sector salud. *Este campo es opcional* debe ser usado de acuerd
 - - ###### `schemeID`
     ID del esquema. *Este campo es opcional* debe ser usado de acuerdo al giro del documento y debe ser un string.
 
-### customer: Factura Electrónica
+### `customer` 🔴
+
+#### Factura Electrónica
 
 Información del cliente. *Este campo es obligatorio* para todos los documentos relacionados con la factura electrónica y documento soporte, y sus respectivas notas
 y debe ser un objeto.
@@ -885,7 +958,7 @@ Información del cliente. *Este campo es obligatorio* solo para los documentos e
   - #### `points`
     Puntos del cliente. *Este campo es opcional*, si no se envía por defecto toma el valor de `0`.
 
-### discrepancy_response
+### `discrepancy_response` 🟢
 
 Respuesta a discrepancias. *Este campo es obligatorio* solo para las notas de crédito, débito y de ajustes de todos los documentos y debe ser un objeto.
 
@@ -904,7 +977,11 @@ Respuesta a discrepancias. *Este campo es obligatorio* solo para las notas de cr
     Hace referencia al tipo de corrección aplicado a la nota. *Este campo es obligatorio* solo para las notas de crédito, débito y de ajustes de todos los documentos y debe ser un string.
     Puede consultar los diferentes tipos de corrección en el **ENDPOINT** `{{url}}/correction-notes`.
 
-### billing_reference
+### `billing_reference` 🟡
+
+**Uso:**
+- 🔴 **Obligatorio** para Notas Crédito/Débito (referencia a factura original)
+- 🟢 **Opcional** para otros documentos
 
 Referencia de facturación. *Este campo es obligatorio* solo para las notas de crédito, débito y de ajustes de todos los documentos y debe ser un objeto.
 
@@ -928,7 +1005,7 @@ Referencia de facturación. *Este campo es obligatorio* solo para las notas de c
   - #### `scheme_name`
     Nombre del esquema. *Este campo es obligatorio* solo para las notas de crédito, débito del **POS ELECTRÓNICO** y para las notas de ajuste del **DOCUMENTO SOPORTE**. Debe ser un string.
 
-### allowance_charges
+### `allowance_charges` 🟢
 
 Descuentos o cargos **a nivel de factura**, es decir descuentos o cargos que no afectan las bases gravables. Los descuentos o cargos que afectan bases gravables se informan a nivel de ítem.
 Este campo es opcional, se debe informar cuando hay un cargo o descuento a nivel global de la factura y debe ser un arreglo de objetos.
@@ -969,7 +1046,7 @@ Este campo es opcional, se debe informar cuando hay un cargo o descuento a nivel
     Obligatorio de informar si es descuento a nivel de factura y debe ser un entero.
     Puede consultar los diferentes tipos de descuentos en el **ENDPOINT** `{{url}}/discount-codes`.
 
-### legal_monetary_totals
+### `legal_monetary_totals` 🔴
 
 Totales del documento. *Este campo es obligatorio* para todos los documentos donde se usa y debe ser un objeto.
 
@@ -1009,7 +1086,7 @@ Totales del documento. *Este campo es obligatorio* para todos los documentos don
     Monto total del documento. Valor total de ítems **(incluyendo cargos y descuentos a nivel de ítems) +valor tributos + valor cargos globales – valor descuentos globales**.
     *Este campo es obligatorio* y debe ser un string con valor flotante de máximo dos decimales.
 
-### lines
+### `lines` 🔴
 
 Líneas del detalle de cada item del documento. *Este campo es obligatorio* para todos los documentos donde se usa y debe ser un arreglo de objetos.
 
@@ -1162,7 +1239,7 @@ Grupo de campos para información relacionada con todos los impuestos de la lín
   - #### `percent`
     Porcentaje. *Este campo es obligatorio* y debe ser un entero.
 
-### tax_totals
+### `tax_totals` 🔴
 
 Arreglo que contiene la suma de todos los impuestos del documento, agrupados por tipo de impuesto. *Este campo es obligatorio* solo cuando el documento tiene impuestos.
 
@@ -1230,11 +1307,16 @@ La estructura del objeto dentro de este arreglo varía si el impuesto es porcent
     - Generalmente su valor es 1 (numérico), indicando que la tarifa en per_unit_amount es 
 por una unidad de la medida especificada en quantity_units_id.
 
-## `additional_document_reference` (Referencia a Documento Adicional)
+## `additional_document_reference` (Referencia a Documento Adicional) {#additional_document_reference-referencia-a-documento-adicional}
 
-Grupo de campos para información que describen documentos referenciados por esta factura. **Obligatorio SOLO para facturas tipo 03 (Contingencia)**. Para otros tipos de documento, este grupo no se valida.
+Grupo de campos para información que describen documentos referenciados por esta factura. **Obligatorio SOLO para facturas tipo 03** ([Contingencia](/docs/glossary#contingencia)). Para otros tipos de documento, este grupo no se valida.
 
 Estos documentos representan acciones comerciales y mercantiles que amparan o soportan transacciones relacionadas con este documento electrónico.
+
+**Referencia rápida:**
+- Ver [Glosario: Contingencia](/docs/glossary#contingencia)
+- Ver [Glosario: CUFE](/docs/glossary#cufe)
+- Ver [Glosario: CUDE](/docs/glossary#cude)
 
 **Ubicación en XPath:** `/Invoice/cac:AdditionalDocumentReference`
 
@@ -1605,13 +1687,15 @@ UUID = NO INFORMADO
 
 ```json
 {
-  "additional_document_reference": {
-    "number": "LZT2119",
-    "uuid": "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567",
-    "scheme_name": "CUFE-SHA384",
-    "date": "2025-08-18",
-    "code": "01"
-  }
+  "additional_document_reference": [
+    {
+      "number": "LZT2119",
+      "uuid": "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567",
+      "scheme_name": "CUFE-SHA384",
+      "date": "2025-08-18",
+      "code": "01"
+    }
+  ]
 }
 ```
 
@@ -1632,4 +1716,68 @@ UUID = NO INFORMADO
 - **Página:** 389 de 753
 - **Dirección de Gestión de Impuestos**
 - **Documento:** Anexo Técnico de Facturación Electrónica v2.1
+
+---
+
+## Ejemplo Mínimo Requerido {#ejemplo-mínimo-requerido}
+
+Este es un ejemplo con **SOLO los campos obligatorios** para generar una factura simple (tipo 1):
+
+```json
+{
+  "resolution_number": "18760000001",
+  "prefix": "FEV",
+  "document_number": 990000001,
+  "operation_type_id": 1,
+  "type_document_id": 1,
+  "customer": {
+    "country_id": "45",
+    "city_id": "836",
+    "identity_document_id": "1",
+    "type_organization_id": 2,
+    "tax_regime_id": 2,
+    "tax_level_id": 5,
+    "company_name": "NOMBRE DEL CLIENTE",
+    "dni": "1234564",
+    "email": "correo@cliente.com"
+  },
+  "payments": [
+    {
+      "payment_method_id": 1,
+      "means_payment_id": 10,
+      "value_paid": "141100.00"
+    }
+  ],
+  "legal_monetary_totals": {
+    "line_extension_amount": "131600.00",
+    "tax_exclusive_amount": "131600.00",
+    "tax_inclusive_amount": "141100.00",
+    "payable_amount": "141100.00"
+  },
+  "lines": [
+    {
+      "invoiced_quantity": "1",
+      "quantity_units_id": "1093",
+      "line_extension_amount": "131600.00",
+      "description": "Producto ejemplo",
+      "price_amount": "131600.00"
+    }
+  ],
+  "tax_totals": [
+    {
+      "tax_id": "01",
+      "tax_amount": 9500,
+      "taxable_amount": 131600,
+      "percent": 19
+    }
+  ]
+}
+```
+
+**Notas importantes sobre este ejemplo:**
+- ✅ Todos los campos 🔴 **Obligatorios** están presentes
+- ✅ Campos 🟢 **Opcionales** se omitieron para simplicidad
+- ✅ Puede extenderse con campos adicionales según necesidad
+- ✅ Para contingencia (tipo 03), debe agregar [`additional_document_reference`](#additional_document_reference-referencia-a-documento-adicional)
+- ✅ Para POS (tipo 9), debe agregar [`point_of_sale`](#point_of_sale)
 ```

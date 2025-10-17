@@ -37,9 +37,61 @@ La API de facturación emite respuestas en formato JSON. Estas respuestas contie
 
 ---
 
-## Estructura de la respuesta, cuando se genera un documento de forma exitosa.
+## Guía Rápida de Inicio
 
-A continuación se muestra un ejemplo de un JSON que representa una respuesta de la API de facturación.
+### Interpretar una respuesta en 3 pasos
+
+**Paso 1: Revisar el código HTTP**
+```
+HTTP 200/201 → Éxito, descargar archivos
+HTTP 400-409 → Error de cliente, revisar solicitud
+HTTP 500-508 → Error de servidor, esperar e intentar
+```
+
+**Paso 2: Verificar el campo `success`**
+```
+success: true  → Documento procesado exitosamente
+success: false → Error en procesamiento, leer errorMessage
+```
+
+**Paso 3: Según el StatusCode**
+```
+StatusCode: 1 o 02  → Documento duplicado/ya procesado
+StatusCode: 98      → En proceso, reintentar en 5 minutos
+StatusCode: OTROS   → Ver tabla de códigos HTTP
+```
+
+### Manejo de errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| `400 - Bad Request` | JSON malformado | Valide estructura con JSONLint |
+| `401 - Unauthorized` | API key inválida | Verifique credenciales |
+| `422 - Unprocessable Entity` | Datos inválidos DIAN | Lea detalles en `response.ErrorMessage` |
+| `504 - Gateway Timeout` | Demora en DIAN | Siga procedimiento contingencia (sección 12.4) |
+| `StatusCode: 98` | Procesando | Consulte estado en 5 minutos |
+
+---
+
+---
+
+## Estructura de la respuesta, cuando se genera un documento de forma exitosa
+
+### Resumen de estructura
+
+Todas las respuestas exitosas (HTTP 200/201) contienen estos elementos clave:
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `message` | string | Descripción legible del resultado |
+| `success` | boolean | `true` si fue exitoso, `false` si hubo error |
+| `XmlDocumentKey` | string | CUFE/CUDE/CUNE del documento (identificador único) |
+| `response` | object | Detalles de la validación DIAN |
+| `AttachedDocument` | object | Contenedor ZIP con documentos |
+| `qr` | object | Códigos QR en diferentes formatos |
+| `pdf` | object | Representación PDF del documento |
+
+### Ejemplo completo de respuesta exitosa
 
 
 ```json title="response.json"

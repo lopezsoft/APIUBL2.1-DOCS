@@ -15,7 +15,10 @@
  */
 
 import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
+import { FiSend, FiRefreshCw, FiAlertCircle } from 'react-icons/fi';
+import { MdAutoAwesome } from 'react-icons/md';
 import styles from './AIChat.module.css';
+import { API_ENDPOINTS } from '../../config/api';
 
 interface Message {
   id: string;
@@ -236,7 +239,7 @@ const MessageInput = memo(
         title="Presiona Enter para enviar"
         type="button"
       >
-        {disabled ? '⏳' : '📤'}
+        {disabled ? <span>⏳</span> : <FiSend size={18} />}
       </button>
     </div>
   ),
@@ -258,7 +261,7 @@ MessageInput.displayName = 'MessageInput';
  */
 const AIChat = memo(
   ({
-    endpoint = '/api/openai/chat',
+    endpoint = API_ENDPOINTS.CHAT,
     maxHistorySize = 20,
     onError,
   }: AIChatProps) => {
@@ -294,7 +297,7 @@ const AIChat = memo(
               type="button"
               title="Descartar error"
             >
-              ✕
+              <FiAlertCircle size={16} />
             </button>
           )}
           <button
@@ -305,14 +308,14 @@ const AIChat = memo(
             type="button"
             aria-label="Limpiar conversación"
           >
-            🗑️
+            <FiRefreshCw size={16} />
           </button>
         </div>
 
         {/* Zona de error */}
         {error && (
           <div className={styles.errorBanner} role="alert" aria-live="polite">
-            <span className={styles.errorIcon}>⚠️</span>
+            <span className={styles.errorIcon}><FiAlertCircle size={16} /></span>
             <div className={styles.errorText}>
               <strong>Error:</strong> {error}
             </div>

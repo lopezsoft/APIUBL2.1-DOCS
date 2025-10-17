@@ -13,6 +13,8 @@
  */
 
 import React, { useState, useCallback, memo } from 'react';
+import { FiMessageCircle, FiX } from 'react-icons/fi';
+import { MdAutoAwesome } from 'react-icons/md';
 import styles from './FloatingAIAssistant.module.css';
 import AIChat from './AIChat';
 
@@ -58,12 +60,11 @@ const FloatingButton = memo(
       type="button"
     >
       <span className={styles.icon} aria-hidden="true">
-        💬
+        {isOpen ? <FiX size={24} /> : <FiMessageCircle size={24} />}
       </span>
       <span className={styles.badge} aria-label="Asistente disponible">
-        ✨
+        <MdAutoAwesome size={16} />
       </span>
-      {isOpen && <span className={styles.close} aria-hidden="true">✕</span>}
     </button>
   ),
 );
@@ -100,7 +101,8 @@ const ChatPopup = memo(
       >
         <div className={styles.header}>
           <h2 id="chat-popup-title" className={styles.title}>
-            🤖 Asistente Técnico
+            <MdAutoAwesome size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+            Asistente Técnico
           </h2>
           <p className={styles.subtitle}>APIUBL2.1 - Facturación Electrónica</p>
           <button
@@ -109,7 +111,7 @@ const ChatPopup = memo(
             aria-label="Cerrar chat"
             type="button"
           >
-            ✕
+            <FiX size={20} />
           </button>
         </div>
         <div className={styles.content}>

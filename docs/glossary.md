@@ -9,6 +9,22 @@ description: "Glosario de términos técnicos, normativas y acrónimos de factur
 
 Este glosario contiene los términos técnicos, normativas, acrónimos y conceptos principales relacionados con la facturación electrónica en Colombia.
 
+### ⚠️ Nota Crítica sobre IDs de API vs Codes DIAN
+
+**Esta es la distinción MÁS IMPORTANTE para usar el API correctamente:**
+
+- **ID (de la DB del API):** Número único usado en las solicitudes al API (ej: `type_document_id: 9`)
+- **Code (DIAN):** Código normativo de la DIAN, usado solo para referencia legal (ej: Code 03 = Factura de Contingencia)
+
+**REGLA FUNDAMENTAL:** 
+> En el API SIEMPRE usas el **ID de la base de datos**, NUNCA el **code DIAN**
+
+Ejemplo:
+- ❌ **INCORRECTO:** `"type_document_id": "03"` 
+- ✅ **CORRECTO:** `"type_document_id": 9`
+
+Los códigos DIAN (01, 02, 03, 04, etc.) se incluyen en este glosario solo para que puedas correlacionar con la documentación normativa de la DIAN. Ver [Tablas de Referencia Rápida](#tablas-de-referencia-rápida) para la correspondencia completa.
+
 ---
 
 ## A
@@ -764,14 +780,19 @@ Esta letra no tiene términos específicos en facturación electrónica.
 ## Tablas de Referencia Rápida
 
 ### Códigos de Documentos
-| Código | Tipo | Normativa | Notas |
-|--------|------|-----------|-------|
-| 1 | Factura de Venta | Res. 165 | Documento estándar |
-| 2 | Factura de Exportación | Res. 165 | Para operaciones con exterior |
-| 3 | Factura de Contingencia Tipo 03 | Res. 165 | Requiere additional_document_reference |
-| 4 | Factura de Contingencia Tipo 04 | Res. 165 | Protocolo alternativo |
-| 91 | Nota Crédito | Res. 165 | Genera CUDE |
-| 92 | Nota Débito | Res. 165 | Genera CUDE |
+
+⚠️ **IMPORTANTE:** La columna **ID (API)** es lo que usas en `type_document_id` en tus solicitudes. La columna **Code (DIAN)** es solo para referencia con la normativa. **REGLA: En el API SIEMPRE usas el ID de la DB, NUNCA el code DIAN.**
+
+| ID (API) | Code (DIAN) | Tipo | Normativa | Notas |
+|----------|-------------|------|-----------|-------|
+| **7** | 01 | Factura de Venta | Res. 165 | `type_document_id: 7` |
+| **8** | 02 | Factura de Exportación | Res. 165 | `type_document_id: 8` |
+| **9** | 03 | Factura de Contingencia Tipo 03 | Res. 165 | **`type_document_id: 9`** - Requiere additional_document_reference |
+| **10** | 04 | Factura de Contingencia Tipo 04 | Res. 165 | **`type_document_id: 10`** - Opcional additional_document_reference |
+| **11** | 05 | Documento Soporte | Res. 165 | `type_document_id: 11` |
+| **20** | 20 | Documento Equivalente POS | Res. 165 | **`type_document_id: 20`** - Requiere datos POS |
+| **5** | 91 | Nota Crédito | Res. 165 | `type_document_id: 5` - Genera CUDE |
+| **4** | 92 | Nota Débito | Res. 165 | `type_document_id: 4` - Genera CUDE |
 
 ### Tipos de Identificación
 | Código | Tipo |

@@ -343,16 +343,19 @@ nota de crédito y nota de débito, documento soporte y documento equivalente, c
 
 ## Referencia Rápida de Tipos de Documento
 
-| Código | Tipo | Descripción | Normativa | Notas |
-|--------|------|-------------|-----------|-------|
-| 1 | Factura de Venta | Documento estándar de venta | Res. 165 | Uso general |
-| 2 | Factura de Exportación | Factura para operaciones con exterior | Res. 165 | Regulación especial |
-| 3 | Factura de Contingencia Tipo 03 | Emitida cuando falla conexión DIAN | Res. 165 | ⚠️ Requiere `additional_document_reference` |
-| 4 | Factura de Contingencia Tipo 04 | Protocolo alternativo especial | Res. 165 | Opcional `additional_document_reference` |
-| 7 | Documento Soporte | Para servicios y operaciones especiales | Res. 165 | Uso específico |
-| 9 | Documento Equivalente POS | Factura de Punto de Venta | Res. 165 | Requiere datos POS |
-| 91 | Nota Crédito | Devolución o descuento | Res. 165 | Genera CUDE |
-| 92 | Nota Débito | Ajuste por aumento | Res. 165 | Genera CUDE |
+⚠️ **IMPORTANTE:** Los valores en la columna **ID (API)** son los que debes usar en `type_document_id`. El **Code (DIAN)** es solo para referencia con la normativa DIAN. 
+**REGLA DE ORO:** En el API SIEMPRE usas el ID de la DB, NUNCA el code DIAN.
+
+| ID (API) | Code (DIAN) | Tipo | Descripción | Normativa | Notas |
+|----------|-------------|------|-------------|-----------|-------|
+| **7** | 01 | Factura de Venta | Documento estándar de venta | Res. 165 | `type_document_id: 7` |
+| **8** | 02 | Factura de Exportación | Factura para operaciones con exterior | Res. 165 | `type_document_id: 8` |
+| **9** | 03 | Factura de Contingencia Tipo 03 | Emitida cuando falla conexión DIAN | Res. 165 | **`type_document_id: 9`** ⚠️ Requiere `additional_document_reference` |
+| **10** | 04 | Factura de Contingencia Tipo 04 | Protocolo alternativo especial | Res. 165 | **`type_document_id: 10`** - Opcional `additional_document_reference` |
+| **11** | 05 | Documento Soporte | Para servicios y operaciones especiales | Res. 165 | `type_document_id: 11` |
+| **20** | 20 | Documento Equivalente POS | Factura de Punto de Venta | Res. 165 | **`type_document_id: 20`** ⚠️ Requiere `point_of_sale` |
+| **5** | 91 | Nota Crédito | Devolución o descuento | Res. 165 | `type_document_id: 5` ⚠️ Genera CUDE |
+| **4** | 92 | Nota Débito | Ajuste por aumento | Res. 165 | `type_document_id: 4` ⚠️ Genera CUDE |
 
 ---
 
@@ -610,17 +613,19 @@ Se refiere al tipo de operación que afecta al documento, en la mayoría de los 
 
 ### `type_document_id` 🔴
 
-Se refiere al tipo de documento que se está enviando a la DIAN. *Este campo es obligatorio* para todos los documentos y debe ser un entero.
+Se refiere al tipo de documento que se está enviando a la DIAN. *Este campo es obligatorio* para todos los documentos y debe ser un **entero que corresponda al ID de la base de datos del API** (NO el code DIAN).
 
-**Valores permitidos:**
-- `1` - Factura de Venta
-- `2` - Factura de Exportación
-- `3` - Factura de Contingencia Tipo 03 (requiere [`additional_document_reference`](#additional_document_reference-referencia-a-documento-adicional))
-- `4` - Factura de Contingencia Tipo 04
-- `7` - Documento Soporte
-- `9` - Documento Equivalente POS (requiere [`point_of_sale`](#point_of_sale))
-- `91` - Nota Crédito
-- `92` - Nota Débito
+**Valores permitidos (ID de API):**
+- `7` - Factura de Venta (code DIAN: 01)
+- `8` - Factura de Exportación (code DIAN: 02)
+- `9` - **Factura de Contingencia Tipo 03** (code DIAN: 03) - Requiere [`additional_document_reference`](#additional_document_reference-referencia-a-documento-adicional)
+- `10` - **Factura de Contingencia Tipo 04** (code DIAN: 04)
+- `11` - Documento Soporte (code DIAN: 05)
+- `20` - **Documento Equivalente POS** (code DIAN: 20) - Requiere [`point_of_sale`](#point_of_sale)
+- `5` - Nota Crédito (code DIAN: 91)
+- `4` - Nota Débito (code DIAN: 92)
+
+**⚠️ CRÍTICO:** En el API SIEMPRE usas el ID (números de la izquierda), NUNCA el code DIAN (números entre paréntesis).
 
 **Consultar también:** [Referencia Rápida de Tipos de Documento](#referencia-rápida-de-tipos-de-documento) | [Glosario: Contingencia](/docs/glossary#contingencia)
 
@@ -1430,13 +1435,14 @@ Estos documentos representan acciones comerciales y mercantiles que amparan o so
 
 - ✅ `additional_document_reference` es **OBLIGATORIO solo para InvoiceTypeCode = "03"** (Factura de Contingencia)
 - ✅ Para otros tipos de documentos, este grupo **NO se valida**
-- ✅ Si `type_document_id = 9` (tipo 03), el grupo es obligatorio
+- ✅ Si `type_document_id = 9` (Factura de Contingencia Tipo 03, code DIAN 03), el grupo es obligatorio
 - ✅ `number` (ID) y `uuid` son críticos - DIAN rechaza si faltan
 - ✅ `scheme_name` debe ser un algoritmo válido (típicamente CUFE-SHA384)
 - ✅ `date` e `code` son opcionales pero recomendados para trazabilidad
 - ✅ Es un **ARRAY**: puede contener múltiples referencias a documentos diferentes
 - ✅ Los códigos (`code`) son de asignación libre del facturador (no están estandarizados por DIAN)
 - ❌ Los documentos XML adoptados por DIAN NO deben incluirse aquí
+- ⚠️ **IMPORTANTE:** `type_document_id = 9` es el ID de API (no el code DIAN 03)
 
 ### ⚠️ Nota sobre API MATIAS (Comportamiento Automático)
 

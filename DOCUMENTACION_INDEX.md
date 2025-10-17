@@ -49,6 +49,36 @@
   - Métricas de éxito
 - **Cuándo leer:** Antes de usar en producción
 
+### 5. **SYSTEM_PROMPT_EXPLICADO.md** 🧠 (NUEVO)
+- **Duración:** 25 minutos
+- **Para:** Entender cómo el modelo entiende la documentación
+- **Contenido:**
+  - Ubicación y contenido del system prompt
+  - Cómo fluye la información (3 componentes)
+  - Ejemplos: antes vs después del system prompt
+  - Estructura de almacenamiento (System, History, Message)
+  - Capacidad disponible (97% sin usar)
+  - 3 opciones de alimentación de documentación
+  - Pruebas de efectividad del system prompt
+  - Flujo completo: de usuario a OpenAI y vuelta
+  - Token accounting detallado
+  - Cómo funciona la iteración de conversación
+- **Cuándo leer:** Para entender la arquitectura de contexto
+
+### 6. **DIAGRAMA_CONTEXTO.md** 📊 (NUEVO)
+- **Duración:** 30 minutos (lectura) + 10 minutos (comprensión)
+- **Para:** Visualizar todo el flujo con diagramas
+- **Contenido:**
+  - 7 diagramas ASCII detallados
+  - Flujo completo paso a paso
+  - Estructura de datos del contexto
+  - Cómo el modelo procesa información
+  - Iteración de conversación (multi-turn)
+  - Comparativas de configuraciones
+  - Arquitectura mental del modelo
+  - Mapa mental completo
+- **Cuándo leer:** Para visualizar la arquitectura
+
 ### 5. **CHECKLIST_OPENAI.md** ✅
 - **Duración:** 10 minutos
 - **Para:** Verificación paso a paso

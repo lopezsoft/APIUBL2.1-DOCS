@@ -1,6 +1,6 @@
 ---
-sidebar_position: 3
-description: "Guía paso a paso para ventas internacionales y exportaciones"
+sidebar_position: 98
+description: "Guía paso a paso para ventas internacionales y exportaciones (DEPRECATED - usar export-scenarios-new.md)"
 ---
 
 # Guía: Exportaciones e Internacionalización

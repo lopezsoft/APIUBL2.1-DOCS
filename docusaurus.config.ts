@@ -29,6 +29,14 @@ const config: Config = {
     locales: ['es'],
   },
 
+  // Scripts que se cargan ANTES del bundle (para inyectar configuración)
+  scripts: [
+    {
+      src: '/config.js',
+      async: false,
+    },
+  ],
+
   presets: [
     [
       'classic',

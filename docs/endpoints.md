@@ -6,28 +6,57 @@ sidebar_position: 2
 
 ## Introducción a los Endpoints de la API
 
-Los endpoints son las URL que se utilizan para acceder a los recursos de la API. 
-Cada endpoint es un punto de acceso a la API que puede devolver datos o realizar operaciones en el servidor.
+Los endpoints son las URL que se utilizan para acceder a los recursos de la API. Cada endpoint es un punto de acceso que devuelve datos o realiza operaciones en el servidor.
 
-La API cuenta con dos tipos de endpoints: **Públicos y Privados.**
+### 🎟️ Flujo Completo de una Factura Electrónica
+
+```
+1. AUTENTICACIÓN        2. CONSULTA              3. ENVÍO                4. ESTADO
+   /auth/login              /document-type            /invoice               /status
+       ↓                       ↓                        ↓                       ↓
+  [Token]                 [Tabla DIAN]            [Factura JSON]        [Validado]
+       ↓                       ↓                        ↓                       ↓
+  Públicos                  Públicos               Privados               Privados
+```
+
+### 📋 Tabla de Contenidos
+
+1. [Endpoints Públicos](#endpoints-públicos) - Sin autenticación
+2. [Endpoints Privados](#endpoints-privados) - Con token
+3. [Consultas de Documentos](#documentos) - Búsqueda y descargas
+4. [Estado de Documentos](#estado-de-documentos) - Seguimiento DIAN
+5. [Eventos y Acuses](#eventos---acuses) - Respuestas del adquirente
+6. [Utilidades](#envío-de-correos-electrónicos-personalizados) - Correos y consultas
+
+## Tipos de Endpoints
+
+La API cuenta con dos categorías principales:
+
+| Tipo | Autenticación | Uso |
+|------|---------------|-----|
+| **Públicos** | ❌ No | Tablas DIAN, autenticación |
+| **Privados** | ✅ Sí | Documentos, estado, eventos |
+
+**Importante:** Los endpoints privados requieren `Authorization: Bearer {token}`
 
 ## Endpoints Públicos
- - Los endpoints públicos son aquellos que no requieren autenticación para ser accedidos.
- - Estos endpoints son utilizados para obtener información de la API, como por ejemplo, token de acceso para los endpoints privados.
- - Todas las solicitudes a los endpoints públicos de las tablas referenciadas de la DIAN retornan un objeto de tipo JSON con la siguiente estructura.
+
+> ❌ **Autenticación NO requerida**
+>
+> Obtienen información de consulta (tablas DIAN, etc.) sin necesidad de token.
+
+### Estructura de Respuesta Estándar
+
+Todas las respuestas siguen este patrón:
+
 ```json
 {
     "dataRecords": {
         "data": [
             {
                 "id": 1,
-                "code": 1,
-                "environment_name": "Producción"
-            },
-            {
-                "id": 2,
-                "code": 2,
-                "environment_name": "Pruebas"
+                "code": "01",
+                "name": "Factura de Venta"
             }
         ]
     },
@@ -35,97 +64,76 @@ La API cuenta con dos tipos de endpoints: **Públicos y Privados.**
 }
 ```
 
-Donde ``dataRecords`` es el objeto que contiene la información de la tabla referenciada,
-``data`` es el arreglo de objetos que contiene la información de la tabla referenciada y ``success`` es el estado de la petición.
+- `dataRecords.data`: Arreglo de registros
+- `success`: Indica si fue exitosa (true/false)
 
-## Tablas Referenciadas DIAN. Todas las peticiónes de este tipo de endpoints son ``GET``.
-### Documentos electrónicos.
-- #### Ambiente de destino de los documentos electrónicos: ``cbc:ProfileExecutionID y cbc:UUID.@schemeID``
+## Tablas Referenciadas DIAN
+
+### 🟢 Método: GET
+
+Todos estos endpoints retornan un listado de valores permitidos en la DIAN.
+
+**¿Cuándo usar?** Para obtener códigos válidos antes de enviar un documento.
+
+### Documentos Electrónicos
+
+#### Ambiente de Destino - 🟢 GET
  ```http
 {{url}}/destination-environment
 ```
-- #### Condiciones de entrega (INCOTERMS)-``LossRiskResponsibilityCode``
-```http
-{{url}}/delivery-conditions
-```
-- #### Tipo de correcciones aplicables a las notas contables: 
- Concepto de Corrección para Notas crédito y Notas débito  cac DiscrepancyResponse cbc ResponseCode.
- ```http
-{{url}}/correction-notes
-```
-- #### Códigos de descuentos: 
-  Códigos de descuento y recargos
- ```http
-{{url}}/discount-codes
-```
-- #### Tipos de Documentos: Factura, Nota Crédito, Nota Débito, etc. ``cbc:InvoiceTypeCode y cbc:CreditnoteTypeCode``
+**Respuesta:** Ambientes (Producción, Pruebas)
+
+#### Tipos de Documentos - 🟢 GET
  ```http
 {{url}}/document-type
 ```
-- #### Tipos de operación: Exportación, Nacional, etc. ``cbc:InvoiceTypeCode y cbc:CreditnoteTypeCode``
- ```http
-{{url}}/operation-type
-```
-- #### Documentos de identificación
- ```http
-{{url}}/identity-documents
-```
-- #### Tributos - Impuestos
- ```http
-{{url}}/taxes
-```
-- #### Rango de impuestos
- ```http
-{{url}}/tax-rates
-```
-- #### Tipo de organización
- ```http
-{{url}}/organization-type
-```
-- #### Régimen Fiscal - Responsabilidades fiscales
- ```http
-{{url}}/fiscal-regime
-```
-- #### Régimen contable
- ```http
-{{url}}/accounting-regime
-```
-- #### Unidades de cantidad
- ```http
-{{url}}/quantity-units
-```
-- #### Tipo de identificación del ITEM de cada línea del documento electrónico.
- ```http
-{{url}}/type-item-identifications
-```
-- #### Referencia de precios
- ```http
-{{url}}/reference-price
-```
-- #### Métodos de pago
+**Respuesta:** IDs y códigos DIAN (01=Factura, 02=Exportación, 03=Contingencia, etc.)
+
+#### Métodos de Pago - 🟢 GET
  ```http
 {{url}}/payment-methods
 ```
-- #### Medios de pago
+**Respuesta:** Formas de pago válidas
+
+#### Medios de Pago - 🟢 GET
  ```http
 {{url}}/payment-means
 ```
-- #### Ciudades
+**Respuesta:** Medios (Efectivo, Tarjeta, Transferencia, etc.)
+
+#### Identidades de Documentos - 🟢 GET
  ```http
-{{url}}/cities
+{{url}}/identity-documents
 ```
-- #### Departamentos
+**Respuesta:** Tipos de identificación (CC, NIT, Pasaporte, etc.)
+
+#### Régimen Fiscal - 🟢 GET
  ```http
-{{url}}/departments
+{{url}}/fiscal-regime
 ```
-- #### Países
+**Respuesta:** Responsabilidades fiscales
+
+#### Régimen Contable - 🟢 GET
  ```http
-{{url}}/countries
+{{url}}/accounting-regime
 ```
-- #### Monedas
- ```http
-{{url}}/currencies
-```
+**Respuesta:** Códigos contables
+
+#### Otros Endpoints de Referencia - 🟢 GET
+
+| Endpoint | Uso |
+|----------|-----|
+| `/delivery-conditions` | INCOTERMS |
+| `/correction-notes` | Motivos de corrección |
+| `/discount-codes` | Códigos de descuento |
+| `/operation-type` | Tipo de operación (Nacional, Exportación) |
+| `/taxes` | Tributos e impuestos |
+| `/quantity-units` | Unidades (Kg, Lt, Pz, etc.) |
+| `/reference-price` | Unidad de referencia |
+| `/cities` | Ciudades |
+| `/departments` | Departamentos |
+| `/countries` | Países |
+| `/currencies` | Monedas |
 ### Nómina electrónica.
 - #### Tipo de ajuste a la nota de ajuste
  ```http
@@ -156,74 +164,150 @@ Donde ``dataRecords`` es el objeto que contiene la información de la tabla refe
 {{url}}/ep/worker-subtype
 ```
 ## Autenticación
-### Autenticación de usuario
-- #### Iniciar sesión. Tipo de petición: ``POST``
- ```http
- {{url}}/auth/login
-```
-## Endpoints Privados
-Los endpoints privados son aquellos que requieren autenticación para ser accedidos.
-Estos endpoints son utilizados para realizar operaciones en la API, como por ejemplo, realizar el envío de una: **factura, un email u otro tipo de operación**.
-### Autenticación
-#### Autenticación de usuario
-- #### Cerrar sesión. Tipo de petición: ``GET``
- ```
-{{url}}/auth/logout
-```
-### Facturación electrónica
-Este endpoint es utilizado para enviar documentos electrónicos a la DIAN, de tipo:  
-**Factura nacional y de exportación, Sector salud, Compra y venta de divisas, D.E POS**.
-- #### Enviar factura. Tipo de petición: ``POST``
- ```http
-{{url}}/invoice
-```
-### Nota crédito electrónica
-Este endpoint es utilizado para enviar notas crédito a la DIAN, de tipo: 
-**Factura nacional y de exportación, Sector salud, Compra y venta de divisas, D.E POS**.
-- #### Enviar nota crédito. Tipo de petición: ``POST``
- ```http
-{{url}}/notes/credit
-```
-### Nota débito electrónica
-Este endpoint es utilizado para enviar notas débito a la DIAN, de tipo: **Factura nacional y de exportación, Sector salud, Compra y venta de divisas, D.E POS**.
-- #### Enviar nota débito. Tipo de petición: ``POST``
- ```http
-{{url}}/notes/debit
-```
-### Nómina electrónica
-Este endpoint es utilizado para enviar nóminas electrónicas a la DIAN.
 
-- #### Enviar nómina. Tipo de petición: ``POST``
- ```http
-{{url}}/ep/payroll
+### Iniciar Sesión - 🟘 POST
+
+```http
+POST {{url}}/auth/login
+Content-Type: application/json
 ```
-### Nota de ajuste electrónica de remplazo (Nómina)
-Este endpoint es utilizado para enviar notas de ajuste electrónicas de remplazo a la DIAN.
-- #### Enviar nota de ajuste. Tipo de petición: ``POST``
- ```http
-{{url}}/ep/payroll/replace
+
+**Body requerido:**
+
+```json
+{
+  "email": "usuario@empresa.com",
+  "password": "tu_contraseña",
+  "remember_me": 0
+}
 ```
-### Nota de ajuste electrónica de eliminación (Nómina)
-Este endpoint es utilizado para enviar notas de ajuste electrónicas de eliminación a la DIAN.
-- #### Enviar nota de ajuste. Tipo de petición: ``POST``
- ```http
-{{url}}/ep/payroll/delete
+
+**Respuesta:** Incluye `access_token`, `user`, `expires_at` (1 año).
+
+Ver [Introducción - Token](/docs/intro#obtener-el-token-de-acceso) para detalles.
+
+---
+## Endpoints Privados
+
+> ✅ **Autenticación REQUERIDA**
+>
+> Incluir en todos: `Authorization: Bearer {token}`
+
+### Cerrar Sesión - 🟢 GET
+
+```http
+GET {{url}}/auth/logout
+Authorization: Bearer {token}
 ```
-### Documento soporte para no obligados a facturar
-Este endpoint es utilizado para enviar documentos soporte para no obligados a facturar a la DIAN. Para residentes y no residentes.
-- #### Enviar documento soporte. Tipo de petición: ``POST``
- ```http
-{{url}}/ds/document
+
+**Uso:** Revoca el token. Recomendado al final de sesión.
+
+---
+
+## Documentos Electrónicos
+
+### Enviar Factura - 🟘 POST
+
+```http
+POST {{url}}/invoice
+Authorization: Bearer {token}
+Content-Type: application/json
 ```
-### Nota de ajuste para el documento soporte
-Este endpoint es utilizado para enviar notas de ajuste para el documento soporte a la DIAN. Para residentes y no residentes.
-- #### Enviar nota de ajuste. Tipo de petición: ``POST``
- ```http
-{{url}}/ds/adjustment-note
+
+**Tipos soportados:**
+- Factura nacional (01)
+- Factura exportación (02)
+- Factura contingencia (03, 04)
+- Documento soporte (05)
+- POS Electrónico (20)
+
+**Body:** JSON con estructura completa. Ver [billing-fields](/docs/billing-fields) para todos los campos.
+
+**Respuesta:** `document_key` (CUFE), estado, XML.
+
+### Enviar Nota Crédito - 🟘 POST
+
+```http
+POST {{url}}/notes/credit
+Authorization: Bearer {token}
+Content-Type: application/json
 ```
-## Documentos
-### Búsqueda de documentos electrónicos
-Este endpoint es utilizado para buscar en los documentos generados por la API.
+
+**Casos:**
+- Devoluciones
+- Descuentos
+- Correcciones hacia abajo
+
+**Campo:** `type_document_id: 5`
+
+### Enviar Nota Débito - 🟘 POST
+
+```http
+POST {{url}}/notes/debit
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Casos:**
+- Intereses
+- Cargos adicionales
+- Correcciones hacia arriba
+
+**Campo:** `type_document_id: 4`
+## Nómina Electrónica
+
+### Enviar Nómina - 🟘 POST
+
+```http
+POST {{url}}/ep/payroll
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+### Enviar Nota de Ajuste - Reemplazo - 🟘 POST
+
+```http
+POST {{url}}/ep/payroll/replace
+Authorization: Bearer {token}
+```
+
+**Uso:** Corregir nómina ya enviada (reemplaza anterior).
+
+### Enviar Nota de Ajuste - Eliminación - 🟘 POST
+
+```http
+POST {{url}}/ep/payroll/delete
+Authorization: Bearer {token}
+```
+
+**Uso:** Eliminar nómina de forma legal ante DIAN.
+
+## Documentos Soporte (No Obligados a Facturar)
+
+### Enviar Documento Soporte - 🟘 POST
+
+```http
+POST {{url}}/ds/document
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Aplicable a:** Residentes y no residentes
+
+### Enviar Nota de Ajuste (Documento Soporte) - 🟘 POST
+
+```http
+POST {{url}}/ds/adjustment-note
+Authorization: Bearer {token}
+```
+
+---
+## Documentos 📄
+
+> 🟢 GET para búsquedas
+> 🟘 POST para descargas
+
+### Búsqueda de Documentos - 🟢 GET
 - #### Buscar documentos. Tipo de petición: ``GET``
  ```http
 {{url}}/documents?order_number=251956&query=&limit=1&resolution=&number=&prefix=

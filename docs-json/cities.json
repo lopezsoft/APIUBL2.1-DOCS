@@ -1,0 +1,104 @@
+{
+    "dataRecords": {
+        "data": [
+            {
+                "id": 605,
+                "city_code": "41001",
+                "name_city": "Neiva",
+                "department": {
+                    "id": 18,
+                    "code": "41",
+                    "name_department": "Huila",
+                    "abbreviation": "HUI"
+                },
+                "postal_code": [
+                    {
+                        "id": 2146,
+                        "city_id": 605,
+                        "city_code": "41001",
+                        "postal_code": "410010",
+                        "location": "Urbano"
+                    },
+                    {
+                        "id": 2147,
+                        "city_id": 605,
+                        "city_code": "41001",
+                        "postal_code": "410004",
+                        "location": "Urbano"
+                    },
+                    {
+                        "id": 2148,
+                        "city_id": 605,
+                        "city_code": "41001",
+                        "postal_code": "410005",
+                        "location": "Urbano"
+                    },
+                    {
+                        "id": 2149,
+                        "city_id": 605,
+                        "city_code": "41001",
+                        "postal_code": "410003",
+                        "location": "Urbano"
+                    },
+                    {
+                        "id": 2150,
+                        "city_id": 605,
+                        "city_code": "41001",
+                        "postal_code": "410009",
+                        "location": "Rural"
+                    },
+                    {
+                        "id": 2151,
+                        "city_id": 605,
+                        "city_code": "41001",
+                        "postal_code": "410017",
+                        "location": "Rural"
+                    },
+                    {
+                        "id": 2152,
+                        "city_id": 605,
+                        "city_code": "41001",
+                        "postal_code": "410006",
+                        "location": "Urbano"
+                    },
+                    {
+                        "id": 2153,
+                        "city_id": 605,
+                        "city_code": "41001",
+                        "postal_code": "410018",
+                        "location": "Rural"
+                    },
+                    {
+                        "id": 2154,
+                        "city_id": 605,
+                        "city_code": "41001",
+                        "postal_code": "410007",
+                        "location": "Rural"
+                    },
+                    {
+                        "id": 2155,
+                        "city_id": 605,
+                        "city_code": "41001",
+                        "postal_code": "410002",
+                        "location": "Urbano"
+                    },
+                    {
+                        "id": 2156,
+                        "city_id": 605,
+                        "city_code": "41001",
+                        "postal_code": "410001",
+                        "location": "Urbano"
+                    },
+                    {
+                        "id": 2157,
+                        "city_id": 605,
+                        "city_code": "41001",
+                        "postal_code": "410008",
+                        "location": "Rural"
+                    }
+                ]
+            }
+        ]
+    },
+    "success": true
+}

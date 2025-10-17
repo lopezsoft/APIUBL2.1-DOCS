@@ -7,6 +7,18 @@ sidebar_position: 4
 En esta sección se describen los campos que se deben de considerar para la generación de la factura electrónica,
 nota de crédito y nota de débito, documento soporte y documento equivalente, con sus respectivas notas de ajuste.
 
+## 📑 Tabla de Contenidos
+
+- [Ejemplo Completo de Factura](#ejemplo-completo)
+- [Descripción de los campos](#descripción-de-los-campos)
+- [Referencia Rápida de Tipos de Documento](#referencia-rápida-de-tipos-de-documento)
+- [Compatibilidad de Campos por Tipo](#compatibilidad-de-campos-por-tipo)
+- [Uso de los campos](#uso-de-los-campos)
+- [Additional Document Reference](#additional_document_reference-referencia-a-documento-adicional)
+- [Ejemplo Mínimo Requerido](#ejemplo-mínimo-requerido)
+
+---
+
 ```json
 {
   "resolution_number": "18760000001",
@@ -329,6 +341,50 @@ nota de crédito y nota de débito, documento soporte y documento equivalente, c
 }
 ```
 
+## Referencia Rápida de Tipos de Documento
+
+⚠️ **IMPORTANTE:** Los valores en la columna **ID (API)** son los que debes usar en `type_document_id`. El **Code (DIAN)** es solo para referencia con la normativa DIAN. 
+**REGLA DE ORO:** En el API SIEMPRE usas el ID de la DB, NUNCA el code DIAN.
+
+| ID (API) | Code (DIAN) | Tipo | Descripción | Normativa | Notas |
+|----------|-------------|------|-------------|-----------|-------|
+| **7** | 01 | Factura de Venta | Documento estándar de venta | Res. 165 | `type_document_id: 7` |
+| **8** | 02 | Factura de Exportación | Factura para operaciones con exterior | Res. 165 | `type_document_id: 8` |
+| **9** | 03 | Factura de Contingencia Tipo 03 | Emitida cuando falla conexión DIAN | Res. 165 | **`type_document_id: 9`** ⚠️ Requiere `additional_document_reference` |
+| **10** | 04 | Factura de Contingencia Tipo 04 | Protocolo alternativo especial | Res. 165 | **`type_document_id: 10`** - Opcional `additional_document_reference` |
+| **11** | 05 | Documento Soporte | Para servicios y operaciones especiales | Res. 165 | `type_document_id: 11` |
+| **20** | 20 | Documento Equivalente POS | Factura de Punto de Venta | Res. 165 | **`type_document_id: 20`** ⚠️ Requiere `point_of_sale` |
+| **5** | 91 | Nota Crédito | Devolución o descuento | Res. 165 | `type_document_id: 5` ⚠️ Genera CUDE |
+| **4** | 92 | Nota Débito | Ajuste por aumento | Res. 165 | `type_document_id: 4` ⚠️ Genera CUDE |
+
+---
+
+## Compatibilidad de Campos por Tipo
+
+| Campo | Factura (1,2) | Contingencia (3,4) | Documento Soporte (7) | POS (9) | Nota Crédito (91) | Nota Débito (92) |
+|-------|:---:|:---:|:---:|:---:|:---:|:---:|
+| `resolution_number` | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 |
+| `prefix` | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 |
+| `date` | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 |
+| `document_number` | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 |
+| `operation_type_id` | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 |
+| `type_document_id` | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 |
+| `payments` | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 |
+| `customer` | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 |
+| `legal_monetary_totals` | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 |
+| `lines` | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 |
+| `additional_document_reference` | 🟢 | 🔴 | 🟢 | 🟢 | 🟢 | 🟢 |
+| `point_of_sale` | 🟢 | 🟢 | 🟢 | 🔴 | 🟢 | 🟢 |
+| `billing_reference` | 🟢 | 🟢 | 🟢 | 🟢 | 🔴 | 🔴 |
+| `order_reference` | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 |
+
+**Leyenda:**
+- 🔴 **Obligatorio**
+- 🟢 **Opcional**
+- 🟡 **Condicional**
+
+---
+
 ## Descripción de los campos
 
 A continuación se describen los campos que se deben de considerar para la generación de la factura electrónica.
@@ -517,63 +573,75 @@ A continuación se describen los campos que se deben de considerar para la gener
 A continuación se describe el uso de los campos de la factura electrónica, nota de crédito y nota de débito,
 documento soporte y documento equivalente, con sus respectivas notas de ajuste.
 
-### `resolution_number`
+### `resolution_number` 🔴
 
 Número de resolución del documento, este valor debe ser el mismo que se configura en el portal web. *Este campo es obligatorio* para todos los documentos.
 
-### `prefix`
+### `prefix` 🟡
 
 Prefijo de la resolución del documento. *Este campo es obligatorio* cuando se tiene más de una resolución y debe ser un string.
 
-### `date`
+### `date` 🟢
 
 Fecha de emisión del documento. *Este campo es opcional* y en caso de enviarlo debe ser un string en formato **`YYYY-MM-DD`**. Si no envía este campo, la API tomará la fecha actual.
 
-### `expiration_date`
+### `expiration_date` 🟢
 
 Fecha de vencimiento del documento equivalente electrónico debe estar asociada con las fechas negociadas o acordadas según los registros de los campos **cac:PaymentTerms/cbc:PaymentDueDate**.
 
-### `time`
+### `time` 🟢
 
 Hora de emisión del documento. *Este campo es opcional* y en caso de enviarlo y debe ser un string en formato **`H:i:s`**. Si no envía este campo, la API tomará la hora actual
 
-### `notes`
+### `notes` 🟢
 
 Si desea enviar información adicional sobre el documento, puede enviar este campo, el cual es opcional para algunos documentos y debe ser un string.
 
-### `document_number`
+### `document_number` 🔴
 
 Número consecutivo del documento, sin prefijos. *Este campo es obligatorio* para todos los documentos y debe ser un entero encerrado entre `""` sin prefijos.
 
-### `operation_type_id`
+### `operation_type_id` 🔴
+
+Se refiere al tipo de operación que afecta al documento, en la mayoría de los documentos es 1 (Estándar). *Este campo es obligatorio* para todos los documentos y debe ser un entero.
 
 - #### Ejemplo
 
   ```json
-    "operation_type_id" : 1
+    "operation_type_id": 1
   ```
 
-Se refiere al tipo de operación que afecta al documento, en la mayoría de los documentos es 1 (Estandar). Puede consultar
-los diferentes tipos de operación en el **ENDPOINT** `{{url}}/operation-type`. *Este campo es obligatorio* para todos los documentos y debe ser un entero.
+### `type_document_id` 🔴
 
-### `type_document_id`
+Se refiere al tipo de documento que se está enviando a la DIAN. *Este campo es obligatorio* para todos los documentos y debe ser un **entero que corresponda al ID de la base de datos del API** (NO el code DIAN).
 
-Se refiere al tipo de documento que se está enviando a la DIAN, puede consultar cada tipo de documento en el **ENDPOINT**
-`{{url}}/document-type`. *Este campo es obligatorio* para todos los documentos y debe ser un entero.
+**Valores permitidos (ID de API):**
+- `7` - Factura de Venta (code DIAN: 01)
+- `8` - Factura de Exportación (code DIAN: 02)
+- `9` - **Factura de Contingencia Tipo 03** (code DIAN: 03) - Requiere [`additional_document_reference`](#additional_document_reference-referencia-a-documento-adicional)
+- `10` - **Factura de Contingencia Tipo 04** (code DIAN: 04)
+- `11` - Documento Soporte (code DIAN: 05)
+- `20` - **Documento Equivalente POS** (code DIAN: 20) - Requiere [`point_of_sale`](#point_of_sale)
+- `5` - Nota Crédito (code DIAN: 91)
+- `4` - Nota Débito (code DIAN: 92)
 
-### `graphic_representation`
+**⚠️ CRÍTICO:** En el API SIEMPRE usas el ID (números de la izquierda), NUNCA el code DIAN (números entre paréntesis).
 
-Indicador de representación gráfica. *Este campo es opcional*, se debe enviar cuado se espera que la API genere el PDF de la representación gráfica.
+**Consultar también:** [Referencia Rápida de Tipos de Documento](#referencia-rápida-de-tipos-de-documento) | [Glosario: Contingencia](/docs/glossary#contingencia)
 
-- ### Ejemplo 
+### `graphic_representation` 🟢
 
-  ```josn 
+Indicador de representación gráfica. *Este campo es opcional*, se debe enviar cuando se espera que la API genere el PDF de la representación gráfica.
+
+- #### Ejemplo
+
+  ```json
     "graphic_representation": 1
   ```
 
-### `send_email`
+### `send_email` 🟢
 
-Indicador de envío de email. *Este campo es opcional*, se debe enviar cuado se espera que la API envíe el email al cliente del documento.
+Indicador de envío de email. *Este campo es opcional*, se debe enviar cuando se espera que la API envíe el email al cliente del documento.
 
 - #### Ejemplo
 
@@ -581,12 +649,16 @@ Indicador de envío de email. *Este campo es opcional*, se debe enviar cuado se 
 "send_email": 1
 ```
 
-### `currency_id`
+### `currency_id` 🟢
 
-Hace referencia a la moneda del documento. Puede consultar la lista de monedas disponibles en el **ENDPOINT** `{{url}}/currencies`.
-Este campo es opcional, solo se debe enviar cuando es una moneda extranjera y debe ser un entero.
+Hace referencia a la moneda del documento. Este campo es opcional, solo se debe enviar cuando es una moneda extranjera y debe ser un entero.
 
-### `payments`
+**Valores comunes:**
+- `170` - Peso Colombiano (COP) - Predeterminado
+- `188` - Dólar Estadounidense (USD)
+- `978` - Euro (EUR)
+
+### `payments` 🔴
 
 Lista de pagos. *Este campo es obligatorio* para todos los documentos y debe ser un arreglo de objetos.
 
@@ -693,7 +765,7 @@ Información de la firma del documento. *Este campo es opcional* y debe ser un o
   - #### `seller`
     Nombre del vendedor(a). *Este campo es opcional* y debe ser un string.
 
-### `payment_exchange_rate`
+### `payment_exchange_rate` 🟡
 
 Tasa de cambio para el pago. *Este campo es obligatorio* solo para los documentos en moneda extranjera y debe ser un objeto.
 
@@ -716,9 +788,9 @@ Tasa de cambio para el pago. *Este campo es obligatorio* solo para los documento
     Tasa base. *Este campo es obligatorio* solo para los documentos en moneda extranjera y debe ser un string.
     Base monetaria de la divisa COP que se deberá convertir a moneda extranjera, ejemplo: si es USD el valor a informar es el valor equivalente de un dólar en pesos.
 
-### `point_of_sale`
+### `point_of_sale` 🟡
 
-Información del punto de venta. *Este campo es obligatorio* solo para los documentos de tipo **P.O.S ELECTRÓNICO** y debe ser un objeto.
+Información del punto de venta. *Este campo es obligatorio* solo para los documentos de tipo **P.O.S ELECTRÓNICO** (`type_document_id = 9`) y debe ser un objeto.
 
 - #### Ejemplo
 
@@ -746,9 +818,9 @@ Información del punto de venta. *Este campo es obligatorio* solo para los docum
   - #### `sub_total`
     Subtotal de la venta, total venta sin IVA. *Este campo es obligatorio* solo para los documentos de tipo **P.O.S ELECTRÓNICO** y debe ser un string.
 
-### `software_manufacturer`
+### `software_manufacturer` 🟡
 
-Información del fabricante del software. *Este campo es obligatorio* solo para los documentos equivalentes P.O.S y debe ser un objeto.
+Información del fabricante del software. *Este campo es obligatorio* solo para los documentos equivalentes P.O.S (`type_document_id = 9`) y debe ser un objeto.
 
 - #### Ejemplo
 
@@ -767,9 +839,13 @@ Información del fabricante del software. *Este campo es obligatorio* solo para 
   - #### `software_name`
     Nombre del software. *Este campo es obligatorio* solo para los documentos equivalentes P.O.S y debe ser un string.
 
-### order_reference
+### `order_reference` 🟢
 
-Referencia de la orden. *Este campo es opcional* debe ser usado de acuerdo al giro del documento y debe ser un objeto.
+Referencia de la orden de compra. *Este campo es opcional* y debe ser usado de acuerdo al giro del documento. Debe ser un objeto.
+
+**Diferencia con `additional_document_reference`:**
+- Use `order_reference` para **UNA SOLA** orden de compra
+- Use [`additional_document_reference`](#additional_document_reference-referencia-a-documento-adicional) para **MÚLTIPLES** documentos de referencia
 
 - #### Ejemplo
 
@@ -785,9 +861,9 @@ Referencia de la orden. *Este campo es opcional* debe ser usado de acuerdo al gi
   - #### `reference_date`
     Fecha de referencia. *Este campo es opcional* debe ser usado de acuerdo al giro del documento y debe ser un string.
 
-### health
+### `health` 🟢
 
-Información del sector salud. *Este campo es opcional* debe ser usado de acuerdo al giro del documento y debe ser un objeto.
+Información del sector salud. *Este campo es opcional* y debe ser usado de acuerdo al giro del documento. Debe ser un objeto.
 
 - #### `operation_type`
   Tipo de operación. *Este campo es opcional* debe ser usado de acuerdo al giro del documento y debe ser un string.
@@ -834,7 +910,9 @@ Información del sector salud. *Este campo es opcional* debe ser usado de acuerd
 - - ###### `schemeID`
     ID del esquema. *Este campo es opcional* debe ser usado de acuerdo al giro del documento y debe ser un string.
 
-### customer: Factura Electrónica
+### `customer` 🔴
+
+#### Factura Electrónica
 
 Información del cliente. *Este campo es obligatorio* para todos los documentos relacionados con la factura electrónica y documento soporte, y sus respectivas notas
 y debe ser un objeto.
@@ -885,7 +963,7 @@ Información del cliente. *Este campo es obligatorio* solo para los documentos e
   - #### `points`
     Puntos del cliente. *Este campo es opcional*, si no se envía por defecto toma el valor de `0`.
 
-### discrepancy_response
+### `discrepancy_response` 🟢
 
 Respuesta a discrepancias. *Este campo es obligatorio* solo para las notas de crédito, débito y de ajustes de todos los documentos y debe ser un objeto.
 
@@ -904,7 +982,11 @@ Respuesta a discrepancias. *Este campo es obligatorio* solo para las notas de cr
     Hace referencia al tipo de corrección aplicado a la nota. *Este campo es obligatorio* solo para las notas de crédito, débito y de ajustes de todos los documentos y debe ser un string.
     Puede consultar los diferentes tipos de corrección en el **ENDPOINT** `{{url}}/correction-notes`.
 
-### billing_reference
+### `billing_reference` 🟡
+
+**Uso:**
+- 🔴 **Obligatorio** para Notas Crédito/Débito (referencia a factura original)
+- 🟢 **Opcional** para otros documentos
 
 Referencia de facturación. *Este campo es obligatorio* solo para las notas de crédito, débito y de ajustes de todos los documentos y debe ser un objeto.
 
@@ -928,7 +1010,7 @@ Referencia de facturación. *Este campo es obligatorio* solo para las notas de c
   - #### `scheme_name`
     Nombre del esquema. *Este campo es obligatorio* solo para las notas de crédito, débito del **POS ELECTRÓNICO** y para las notas de ajuste del **DOCUMENTO SOPORTE**. Debe ser un string.
 
-### allowance_charges
+### `allowance_charges` 🟢
 
 Descuentos o cargos **a nivel de factura**, es decir descuentos o cargos que no afectan las bases gravables. Los descuentos o cargos que afectan bases gravables se informan a nivel de ítem.
 Este campo es opcional, se debe informar cuando hay un cargo o descuento a nivel global de la factura y debe ser un arreglo de objetos.
@@ -969,7 +1051,7 @@ Este campo es opcional, se debe informar cuando hay un cargo o descuento a nivel
     Obligatorio de informar si es descuento a nivel de factura y debe ser un entero.
     Puede consultar los diferentes tipos de descuentos en el **ENDPOINT** `{{url}}/discount-codes`.
 
-### legal_monetary_totals
+### `legal_monetary_totals` 🔴
 
 Totales del documento. *Este campo es obligatorio* para todos los documentos donde se usa y debe ser un objeto.
 
@@ -1009,7 +1091,7 @@ Totales del documento. *Este campo es obligatorio* para todos los documentos don
     Monto total del documento. Valor total de ítems **(incluyendo cargos y descuentos a nivel de ítems) +valor tributos + valor cargos globales – valor descuentos globales**.
     *Este campo es obligatorio* y debe ser un string con valor flotante de máximo dos decimales.
 
-### lines
+### `lines` 🔴
 
 Líneas del detalle de cada item del documento. *Este campo es obligatorio* para todos los documentos donde se usa y debe ser un arreglo de objetos.
 
@@ -1162,7 +1244,7 @@ Grupo de campos para información relacionada con todos los impuestos de la lín
   - #### `percent`
     Porcentaje. *Este campo es obligatorio* y debe ser un entero.
 
-### tax_totals
+### `tax_totals` 🔴
 
 Arreglo que contiene la suma de todos los impuestos del documento, agrupados por tipo de impuesto. *Este campo es obligatorio* solo cuando el documento tiene impuestos.
 
@@ -1228,4 +1310,480 @@ La estructura del objeto dentro de este arreglo varía si el impuesto es porcent
     - Cantidad de unidades base a la que se aplica la tarifa per_unit_amount. Este campo es obligatorio y 
     - aplica únicamente para impuestos de valor fijo por unidad (**códigos 21, 22, 23, 24**).
     - Generalmente su valor es 1 (numérico), indicando que la tarifa en per_unit_amount es 
-    por una unidad de la medida especificada en quantity_units_id.
+por una unidad de la medida especificada en quantity_units_id.
+
+## `additional_document_reference` (Referencia a Documento Adicional) {#additional_document_reference-referencia-a-documento-adicional}
+
+Grupo de campos para información que describen documentos referenciados por esta factura. **Obligatorio SOLO para facturas tipo 03** ([Contingencia](/docs/glossary#contingencia)). Para otros tipos de documento, este grupo no se valida.
+
+Estos documentos representan acciones comerciales y mercantiles que amparan o soportan transacciones relacionadas con este documento electrónico.
+
+**Referencia rápida:**
+- Ver [Glosario: Contingencia](/docs/glossary#contingencia)
+- Ver [Glosario: CUFE](/docs/glossary#cufe)
+- Ver [Glosario: CUDE](/docs/glossary#cude)
+
+**Ubicación en XPath:** `/Invoice/cac:AdditionalDocumentReference`
+
+**Normativa:** Resolución No. 000165 (01/NOV/2023) - DIAN - Página 389
+
+**Obligatoriedad:** 
+- ✅ **Obligatorio** si `InvoiceTypeCode = "03"` (Factura de Contingencia)
+- ❌ No aplica para otros tipos de documentos
+
+**Tipo de Estructura:** Array (puede contener múltiples referencias)
+
+### Estructura
+
+```json
+{
+  "additional_document_reference": [
+    {
+      "number": "LZT2119",
+      "uuid": "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567",
+      "scheme_name": "CUFE-SHA384",
+      "date": "2025-08-18",
+      "code": "01"
+    }
+  ]
+}
+```
+
+### Notas Importantes sobre Documentos Referenciados
+
+- ⚠️ Los **documentos electrónicos XML adoptados por la DIAN NO deben incluirse** en este fragmento, ya que estos documentos no contienen las identificaciones estándar como CUFE o CUDE.
+
+- 📌 Si se trata de una **orden de entrega**, debe utilizarse el grupo de elemento `OrderReference`.
+
+- 🔄 Si se desea **informar más de una orden de entrega**, debe disponerse del grupo `AdditionalDocumentReference`.
+
+- 🏢 Este campo es **opcional para referenciar temas comerciales** a voluntad del facturador electrónico. Los códigos (`code`) son asignados por el facturador.
+
+### Campos Obligatorios
+
+- #### `number` (FAI02)
+  - **Etiqueta XML:** `cbc:ID`
+  - **Requerido:** Sí (cuando AdditionalDocumentReference existe)
+  - **Tipo:** String
+  - **Descripción:** Prefijo y Número del documento referenciado.
+  - **Ejemplo:** "LZT2119"
+  - **Validación DIAN:** ID de Documento de referencia no relacionado
+  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:ID`
+
+- #### `uuid` (FAI03) ⚠️ CRÍTICO
+  - **Etiqueta XML:** `cbc:ID/UUID`
+  - **Requerido:** Sí (cuando AdditionalDocumentReference existe)
+  - **Tipo:** String
+  - **Longitud máxima:** 96 caracteres
+  - **Descripción:** CUFE o CUDE del documento referenciado.
+  - **Ejemplo:** "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567"
+  - **Validación DIAN:** "No fue informado el CUFE o CUDE del documento referenciado"
+  - **Rechazo:** Si no se informa CUFE o CUDE
+  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:ID/UUID`
+
+- #### `scheme_name` (FAI04)
+  - **Etiqueta XML:** `@schemeName` (atributo)
+  - **Requerido:** No (pero recomendado)
+  - **Tipo:** String
+  - **Descripción:** Identificador del esquema de identificación del UUID.
+  - **Valores válidos:**
+    - `CUFE-SHA384` - Código Único de Factura Electrónica con algoritmo SHA384
+    - `CUDE-SHA384` - Código Único de Documento Equivalente con algoritmo SHA384
+    - Otros algoritmos permitidos por DIAN
+  - **Ejemplo:** "CUFE-SHA384"
+  - **Validación DIAN:** "No fue utilizado o informado uno de los algoritmos permitidos para el cálculo del CUFE o CUDE"
+  - **Rechazo:** Si se utiliza algoritmo no permitido
+  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:UUID/@schemeName`
+
+### Campos Opcionales
+
+- #### `date` (FAI05)
+  - **Etiqueta XML:** `cbc:IssueDate`
+  - **Requerido:** No
+  - **Tipo:** String (Formato: YYYY-MM-DD)
+  - **Descripción:** Fecha de emisión del documento referenciado.
+  - **Ejemplo:** "2025-08-18"
+  - **Validación DIAN:** "No se informó la fecha de emisión del documento referenciado"
+  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:IssueDate`
+
+- #### `code` (FAI06)
+  - **Etiqueta XML:** `cbc:DocumentTypeCode`
+  - **Requerido:** No
+  - **Tipo:** String
+  - **Descripción:** Identificador del tipo de documento de referencia. Este es un código asignado por el facturador electrónico para clasificar el tipo de documento comercial o mercantil que ampara la transacción. La codificación es asignada libremente por el facturador (no está estandarizada por DIAN).
+  - **Ejemplo:** "01"
+  - **Asignación:** Propia de cada empresa
+  - **Validación DIAN:** "No está informado el tipo de documento referenciado"
+  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:DocumentTypeCode`
+
+### Reglas de Validación DIAN
+
+| ID | Elemento | Tipo | Descripción | Regla | Mensaje de Rechazo | XPath |
+|-----|----------|------|-------------|-------|-------------------|-------|
+| FAI01 | AdditionalDocumentReference | **R** | Valida que exista grupo de referencia para factura tipo 03 | Solo obligatorio si `InvoiceTypeCode = "03"` | "El grupo AdditionalDocumentReference no está informado para factura tipo 03" | `/Invoice/cac:AdditionalDocumentReference` |
+| FAI02 | ID | **R** | Prefijo y Número del documento referenciado | Requerido cuando existe AdditionalDocumentReference | "ID de Documento de referencia no relacionado" | `/Invoice/cac:AdditionalDocumentReference/cbc:ID` |
+| FAI03 | UUID | **R** | CUFE o CUDE del documento referenciado | Requerido cuando existe AdditionalDocumentReference | "No fue informado el CUFE o CUDE del documento referenciado" | `/Invoice/cac:AdditionalDocumentReference/cbc:ID/UUID` |
+| FAI04 | @schemeName | **N** | Identificador del esquema de identificación | Debe ser algoritmo permitido | "No fue utilizado o informado uno de los algoritmos permitidos para el cálculo del CUFE o CUDE" | `/Invoice/cac:AdditionalDocumentReference/cbc:UUID/@schemeName` |
+| FAI05 | IssueDate | **N** | Fecha de emisión del documento referenciado | Opcional | "No se informó la fecha de emisión del documento referenciado" | `/Invoice/cac:AdditionalDocumentReference/cbc:IssueDate` |
+| FAI06 | DocumentTypeCode | **N** | Identificador del tipo de documento de referencia | Opcional (asignado por facturador) | "No está informado el tipo de documento referenciado" | `/Invoice/cac:AdditionalDocumentReference/cbc:DocumentTypeCode` |
+
+**Leyenda de Tipo:**
+- **R** = Rechazo (campo obligatorio cuando grupo existe)
+- **N** = Notificación (campo opcional, genera advertencia si falta)
+
+### Notas Importantes
+
+- ✅ `additional_document_reference` es **OBLIGATORIO solo para InvoiceTypeCode = "03"** (Factura de Contingencia)
+- ✅ Para otros tipos de documentos, este grupo **NO se valida**
+- ✅ Si `type_document_id = 9` (Factura de Contingencia Tipo 03, code DIAN 03), el grupo es obligatorio
+- ✅ `number` (ID) y `uuid` son críticos - DIAN rechaza si faltan
+- ✅ `scheme_name` debe ser un algoritmo válido (típicamente CUFE-SHA384)
+- ✅ `date` e `code` son opcionales pero recomendados para trazabilidad
+- ✅ Es un **ARRAY**: puede contener múltiples referencias a documentos diferentes
+- ✅ Los códigos (`code`) son de asignación libre del facturador (no están estandarizados por DIAN)
+- ❌ Los documentos XML adoptados por DIAN NO deben incluirse aquí
+- ⚠️ **IMPORTANTE:** `type_document_id = 9` es el ID de API (no el code DIAN 03)
+
+### ⚠️ Nota sobre API MATIAS (Comportamiento Automático)
+
+**Para facturas tipo 03 (Contingencia):**
+
+Si el cliente **no proporciona `additional_document_reference`** en la solicitud, el **API de MATIAS agregará automáticamente** los datos por defecto del **documento procesado** (la factura que se está generando):
+
+```json
+{
+  "additional_document_reference": [
+    {
+      "number": "[PREFIX]-[DOCUMENT_NUMBER]",
+      "uuid": "[CUFE_DEL_DOCUMENTO_GENERADO]",
+      "scheme_name": "CUFE-SHA384",
+      "date": "[FECHA_DE_EMISION_DEL_DOCUMENTO]",
+      "code": "01"
+    }
+  ]
+}
+```
+
+**Ejemplo automático del API:**
+
+Si genera factura tipo 03 con:
+- Prefijo: `LCON`
+- Número: `2`
+- Fecha: `2025-08-18`
+- CUFE: `0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567`
+
+El API agregará automáticamente:
+```json
+{
+  "additional_document_reference": [
+    {
+      "number": "LCON2",
+      "uuid": "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567",
+      "scheme_name": "CUFE-SHA384",
+      "date": "2025-08-18",
+      "code": "01"
+    }
+  ]
+}
+```
+
+**Opciones de cliente:**
+
+| Opción | Comportamiento |
+|--------|----------------|
+| No envía `additional_document_reference` | API agrega valores por defecto del documento |
+| Envía `additional_document_reference` vacío `[]` | API agrega valores por defecto del documento |
+| Envía `additional_document_reference` con datos | API utiliza los datos proporcionados |
+| Envía múltiples referencias en el array | API procesa todas las referencias |
+
+**Casos de uso:**
+
+- ✅ **Contingencia simple:** No enviar `additional_document_reference`, el API lo genera automáticamente
+- ✅ **Contingencia con referencia a otro documento:** Proporcionar explícitamente el `additional_document_reference`
+- ✅ **Múltiples referencias:** Enviar array con varias referencias comerciales/de soporte
+
+### Ejemplo 1: Una Referencia - JSON
+
+```json
+{
+  "additional_document_reference": [
+    {
+      "number": "LZT2119",
+      "uuid": "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567",
+      "scheme_name": "CUFE-SHA384",
+      "date": "2025-08-18",
+      "code": "01"
+    }
+  ]
+}
+```
+
+### Ejemplo 2: Múltiples Referencias - JSON
+
+```json
+{
+  "additional_document_reference": [
+    {
+      "number": "LZT2119",
+      "uuid": "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567",
+      "scheme_name": "CUFE-SHA384",
+      "date": "2025-08-18",
+      "code": "01"
+    },
+    {
+      "number": "LZT2120",
+      "uuid": "1cd52b158f51ecdb92bc1defcec90g7s52c68bb932db03ca79g16b69adcdbe59f05g67402f2eg115a76g688845d5f568",
+      "scheme_name": "CUFE-SHA384",
+      "date": "2025-08-19",
+      "code": "02"
+    }
+  ]
+}
+```
+
+### Ejemplo Correcto - XML (Una Referencia)
+
+```xml
+<AdditionalDocumentReference>
+  <cbc:ID>LZT2119</cbc:ID>
+  <cbc:IssueDate>2025-08-18</cbc:IssueDate>
+  <cbc:DocumentTypeCode>01</cbc:DocumentTypeCode>
+  <cbc:UUID schemeName="CUFE-SHA384">0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567</cbc:UUID>
+</AdditionalDocumentReference>
+```
+
+### Ejemplo Correcto - XML (Múltiples Referencias)
+
+```xml
+<AdditionalDocumentReference>
+  <cbc:ID>LZT2119</cbc:ID>
+  <cbc:IssueDate>2025-08-18</cbc:IssueDate>
+  <cbc:DocumentTypeCode>01</cbc:DocumentTypeCode>
+  <cbc:UUID schemeName="CUFE-SHA384">0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567</cbc:UUID>
+</AdditionalDocumentReference>
+<AdditionalDocumentReference>
+  <cbc:ID>LZT2120</cbc:ID>
+  <cbc:IssueDate>2025-08-19</cbc:IssueDate>
+  <cbc:DocumentTypeCode>02</cbc:DocumentTypeCode>
+  <cbc:UUID schemeName="CUFE-SHA384">1cd52b158f51ecdb92bc1defcec90g7s52c68bb932db03ca79g16b69adcdbe59f05g67402f2eg115a76g688845d5f568</cbc:UUID>
+</AdditionalDocumentReference>
+```
+
+### Casos de Uso
+
+#### Caso 1: Factura de Contingencia Tipo 03
+Una factura de talonario que referencia un documento original.
+
+#### Caso 2: Múltiples Órdenes de Entrega
+Si se desea informar más de una orden de entrega, se usa este grupo (en lugar de solo `OrderReference`).
+
+#### Caso 3: Documentos Comerciales de Soporte
+Facturas que amparan transacciones con múltiples documentos de soporte (ej: recibos, órdenes, etc.).
+
+### Referencias DIAN
+
+- **Resolución:** No. 000165 (01/NOV/2023)
+- **Página:** 389 de 753
+- **Dirección de Gestión de Impuestos**
+- **Documento:** Anexo Técnico de Facturación Electrónica v2.1
+
+### Campos Obligatorios
+
+- #### `number` (FAI02)
+  - **Etiqueta XML:** `cbc:ID`
+  - **Requerido:** Sí (cuando AdditionalDocumentReference existe)
+  - **Tipo:** String
+  - **Descripción:** Prefijo y Número del documento referenciado.
+  - **Ejemplo:** "LZT2119"
+  - **Validación DIAN:** ID de Documento de referencia no relacionado
+  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:ID`
+
+- #### `uuid` (FAI03) ⚠️ CRÍTICO
+  - **Etiqueta XML:** `cbc:ID/UUID`
+  - **Requerido:** Sí (cuando AdditionalDocumentReference existe)
+  - **Tipo:** String
+  - **Longitud máxima:** 96 caracteres
+  - **Descripción:** CUFE o CUDE del documento referenciado.
+  - **Ejemplo:** "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567"
+  - **Validación DIAN:** "No fue informado el CUFE o CUDE del documento referenciado"
+  - **Rechazo:** Si no se informa CUFE o CUDE
+  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:ID/UUID`
+
+- #### `scheme_name` (FAI04)
+  - **Etiqueta XML:** `@schemeName` (atributo)
+  - **Requerido:** No (pero recomendado)
+  - **Tipo:** String
+  - **Descripción:** Identificador del esquema de identificación del UUID.
+  - **Valores válidos:**
+    - `CUFE-SHA384` - Código Único de Factura Electrónica con algoritmo SHA384
+    - `CUDE-SHA384` - Código Único de Documento Equivalente con algoritmo SHA384
+    - Otros algoritmos permitidos por DIAN
+  - **Ejemplo:** "CUFE-SHA384"
+  - **Validación DIAN:** "No fue utilizado o informado uno de los algoritmos permitidos para el cálculo del CUFE o CUDE"
+  - **Rechazo:** Si se utiliza algoritmo no permitido
+  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:UUID/@schemeName`
+
+### Campos Opcionales
+
+- #### `date` (FAI05)
+  - **Etiqueta XML:** `cbc:IssueDate`
+  - **Requerido:** No
+  - **Tipo:** String (Formato: YYYY-MM-DD)
+  - **Descripción:** Fecha de emisión del documento referenciado.
+  - **Ejemplo:** "2025-08-18"
+  - **Validación DIAN:** "No se informó la fecha de emisión del documento referenciado"
+  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:IssueDate`
+
+- #### `code` (FAI06)
+  - **Etiqueta XML:** `cbc:DocumentTypeCode`
+  - **Requerido:** No
+  - **Tipo:** String
+  - **Descripción:** Identificador del tipo de documento de referencia (codificación propia de la empresa).
+  - **Ejemplo:** "01"
+  - **Validación DIAN:** "No está informado el tipo de documento referenciado"
+  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:DocumentTypeCode`
+
+### Reglas de Validación DIAN
+
+| ID | Elemento | Tipo | Descripción | Regla | Mensaje de Rechazo | XPath |
+|-----|----------|------|-------------|-------|-------------------|-------|
+| FAI01 | AdditionalDocumentReference | **R** | Valida que exista grupo de referencia para factura tipo 03 | Solo obligatorio si `InvoiceTypeCode = "03"` | "El grupo AdditionalDocumentReference no está informado para factura tipo 03" | `/Invoice/cac:AdditionalDocumentReference` |
+| FAI02 | ID | **R** | Prefijo y Número del documento referenciado | Requerido cuando existe AdditionalDocumentReference | "ID de Documento de referencia no relacionado" | `/Invoice/cac:AdditionalDocumentReference/cbc:ID` |
+| FAI03 | UUID | **R** | CUFE o CUDE del documento referenciado | Requerido cuando existe AdditionalDocumentReference | "No fue informado el CUFE o CUDE del documento referenciado" | `/Invoice/cac:AdditionalDocumentReference/cbc:ID/UUID` |
+| FAI04 | @schemeName | **N** | Identificador del esquema de identificación | Debe ser algoritmo permitido | "No fue utilizado o informado uno de los algoritmos permitidos para el cálculo del CUFE o CUDE" | `/Invoice/cac:AdditionalDocumentReference/cbc:UUID/@schemeName` |
+| FAI05 | IssueDate | **N** | Fecha de emisión del documento referenciado | Opcional | "No se informó la fecha de emisión del documento referenciado" | `/Invoice/cac:AdditionalDocumentReference/cbc:IssueDate` |
+| FAI06 | DocumentTypeCode | **N** | Identificador del tipo de documento de referencia | Opcional | "No está informado el tipo de documento referenciado" | `/Invoice/cac:AdditionalDocumentReference/cbc:DocumentTypeCode` |
+
+**Leyenda de Tipo:**
+- **R** = Rechazo (campo obligatorio cuando grupo existe)
+- **N** = Notificación (campo opcional, genera advertencia si falta)
+
+### Notas Importantes
+
+- ✅ `additional_document_reference` es **OBLIGATORIO solo para InvoiceTypeCode = "03"** (Factura de Contingencia)
+- ✅ Para otros tipos de documentos, este grupo **NO se valida**
+- ✅ Si `type_document_id = 9` (tipo 03), el grupo es obligatorio
+- ✅ `number` (ID) y `uuid` son críticos - DIAN rechaza si faltan
+- ✅ `scheme_name` debe ser un algoritmo válido (típicamente CUFE-SHA384)
+- ✅ `date` e `code` son opcionales pero recomendados para trazabilidad
+
+### Ejemplos de Rechazo
+
+**❌ Rechazo 1: Falta AdditionalDocumentReference para tipo 03**
+```
+InvoiceTypeCode = "03"
+AdditionalDocumentReference = NO INFORMADO
+→ RECHAZO: El grupo AdditionalDocumentReference no está informado para factura tipo 03
+```
+
+**❌ Rechazo 2: Falta UUID (CUFE)**
+```
+AdditionalDocumentReference informado
+UUID = NO INFORMADO
+→ RECHAZO: No fue informado el CUFE o CUDE del documento referenciado
+```
+
+**❌ Rechazo 3: Esquema inválido**
+```
+@schemeName = "HASH-MD5" (no permitido)
+→ RECHAZO: No fue utilizado o informado uno de los algoritmos permitidos
+```
+
+### Ejemplo Correcto - JSON
+
+```json
+{
+  "additional_document_reference": [
+    {
+      "number": "LZT2119",
+      "uuid": "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567",
+      "scheme_name": "CUFE-SHA384",
+      "date": "2025-08-18",
+      "code": "01"
+    }
+  ]
+}
+```
+
+### Ejemplo Correcto - XML
+
+```xml
+<AdditionalDocumentReference>
+  <cbc:ID>LZT2119</cbc:ID>
+  <cbc:IssueDate>2025-08-18</cbc:IssueDate>
+  <cbc:DocumentTypeCode>01</cbc:DocumentTypeCode>
+  <cbc:UUID schemeName="CUFE-SHA384">0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567</cbc:UUID>
+</AdditionalDocumentReference>
+```
+
+### Referencias DIAN
+
+- **Resolución:** No. 000165 (01/NOV/2023)
+- **Página:** 389 de 753
+- **Dirección de Gestión de Impuestos**
+- **Documento:** Anexo Técnico de Facturación Electrónica v2.1
+
+---
+
+## Ejemplo Mínimo Requerido {#ejemplo-mínimo-requerido}
+
+Este es un ejemplo con **SOLO los campos obligatorios** para generar una factura simple (tipo 1):
+
+```json
+{
+  "resolution_number": "18760000001",
+  "prefix": "FEV",
+  "document_number": 990000001,
+  "operation_type_id": 1,
+  "type_document_id": 1,
+  "customer": {
+    "country_id": "45",
+    "city_id": "836",
+    "identity_document_id": "1",
+    "type_organization_id": 2,
+    "tax_regime_id": 2,
+    "tax_level_id": 5,
+    "company_name": "NOMBRE DEL CLIENTE",
+    "dni": "1234564",
+    "email": "correo@cliente.com"
+  },
+  "payments": [
+    {
+      "payment_method_id": 1,
+      "means_payment_id": 10,
+      "value_paid": "141100.00"
+    }
+  ],
+  "legal_monetary_totals": {
+    "line_extension_amount": "131600.00",
+    "tax_exclusive_amount": "131600.00",
+    "tax_inclusive_amount": "141100.00",
+    "payable_amount": "141100.00"
+  },
+  "lines": [
+    {
+      "invoiced_quantity": "1",
+      "quantity_units_id": "1093",
+      "line_extension_amount": "131600.00",
+      "description": "Producto ejemplo",
+      "price_amount": "131600.00"
+    }
+  ],
+  "tax_totals": [
+    {
+      "tax_id": "01",
+      "tax_amount": 9500,
+      "taxable_amount": 131600,
+      "percent": 19
+    }
+  ]
+}
+```
+
+**Notas importantes sobre este ejemplo:**
+- ✅ Todos los campos 🔴 **Obligatorios** están presentes
+- ✅ Campos 🟢 **Opcionales** se omitieron para simplicidad
+- ✅ Puede extenderse con campos adicionales según necesidad
+- ✅ Para contingencia (tipo 03), debe agregar [`additional_document_reference`](#additional_document_reference-referencia-a-documento-adicional)
+- ✅ Para POS (tipo 9), debe agregar [`point_of_sale`](#point_of_sale)
+```

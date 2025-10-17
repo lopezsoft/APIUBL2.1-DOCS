@@ -1,0 +1,194 @@
+{
+    "dataRecords": {
+        "data": [
+            {
+                "id": 164,
+                "CurrencyISO": "VEF",
+                "Language": "ES",
+                "CurrencyName": "Bolivar Fuerte",
+                "Money": "Bolívar",
+                "Symbol": "B",
+                "Format": "es-CO",
+                "image": "venezuela.png",
+                "active": 1
+            },
+            {
+                "id": 165,
+                "CurrencyISO": "BOB",
+                "Language": "ES",
+                "CurrencyName": "Boliviano",
+                "Money": "Boliviano",
+                "Symbol": "B",
+                "Format": "es-CO",
+                "image": "bolivia.png",
+                "active": 1
+            },
+            {
+                "id": 168,
+                "CurrencyISO": "CRC",
+                "Language": "ES",
+                "CurrencyName": "Colón Costa Rican",
+                "Money": "Colón",
+                "Symbol": "₡",
+                "Format": "es-CO",
+                "image": "costa rica.png",
+                "active": 1
+            },
+            {
+                "id": 169,
+                "CurrencyISO": "SVC",
+                "Language": "ES",
+                "CurrencyName": "Colón Salvadoreño",
+                "Money": "Colón",
+                "Symbol": "₡",
+                "Format": "es-CO",
+                "image": "el salvador.png",
+                "active": 1
+            },
+            {
+                "id": 188,
+                "CurrencyISO": "USD",
+                "Language": "ES",
+                "CurrencyName": "Dólar Americano",
+                "Money": "Dólar",
+                "Symbol": "$",
+                "Format": "es-CO",
+                "image": "usa.png",
+                "active": 1
+            },
+            {
+                "id": 194,
+                "CurrencyISO": "CAD",
+                "Language": "ES",
+                "CurrencyName": "Dólar Canadiense",
+                "Money": "Dólar",
+                "Symbol": "$",
+                "Format": "es-CO",
+                "image": "",
+                "active": 1
+            },
+            {
+                "id": 195,
+                "CurrencyISO": "GYD",
+                "Language": "ES",
+                "CurrencyName": "Dólar de Guyana",
+                "Money": "Dólar",
+                "Symbol": "G",
+                "Format": "es-CO",
+                "image": "Guyana.png",
+                "active": 1
+            },
+            {
+                "id": 213,
+                "CurrencyISO": "EUR",
+                "Language": "ES",
+                "CurrencyName": "Euro",
+                "Money": "Euro",
+                "Symbol": "€",
+                "Format": "es-CO",
+                "image": "euro.png",
+                "active": 1
+            },
+            {
+                "id": 225,
+                "CurrencyISO": "PYG",
+                "Language": "ES",
+                "CurrencyName": "Guarani",
+                "Money": "Guaraní",
+                "Symbol": "₲",
+                "Format": "es-CO",
+                "image": "paraguay.png",
+                "active": 1
+            },
+            {
+                "id": 266,
+                "CurrencyISO": "PEN",
+                "Language": "ES",
+                "CurrencyName": "Nuevo Sol",
+                "Money": "Sol",
+                "Symbol": "S",
+                "Format": "es-CO",
+                "image": "peru.png",
+                "active": 1
+            },
+            {
+                "id": 270,
+                "CurrencyISO": "ARS",
+                "Language": "ES",
+                "CurrencyName": "Peso Argentino",
+                "Money": "Peso",
+                "Symbol": "$",
+                "Format": "es-CO",
+                "image": "argentina.png",
+                "active": 1
+            },
+            {
+                "id": 271,
+                "CurrencyISO": "CLP",
+                "Language": "ES",
+                "CurrencyName": "Peso Chileno",
+                "Money": "Peso",
+                "Symbol": "$",
+                "Format": "es-CO",
+                "image": "chile.png",
+                "active": 1
+            },
+            {
+                "id": 272,
+                "CurrencyISO": "COP",
+                "Language": "ES",
+                "CurrencyName": "Peso Colombiano",
+                "Money": "Peso",
+                "Symbol": "$",
+                "Format": "es-CO",
+                "image": "colombia.png",
+                "active": 1
+            },
+            {
+                "id": 273,
+                "CurrencyISO": "CUP",
+                "Language": "ES",
+                "CurrencyName": "Peso Cubano",
+                "Money": "Peso",
+                "Symbol": "$",
+                "Format": "es-CO",
+                "image": "cuba.png",
+                "active": 1
+            },
+            {
+                "id": 274,
+                "CurrencyISO": "DOP",
+                "Language": "ES",
+                "CurrencyName": "Peso Dominicano",
+                "Money": "Peso",
+                "Symbol": "R",
+                "Format": "es-CO",
+                "image": "",
+                "active": 1
+            },
+            {
+                "id": 277,
+                "CurrencyISO": "MXN",
+                "Language": "ES",
+                "CurrencyName": "Peso Mexicano",
+                "Money": "Peso",
+                "Symbol": "$",
+                "Format": "es-CO",
+                "image": "mexico.png",
+                "active": 1
+            },
+            {
+                "id": 278,
+                "CurrencyISO": "UYU",
+                "Language": "ES",
+                "CurrencyName": "Peso Uruguayo",
+                "Money": "Peso",
+                "Symbol": "$",
+                "Format": "es-CO",
+                "image": "uruguay.png",
+                "active": 1
+            }
+        ]
+    },
+    "success": true
+}

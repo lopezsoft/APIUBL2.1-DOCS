@@ -1,0 +1,139 @@
+{
+    "dataRecords": {
+        "data": [
+            {
+                "id": 1,
+                "name_taxe": "IVA",
+                "description": "Impuesto sobre la Ventas",
+                "code": "01"
+            },
+            {
+                "id": 2,
+                "name_taxe": "IC",
+                "description": "Impuesto al Consumo Departamental Nominal",
+                "code": "02"
+            },
+            {
+                "id": 3,
+                "name_taxe": "ICA",
+                "description": "Impuesto de Industria, Comercio y Aviso",
+                "code": "03"
+            },
+            {
+                "id": 4,
+                "name_taxe": "INC",
+                "description": "Impuesto Nacional al Consumo",
+                "code": "04"
+            },
+            {
+                "id": 5,
+                "name_taxe": "ReteIVA",
+                "description": "Retención sobre el IVA",
+                "code": "05"
+            },
+            {
+                "id": 6,
+                "name_taxe": "ReteRenta",
+                "description": "Retención sobre Renta",
+                "code": "06"
+            },
+            {
+                "id": 7,
+                "name_taxe": "ReteICA",
+                "description": "Retención sobre el ICA",
+                "code": "07"
+            },
+            {
+                "id": 8,
+                "name_taxe": "FtoHorticultura",
+                "description": "Cuota de Fomento Hortifrutícula",
+                "code": "20"
+            },
+            {
+                "id": 9,
+                "name_taxe": "Timbre",
+                "description": "Impuesto de Timbre",
+                "code": "21"
+            },
+            {
+                "id": 10,
+                "name_taxe": "INC Bolsas",
+                "description": "Impuesto al Consumo de Bolsa Plástica",
+                "code": "22"
+            },
+            {
+                "id": 11,
+                "name_taxe": "INCarbono",
+                "description": "Impuesto Nacional al Carbono",
+                "code": "23"
+            },
+            {
+                "id": 12,
+                "name_taxe": "INCombustibles",
+                "description": "Impuesto Nacional a los Combustibles",
+                "code": "24"
+            },
+            {
+                "id": 13,
+                "name_taxe": "Sobretasa Combustibles",
+                "description": "Sobretasa a los combustibles",
+                "code": "25"
+            },
+            {
+                "id": 14,
+                "name_taxe": "Sordicom",
+                "description": "Contribución minoristas (Combustibles)",
+                "code": "26"
+            },
+            {
+                "id": 15,
+                "name_taxe": "Nombre de la figura tributaria",
+                "description": "Otros tributos, tasas, contribuciones, y similares",
+                "code": "ZZ"
+            },
+            {
+                "id": 16,
+                "name_taxe": "IC Porcentual",
+                "description": "Impuesto al Consumo Departamental Porcentual",
+                "code": "08"
+            },
+            {
+                "id": 17,
+                "name_taxe": "IC Datos",
+                "description": "Impuesto al Consumo de Datos",
+                "code": "30"
+            },
+            {
+                "id": 18,
+                "name_taxe": "ICL",
+                "description": "Impuesto al Consumo de Licores",
+                "code": "32"
+            },
+            {
+                "id": 19,
+                "name_taxe": "INPP",
+                "description": "Impuesto nacional productos plásticos",
+                "code": "33"
+            },
+            {
+                "id": 20,
+                "name_taxe": "IBUA",
+                "description": "Impuesto a las bebidas ultraprocesadas azucaradas",
+                "code": "34"
+            },
+            {
+                "id": 21,
+                "name_taxe": "ICUI",
+                "description": "Impuesto a los productos comestibles ultraprocesados industrialmente y/o con alto contenido de azúcares añadidos, sodio o grasas saturadas",
+                "code": "35"
+            },
+            {
+                "id": 22,
+                "name_taxe": "ADV",
+                "description": "AD VALOREM ",
+                "code": "36"
+            }
+        ]
+    },
+    "success": true
+}

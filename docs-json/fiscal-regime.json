@@ -1,0 +1,32 @@
+{
+    "dataRecords": {
+        "data": [
+            {
+                "id": 1,
+                "code": "O-13",
+                "description": "Gran contribuyente"
+            },
+            {
+                "id": 2,
+                "code": "O-15",
+                "description": "Autorretenedor"
+            },
+            {
+                "id": 3,
+                "code": "O-23",
+                "description": "Agente de retención IVA"
+            },
+            {
+                "id": 4,
+                "code": "O-47",
+                "description": "Régimen simple de tributación"
+            },
+            {
+                "id": 5,
+                "code": "R-99-PN",
+                "description": "No aplica – Otros"
+            }
+        ]
+    },
+    "success": true
+}

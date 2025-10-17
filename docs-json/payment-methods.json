@@ -1,0 +1,29 @@
+{
+    "dataRecords": {
+        "data": [
+            {
+                "id": 1,
+                "code": "1",
+                "payment_method": "Contado",
+                "active": 1,
+                "payment_method_code": null,
+                "payment_due_date": null,
+                "duration_measure": null,
+                "duration_measure_unit_code": "DAY",
+                "payment_id": 1
+            },
+            {
+                "id": 2,
+                "code": "2",
+                "payment_method": "Crédito",
+                "active": 1,
+                "payment_method_code": null,
+                "payment_due_date": null,
+                "duration_measure": null,
+                "duration_measure_unit_code": "DAY",
+                "payment_id": 1
+            }
+        ]
+    },
+    "success": true
+}

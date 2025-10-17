@@ -1,0 +1,263 @@
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  height: 600px;
+  overflow: hidden;
+}
+
+.header {
+  background: linear-gradient(135deg, #3c6ab2 0%, #2556a3 100%);
+  color: white;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.header p {
+  margin: 0.5rem 0 0 0;
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
+
+.messagesContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: #f9fafb;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message.user {
+  align-items: flex-end;
+}
+
+.message.assistant {
+  align-items: flex-start;
+}
+
+.messageContent {
+  display: flex;
+  gap: 0.75rem;
+  max-width: 80%;
+  align-items: flex-start;
+}
+
+.message.user .messageContent {
+  flex-direction: row-reverse;
+}
+
+.icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  line-height: 1.5rem;
+}
+
+.text {
+  background: white;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.message.user .text {
+  background: #3c6ab2;
+  color: white;
+  border-radius: 12px 0 12px 12px;
+}
+
+.message.assistant .text {
+  background: #e5e7eb;
+  color: #1f2937;
+  border-radius: 0 12px 12px 12px;
+}
+
+.timestamp {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
+  padding: 0 0.75rem;
+}
+
+.typing {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+}
+
+.typing span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3c6ab2;
+  animation: typing 1.4s infinite;
+}
+
+.typing span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-8px);
+  }
+}
+
+.errorMessage {
+  background: #fee2e2;
+  border-left: 4px solid #ef4444;
+  color: #991b1b;
+  padding: 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.inputContainer {
+  padding: 1rem;
+  border-top: 1px solid #e5e7eb;
+  background: white;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.9rem;
+  resize: none;
+  margin-bottom: 0.75rem;
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #3c6ab2;
+  box-shadow: 0 0 0 3px rgba(60, 106, 178, 0.1);
+}
+
+.input:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.buttonSend,
+.buttonClear {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.buttonSend {
+  background: linear-gradient(135deg, #3c6ab2 0%, #2556a3 100%);
+  color: white;
+}
+
+.buttonSend:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(60, 106, 178, 0.4);
+}
+
+.buttonSend:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.buttonClear {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.buttonClear:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.buttonClear:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.info {
+  background: #dbeafe;
+  border-left: 4px solid #3b82f6;
+  color: #1e40af;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  border-radius: 4px;
+}
+
+.info p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card {
+    height: 500px;
+  }
+
+  .messageContent {
+    max-width: 90%;
+  }
+
+  .messagesContainer {
+    padding: 1rem;
+  }
+}

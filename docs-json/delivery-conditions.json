@@ -1,0 +1,62 @@
+{
+    "dataRecords": {
+        "data": [
+            {
+                "id": 1,
+                "code": "CFR",
+                "name": "Costo y flete"
+            },
+            {
+                "id": 2,
+                "code": "CIF",
+                "name": "Costo, flete y seguro"
+            },
+            {
+                "id": 3,
+                "code": "CIP",
+                "name": "Transporte y Seguro Pagados hasta"
+            },
+            {
+                "id": 4,
+                "code": "CPT",
+                "name": "Transporte Pagado Hasta"
+            },
+            {
+                "id": 5,
+                "code": "DAP",
+                "name": "Entregado en un Lugar"
+            },
+            {
+                "id": 6,
+                "code": "DAT",
+                "name": "Entregado en Terminal"
+            },
+            {
+                "id": 7,
+                "code": "DDP",
+                "name": "Entregado con Pago de Derechos"
+            },
+            {
+                "id": 8,
+                "code": "EXW",
+                "name": "En Fábrica"
+            },
+            {
+                "id": 9,
+                "code": "FAS",
+                "name": "Franco al costado del buque"
+            },
+            {
+                "id": 10,
+                "code": "FCA",
+                "name": "Franco transportista"
+            },
+            {
+                "id": 11,
+                "code": "FOB",
+                "name": "Franco a bordo"
+            }
+        ]
+    },
+    "success": true
+}

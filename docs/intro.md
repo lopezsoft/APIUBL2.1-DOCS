@@ -3,7 +3,46 @@ sidebar_position: 1
 ---
 
 # Introducción
-Matias es una plataforma de facturación electrónica que permite a las empresas emitir, enviar y gestionar facturas electrónicas de forma segura y eficiente. Nuestra API RESTful proporciona acceso a los servicios de Matias, permitiendo a los desarrolladores integrar la funcionalidad de facturación electrónica en sus aplicaciones.
+
+Matias es una plataforma de **facturación electrónica** que permite a las empresas emitir, enviar y gestionar facturas electrónicas de forma segura y eficiente. Nuestra **API RESTful** proporciona acceso completo a los servicios de Matias.
+
+Con Matias, los desarrolladores pueden integrar la funcionalidad de facturación electrónica en sus aplicaciones, automatizando completamente el proceso de emisión de documentos de forma segura, legal y eficiente.
+
+## 📋 Tabla de Contenidos
+
+1. [Flujo de Autenticación](#flujo-de-autenticación)
+2. [Registro en la API](#registro-en-la-api)
+3. [Obtener Token de Acceso](#obtener-el-token-de-acceso)
+4. [Uso del Token](#uso-del-token-de-acceso)
+5. [Revocar Token](#revocar-el-token)
+6. [Recursos Adicionales](#ejemplos-y-endpoints-en-postman)
+
+## Flujo de Autenticación
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                  FLUJO DE AUTENTICACIÓN                      │
+├─────────────────────────────────────────────────────────────┤
+│                                                               │
+│  1. REGISTRO              2. OBTENER TOKEN                   │
+│  POST /register           POST /auth/login                   │
+│      ↓                         ↓                              │
+│  [Email/Password]         [Credenciales]                     │
+│      ↓                         ↓                              │
+│  Confirmación Email       access_token + User Info           │
+│                                ↓                              │
+│  ────────────────────────────────────────────────────────    │
+│                                                               │
+│  3. USAR TOKEN                4. REVOCACIÓN                  │
+│  Bearer {token}               GET /auth/logout               │
+│      ↓                              ↓                         │
+│  [Solicitudes API]            Token Revocado                 │
+│      ↓                                                        │
+│  Respuestas JSON                                             │
+│                                                               │
+└─────────────────────────────────────────────────────────────┘
+```
+
 ## Autenticación de API con OAuth2
 
 La autenticación para acceder a la API se gestiona mediante **Tokens de acceso** siguiendo el estándar de autenticación OAuth2. Esto asegura que las interacciones con la API sean seguras y estén autorizadas.
@@ -16,7 +55,17 @@ La autenticación para acceder a la API se gestiona mediante **Tokens de acceso*
 
 ## Encabezado de Autorización
 
-Para acceder a los recursos de la API, es necesario incluir un encabezado de autorización en cada solicitud. Este encabezado debe contener el token de acceso obtenido durante el proceso de autenticación:
+Para acceder a los recursos de la API, es necesario incluir un encabezado de autorización en cada solicitud. Este encabezado debe contener el token de acceso obtenido durante el proceso de autenticación.
+
+### Formato Esperado
+
+```
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM...
+Content-Type: application/json
+Accept: application/json
+```
+
+Donde `eyJ0eXAi...` es el token de acceso obtenido en el login.
 
 
 ## URL Base de la API
@@ -44,24 +93,43 @@ Para acceder y utilizar los servicios de nuestra API, es necesario que primero s
 
   - Realice una petición de tipo `POST` a la siguiente dirección: `{{URL}}/register`.
   - El cuerpo (`BODY`) de la petición debe incluir los siguientes parámetros:
-    ```
-    {
-      "first_name": "Lewis",
-      "last_name": "Lopez Gomez",
-      "email": "correo@correo.com", 
-      "password": "****",
-      "password_confirmation": "****",
-      "address": "dirección", 
-      "city_id": "836", 
-      "company_name": "nombre de la empresa", 
-      "dni": "12345678", 
-      "identity_document_id": 3, 
-      "mobile": "3108435431", 
-      "tax_level_id": "5", 
-      "tax_regime_id": "2",
-      "type_organization_id": 1
-    }
-    ```
+
+| Parámetro | Tipo | Descripción | Ejemplo |
+|-----------|------|-------------|----------|
+| `first_name` | string | Nombre del usuario | "Lewis" |
+| `last_name` | string | Apellido del usuario | "Lopez Gomez" |
+| `email` | string | Correo electrónico válido | "correo@correo.com" |
+| `password` | string | Contraseña (min 8 caracteres) | "MiPassword123!" |
+| `password_confirmation` | string | Confirmación de contraseña | "MiPassword123!" |
+| `address` | string | Dirección física | "Calle 123 #45-67" |
+| `city_id` | integer | ID de ciudad | 836 |
+| `company_name` | string | Nombre de la empresa | "Mi Empresa S.A." |
+| `dni` | string | Número de identificación (NIT) | "1234567890" |
+| `identity_document_id` | integer | Tipo de documento (1=CC, 3=NIT) | 3 |
+| `mobile` | string | Teléfono celular | "3108435431" |
+| `tax_level_id` | integer | Nivel fiscal | 5 |
+| `tax_regime_id` | integer | Régimen fiscal | 2 |
+| `type_organization_id` | integer | Tipo de organización | 1 |
+
+Ejemplo JSON completo:
+```json
+{
+  "first_name": "Lewis",
+  "last_name": "Lopez Gomez",
+  "email": "correo@correo.com", 
+  "password": "MiPassword123!",
+  "password_confirmation": "MiPassword123!",
+  "address": "Calle 123 #45-67", 
+  "city_id": 836, 
+  "company_name": "Mi Empresa S.A.", 
+  "dni": "1234567890", 
+  "identity_document_id": 3, 
+  "mobile": "3108435431", 
+  "tax_level_id": 5, 
+  "tax_regime_id": 2,
+  "type_organization_id": 1
+}
+```
   - Si el registro es correcto, la petición devolverá una respuesta HTTP 200 en formato JSON con la estructura:
     ```
     {
@@ -158,11 +226,12 @@ headers.set('Content-Type', 'application/json');
 headers.set('Accept', 'application/json');
 ```
 Donde `token` es el valor del token de acceso obtenido.
-- **Ejemplo de Encabezado de Autorización en nodejs:** 
+- **Ejemplo de Encabezado de Autorización en nodejs:** 🔵 Recomendado
    ```javascript
    const axios = require('axios');
-   const
-   const token
+   const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM...'; // Token obtenido del login
+   const url = '{{URL}}/v1/user';
+   
    const headers = {
       'Content-Type': 'application/json', 
       'Accept': 'application/json',
@@ -176,7 +245,7 @@ Donde `token` es el valor del token de acceso obtenido.
        console.log(error);
    });
    ```
-- ### **Ejemplo de Encabezado de Autorización en PHP:** 
+- ### **Ejemplo de Encabezado de Autorización en PHP:** 🟢 Básico
    ```php
    $curl = curl_init();
    curl_setopt_array($curl, array(
@@ -198,7 +267,7 @@ Donde `token` es el valor del token de acceso obtenido.
    curl_close($curl);
    echo $response;
    ```
-- ### **Ejemplo de Encabezado de Autorización en Python:** 
+- ### **Ejemplo de Encabezado de Autorización en Python:** 🔵 Recomendado
     ```python
     import requests
     url = "{{URL}}/v1/user"
@@ -210,7 +279,7 @@ Donde `token` es el valor del token de acceso obtenido.
     response = requests.request("GET", url, headers=headers)
     print(response.text)
     ```
-- ### **Ejemplo de Encabezado de Autorización en Java:** 
+- ### **Ejemplo de Encabezado de Autorización en Java:** 🟡 Avanzado
     ```java
     OkHttpClient client = new OkHttpClient().newBuilder()
       .build();
@@ -223,7 +292,7 @@ Donde `token` es el valor del token de acceso obtenido.
       .build();
     Response response = client.newCall(request).execute();
     ```
-- ### **Ejemplo de Encabezado de Autorización en C#:** 
+- ### **Ejemplo de Encabezado de Autorización en C#:** 🟢 Básico
     ```csharp
     var client = new RestClient("{{URL}}/v1/user");
     client.Timeout = -1;
@@ -234,7 +303,7 @@ Donde `token` es el valor del token de acceso obtenido.
     IRestResponse response = client.Execute(request);
     Console.WriteLine(response.Content);
     ```
-- ### **Ejemplo de Encabezado de Autorización en Ruby:** 
+- ### **Ejemplo de Encabezado de Autorización en Ruby:** 🟡 Avanzado
     ```ruby
     require 'uri'
     require 'net/http'
@@ -248,7 +317,7 @@ Donde `token` es el valor del token de acceso obtenido.
     response = http.request(request)
     puts response.read_body
     ```
-- ### **Ejemplo de Encabezado de Autorización en Go:** 
+- ### **Ejemplo de Encabezado de Autorización en Go:** 🟡 Avanzado
     ```go
     package main
     import (
@@ -302,27 +371,58 @@ Para revocar un token generado anteriormente y que aún no ha vencido, debe envi
     }
     ```
 
-## Nota Importante:
-Para que pueda dar continuidad a esta documentación, debe haber realizado la subida del certificado digital, 
-la información del Software generada por el portal de la DIAN, al igual que la resolución de facturación, 
-esta información la registra de forma visual mediante el portal web dispuesto para ello. 
-```
-{{URL}}/#/auth/login
-```
+## ⚠️ Nota Importante
+
+> **REQUISITO PREVIO OBLIGATORIO:** Para que pueda dar continuidad a esta documentación y usar la API para emitir documentos ante la DIAN, debe haber realizado:
+>
+> 1. ✅ Subida del **certificado digital** (Resolución DIAN)
+> 2. ✅ Información del **Software** generada por portal DIAN
+> 3. ✅ **Resolución de facturación** (números de rango)
+>
+> Registre esta información de forma visual en el portal web:
+> ```
+> {{URL}}/#/auth/login
+> ```
+>
+> Sin estos requisitos, el API rechazará sus solicitudes de emisión de facturas.
+
+## 🔗 Siguientes Pasos
+
+Ahora que comprende el flujo de autenticación, consulte:
+
+- 📚 **[Referencia Completa de Campos](/docs/billing-fields)** - Todos los campos disponibles en facturas
+- 🔌 **[Endpoints Disponibles](/docs/endpoints)** - Lista completa de endpoints del API
+- 📖 **[Glosario Técnico](/docs/glossary)** - Términos y conceptos clave
+- 💡 **[Casos de Uso Comunes](/docs/use-cases/common-errors)** - Errores frecuentes
+
 ## Ejemplos y endpoints en Postman
+
 Para facilitar la comprensión de los ejemplos de uso de la API, hemos creado una colección de ejemplos en Postman.
 Puede descargar la colección de ejemplos en el siguiente enlace:
 ```
 https://documenter.getpostman.com/view/8699065/2s9YyvBLby
 ```
-## Soporte
-Si tiene alguna pregunta o necesita ayuda, no dude en ponerse en contacto con nuestro equipo de soporte técnico. Estamos aquí para ayudarle.
+
+## 💬 Soporte y Ayuda
+
+**Contacto por Email:**
 ```
-soporte@matias.com.co
+📧 soporte@matias.com.co
 ```
 
-## Centro de Ayuda y Soporte vía tikets
-Para obtener ayuda con la API, puede abrir un ticket en nuestro Centro de Ayuda y Soporte. En el ticket, proporcionará información sobre su problema o pregunta relacionada con la API, y nuestro equipo de soporte técnico le ayudará a resolverlo.
+**Centro de Ayuda (Tickets):**
+Para obtener ayuda especializada con la API, abra un ticket en nuestro portal:
 ```
-https://support.lopezsoft.net.co/portal
+🎟️ https://support.lopezsoft.net.co/portal
 ```
+
+En su ticket, incluya:
+- Descripción clara del problema
+- Endpoint que está usando
+- Payload (JSON) que está enviando
+- Respuesta de error que recibe
+- Identificador de transacción (si aplica)
+
+---
+
+**Versión de Documentación:** 1.2 | **Última actualización:** Octubre 2025 | **API:** v1

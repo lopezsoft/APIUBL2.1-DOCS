@@ -1,0 +1,9 @@
+{
+  "label": "Marco Regulatorio DIAN",
+  "description": "Documentación de los anexos técnicos de la DIAN para facturación electrónica, nómina electrónica, documentos equivalentes, documento soporte y RADIAN",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Consulta los anexos técnicos de la DIAN y aprende cómo implementarlos con la API de MATIAS"
+  }
+}

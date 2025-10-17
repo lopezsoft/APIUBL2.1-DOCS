@@ -1,0 +1,8 @@
+{
+  "label": "Documento Soporte",
+  "description": "Guía de documento soporte según DIAN",
+  "position": 4,
+  "link": {
+    "type": "generated-index"
+  }
+}

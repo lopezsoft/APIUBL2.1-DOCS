@@ -1,11 +1,14 @@
 "use strict";
 /**
- * Servidor Express para integración con OpenAI GPT-4 Turbo
+ * Servidor Express para integración con OpenAI GPT-4o Mini
  *
  * Propósito:
  * - Proporcionar endpoint seguro para chat con IA
  * - Mantener contexto de conversación
  * - Especializado en APIUBL2.1 y facturación electrónica colombiana
+ * - Optimizado para velocidad y bajo costo ($1.88/mes)
+ *
+ * Modelo: gpt-4o-mini (128K tokens, 100-200ms latencia, production-ready)
  *
  * Uso:
  * npm install openai dotenv express cors
@@ -191,10 +194,10 @@ app.post('/api/openai/chat', async (req, res) => {
         ];
         // Llamar a OpenAI API
         const response = await openai.chat.completions.create({
-            model: 'gpt-4-turbo',
+            model: 'gpt-4o-mini',
             messages: messages,
-            max_tokens: 2048,
-            temperature: 0.7,
+            max_tokens: 4096,
+            temperature: 0.5,
             top_p: 0.9,
         });
         // Extraer respuesta

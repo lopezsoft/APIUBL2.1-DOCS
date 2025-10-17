@@ -85,13 +85,13 @@ Recomendamos comenzar por el documento que se ajuste a tu modelo de negocio:
 
 Esta documentación se actualiza regularmente para reflejar los cambios en la normativa DIAN. La fecha de última actualización se encuentra en cada documento específico.
 
-Para ver el historial de cambios en la normativa, consulta la [página de versiones](/docs/versions).
+Para ver el historial de cambios en la normativa, consulta la [página de descargas DIAN](https://www.dian.gov.co/impuestos/factura-electronica).
 
 ## Recursos Adicionales
 
 - 🔗 [Sitio Oficial DIAN](https://www.dian.gov.co/)
 - 📚 [Portal de Facturación Electrónica](https://www.dian.gov.co/fisc/Paginas/default.aspx)
-- 📖 [Tablas Referenciadas DIAN](/docs/reference-tables/overview)
+- 📖 [Tablas Referenciadas DIAN](/docs/regulatory-framework/tablas-referencia)
 - 🔍 [Glosario de Términos](/docs/glossary)
 
 ## Preguntas Frecuentes

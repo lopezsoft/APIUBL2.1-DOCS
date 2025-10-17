@@ -15,7 +15,34 @@ Con Matias, los desarrolladores pueden integrar la funcionalidad de facturación
 3. [Obtener Token de Acceso](#obtener-el-token-de-acceso)
 4. [Uso del Token](#uso-del-token-de-acceso)
 5. [Revocar Token](#revocar-el-token)
-6. [Recursos Adicionales](#ejemplos-y-endpoints-en-postman)
+6. [Marco Regulatorio DIAN](#marco-regulatorio-dian)
+7. [Recursos Adicionales](#ejemplos-y-endpoints-en-postman)
+
+---
+
+## 🏛️ Marco Regulatorio DIAN
+
+Matias en v1.4.0 incluye **documentación completa** de todos los marcos regulatorios emitidos por DIAN para documentos electrónicos. Consulta las especificaciones técnicas, casos de uso y ejemplos prácticos:
+
+### 📄 Documentos Disponibles
+
+| Documento | Resolución | Versión | Estado |
+|-----------|-----------|---------|---------|
+| **Factura Electrónica** | 000165/2024 | v1.9 | ✅ Vigente |
+| **Nómina Electrónica** | 0000040/2024 | v3.0 | ✅ Vigente |
+| **RADIAN** | 000198/2024 | v2.0 | ✅ Vigente |
+| **Documento Soporte** | 000160/2024 | v1.1 | ✅ Vigente |
+
+### 🚀 Acceso Rápido
+
+- 📖 **[Factura Electrónica v1.9](/docs/regulatory-framework/factura-electronica/intro)** - Especificación técnica y anexos
+- 💼 **[Nómina Electrónica v3.0](/docs/regulatory-framework/nomina-electronica/intro)** - Guía completa de campos y cálculos
+- 🌐 **[RADIAN v2.0](/docs/regulatory-framework/radian/intro)** - Sistema de radicación y validación
+- 📋 **[Documento Soporte v1.1](/docs/regulatory-framework/documento-soporte/intro)** - Especificaciones técnicas
+- 📊 **[Tablas de Referencia](/docs/regulatory-framework/tablas-referencia)** - Todas las tablas DIAN consolidadas
+- 📥 **[Descargas PDF](/docs/regulatory-framework/descargas-pdf)** - Anexos técnicos oficiales DIAN
+
+---
 
 ## Flujo de Autenticación
 
@@ -425,4 +452,7 @@ En su ticket, incluya:
 
 ---
 
-**Versión de Documentación:** 1.2 | **Última actualización:** Octubre 2025 | **API:** v1
+**Versión de Documentación:** 1.4 | **Última actualización:** Octubre 2025 | **API:** v1
+
+### 📢 ¡Nuevo en v1.4!
+Hemos agregado documentación completa del **Marco Regulatorio DIAN** con 11,539 líneas de contenido técnico. Consulta las nuevas secciones en el menú lateral.

@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
-import { FiSend, FiRefreshCw, FiAlertCircle } from 'react-icons/fi';
+import { FiSend, FiTrash2, FiAlertCircle } from 'react-icons/fi';
 import { MdAutoAwesome } from 'react-icons/md';
 import styles from './AIChat.module.css';
 import { API_ENDPOINTS } from '../../config/api';
@@ -319,7 +319,7 @@ const AIChat = memo(
             type="button"
             aria-label="Limpiar conversación"
           >
-            <FiRefreshCw size={16} />
+            <FiTrash2 size={16} />
           </button>
         </div>
 

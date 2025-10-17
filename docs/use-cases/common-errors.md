@@ -18,29 +18,45 @@ Esta guía enumera los errores más frecuentes al trabajar con la API MATIAS de 
 **Respuesta del API:**
 ```json
 {
-  "error": "unauthorized",
-  "message": "Token inválido o expirado"
+  "success": false,
+  "message": "Unauthorized - Token inválido o expirado"
 }
 ```
 
+**HTTP Status**: 401 - Unauthorized
+
 **Causas posibles:**
 1. Token OAuth2 ha expirado (generalmente 1 hora)
-2. Token no incluido en header
-3. Credenciales incorrectas
+2. Token no incluido en header Authorization
+3. Credenciales client_id/client_secret incorrectas
+4. Token malformado o corrupto
 
 **Solución:**
 ```bash
-# Obtener nuevo token
+# 1. Obtener nuevo token
 curl -X POST https://api.matias-app.com/oauth/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "client_id=YOUR_CLIENT_ID" \
   -d "client_secret=YOUR_CLIENT_SECRET" \
   -d "grant_type=client_credentials"
 
-# Usar en requests
+# 2. Respuesta con nuevo token
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+
+# 3. Usar en requests posterior
 curl -X POST https://api.matias-app.com/api/invoices \
-  -H "Authorization: Bearer YOUR_NEW_TOKEN"
+  -H "Authorization: Bearer YOUR_NEW_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{...}'
 ```
+
+:::tip
+**Pro tip:** Guarda la fecha/hora de expiración del token. Obtén uno nuevo 5 minutos antes de que expire.
+:::
 
 ---
 
@@ -51,13 +67,14 @@ curl -X POST https://api.matias-app.com/api/invoices \
 **Respuesta del API:**
 ```json
 {
-  "error": true,
-  "message": "JSON inválido"
+  "success": false,
+  "message": "Invalid or malformed JSON"
 }
 ```
 
-**Causa común:**
-```json
+**HTTP Status**: 400 - Bad Request
+
+**Causa común - JSON inválido:**
 // INCORRECTO - Falta cierre de llaves
 {
   "resolution_number": "18764074347312",
@@ -82,29 +99,28 @@ curl -X POST https://api.matias-app.com/api/invoices \
 **Respuesta del API:**
 ```json
 {
-  "error": true,
-  "errors": [
-    {
-      "field": "lines",
-      "message": "Este campo es obligatorio"
-    }
-  ]
+  "success": false,
+  "message": "Required field missing: lines"
 }
 ```
 
+**HTTP Status**: 400 - Bad Request
+
 **Campos obligatorios:**
 
-| Campo | Tipo | Ejemplo |
-|-------|------|---------|
-| `resolution_number` | string | "18764074347312" |
-| `prefix` | string | "FEV" |
-| `document_number` | string | "2001" |
-| `type_document_id` | int | 7 |
-| `operation_type_id` | int | 1 |
-| `customer` | object | `{ }` |
-| `lines` | array | `[ ]` |
-| `legal_monetary_totals` | object | `{ }` |
-| `payments` | array | `[ ]` |
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `resolution_number` | string | Resolución DIAN de facturación |
+| `prefix` | string | Prefijo registrado (ej: FEV, FVD) |
+| `document_number` | string | Número secuencial del documento |
+| `type_document_id` | int | Tipo de documento (7=Factura) |
+| `operation_type_id` | int | Tipo de operación (1=Estándar) |
+| `customer` | object | Datos del cliente/comprador |
+| `lines` | array | Ítems facturados |
+| `legal_monetary_totals` | object | Totales finales |
+| `payments` | array | Información de pago |
+
+**Solución:** Verifica que el JSON incluya todos estos campos con valores válidos.
 
 ---
 
@@ -115,22 +131,16 @@ curl -X POST https://api.matias-app.com/api/invoices \
 **Respuesta del API:**
 ```json
 {
-  "error": true,
-  "errors": [
-    {
-      "field": "customer.dni",
-      "message": "NIT con dígito verificador inválido"
-    }
-  ]
+  "success": false,
+  "message": "El documento (cliente.dni) con numero 8001234567-8, no es valido"
 }
 ```
 
+**HTTP Status**: 422 - Unprocessable Entity
+
 **Ejemplo:** NIT `8001234567-8` es inválido
 
-**Algoritmo correcto (Validador interactivo disponible):**
-
-```
-NIT: 800123456
+**Algoritmo Colombiano Correcto:**
 Posición: 1 2 3 4 5 6 7 8 9
 Dígito:   8 0 0 1 2 3 4 5 6
 Peso:     3 7 13 17 19 23 29 37 41
@@ -189,9 +199,17 @@ Dígito verificador = 11 - 2 = 9
   "legal_monetary_totals": {
     "line_extension_amount": "200.00",
     "tax_exclusive_amount": "200.00",
-    "tax_inclusive_amount": "237.00",  // ❌ INCORRECTO: 200 + 38 = 238
+    "tax_inclusive_amount": "237.00",
     "payable_amount": 237.00
   }
+}
+```
+
+**Respuesta del API:**
+```json
+{
+  "success": false,
+  "message": "La validación de tax_inclusive_amount es incorrecta. Se esperaba 238.00, se recibió 237.00"
 }
 ```
 
@@ -201,13 +219,13 @@ Dígito verificador = 11 - 2 = 9
   "legal_monetary_totals": {
     "line_extension_amount": "200.00",
     "tax_exclusive_amount": "200.00",
-    "tax_inclusive_amount": "238.00",  // ✓ CORRECTO: 200 + 38 = 238
+    "tax_inclusive_amount": "238.00",
     "payable_amount": 238.00
   }
 }
 ```
 
-**Fórmula:**
+**Fórmula Correcta:**
 ```
 tax_inclusive_amount = tax_exclusive_amount + SUMA(tax_totals[*].tax_amount)
 payable_amount = tax_inclusive_amount
@@ -271,15 +289,12 @@ tax_amount = taxable_amount × (percent / 100)
 **Respuesta del API:**
 ```json
 {
-  "error": true,
-  "errors": [
-    {
-      "field": "lines[0].allowance_charges",
-      "message": "Descuento no puede ser mayor que el monto base"
-    }
-  ]
+  "success": false,
+  "message": "Allowance/Charge amount cannot exceed line base amount"
 }
 ```
+
+**HTTP Status**: 422 - Unprocessable Entity
 
 **Ejemplo incorrecto:**
 ```json
@@ -289,7 +304,7 @@ tax_amount = taxable_amount × (percent / 100)
       "price_amount": "100.00",
       "allowance_charges": [
         {
-          "amount": "150.00",           // ❌ INCORRECTO: Mayor que base
+          "amount": "150.00",
           "base_amount": "100.00",
           "charge_indicator": false
         }
@@ -372,26 +387,36 @@ tax_amount = taxable_amount × (percent / 100)
 **Respuesta del API:**
 ```json
 {
-  "error": true,
-  "message": "Ya existe una factura con este número"
+  "success": false,
+  "message": "El documento (Factura electrónica) con numero FEV2001, ya se encuentra validado"
 }
 ```
 
-**Causa:** Mismo `prefix` + `document_number` ya existe
+**HTTP Status**: 422 - Unprocessable Entity
 
-**Solución:**
+**Causa:** El mismo `prefix` + `document_number` ya existe en el sistema
+
+**Solución - Opción 1: Incrementar número secuencial**
 ```
-Opción 1: Incrementar document_number
-- Actual: FEV-2001
-- Nuevo:  FEV-2002
-
-Opción 2: Cambiar prefix
-- Actual: FEV-2001
-- Nuevo:  FEX-2001
-
-Opción 3: Verificar si la factura fue creada
-- Consultar: GET /api/invoices?prefix=FEV&document_number=2001
+Actual: FEV-2001  ❌ Ya existe
+Nuevo:  FEV-2002  ✓ Use este
 ```
+
+**Solución - Opción 2: Usar diferente prefijo**
+```
+Actual: FEV-2001  ❌ Ya existe
+Nuevo:  FEX-2001  ✓ Prefijo diferente
+```
+
+**Solución - Opción 3: Consultar documento anterior**
+```bash
+curl -X GET "https://api.matias-app.com/api/invoices?prefix=FEV&document_number=2001" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+:::warning
+**IMPORTANTE**: Los prefijos deben estar registrados previamente en tu resolución de facturación ante la DIAN.
+:::
 
 ---
 

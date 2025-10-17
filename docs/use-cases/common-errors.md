@@ -80,8 +80,8 @@ Ejemplo de JSON malformado (falta cierre de llave):
 ```json
 {
   "resolution_number": "18764074347312",
-  "prefix": "FEV",
-  "document_number": "2001"
+  "prefix": "LZT",
+  "document_number": "2002"
 }
 ```
 
@@ -89,8 +89,8 @@ Ejemplo de JSON malformado (falta cierre de llave):
 ```json
 {
   "resolution_number": "18764074347312",
-  "prefix": "FEV",
-  "document_number": "2001"
+  "prefix": "LZT",
+  "document_number": "2002"
 }
 ```
 
@@ -394,7 +394,7 @@ tax_amount = taxable_amount × (percent / 100)
 ```json
 {
   "success": false,
-  "message": "El documento (Factura electrónica) con numero FEV2001, ya se encuentra validado"
+  "message": "El documento (Factura electrónica) con numero LZT2002, ya se encuentra validado"
 }
 ```
 
@@ -404,19 +404,19 @@ tax_amount = taxable_amount × (percent / 100)
 
 **Solución - Opción 1: Incrementar número secuencial**
 ```
-Actual: FEV-2001  ❌ Ya existe
-Nuevo:  FEV-2002  ✓ Use este
+Actual: LZT-2002  ❌ Ya existe
+Nuevo:  LZT-2003  ✓ Use este
 ```
 
 **Solución - Opción 2: Usar diferente prefijo**
 ```
-Actual: FEV-2001  ❌ Ya existe
-Nuevo:  FEX-2001  ✓ Prefijo diferente
+Actual: LZT-2002  ❌ Ya existe
+Nuevo:  LZX-2002  ✓ Prefijo diferente
 ```
 
 **Solución - Opción 3: Consultar documento anterior**
 ```bash
-curl -X GET "https://api.matias-app.com/api/invoices?prefix=FEV&document_number=2001" \
+curl -X GET "https://api.matias-app.com/api/invoices?prefix=LZT&document_number=2002" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 

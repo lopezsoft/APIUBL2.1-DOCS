@@ -65,8 +65,8 @@ Reúne la información necesaria:
 ```json
 {
   "resolution_number": "18764074347312",
-  "prefix": "FEV",
-  "document_number": "2001",
+  "prefix": "LZT",
+  "document_number": "2002",
   "date": "2024-10-17",
   "time": "14:30:00"
 }
@@ -76,16 +76,16 @@ Reúne la información necesaria:
 ```json
 {
   "country_id": "45",
-  "city_id": "76",
-  "identity_document_id": "2",
+  "city_id": "836",
+  "identity_document_id": "1",
   "type_organization_id": 2,
-  "tax_regime_id": 1,
+  "tax_regime_id": 2,
   "tax_level_id": 5,
-  "company_name": "CLIENTE EMPRESA LTDA",
-  "dni": "8001234567",
-  "email": "compras@cliente.com",
-  "address": "Calle 15 #8-30",
-  "postal_code": "050001"
+  "company_name": "LOPEZ GOMEZ LEWIS OSWALDO",
+  "dni": "1063279307",
+  "email": "lws_1234@hotmail.com",
+  "address": "Calle 64 #1823",
+  "postal_code": "661002"
 }
 ```
 
@@ -100,9 +100,9 @@ Monta el JSON completo usando la estructura real del API:
 ```json
 {
   "resolution_number": "18764074347312",
-  "prefix": "FEV",
-  "notes": "Factura de venta electrónica",
-  "document_number": "2001",
+  "prefix": "LZT",
+  "notes": "Nota del documento",
+  "document_number": "2002",
   "graphic_representation": 0,
   "send_email": 1,
   "operation_type_id": 1,
@@ -112,42 +112,42 @@ Monta el JSON completo usando la estructura real del API:
     {
       "payment_method_id": 1,
       "means_payment_id": 10,
-      "value_paid": "119000.00"
+      "value_paid": "224.00"
     }
   ],
   
   "customer": {
     "country_id": "45",
-    "city_id": "76",
-    "identity_document_id": "2",
+    "city_id": "836",
+    "identity_document_id": "1",
     "type_organization_id": 2,
-    "tax_regime_id": 1,
+    "tax_regime_id": 2,
     "tax_level_id": 5,
-    "company_name": "CLIENTE EMPRESA LTDA",
-    "dni": "8001234567",
-    "mobile": "3001234567",
-    "email": "compras@cliente.com",
-    "address": "Calle 15 #8-30",
-    "postal_code": "050001"
+    "company_name": "LOPEZ GOMEZ LEWIS OSWALDO",
+    "dni": "1063279307",
+    "mobile": "3108435423",
+    "email": "lws_1234@hotmail.com",
+    "address": "Calle 64 #1823",
+    "postal_code": "661002"
   },
   
   "lines": [
     {
-      "invoiced_quantity": "1",
+      "invoiced_quantity": "2",
       "quantity_units_id": "1093",
-      "line_extension_amount": "100000.00",
+      "line_extension_amount": "100.00",
       "free_of_charge_indicator": false,
-      "description": "PRODUCTO O SERVICIO",
-      "code": "PRD-001",
+      "description": "TIJERA NECROPSIA AVES",
+      "code": "HMT83",
       "type_item_identifications_id": "4",
       "reference_price_id": "1",
-      "price_amount": "100000.00",
-      "base_quantity": "1",
+      "price_amount": "50",
+      "base_quantity": "2",
       "tax_totals": [
         {
           "tax_id": "1",
-          "tax_amount": 19000.00,
-          "taxable_amount": 100000.00,
+          "tax_amount": 19,
+          "taxable_amount": 100,
           "percent": 19
         }
       ]
@@ -155,17 +155,17 @@ Monta el JSON completo usando la estructura real del API:
   ],
   
   "legal_monetary_totals": {
-    "line_extension_amount": "100000.00",
-    "tax_exclusive_amount": "100000.00",
-    "tax_inclusive_amount": "119000.00",
-    "payable_amount": 119000.00
+    "line_extension_amount": "100.00",
+    "tax_exclusive_amount": "100.00",
+    "tax_inclusive_amount": "119.00",
+    "payable_amount": 119.00
   },
   
   "tax_totals": [
     {
       "tax_id": "1",
-      "tax_amount": 19000.00,
-      "taxable_amount": 100000.00,
+      "tax_amount": 19,
+      "taxable_amount": 100,
       "percent": 19
     }
   ]
@@ -186,33 +186,33 @@ Monta el JSON completo usando la estructura real del API:
 Antes de enviarla a la API, verifica:
 
 ✅ **Identificación**
-- `resolution_number` válida
-- `prefix` registrada en DIAN
-- `document_number` no duplicado
+- `resolution_number: "18764074347312"` (válida)
+- `prefix: "LZT"` (registrada en DIAN)
+- `document_number: "2002"` (no duplicado)
 - `type_document_id: 7` (Factura de venta)
 - `operation_type_id: 1` (Operación estándar)
 
 ✅ **Cliente**
-- `dni` válido y formateado correctamente
-- `company_name` no vacío
-- `email` con formato correcto
-- `country_id: 45` (Colombia)
+- `dni: "1063279307"` (válido con dígito verificador)
+- `company_name: "LOPEZ GOMEZ LEWIS OSWALDO"` (no vacío)
+- `email: "lws_1234@hotmail.com"` (formato correcto)
+- `country_id: "45"` (Colombia)
 
 ✅ **Líneas**
-- `invoiced_quantity` > 0
-- `price_amount` > 0
-- `line_extension_amount` = `invoiced_quantity` × `price_amount`
-- `tax_totals` calcular correctamente
+- `invoiced_quantity: "2"` > 0
+- `price_amount: "50"` > 0
+- `line_extension_amount: "100.00"` = 2 × 50 ✓
+- `tax_totals` con cálculo: 100 × 0.19 = 19 ✓
 
 ✅ **Totales**
-- `tax_exclusive_amount` = suma de `line_extension_amount`
-- `tax_inclusive_amount` = `tax_exclusive_amount` + impuestos
-- `payable_amount` = `tax_inclusive_amount`
+- `tax_exclusive_amount: "100.00"` = suma de líneas
+- `tax_inclusive_amount: "119.00"` = 100 + 19 ✓
+- `payable_amount: 119.00` = `tax_inclusive_amount` ✓
 
 ✅ **Pagos**
-- `value_paid` = `payable_amount`
-- `payment_method_id` válido
-- `means_payment_id` válido
+- `value_paid: "224.00"` = `payable_amount` ✓
+- `payment_method_id: 1` (válido)
+- `means_payment_id: 10` (válido)
 
 ## Paso 5: Enviar la Factura a la API
 
@@ -224,59 +224,60 @@ curl -X POST https://api.matias-app.com/api/invoices \
   -H "Content-Type: application/json" \
   -d '{
   "resolution_number": "18764074347312",
-  "prefix": "FEV",
-  "document_number": "2001",
+  "prefix": "LZT",
+  "notes": "Nota del documento",
+  "document_number": "2002",
   "type_document_id": 7,
   "operation_type_id": 1,
   "graphic_representation": 0,
   "send_email": 1,
   "customer": {
     "country_id": "45",
-    "city_id": "76",
-    "identity_document_id": "2",
+    "city_id": "836",
+    "identity_document_id": "1",
     "type_organization_id": 2,
-    "tax_regime_id": 1,
+    "tax_regime_id": 2,
     "tax_level_id": 5,
-    "company_name": "CLIENTE EMPRESA LTDA",
-    "dni": "8001234567",
-    "mobile": "3001234567",
-    "email": "compras@cliente.com",
-    "address": "Calle 15 #8-30",
-    "postal_code": "050001"
+    "company_name": "LOPEZ GOMEZ LEWIS OSWALDO",
+    "dni": "1063279307",
+    "mobile": "3108435423",
+    "email": "lws_1234@hotmail.com",
+    "address": "Calle 64 #1823",
+    "postal_code": "661002"
   },
   "lines": [
     {
-      "invoiced_quantity": "1",
+      "invoiced_quantity": "2",
       "quantity_units_id": "1093",
-      "line_extension_amount": "100000.00",
+      "line_extension_amount": "100.00",
       "free_of_charge_indicator": false,
-      "description": "PRODUCTO O SERVICIO",
-      "code": "PRD-001",
+      "description": "TIJERA NECROPSIA AVES",
+      "code": "HMT83",
       "type_item_identifications_id": "4",
       "reference_price_id": "1",
-      "price_amount": "100000.00",
-      "base_quantity": "1",
+      "price_amount": "50",
+      "base_quantity": "2",
       "tax_totals": [
         {
           "tax_id": "1",
-          "tax_amount": 19000.00,
-          "taxable_amount": 100000.00,
+          "tax_amount": 19,
+          "taxable_amount": 100,
           "percent": 19
         }
       ]
     }
   ],
   "legal_monetary_totals": {
-    "line_extension_amount": "100000.00",
-    "tax_exclusive_amount": "100000.00",
-    "tax_inclusive_amount": "119000.00",
-    "payable_amount": 119000.00
+    "line_extension_amount": "100.00",
+    "tax_exclusive_amount": "100.00",
+    "tax_inclusive_amount": "119.00",
+    "payable_amount": 119.00
   },
   "tax_totals": [
     {
       "tax_id": "1",
-      "tax_amount": 19000.00,
-      "taxable_amount": 100000.00,
+      "tax_amount": 19,
+      "taxable_amount": 100,
       "percent": 19
     }
   ],
@@ -284,7 +285,7 @@ curl -X POST https://api.matias-app.com/api/invoices \
     {
       "payment_method_id": 1,
       "means_payment_id": 10,
-      "value_paid": "119000.00"
+      "value_paid": "119.00"
     }
   ]
 }'
@@ -303,7 +304,7 @@ curl -X POST https://api.matias-app.com/api/invoices \
     "IsValid": "true",
     "StatusCode": "00",
     "StatusDescription": "Procesado Correctamente.",
-    "StatusMessage": "La Factura electrónica FEV2001, ha sido autorizada.",
+    "StatusMessage": "La Factura electrónica LZT2002, ha sido autorizada.",
     "XmlBase64Bytes": "",
     "XmlBytes": {
       "_attributes": {
@@ -352,7 +353,7 @@ curl -X POST https://api.matias-app.com/api/invoices \
 ```json
 {
   "success": false,
-  "message": "El documento (Factura electrónica) con numero FEV2001, ya se encuentra validado"
+  "message": "El documento (Factura electrónica) con numero LZT2002, ya se encuentra validado"
 }
 ```
 
@@ -370,7 +371,7 @@ curl -X POST https://api.matias-app.com/api/invoices \
 Para obtener los detalles completos de tu factura después de haberla creado:
 
 ```bash
-curl -X GET "https://api.matias-app.com/api/invoices/FEV-2001" \
+curl -X GET "https://api.matias-app.com/api/invoices/LZT-2002" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
@@ -387,7 +388,7 @@ curl -X GET "https://api.matias-app.com/api/invoices/FEV-2001" \
     "IsValid": "true",
     "StatusCode": "00",
     "StatusDescription": "Procesado Correctamente.",
-    "StatusMessage": "La Factura electrónica FEV2001, ha sido autorizada.",
+    "StatusMessage": "La Factura electrónica LZT2002, ha sido autorizada.",
     "XmlBase64Bytes": "",
     "XmlBytes": {
       "_attributes": {

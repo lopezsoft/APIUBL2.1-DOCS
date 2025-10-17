@@ -160,8 +160,8 @@ Analicemos el JSON línea por línea:
 ```json
 {
   "resolution_number": "18764074347312",
-  "prefix": "FEV",
-  "document_number": "2006",
+  "prefix": "LZT",
+  "document_number": "5045",
   "operation_type_id": 1,
   "type_document_id": 7,
   "graphic_representation": 0,

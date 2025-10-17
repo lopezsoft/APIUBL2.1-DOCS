@@ -55,13 +55,15 @@ Factura electrónica emitida como respaldo de un documento en papel o talonario 
         "reference_number": "4541212",
         "reference_date": "2025-06-01"
     },
-    "additional_document_reference": {
-        "number": "LZT2119",
-        "code": "01",
-        "date": "2025-08-18",
-        "uuid": "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567",
-        "scheme_name": "CUFE-SHA384"
-    },
+    "additional_document_reference": [
+        {
+            "number": "LZT2119",
+            "code": "01",
+            "date": "2025-08-18",
+            "uuid": "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567",
+            "scheme_name": "CUFE-SHA384"
+        }
+    ],
     "document_signature": {
         "cashier": "Nombre del cajero(a)",
         "cashier_title": "Firma Cajero(a)",

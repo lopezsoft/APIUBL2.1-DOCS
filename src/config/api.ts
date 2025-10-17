@@ -1,20 +1,58 @@
 /**
- * Configuración del API
+ * Configuración del API (Frontend)
  * 
- * Centraliza todas las URLs y endpoints del backend
- * Permite cambiar fácilmente entre desarrollo y producción
+ * Lee la configuración de window.__MATIAS_CONFIG__ que es inyectada
+ * por /static/config.js ANTES de que se cargue el bundle de React
+ * 
+ * Esto evita usar process.env que no existe en el navegador
  */
 
-// Detectar ambiente (desarrollo vs producción)
-const isProduction = process.env.NODE_ENV === 'production';
-const isDevelopment = process.env.NODE_ENV === 'development';
+// Tipos para la configuración
+declare global {
+  interface Window {
+    __MATIAS_CONFIG__?: {
+      BACKEND_URL: string;
+      isDevelopment: boolean;
+      environment: 'development' | 'production';
+      API_ENDPOINTS: {
+        CHAT: string;
+        HEALTH: string;
+        BEDROCK: string;
+      };
+    };
+    __BACKEND_URL__?: string;
+  }
+}
 
-// URLs del backend
-const BACKEND_DEV = process.env.REACT_APP_API_BACKEND_DEV || 'http://localhost:3001';
-const BACKEND_PROD = process.env.REACT_APP_API_BACKEND_PROD || 'https://api.matias-api.com';
+// Obtener la configuración inyectada (o usar defaults)
+const getConfig = () => {
+  if (typeof window !== 'undefined' && window.__MATIAS_CONFIG__) {
+    return window.__MATIAS_CONFIG__;
+  }
+  
+  // Default fallback (solo si config.js no se ha cargado)
+  const isDev = typeof window !== 'undefined' && 
+                (window.location.hostname === 'localhost' || 
+                 window.location.hostname === '127.0.0.1');
+  
+  return {
+    BACKEND_URL: isDev ? 'http://localhost:3001' : 'https://api.matias-api.com',
+    isDevelopment: isDev,
+    environment: isDev ? 'development' : 'production',
+    API_ENDPOINTS: {
+      CHAT: (isDev ? 'http://localhost:3001' : 'https://api.matias-api.com') + '/api/openai/chat',
+      HEALTH: (isDev ? 'http://localhost:3001' : 'https://api.matias-api.com') + '/health',
+      BEDROCK: (isDev ? 'http://localhost:3001' : 'https://api.matias-api.com') + '/api/bedrock/chat',
+    }
+  };
+};
 
-// Seleccionar URL del backend según ambiente
-export const BACKEND_URL = isProduction ? BACKEND_PROD : BACKEND_DEV;
+const config = getConfig();
+
+// Exportar configuración
+export const BACKEND_URL = config.BACKEND_URL;
+export const isDevelopment = config.isDevelopment;
+export const environment = config.environment;
 
 // Endpoints
 export const API_ENDPOINTS = {
@@ -24,26 +62,26 @@ export const API_ENDPOINTS = {
    * Body: { message: string, conversationHistory: Message[] }
    * Response: { response: string, usage: { prompt_tokens, completion_tokens, total_tokens } }
    */
-  CHAT: `${BACKEND_URL}${process.env.REACT_APP_API_CHAT_ENDPOINT || '/api/openai/chat'}`,
+  CHAT: config.API_ENDPOINTS.CHAT,
 
   /**
    * Endpoint para verificar estado del servidor
    * GET /health
    * Response: { status: string, service: string, model: string }
    */
-  HEALTH: `${BACKEND_URL}${process.env.REACT_APP_API_HEALTH_CHECK || '/health'}`,
+  HEALTH: config.API_ENDPOINTS.HEALTH,
 
   /**
    * Endpoint legacy (compatibilidad)
    * POST /api/bedrock/chat (se redirige a /api/openai/chat)
    */
-  BEDROCK: `${BACKEND_URL}/api/bedrock/chat`,
+  BEDROCK: config.API_ENDPOINTS.BEDROCK,
 };
 
 // Configuración de request
 export const API_CONFIG = {
   /** Timeout para requests (ms) */
-  TIMEOUT: parseInt(process.env.REACT_APP_API_TIMEOUT || '30000', 10),
+  TIMEOUT: 30000,
 
   /** Headers por defecto */
   HEADERS: {
@@ -58,12 +96,10 @@ export const API_CONFIG = {
   RETRY_DELAY: 1000,
 };
 
-// Logging
-export const DEBUG_MODE = isDevelopment && process.env.REACT_APP_DEBUG !== 'false';
-
-if (DEBUG_MODE) {
+// Logging en desarrollo
+if (isDevelopment && typeof window !== 'undefined') {
   console.log('🔧 API Configuration:');
-  console.log('  Ambiente:', process.env.NODE_ENV);
+  console.log('  Ambiente:', environment);
   console.log('  Backend URL:', BACKEND_URL);
   console.log('  Chat Endpoint:', API_ENDPOINTS.CHAT);
   console.log('  Health Endpoint:', API_ENDPOINTS.HEALTH);

@@ -206,42 +206,45 @@ TypingIndicator.displayName = 'TypingIndicator';
  * Área de entrada de texto
  */
 const MessageInput = memo(
-  ({
-    value,
-    onChange,
-    onSend,
-    onKeyPress,
-    disabled,
-  }: {
+  React.forwardRef<HTMLTextAreaElement, {
     value: string;
     onChange: (value: string) => void;
     onSend: () => void;
     onKeyPress: (e: React.KeyboardEvent) => void;
     disabled: boolean;
-  }) => (
-    <div className={styles.inputArea}>
-      <textarea
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onKeyPress={onKeyPress}
-        placeholder="Escribe tu pregunta aquí..."
-        disabled={disabled}
-        className={styles.input}
-        rows={2}
-        maxLength={4000}
-        aria-label="Campo de entrada para preguntas"
-      />
-      <button
-        onClick={onSend}
-        disabled={disabled || !value.trim()}
-        className={styles.sendButton}
-        aria-label="Enviar mensaje"
-        title="Presiona Enter para enviar"
-        type="button"
-      >
-        {disabled ? <span>⏳</span> : <FiSend size={18} />}
-      </button>
-    </div>
+  }>(
+    ({
+      value,
+      onChange,
+      onSend,
+      onKeyPress,
+      disabled,
+    }, ref) => (
+      <div className={styles.inputArea}>
+        <textarea
+          ref={ref}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onKeyPress={onKeyPress}
+          placeholder="Escribe tu pregunta aquí..."
+          disabled={disabled}
+          className={styles.input}
+          rows={2}
+          maxLength={4000}
+          aria-label="Campo de entrada para preguntas"
+        />
+        <button
+          onClick={onSend}
+          disabled={disabled || !value.trim()}
+          className={styles.sendButton}
+          aria-label="Enviar mensaje"
+          title="Presiona Enter para enviar"
+          type="button"
+        >
+          {disabled ? <span>⏳</span> : <FiSend size={18} />}
+        </button>
+      </div>
+    ),
   ),
 );
 
@@ -269,11 +272,19 @@ const AIChat = memo(
       useChatLogic(endpoint, maxHistorySize, onError);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLTextAreaElement>(null);
 
     // Auto scroll cuando hay nuevos mensajes
     useEffect(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
+
+    // Focus en el input después de enviar y cuando termina de cargar
+    useEffect(() => {
+      if (!loading && inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, [loading]);
 
     const handleKeyPress = useCallback(
       (e: React.KeyboardEvent) => {
@@ -335,6 +346,7 @@ const AIChat = memo(
 
         {/* Área de entrada */}
         <MessageInput
+          ref={inputRef}
           value={input}
           onChange={setInput}
           onSend={sendMessage}

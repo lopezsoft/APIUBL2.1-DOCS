@@ -275,3 +275,4 @@ exports.ragService = new RAGService();
 // Inicializar en background cuando se carga el módulo
 exports.ragService.initialize().catch(err => console.error('Error inicializando RAG:', err));
 exports.default = exports.ragService;
+//# sourceMappingURL=rag.service.js.map

@@ -7,6 +7,16 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  sources?: Array<{
+    source: string;
+    relevance: number;
+    title: string;
+  }>;
+}
+
+interface ChatOptions {
+  useRAG: boolean;
+  topK: number;
 }
 
 export default function AIAssistant() {
@@ -14,13 +24,19 @@ export default function AIAssistant() {
     {
       id: '1',
       role: 'assistant',
-      content: '👋 Hola, soy tu asistente técnico de APIUBL2.1. ¿En qué puedo ayudarte hoy? Puedo responder preguntas sobre:\n\n• Estructura de facturas electrónicas\n• Validación de NITs\n• Cálculo de totales e impuestos\n• Ejemplos de JSON\n• Errores comunes\n• Integración del API',
+      content: '� **Asistente Técnico IA - APIUBL2.1**\n\n¡Hola! Soy tu asistente especializado en facturación electrónica colombiana, respaldado por **documentación oficial DIAN** y búsqueda inteligente (RAG).\n\n**¿En qué puedo ayudarte?**\n• 📄 Estructura de facturas electrónicas\n• ✅ Validación de NITs y documentos\n• 🧮 Cálculo de totales e impuestos\n• 📋 Ejemplos JSON de transacciones\n• 🚨 Resolución de errores comunes\n• 📖 Referencias del marco regulatorio DIAN\n• 💼 Integración del API',
       timestamp: new Date()
     }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [options, setOptions] = useState<ChatOptions>({
+    useRAG: true,
+    topK: 3
+  });
+  const [showOptions, setShowOptions] = useState(false);
+  const [showSourcesFor, setShowSourcesFor] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -48,7 +64,7 @@ export default function AIAssistant() {
     setError(null);
 
     try {
-      // Llamar a Bedrock API (usa config inyectada)
+      // Llamar a API con opciones RAG
       const response = await fetch(API_ENDPOINTS.BEDROCK, {
         method: 'POST',
         headers: {
@@ -59,7 +75,11 @@ export default function AIAssistant() {
           conversationHistory: messages.map(m => ({
             role: m.role,
             content: m.content
-          }))
+          })),
+          options: {
+            useRAG: options.useRAG,
+            topK: options.topK
+          }
         })
       });
 
@@ -69,12 +89,13 @@ export default function AIAssistant() {
 
       const data = await response.json();
 
-      // Agregar respuesta del asistente
+      // Agregar respuesta del asistente con fuentes
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: data.response,
-        timestamp: new Date()
+        timestamp: new Date(),
+        sources: data.sources || undefined
       };
 
       setMessages(prev => [...prev, assistantMessage]);
@@ -99,18 +120,79 @@ export default function AIAssistant() {
       {
         id: '1',
         role: 'assistant',
-        content: '👋 Hola, soy tu asistente técnico de APIUBL2.1. ¿En qué puedo ayudarte hoy?',
+        content: '� Chat limpiado. ¿En qué más puedo ayudarte?',
         timestamp: new Date()
       }
     ]);
+  };
+
+  const exportChat = () => {
+    const chatContent = messages
+      .map(m => `[${m.timestamp.toLocaleTimeString()}] ${m.role.toUpperCase()}: ${m.content}`)
+      .join('\n\n');
+    
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(chatContent));
+    element.setAttribute('download', `chat-apiubl-${Date.now()}.txt`);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
+  const copySources = (message: Message) => {
+    if (!message.sources) return;
+    const sourcesText = message.sources
+      .map(s => `📚 ${s.title}\nFuente: ${s.source}\nRelevancia: ${(s.relevance * 100).toFixed(0)}%`)
+      .join('\n\n');
+    navigator.clipboard.writeText(sourcesText);
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <h2>🤖 Asistente Técnico AI</h2>
-          <p>Soporte técnico inteligente para APIUBL2.1</p>
+          <div className={styles.titleSection}>
+            <h2>🤖 Asistente Técnico AI</h2>
+            <p>Soporte inteligente con RAG (Búsqueda en docs DIAN)</p>
+          </div>
+          
+          <div className={styles.optionsPanel}>
+            <button 
+              onClick={() => setShowOptions(!showOptions)}
+              className={styles.optionsToggle}
+              title="Opciones RAG"
+            >
+              ⚙️
+            </button>
+            
+            {showOptions && (
+              <div className={styles.optionsDropdown}>
+                <div className={styles.optionGroup}>
+                  <label>
+                    <input 
+                      type="checkbox"
+                      checked={options.useRAG}
+                      onChange={(e) => setOptions({...options, useRAG: e.target.checked})}
+                    />
+                    Usar RAG (Búsqueda de documentación)
+                  </label>
+                </div>
+
+                <div className={styles.optionGroup}>
+                  <label>Documentos: {options.topK}</label>
+                  <input 
+                    type="range"
+                    min="1"
+                    max="5"
+                    value={options.topK}
+                    onChange={(e) => setOptions({...options, topK: parseInt(e.target.value)})}
+                    className={styles.slider}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className={styles.messagesContainer}>
@@ -122,7 +204,38 @@ export default function AIAssistant() {
               <div className={styles.messageContent}>
                 {message.role === 'assistant' && <span className={styles.icon}>🤖</span>}
                 {message.role === 'user' && <span className={styles.icon}>👤</span>}
-                <div className={styles.text}>{message.content}</div>
+                <div className={styles.textWrapper}>
+                  <div className={styles.text}>{message.content}</div>
+                  
+                  {message.sources && message.sources.length > 0 && (
+                    <div className={styles.sources}>
+                      <button
+                        onClick={() => setShowSourcesFor(showSourcesFor === message.id ? null : message.id)}
+                        className={styles.sourcesToggle}
+                      >
+                        📚 Fuentes ({message.sources.length}) {showSourcesFor === message.id ? '▼' : '▶'}
+                      </button>
+                      
+                      {showSourcesFor === message.id && (
+                        <div className={styles.sourcesList}>
+                          {message.sources.map((source, idx) => (
+                            <div key={idx} className={styles.sourceItem}>
+                              <strong>{source.title}</strong>
+                              <p><small>{source.source}</small></p>
+                              <span className={styles.relevance}>Relevancia: {(source.relevance * 100).toFixed(0)}%</span>
+                            </div>
+                          ))}
+                          <button
+                            onClick={() => copySources(message)}
+                            className={styles.copySourcesBtn}
+                          >
+                            📋 Copiar fuentes
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
               <div className={styles.timestamp}>
                 {message.timestamp.toLocaleTimeString([], { 
@@ -147,6 +260,7 @@ export default function AIAssistant() {
           {error && (
             <div className={styles.errorMessage}>
               ❌ {error}
+              <button onClick={() => setError(null)} className={styles.closeError}>✕</button>
             </div>
           )}
 
@@ -172,6 +286,14 @@ export default function AIAssistant() {
               {loading ? '⏳ Procesando...' : '📤 Enviar'}
             </button>
             <button
+              onClick={exportChat}
+              disabled={messages.length <= 1}
+              className={styles.buttonExport}
+              title="Descargar historial del chat"
+            >
+              💾
+            </button>
+            <button
               onClick={clearChat}
               disabled={loading}
               className={styles.buttonClear}
@@ -182,7 +304,10 @@ export default function AIAssistant() {
         </div>
 
         <div className={styles.info}>
-          <p>💡 <strong>Consejo:</strong> Puedo ayudarte con preguntas sobre estructura de facturas, validaciones, cálculos, ejemplos y errores comunes.</p>
+          <p>💡 <strong>RAG Habilitado:</strong> Las respuestas se basan en búsqueda automática de documentación oficial DIAN y guías técnicas del API.</p>
+          {options.useRAG && (
+            <p>🔍 <strong>Buscando en:</strong> {options.topK} documento(s) más relevante(s) por pregunta</p>
+          )}
         </div>
       </div>
     </div>

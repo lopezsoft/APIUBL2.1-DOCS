@@ -379,6 +379,15 @@ export default function AIAssistant() {
           </div>
           
           <div className={styles.optionsPanel}>
+            <a 
+              href="/chat"
+              className={styles.fullChatBtn}
+              title="Abrir chat completo con historial"
+              target="_blank"
+            >
+              🚀 Chat Completo
+            </a>
+            
             <button 
               onClick={() => setShowOptions(!showOptions)}
               className={styles.optionsToggle}

@@ -245,7 +245,7 @@ export default function AIAssistant() {
     {
       id: '1',
       role: 'assistant',
-      content: '� **Asistente Técnico IA - APIUBL2.1**\n\n¡Hola! Soy tu asistente especializado en facturación electrónica colombiana, respaldado por **documentación oficial DIAN** y búsqueda inteligente (RAG).\n\n**¿En qué puedo ayudarte?**\n• 📄 Estructura de facturas electrónicas\n• ✅ Validación de NITs y documentos\n• 🧮 Cálculo de totales e impuestos\n• 📋 Ejemplos JSON de transacciones\n• 🚨 Resolución de errores comunes\n• 📖 Referencias del marco regulatorio DIAN\n• 💼 Integración del API',
+      content: '🎉 **¡Bienvenido al Chat Completo!**\n\nEste popup ahora tiene una versión completa con muchas más funcionalidades:\n\n✨ **Nuevas características:**\n• 💾 **Historial completo** - Guarda todas tus conversaciones\n• 🔍 **Búsqueda** - Encuentra conversaciones anteriores\n• 💡 **23 preguntas sugeridas** - En 5 categorías temáticas\n• � **Exportar chats** - Descarga tus conversaciones en .txt\n• ⚙️ **Configuración avanzada** - RAG con hasta 10 documentos\n• 📱 **Responsive** - Funciona en móvil, tablet y desktop\n\n🚀 **Para usar el chat completo, haz click en el botón "Abrir Chat Completo" arriba.**\n\nO puedes usar este popup para consultas rápidas.',
       timestamp: new Date()
     }
   ]);
@@ -375,17 +375,18 @@ export default function AIAssistant() {
         <div className={styles.header}>
           <div className={styles.titleSection}>
             <h2>🤖 Asistente Técnico AI</h2>
-            <p>Soporte inteligente con RAG (Búsqueda en docs DIAN)</p>
+            <p>Popup rápido - Para más funciones usa el Chat Completo</p>
           </div>
           
           <div className={styles.optionsPanel}>
             <a 
               href="/chat"
               className={styles.fullChatBtn}
-              title="Abrir chat completo con historial"
+              title="Abrir chat completo con historial, búsqueda y 23 preguntas sugeridas"
               target="_blank"
+              rel="noopener noreferrer"
             >
-              🚀 Chat Completo
+              🚀 Abrir Chat Completo
             </a>
             
             <button 
@@ -536,9 +537,14 @@ export default function AIAssistant() {
         </div>
 
         <div className={styles.info}>
-          <p>💡 <strong>RAG Habilitado:</strong> Las respuestas se basan en búsqueda automática de documentación oficial DIAN y guías técnicas del API.</p>
+          <p>
+            💡 <strong>Popup Rápido:</strong> Para historial completo, búsqueda y 23 preguntas sugeridas → 
+            <a href="/chat" target="_blank" rel="noopener noreferrer" className={styles.infoLink}>
+              🚀 Abrir Chat Completo
+            </a>
+          </p>
           {options.useRAG && (
-            <p>🔍 <strong>Buscando en:</strong> {options.topK} documento(s) más relevante(s) por pregunta</p>
+            <p>🔍 <strong>RAG Activo:</strong> Buscando en {options.topK} documento(s) DIAN más relevante(s)</p>
           )}
         </div>
       </div>

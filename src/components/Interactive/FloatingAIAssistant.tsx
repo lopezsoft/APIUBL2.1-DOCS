@@ -1,22 +1,21 @@
 /**
  * FloatingAIAssistant
  *
- * Componente de asistente IA flotante con popup modal.
+ * Componente de botón flotante que redirige al chat completo.
  * Se muestra como un icono flotante en la esquina inferior derecha,
- * que al hacer clic abre un popup con el chat.
+ * que al hacer clic abre la página /chat en una nueva pestaña.
  *
  * Características:
- * - SOLID: Responsabilidad única (mostrar/ocultar chat)
- * - UX/UI: Flotante no invasivo, animaciones suave
- * - Accesibilidad: Teclado, ARIA labels
- * - Performance: Lazy loading, memoization
+ * - SOLID: Responsabilidad única (redirección al chat)
+ * - UX/UI: Flotante no invasivo, animaciones suaves
+ * - Accesibilidad: ARIA labels descriptivos
+ * - Performance: Memoization
  */
 
-import React, { useState, useCallback, memo } from 'react';
-import { FiMessageCircle, FiX } from 'react-icons/fi';
+import React, { memo } from 'react';
+import { FiMessageCircle } from 'react-icons/fi';
 import { MdAutoAwesome } from 'react-icons/md';
 import styles from './FloatingAIAssistant.module.css';
-import AIChat from './AIChat';
 
 interface FloatingAIAssistantProps {
   /**
@@ -39,100 +38,45 @@ interface FloatingAIAssistantProps {
 
 /**
  * Icono flotante principal
- * - Muestra indicador visual del estado
- * - Animación de pulseo cuando hay nuevos mensajes
+ * - Redirige directamente al chat completo en /chat
+ * - Abre en nueva pestaña para no interrumpir la navegación
  */
 const FloatingButton = memo(
   ({
-    isOpen,
-    onClick,
     size,
   }: {
-    isOpen: boolean;
-    onClick: () => void;
     size: string;
   }) => (
-    <button
+    <a
+      href="/chat"
+      target="_blank"
+      rel="noopener noreferrer"
       className={`${styles.floatingButton} ${styles[size]}`}
-      onClick={onClick}
-      aria-label="Abrir asistente de IA"
-      title="Asistente Técnico IA - Haz clic para abrir"
-      type="button"
+      aria-label="Abrir chat completo con historial y preguntas sugeridas"
+      title="🚀 Chat Completo - Historial, búsqueda y 23 preguntas sugeridas"
     >
       <span className={styles.icon} aria-hidden="true">
-        {isOpen ? <FiX size={24} /> : <FiMessageCircle size={24} />}
+        <FiMessageCircle size={24} />
       </span>
-      <span className={styles.badge} aria-label="Asistente disponible">
+      <span className={styles.badge} aria-label="Chat completo disponible">
         <MdAutoAwesome size={16} />
       </span>
-    </button>
+    </a>
   ),
 );
 
 FloatingButton.displayName = 'FloatingButton';
 
 /**
- * Overlay de fondo para cerrar el popup
- */
-const Backdrop = memo(({ onClick }: { onClick: () => void }) => (
-  <div className={styles.backdrop} onClick={onClick} aria-hidden="true" />
-));
-
-Backdrop.displayName = 'Backdrop';
-
-/**
- * Contenedor del popup con animaciones
- */
-const ChatPopup = memo(
-  ({
-    isOpen,
-    onClose,
-  }: {
-    isOpen: boolean;
-    onClose: () => void;
-  }) => (
-    <>
-      {isOpen && <Backdrop onClick={onClose} />}
-      <div
-        className={`${styles.chatPopup} ${isOpen ? styles.open : styles.closed}`}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="chat-popup-title"
-      >
-        <div className={styles.header}>
-          <h2 id="chat-popup-title" className={styles.title}>
-            <MdAutoAwesome size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
-            Asistente Técnico
-          </h2>
-          <p className={styles.subtitle}>APIUBL2.1 - Facturación Electrónica</p>
-          <button
-            className={styles.closeButton}
-            onClick={onClose}
-            aria-label="Cerrar chat"
-            type="button"
-          >
-            <FiX size={20} />
-          </button>
-        </div>
-        <div className={styles.content}>
-          <AIChat />
-        </div>
-      </div>
-    </>
-  ),
-);
-
-ChatPopup.displayName = 'ChatPopup';
-
-/**
  * Componente principal: FloatingAIAssistant
+ *
+ * Ahora simplemente muestra un botón flotante que redirige a /chat
  *
  * Uso:
  * ```tsx
  * <FloatingAIAssistant
  *   size="medium"
  *   position="bottom-right"
- *   onToggle={(isOpen) => console.log('Chat:', isOpen)}
  * />
  * ```
  */
@@ -140,24 +84,10 @@ const FloatingAIAssistant = memo(
   ({
     size = 'medium',
     position = 'bottom-right',
-    onToggle,
   }: FloatingAIAssistantProps) => {
-    const [isOpen, setIsOpen] = useState(false);
-
-    const handleToggle = useCallback(() => {
-      setIsOpen((prev) => !prev);
-      onToggle?.(!isOpen);
-    }, [isOpen, onToggle]);
-
-    const handleClose = useCallback(() => {
-      setIsOpen(false);
-      onToggle?.(false);
-    }, [onToggle]);
-
     return (
       <div className={`${styles.container} ${styles[position]}`}>
-        <FloatingButton isOpen={isOpen} onClick={handleToggle} size={size} />
-        <ChatPopup isOpen={isOpen} onClose={handleClose} />
+        <FloatingButton size={size} />
       </div>
     );
   },

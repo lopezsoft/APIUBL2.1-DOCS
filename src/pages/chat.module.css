@@ -382,17 +382,20 @@
   background: #fff;
   display: flex;
   gap: 0.8rem;
+  align-items: flex-end;
 }
 
 .inputContainer textarea {
   flex: 1;
   border: 1px solid #d1d5db;
   border-radius: 8px;
-  padding: 0.8rem;
+  padding: 0.75rem 1rem;
   font-family: inherit;
   font-size: 0.95rem;
-  resize: none;
+  resize: vertical;
   line-height: 1.5;
+  min-height: 48px;
+  max-height: 150px;
 }
 
 .inputContainer textarea:focus {
@@ -405,13 +408,18 @@
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
   border: none;
-  padding: 0.8rem 1.5rem;
+  padding: 0.75rem 1.5rem;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
   font-size: 0.95rem;
   transition: all 0.2s;
-  align-self: flex-end;
+  white-space: nowrap;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
 }
 
 .inputContainer button:hover:not(:disabled) {

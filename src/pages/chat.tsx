@@ -588,7 +588,7 @@ export default function ChatPage(): React.ReactElement {
                 }
               }}
               placeholder="Escribe tu pregunta... (Enter para enviar, Shift+Enter para nueva línea)"
-              rows={3}
+              rows={1}
             />
             <button onClick={() => sendMessage()} disabled={loading || !input.trim()}>
               {loading ? '⏳' : '📤'} Enviar

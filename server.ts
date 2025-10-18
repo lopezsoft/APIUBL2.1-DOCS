@@ -18,6 +18,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import OpenAI from 'openai';
+import { ragService } from './src/services/rag.service';
 
 // ============================================================================
 // CONFIGURACIÓN
@@ -215,7 +216,7 @@ app.get('/health', async (req: Request, res: Response) => {
 });
 
 /**
- * Endpoint de Chat Principal
+ * Endpoint de Chat Principal (CON RAG)
  * POST /api/openai/chat
  * 
  * Body:
@@ -226,6 +227,8 @@ app.get('/health', async (req: Request, res: Response) => {
  *     { "role": "assistant", "content": "..." }
  *   ]
  * }
+ * 
+ * RAG: Busca documentación relevante y la inyecta en el prompt
  */
 app.post('/api/openai/chat', async (req: Request, res: Response) => {
   try {
@@ -260,9 +263,23 @@ app.post('/api/openai/chat', async (req: Request, res: Response) => {
     // Limitar histórico a últimos 20 mensajes para optimizar costos
     const limitedHistory = conversationHistory.slice(-20);
 
+    // ========================================================================
+    // RAG: BUSCAR DOCUMENTACIÓN RELEVANTE
+    // ========================================================================
+    const ragContext = await ragService.getContext(message, 3);
+    const contextualSystemPrompt = `${SYSTEM_PROMPT}
+
+${ragContext.contextText}
+
+INSTRUCCIONES IMPORTANTES:
+- Usa el contexto de documentación anterior para responder
+- Si la documentación tiene ejemplos JSON, úsalos
+- Cita la fuente del documento cuando sea relevante
+- Si no encuentras información en la documentación, dilo claramente`;
+
     // Construir mensajes para OpenAI
     const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-      { role: 'system', content: SYSTEM_PROMPT },
+      { role: 'system', content: contextualSystemPrompt },
       ...limitedHistory,
       { role: 'user', content: message.trim() },
     ] as OpenAI.Chat.ChatCompletionMessageParam[];
@@ -327,6 +344,29 @@ app.post('/api/openai/chat', async (req: Request, res: Response) => {
 app.post('/api/bedrock/chat', async (req: Request, res: Response) => {
   // Redirigir a nuevo endpoint
   res.redirect(307, '/api/openai/chat');
+});
+
+/**
+ * Endpoint para ver estadísticas de RAG
+ * GET /api/rag/stats
+ */
+app.get('/api/rag/stats', (req: Request, res: Response) => {
+  try {
+    const stats = ragService.getStats();
+    res.json({
+      status: 'ok',
+      rag: {
+        enabled: true,
+        service: 'RAG (Retrieval-Augmented Generation)',
+        ...stats,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: 'Error obteniendo estadísticas de RAG',
+      message: error instanceof Error ? error.message : 'Error desconocido',
+    });
+  }
 });
 
 // ============================================================================

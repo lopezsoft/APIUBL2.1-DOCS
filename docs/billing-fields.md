@@ -1126,6 +1126,35 @@ Líneas del detalle de cada item del documento. *Este campo es obligatorio* para
 - #### `base_quantity`
   La cantidad real sobre la cual el precio aplica, se recomienda ser igual a `invoiced_quantity`. *Este campo es obligatorio* y debe ser un string.
 
+### `lines->mandate`
+
+Grupo de información que describe el mandatario de la operación de venta. *Este campo es obligatorio solo para facturas de mandato* y debe ser un objeto.
+
+Este campo se informa a nivel de ítem y aplica solo para mandatos. Un mandante por ítem.
+
+- #### Ejemplo
+
+```json
+"mandate": {
+  "dni": "2222222222",
+  "dv": "2",
+  "code": "0"
+}
+```
+
+- #### Detalle de los campos
+  - #### `dni`
+    Número de identificación del mandatario. *Este campo es obligatorio* y debe ser un string.
+  - #### `dv`
+    Dígito de verificación del mandatario. *Este campo es obligatorio* y debe ser un string.
+  - #### `code`
+    Código que indica el tipo de ingreso del mandatario. *Este campo es obligatorio* y debe ser un string.
+    
+    | Código | Significado |
+    |--------|-------------|
+    | 0 | B/S ingreso propio |
+    | 1 | B/S Ingresos Recibidos para Terceros |
+
 ### `linea->extra_data`: **NEW**
  - Grupo de campos para información adicional de la línea. *Este campo es opcional* y debe ser un arreglo de objetos.
  - Este campo es utilizado para enviar información adicional que no se encuentra en los campos estándar de la línea.

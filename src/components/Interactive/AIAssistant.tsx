@@ -19,115 +19,223 @@ interface ChatOptions {
   topK: number;
 }
 
-// Función para formatear contenido del mensaje con syntax highlighting
+// Función para detectar si un texto es JSON válido
+function isValidJSON(str: string): boolean {
+  try {
+    const trimmed = str.trim();
+    if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) return false;
+    JSON.parse(trimmed);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Función para detectar si un texto es XML válido
+function isValidXML(str: string): boolean {
+  const trimmed = str.trim();
+  return trimmed.startsWith('<') && trimmed.includes('>') && trimmed.split('\n').length > 1;
+}
+
+// Función para formatear contenido del mensaje con syntax highlighting mejorado
 function formatMessageContent(content: string): React.ReactElement {
   const parts: React.ReactElement[] = [];
-  let currentIndex = 0;
   let key = 0;
 
-  // Regex para detectar bloques de código (```json, ```xml, ```)
-  const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
-  
-  // Regex para código inline (`código`)
-  const inlineCodeRegex = /`([^`]+)`/g;
-  
-  // Regex para negrita (**texto** o __texto__)
-  const boldRegex = /\*\*([^*]+)\*\*|__([^_]+)__/g;
-  
-  // Regex para cursiva (*texto* o _texto_)
-  const italicRegex = /\*([^*]+)\*|_([^_]+)_/g;
+  // Primero intentar detectar bloques JSON/XML sin delimitadores
+  const lines = content.split('\n');
+  let currentBlock: string[] = [];
+  let inJsonBlock = false;
+  let inXmlBlock = false;
+  let braceCount = 0;
 
-  let match: RegExpExecArray | null;
+  const flushTextBlock = (text: string) => {
+    if (!text.trim()) return;
+    
+    // Procesar formato inline en texto normal
+    const processedParts: React.ReactElement[] = [];
+    let remaining = text;
+    let localKey = 0;
 
-  // Primero procesamos bloques de código
-  const codeBlocks: Array<{start: number, end: number, lang: string, code: string}> = [];
-  while ((match = codeBlockRegex.exec(content)) !== null) {
-    codeBlocks.push({
-      start: match.index,
-      end: match.index + match[0].length,
-      lang: match[1] || 'text',
-      code: match[2]
-    });
-  }
+    // Negrita **texto**
+    const boldRegex = /\*\*([^*]+)\*\*/g;
+    const inlineCodeRegex = /`([^`]+)`/g;
 
-  // Procesar el contenido
-  const segments = content.split('\n');
-  
-  segments.forEach((line, lineIdx) => {
-    // Verificar si esta línea está en un bloque de código
-    const lineStart = content.indexOf(line, currentIndex);
-    const inCodeBlock = codeBlocks.some(block => 
-      lineStart >= block.start && lineStart < block.end
-    );
+    let lastIndex = 0;
+    let match;
 
-    if (inCodeBlock) {
-      const block = codeBlocks.find(b => lineStart >= b.start && lineStart < b.end);
-      if (block && lineStart === block.start) {
-        parts.push(
-          <pre key={key++} className={styles.codeBlock}>
-            <div className={styles.codeHeader}>
-              <span className={styles.codeLang}>{block.lang.toUpperCase()}</span>
-              <button 
-                className={styles.copyCode}
-                onClick={() => navigator.clipboard.writeText(block.code)}
-              >
-                📋 Copiar
-              </button>
-            </div>
-            <code className={`${styles.code} language-${block.lang}`}>
-              {block.code}
-            </code>
-          </pre>
-        );
+    // Buscar negritas
+    while ((match = boldRegex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        processedParts.push(<span key={`${key}-${localKey++}`}>{text.slice(lastIndex, match.index)}</span>);
       }
-    } else {
-      // Procesar texto normal con formato inline
-      let processedLine = line;
-      const elements: React.ReactElement[] = [];
-      let lastIndex = 0;
-
-      // Procesar negrita
-      const boldMatches = [...processedLine.matchAll(boldRegex)];
-      boldMatches.forEach(match => {
-        const beforeText = processedLine.slice(lastIndex, match.index);
-        if (beforeText) elements.push(<span key={key++}>{beforeText}</span>);
-        
-        elements.push(
-          <strong key={key++} className={styles.bold}>
-            {match[1] || match[2]}
-          </strong>
-        );
-        lastIndex = match.index! + match[0].length;
-      });
-
-      // Procesar código inline
-      const inlineMatches = [...processedLine.matchAll(inlineCodeRegex)];
-      inlineMatches.forEach(match => {
-        const beforeText = processedLine.slice(lastIndex, match.index);
-        if (beforeText) elements.push(<span key={key++}>{beforeText}</span>);
-        
-        elements.push(
-          <code key={key++} className={styles.inlineCode}>
-            {match[1]}
-          </code>
-        );
-        lastIndex = match.index! + match[0].length;
-      });
-
-      // Agregar texto restante
-      if (lastIndex < processedLine.length) {
-        elements.push(<span key={key++}>{processedLine.slice(lastIndex)}</span>);
-      }
-
-      if (elements.length === 0) {
-        parts.push(<div key={key++}>{line}</div>);
-      } else {
-        parts.push(<div key={key++}>{elements}</div>);
-      }
+      processedParts.push(
+        <strong key={`${key}-${localKey++}`} className={styles.bold}>
+          {match[1]}
+        </strong>
+      );
+      lastIndex = match.index + match[0].length;
     }
 
-    currentIndex = lineStart + line.length + 1;
-  });
+    // Reset para código inline
+    boldRegex.lastIndex = 0;
+    lastIndex = 0;
+    const tempText = text;
+    
+    while ((match = inlineCodeRegex.exec(tempText)) !== null) {
+      processedParts.push(
+        <code key={`${key}-${localKey++}`} className={styles.inlineCode}>
+          {match[1]}
+        </code>
+      );
+    }
+
+    if (processedParts.length === 0) {
+      parts.push(<div key={key++}>{text}</div>);
+    } else {
+      // Mezclar texto y elementos formateados
+      const finalText = text
+        .replace(/\*\*([^*]+)\*\*/g, '')
+        .replace(/`([^`]+)`/g, '');
+      
+      if (finalText.trim()) {
+        parts.push(<div key={key++}>{processedParts.length > 0 ? processedParts : text}</div>);
+      }
+    }
+  };
+
+  const flushCodeBlock = (code: string[], lang: string) => {
+    const codeText = code.join('\n').trim();
+    if (!codeText) return;
+
+    parts.push(
+      <pre key={key++} className={styles.codeBlock}>
+        <div className={styles.codeHeader}>
+          <span className={styles.codeLang}>{lang.toUpperCase()}</span>
+          <button 
+            className={styles.copyCode}
+            onClick={() => navigator.clipboard.writeText(codeText)}
+          >
+            📋 Copiar
+          </button>
+        </div>
+        <code className={`${styles.code} language-${lang}`}>
+          {lang === 'json' ? JSON.stringify(JSON.parse(codeText), null, 2) : codeText}
+        </code>
+      </pre>
+    );
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    // Detectar inicio de bloque con delimitadores ```
+    if (trimmed.startsWith('```')) {
+      if (currentBlock.length > 0) {
+        flushTextBlock(currentBlock.join('\n'));
+        currentBlock = [];
+      }
+      
+      const lang = trimmed.slice(3) || 'text';
+      const codeLines: string[] = [];
+      i++;
+      
+      while (i < lines.length && !lines[i].trim().startsWith('```')) {
+        codeLines.push(lines[i]);
+        i++;
+      }
+      
+      flushCodeBlock(codeLines, lang);
+      continue;
+    }
+
+    // Detectar inicio de JSON { o [
+    if (!inJsonBlock && !inXmlBlock && (trimmed.startsWith('{') || trimmed.startsWith('['))) {
+      // Flush texto anterior
+      if (currentBlock.length > 0) {
+        flushTextBlock(currentBlock.join('\n'));
+        currentBlock = [];
+      }
+      
+      inJsonBlock = true;
+      braceCount = (trimmed.match(/\{/g) || []).length - (trimmed.match(/\}/g) || []).length;
+      braceCount += (trimmed.match(/\[/g) || []).length - (trimmed.match(/\]/g) || []).length;
+      currentBlock.push(line);
+      
+      if (braceCount === 0) {
+        // JSON en una sola línea
+        if (isValidJSON(line)) {
+          flushCodeBlock(currentBlock, 'json');
+          currentBlock = [];
+          inJsonBlock = false;
+        }
+      }
+      continue;
+    }
+
+    // Continuar bloque JSON
+    if (inJsonBlock) {
+      currentBlock.push(line);
+      braceCount += (line.match(/\{/g) || []).length - (line.match(/\}/g) || []).length;
+      braceCount += (line.match(/\[/g) || []).length - (line.match(/\]/g) || []).length;
+      
+      if (braceCount === 0) {
+        const jsonText = currentBlock.join('\n');
+        if (isValidJSON(jsonText)) {
+          flushCodeBlock(currentBlock, 'json');
+        } else {
+          flushTextBlock(jsonText);
+        }
+        currentBlock = [];
+        inJsonBlock = false;
+      }
+      continue;
+    }
+
+    // Detectar inicio de XML
+    if (!inJsonBlock && !inXmlBlock && trimmed.startsWith('<') && !trimmed.includes('</')) {
+      if (currentBlock.length > 0) {
+        flushTextBlock(currentBlock.join('\n'));
+        currentBlock = [];
+      }
+      
+      inXmlBlock = true;
+      currentBlock.push(line);
+      continue;
+    }
+
+    // Continuar o finalizar bloque XML
+    if (inXmlBlock) {
+      currentBlock.push(line);
+      
+      if (trimmed.includes('</')) {
+        const xmlText = currentBlock.join('\n');
+        if (isValidXML(xmlText)) {
+          flushCodeBlock(currentBlock, 'xml');
+        } else {
+          flushTextBlock(xmlText);
+        }
+        currentBlock = [];
+        inXmlBlock = false;
+      }
+      continue;
+    }
+
+    // Texto normal
+    currentBlock.push(line);
+  }
+
+  // Flush resto
+  if (currentBlock.length > 0) {
+    if (inJsonBlock && isValidJSON(currentBlock.join('\n'))) {
+      flushCodeBlock(currentBlock, 'json');
+    } else if (inXmlBlock && isValidXML(currentBlock.join('\n'))) {
+      flushCodeBlock(currentBlock, 'xml');
+    } else {
+      flushTextBlock(currentBlock.join('\n'));
+    }
+  }
 
   return <>{parts}</>;
 }

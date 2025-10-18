@@ -88,8 +88,12 @@ function isValidJSON(str: string): boolean {
   try {
     const trimmed = str.trim();
     if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) return false;
-    JSON.parse(trimmed);
-    return true;
+    // Solo intentar parsear si parece una estructura completa
+    if (trimmed.endsWith('}') || trimmed.endsWith(']')) {
+      JSON.parse(trimmed);
+      return true;
+    }
+    return false;
   } catch {
     return false;
   }
@@ -145,19 +149,32 @@ function formatMessageContent(content: string): React.ReactElement {
     const codeText = code.join('\n').trim();
     if (!codeText) return;
 
+    let formattedCode = codeText;
+    
+    // Intentar formatear JSON si es JSON
+    if (lang === 'json') {
+      try {
+        const parsed = JSON.parse(codeText);
+        formattedCode = JSON.stringify(parsed, null, 2);
+      } catch (e) {
+        // Si hay error al parsear, mostrar el código tal cual
+        formattedCode = codeText;
+      }
+    }
+
     parts.push(
       <pre key={key++} className={styles.codeBlock}>
         <div className={styles.codeHeader}>
           <span className={styles.codeLang}>{lang.toUpperCase()}</span>
           <button 
             className={styles.copyCode}
-            onClick={() => navigator.clipboard.writeText(codeText)}
+            onClick={() => navigator.clipboard.writeText(formattedCode)}
           >
             📋 Copiar
           </button>
         </div>
         <code className={`${styles.code} language-${lang}`}>
-          {lang === 'json' ? JSON.stringify(JSON.parse(codeText), null, 2) : codeText}
+          {formattedCode}
         </code>
       </pre>
     );

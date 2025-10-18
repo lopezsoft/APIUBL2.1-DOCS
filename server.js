@@ -28,8 +28,16 @@ const openai_1 = __importDefault(require("openai"));
 dotenv_1.default.config({ path: '.env.local' });
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
-// Middleware
-app.use((0, cors_1.default)());
+// CORS Configuration (debe ser antes de otras rutas)
+const corsOptions = {
+    origin: '*', // Permitir todos los orígenes
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    credentials: true,
+    maxAge: 86400,
+};
+// Middleware (orden importa!)
+app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json({ limit: '10mb' }));
 // ============================================================================
 // VALIDACIÓN DE CONFIGURACIÓN
@@ -290,3 +298,4 @@ app.listen(PORT, () => {
   `);
 });
 exports.default = app;
+//# sourceMappingURL=server.js.map

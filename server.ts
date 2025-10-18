@@ -28,8 +28,17 @@ dotenv.config({ path: '.env.local' });
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
-app.use(cors());
+// CORS Configuration (debe ser antes de otras rutas)
+const corsOptions = {
+  origin: '*', // Permitir todos los orígenes
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  credentials: true,
+  maxAge: 86400,
+};
+
+// Middleware (orden importa!)
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 
 // ============================================================================

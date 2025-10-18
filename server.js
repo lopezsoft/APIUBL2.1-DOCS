@@ -22,14 +22,23 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const openai_1 = __importDefault(require("openai"));
+const rag_service_1 = require("./src/services/rag.service");
 // ============================================================================
 // CONFIGURACIÓN
 // ============================================================================
 dotenv_1.default.config({ path: '.env.local' });
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
-// Middleware
-app.use((0, cors_1.default)());
+// CORS Configuration (debe ser antes de otras rutas)
+const corsOptions = {
+    origin: '*', // Permitir todos los orígenes
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    credentials: true,
+    maxAge: 86400,
+};
+// Middleware (orden importa!)
+app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json({ limit: '10mb' }));
 // ============================================================================
 // VALIDACIÓN DE CONFIGURACIÓN
@@ -172,7 +181,7 @@ app.get('/health', async (req, res) => {
     }
 });
 /**
- * Endpoint de Chat Principal
+ * Endpoint de Chat Principal (CON RAG)
  * POST /api/openai/chat
  *
  * Body:
@@ -183,6 +192,8 @@ app.get('/health', async (req, res) => {
  *     { "role": "assistant", "content": "..." }
  *   ]
  * }
+ *
+ * RAG: Busca documentación relevante y la inyecta en el prompt
  */
 app.post('/api/openai/chat', async (req, res) => {
     try {
@@ -211,9 +222,22 @@ app.post('/api/openai/chat', async (req, res) => {
         }
         // Limitar histórico a últimos 20 mensajes para optimizar costos
         const limitedHistory = conversationHistory.slice(-20);
+        // ========================================================================
+        // RAG: BUSCAR DOCUMENTACIÓN RELEVANTE
+        // ========================================================================
+        const ragContext = await rag_service_1.ragService.getContext(message, 3);
+        const contextualSystemPrompt = `${SYSTEM_PROMPT}
+
+${ragContext.contextText}
+
+INSTRUCCIONES IMPORTANTES:
+- Usa el contexto de documentación anterior para responder
+- Si la documentación tiene ejemplos JSON, úsalos
+- Cita la fuente del documento cuando sea relevante
+- Si no encuentras información en la documentación, dilo claramente`;
         // Construir mensajes para OpenAI
         const messages = [
-            { role: 'system', content: SYSTEM_PROMPT },
+            { role: 'system', content: contextualSystemPrompt },
             ...limitedHistory,
             { role: 'user', content: message.trim() },
         ];
@@ -270,6 +294,29 @@ app.post('/api/bedrock/chat', async (req, res) => {
     // Redirigir a nuevo endpoint
     res.redirect(307, '/api/openai/chat');
 });
+/**
+ * Endpoint para ver estadísticas de RAG
+ * GET /api/rag/stats
+ */
+app.get('/api/rag/stats', (req, res) => {
+    try {
+        const stats = rag_service_1.ragService.getStats();
+        res.json({
+            status: 'ok',
+            rag: {
+                enabled: true,
+                service: 'RAG (Retrieval-Augmented Generation)',
+                ...stats,
+            },
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            error: 'Error obteniendo estadísticas de RAG',
+            message: error instanceof Error ? error.message : 'Error desconocido',
+        });
+    }
+});
 // ============================================================================
 // INICIO DEL SERVIDOR
 // ============================================================================
@@ -290,3 +337,4 @@ app.listen(PORT, () => {
   `);
 });
 exports.default = app;
+//# sourceMappingURL=server.js.map

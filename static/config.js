@@ -5,7 +5,7 @@
  * y proporciona las variables globales que necesita api.ts
  * 
  * En desarrollo: http://localhost:3001
- * En producción: https://api.matias-api.com (detectado por hostname)
+ * En producción: https://api-docs.matias-api.com (detectado por hostname)
  */
 
 (function() {
@@ -18,7 +18,7 @@
   // URLs del backend
   const BACKEND_URL = isDevelopment 
     ? 'http://localhost:3001'
-    : 'https://api.matias-api.com';
+    : 'https://api-docs.matias-api.com';
 
   // Inyectar configuración global
   window.__MATIAS_CONFIG__ = {

@@ -245,6 +245,31 @@
 .info p {
   margin: 0;
   line-height: 1.4;
+  margin-bottom: 0.3rem;
+}
+
+.info p:last-child {
+  margin-bottom: 0;
+}
+
+.infoLink {
+  color: #10b981;
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 0.5rem;
+  padding: 0.2rem 0.6rem;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 4px;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.infoLink:hover {
+  background: rgba(16, 185, 129, 0.2);
+  color: #059669;
+  text-decoration: none;
 }
 
 /* Responsive */
@@ -260,4 +285,190 @@
   .messagesContainer {
     padding: 1rem;
   }
+}
+
+/* Estilos para syntax highlighting */
+.bold {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.inlineCode {
+  background: #f3f4f6;
+  color: #e53e3e;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+  font-size: 0.9em;
+  border: 1px solid #e5e7eb;
+}
+
+.codeBlock {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 0;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+  overflow: hidden;
+  border: 1px solid #334155;
+  font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+  font-size: 0.85em;
+}
+
+.codeHeader {
+  background: #0f172a;
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #334155;
+}
+
+.codeLang {
+  color: #94a3b8;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.copyCode {
+  background: transparent;
+  border: 1px solid #475569;
+  color: #94a3b8;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.2s;
+}
+
+.copyCode:hover {
+  background: #334155;
+  border-color: #64748b;
+  color: #e2e8f0;
+}
+
+.code {
+  display: block;
+  padding: 1rem;
+  overflow-x: auto;
+  line-height: 1.5;
+  white-space: pre;
+}
+
+/* Syntax highlighting colors */
+.code.language-json {
+  color: #a5d6ff;
+}
+
+.code.language-xml,
+.code.language-markup {
+  color: #ffa657;
+}
+
+.code.language-javascript,
+.code.language-typescript {
+  color: #79c0ff;
+}
+
+.code.language-text {
+  color: #e2e8f0;
+}
+
+/* Estilos para panel de opciones y botón de chat completo */
+.optionsPanel {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  position: relative;
+}
+
+.fullChatBtn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: 2px solid #047857;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5);
+  }
+}
+
+.fullChatBtn:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  border-color: #065f46;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  color: white;
+}
+
+.optionsToggle {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.2s;
+}
+
+.optionsToggle:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.optionsDropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  min-width: 280px;
+}
+
+.optionGroup {
+  margin-bottom: 1rem;
+}
+
+.optionGroup:last-child {
+  margin-bottom: 0;
+}
+
+.optionGroup label {
+  display: block;
+  color: #374151;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.optionGroup input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+.slider {
+  width: 100%;
+  margin-top: 0.5rem;
 }

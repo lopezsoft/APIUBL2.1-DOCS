@@ -1,6 +1,6 @@
 ---
-sidebar_position: 2
-description: "Guía paso a paso para facturas con descuentos comerciales"
+sidebar_position: 97
+description: "Guía paso a paso para facturas con descuentos comerciales (DEPRECATED - usar invoice-with-discounts-new.md)"
 ---
 
 # Guía: Factura con Descuentos

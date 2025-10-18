@@ -36,13 +36,13 @@ const getConfig = () => {
                  window.location.hostname === '127.0.0.1');
   
   return {
-    BACKEND_URL: isDev ? 'http://localhost:3001' : 'https://api.matias-api.com',
+    BACKEND_URL: isDev ? 'http://localhost:3001' : 'https://api-docs.matias-api.com',
     isDevelopment: isDev,
     environment: isDev ? 'development' : 'production',
     API_ENDPOINTS: {
-      CHAT: (isDev ? 'http://localhost:3001' : 'https://api.matias-api.com') + '/api/openai/chat',
-      HEALTH: (isDev ? 'http://localhost:3001' : 'https://api.matias-api.com') + '/health',
-      BEDROCK: (isDev ? 'http://localhost:3001' : 'https://api.matias-api.com') + '/api/bedrock/chat',
+      CHAT: (isDev ? 'http://localhost:3001' : 'https://api-docs.matias-api.com') + '/api/openai/chat',
+      HEALTH: (isDev ? 'http://localhost:3001' : 'https://api-docs.matias-api.com') + '/health',
+      BEDROCK: (isDev ? 'http://localhost:3001' : 'https://api-docs.matias-api.com') + '/api/bedrock/chat',
     }
   };
 };

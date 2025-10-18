@@ -1,0 +1,60 @@
+# Apache Configuration - docs.matias-api.com
+# Frontend estático (SPA)
+# Backend en: api-docs.matias-api.com
+
+# Redirige todas las solicitudes al archivo index.html, excepto para los recursos existentes
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  
+  # Si el archivo existe, sirve directamente
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteRule ^ - [L]
+  
+  # Si el directorio existe, sirve index.html de esa carpeta
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+  
+  # Busca index.html en la carpeta si no existe el archivo/directorio
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.*)$ $1/index.html [L]
+  
+  # Si todo falla, sirve index.html raíz (SPA)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ /index.html [L]
+</IfModule>
+
+# Deshabilita el listado de directorios
+Options -Indexes
+
+# Encabezados de seguridad
+<IfModule mod_headers.c>
+  # Protege contra ataques XSS
+  Header set X-XSS-Protection "1; mode=block"
+
+  # Evita que el contenido sea incrustado en un iframe
+  Header always append X-Frame-Options SAMEORIGIN
+
+  # Protege contra ataques de tipo MIME sniffing
+  Header set X-Content-Type-Options nosniff
+
+  # Establece la Política de Seguridad de Contenido (CSP)
+  Header set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';"
+
+  # Habilita HSTS (HTTP Strict Transport Security)
+  Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+  # Controla permisos del navegador
+  Header set Permissions-Policy "geolocation=(self), microphone=()"
+
+  # Política de referencia
+  Header set Referrer-Policy "no-referrer-when-downgrade"
+</IfModule>
+
+# Fuerza el uso de HTTPS
+<IfModule mod_rewrite.c>
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './AIAssistant.module.css';
+import { API_ENDPOINTS } from '@site/src/config/api';
 
 interface Message {
   id: string;
@@ -47,8 +48,8 @@ export default function AIAssistant() {
     setError(null);
 
     try {
-      // Llamar a Bedrock API
-      const response = await fetch('/api/bedrock/chat', {
+      // Llamar a Bedrock API (usa config inyectada)
+      const response = await fetch(API_ENDPOINTS.BEDROCK, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

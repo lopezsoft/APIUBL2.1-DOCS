@@ -261,3 +261,92 @@
     padding: 1rem;
   }
 }
+
+/* Estilos para syntax highlighting */
+.bold {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.inlineCode {
+  background: #f3f4f6;
+  color: #e53e3e;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+  font-size: 0.9em;
+  border: 1px solid #e5e7eb;
+}
+
+.codeBlock {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 0;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+  overflow: hidden;
+  border: 1px solid #334155;
+  font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+  font-size: 0.85em;
+}
+
+.codeHeader {
+  background: #0f172a;
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #334155;
+}
+
+.codeLang {
+  color: #94a3b8;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.copyCode {
+  background: transparent;
+  border: 1px solid #475569;
+  color: #94a3b8;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.2s;
+}
+
+.copyCode:hover {
+  background: #334155;
+  border-color: #64748b;
+  color: #e2e8f0;
+}
+
+.code {
+  display: block;
+  padding: 1rem;
+  overflow-x: auto;
+  line-height: 1.5;
+  white-space: pre;
+}
+
+/* Syntax highlighting colors */
+.code.language-json {
+  color: #a5d6ff;
+}
+
+.code.language-xml,
+.code.language-markup {
+  color: #ffa657;
+}
+
+.code.language-javascript,
+.code.language-typescript {
+  color: #79c0ff;
+}
+
+.code.language-text {
+  color: #e2e8f0;
+}

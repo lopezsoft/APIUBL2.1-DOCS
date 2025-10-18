@@ -19,6 +19,119 @@ interface ChatOptions {
   topK: number;
 }
 
+// Función para formatear contenido del mensaje con syntax highlighting
+function formatMessageContent(content: string): React.ReactElement {
+  const parts: React.ReactElement[] = [];
+  let currentIndex = 0;
+  let key = 0;
+
+  // Regex para detectar bloques de código (```json, ```xml, ```)
+  const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
+  
+  // Regex para código inline (`código`)
+  const inlineCodeRegex = /`([^`]+)`/g;
+  
+  // Regex para negrita (**texto** o __texto__)
+  const boldRegex = /\*\*([^*]+)\*\*|__([^_]+)__/g;
+  
+  // Regex para cursiva (*texto* o _texto_)
+  const italicRegex = /\*([^*]+)\*|_([^_]+)_/g;
+
+  let match: RegExpExecArray | null;
+
+  // Primero procesamos bloques de código
+  const codeBlocks: Array<{start: number, end: number, lang: string, code: string}> = [];
+  while ((match = codeBlockRegex.exec(content)) !== null) {
+    codeBlocks.push({
+      start: match.index,
+      end: match.index + match[0].length,
+      lang: match[1] || 'text',
+      code: match[2]
+    });
+  }
+
+  // Procesar el contenido
+  const segments = content.split('\n');
+  
+  segments.forEach((line, lineIdx) => {
+    // Verificar si esta línea está en un bloque de código
+    const lineStart = content.indexOf(line, currentIndex);
+    const inCodeBlock = codeBlocks.some(block => 
+      lineStart >= block.start && lineStart < block.end
+    );
+
+    if (inCodeBlock) {
+      const block = codeBlocks.find(b => lineStart >= b.start && lineStart < b.end);
+      if (block && lineStart === block.start) {
+        parts.push(
+          <pre key={key++} className={styles.codeBlock}>
+            <div className={styles.codeHeader}>
+              <span className={styles.codeLang}>{block.lang.toUpperCase()}</span>
+              <button 
+                className={styles.copyCode}
+                onClick={() => navigator.clipboard.writeText(block.code)}
+              >
+                📋 Copiar
+              </button>
+            </div>
+            <code className={`${styles.code} language-${block.lang}`}>
+              {block.code}
+            </code>
+          </pre>
+        );
+      }
+    } else {
+      // Procesar texto normal con formato inline
+      let processedLine = line;
+      const elements: React.ReactElement[] = [];
+      let lastIndex = 0;
+
+      // Procesar negrita
+      const boldMatches = [...processedLine.matchAll(boldRegex)];
+      boldMatches.forEach(match => {
+        const beforeText = processedLine.slice(lastIndex, match.index);
+        if (beforeText) elements.push(<span key={key++}>{beforeText}</span>);
+        
+        elements.push(
+          <strong key={key++} className={styles.bold}>
+            {match[1] || match[2]}
+          </strong>
+        );
+        lastIndex = match.index! + match[0].length;
+      });
+
+      // Procesar código inline
+      const inlineMatches = [...processedLine.matchAll(inlineCodeRegex)];
+      inlineMatches.forEach(match => {
+        const beforeText = processedLine.slice(lastIndex, match.index);
+        if (beforeText) elements.push(<span key={key++}>{beforeText}</span>);
+        
+        elements.push(
+          <code key={key++} className={styles.inlineCode}>
+            {match[1]}
+          </code>
+        );
+        lastIndex = match.index! + match[0].length;
+      });
+
+      // Agregar texto restante
+      if (lastIndex < processedLine.length) {
+        elements.push(<span key={key++}>{processedLine.slice(lastIndex)}</span>);
+      }
+
+      if (elements.length === 0) {
+        parts.push(<div key={key++}>{line}</div>);
+      } else {
+        parts.push(<div key={key++}>{elements}</div>);
+      }
+    }
+
+    currentIndex = lineStart + line.length + 1;
+  });
+
+  return <>{parts}</>;
+}
+
 export default function AIAssistant() {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -205,7 +318,9 @@ export default function AIAssistant() {
                 {message.role === 'assistant' && <span className={styles.icon}>🤖</span>}
                 {message.role === 'user' && <span className={styles.icon}>👤</span>}
                 <div className={styles.textWrapper}>
-                  <div className={styles.text}>{message.content}</div>
+                  <div className={styles.text}>
+                    {formatMessageContent(message.content)}
+                  </div>
                   
                   {message.sources && message.sources.length > 0 && (
                     <div className={styles.sources}>

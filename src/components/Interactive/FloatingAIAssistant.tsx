@@ -4,6 +4,8 @@
  * Componente de botón flotante que redirige al chat completo.
  * Se muestra como un icono flotante en la esquina inferior derecha,
  * que al hacer clic abre la página /chat en una nueva pestaña.
+ * 
+ * Se oculta automáticamente cuando el usuario está en la página /chat.
  *
  * Características:
  * - SOLID: Responsabilidad única (redirección al chat)
@@ -15,6 +17,7 @@
 import React, { memo } from 'react';
 import { FiMessageCircle } from 'react-icons/fi';
 import { MdAutoAwesome } from 'react-icons/md';
+import { useLocation } from '@docusaurus/router';
 import styles from './FloatingAIAssistant.module.css';
 
 interface FloatingAIAssistantProps {
@@ -70,7 +73,8 @@ FloatingButton.displayName = 'FloatingButton';
 /**
  * Componente principal: FloatingAIAssistant
  *
- * Ahora simplemente muestra un botón flotante que redirige a /chat
+ * Muestra un botón flotante que redirige a /chat.
+ * Se oculta automáticamente cuando el usuario ya está en /chat.
  *
  * Uso:
  * ```tsx
@@ -85,6 +89,13 @@ const FloatingAIAssistant = memo(
     size = 'medium',
     position = 'bottom-right',
   }: FloatingAIAssistantProps) => {
+    const location = useLocation();
+    
+    // Ocultar el botón si estamos en la página de chat
+    if (location.pathname === '/chat' || location.pathname === '/chat/') {
+      return null;
+    }
+
     return (
       <div className={`${styles.container} ${styles[position]}`}>
         <FloatingButton size={size} />

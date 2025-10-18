@@ -459,6 +459,14 @@ export default function ChatPage(): React.ReactElement {
       description="Asistente de IA para documentación API UBL 2.1"
     >
       <div className={styles.container}>
+        {/* OVERLAY PARA CERRAR SIDEBAR EN MOBILE */}
+        {sidebarOpen && (
+          <div
+            className={`${styles.sidebarOverlay} ${sidebarOpen ? styles.active : ''}`}
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
         {/* SIDEBAR IZQUIERDO: HISTORIAL */}
         <aside className={`${styles.sidebar} ${sidebarOpen ? styles.open : ''}`}>
           <div className={styles.sidebarHeader}>

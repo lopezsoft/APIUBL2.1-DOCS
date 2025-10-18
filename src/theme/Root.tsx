@@ -27,7 +27,12 @@ function useServerHealth() {
   useEffect(() => {
     const checkHealth = async () => {
       try {
-        const response = await fetch('/health', { method: 'GET' });
+        // Obtener URL del backend desde config inyectada
+        const config = (window as any).__MATIAS_CONFIG__;
+        const backendUrl = config?.BACKEND_URL || 'https://api-docs.matias-api.com';
+        const healthUrl = `${backendUrl}/health`;
+        
+        const response = await fetch(healthUrl, { method: 'GET' });
         setIsHealthy(response.ok);
       } catch (error) {
         console.warn('⚠️ Servidor de IA no disponible. El chat estará deshabilitado.');

@@ -2,6 +2,9 @@
 sidebar_position: 1
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Introducción
 
 Matias es una plataforma de **facturación electrónica** que permite a las empresas emitir, enviar y gestionar facturas electrónicas de forma segura y eficiente. Nuestra **API RESTful** proporciona acceso completo a los servicios de Matias.
@@ -259,9 +262,6 @@ Accept: application/json
 
 ### 💻 Ejemplos de Uso por Lenguaje
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
 <Tabs>
 <TabItem value="nodejs" label="Node.js" default>
 
@@ -424,9 +424,6 @@ func main() {
 </Tabs>
 
 ### 💻 Ejemplos de Uso por Lenguaje
-
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 
 <Tabs>
 <TabItem value="nodejs" label="Node.js" default>

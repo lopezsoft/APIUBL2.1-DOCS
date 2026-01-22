@@ -16,11 +16,28 @@ function HomepageHeader() {
           {siteConfig.title}
         </Heading>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
+        <div className={styles.badges}>
+          <span className={styles.badge}>✅ 100% Conforme DIAN</span>
+          <span className={styles.badge}>🚀 v1.4.2</span>
+          <span className={styles.badge}>📄 Factura v1.9</span>
+        </div>
         <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
             to="/docs/intro">
-            Inicia con la integración ⏱️
+            📖 Inicia con la integración
+          </Link>
+          <Link
+            className="button button--outline button--secondary button--lg"
+            to="/docs/jsons-billing/invoice"
+            style={{marginLeft: '1rem'}}>
+            📝 Ver ejemplos
+          </Link>
+          <Link
+            className="button button--outline button--secondary button--lg"
+            to="/docs/regulatory-framework/factura-electronica/intro"
+            style={{marginLeft: '1rem'}}>
+            📋 Marco Regulatorio
           </Link>
         </div>
       </div>

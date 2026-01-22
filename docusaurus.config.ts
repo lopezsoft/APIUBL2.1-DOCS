@@ -78,7 +78,17 @@ const config: Config = {
           position: 'left',
           label: 'Integración',
         },
-        /*{to: '/blog', label: 'Blog', position: 'left'},*/
+        {to: '/blog', label: 'Blog', position: 'left'},
+        {
+          href: 'https://github.com/lopezsoft',
+          label: 'GitHub',
+          position: 'right',
+        },
+        {
+          href: 'https://www.youtube.com/channel/UCOR7YVBcqQuuGN6-jnPgm0g',
+          label: 'YouTube',
+          position: 'right',
+        },
         {
           href: 'https://www.facebook.com/MatiasAppi',
           label: 'Facebook',
@@ -90,11 +100,44 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Documentación',
           items: [
             {
-              label: 'Integración',
+              label: 'Introducción',
               to: '/docs/intro',
+            },
+            {
+              label: 'Guías de Uso',
+              to: '/docs/use-cases/simple-invoice',
+            },
+            {
+              label: 'Endpoints API',
+              to: '/docs/endpoints',
+            },
+            {
+              label: 'Marco Regulatorio DIAN',
+              to: '/docs/regulatory-framework/factura-electronica/intro',
+            },
+          ],
+        },
+        {
+          title: 'Recursos',
+          items: [
+            {
+              label: 'Ejemplos de Facturación',
+              to: '/docs/jsons-billing/invoice',
+            },
+            {
+              label: 'Nómina Electrónica',
+              to: '/docs/payroll/payroll-fields',
+            },
+            {
+              label: 'Glosario',
+              to: '/docs/glossary',
+            },
+            {
+              label: 'Blog',
+              to: '/blog',
             },
           ],
         },
@@ -102,22 +145,38 @@ const config: Config = {
           title: 'Comunidad',
           items: [
             {
+              label: 'Facebook',
+              href: 'https://www.facebook.com/MatiasAppi',
+            },
+            {
               label: 'YouTube',
               href: 'https://www.youtube.com/channel/UCOR7YVBcqQuuGN6-jnPgm0g',
+            },
+            {
+              label: 'GitHub',
+              href: 'https://github.com/lopezsoft',
             },
           ],
         },
         {
-          title: 'Más',
+          title: 'Legal',
           items: [
             {
-              label: 'Blog',
-              to: '/blog',
-            }
+              label: 'Términos y Condiciones',
+              href: '#',
+            },
+            {
+              label: 'Política de Privacidad',
+              href: '#',
+            },
+            {
+              label: 'Soporte',
+              href: 'mailto:soporte@matias-api.com',
+            },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} LOPEZSOFT SAS, Todos los derechos reservados.`,
+      copyright: `Copyright © ${new Date().getFullYear()} LOPEZSOFT SAS - Todos los derechos reservados. | MATIAS API v1.4.2`,
     },
     prism: {
       theme: prismThemes.github,

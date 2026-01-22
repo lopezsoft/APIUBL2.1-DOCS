@@ -14,13 +14,13 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/easy-api.svg').default,
     description: (
       <>
-        Facial de usar, con una documentación clara y sencilla. No te complicamos la vida.
+        Fácil de usar, con una documentación clara y sencilla. No te complicamos la vida.
       </>
     ),
   },
   {
     title: 'Interfaz web',
-    Svg: require('@site/static/img/languages.svg').default,
+    Svg: require('@site/static/img/web-inteface.svg').default,
     description: (
       <>
         Interfaz web para configurar y administrar tus facturas electrónicas.

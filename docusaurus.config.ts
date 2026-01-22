@@ -1,5 +1,5 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
@@ -78,7 +78,7 @@ const config: Config = {
           position: 'left',
           label: 'Integración',
         },
-        {to: '/blog', label: 'Blog', position: 'left'},
+        { to: '/blog', label: 'Blog', position: 'left' },
         {
           href: 'https://github.com/lopezsoft',
           label: 'GitHub',
@@ -163,11 +163,11 @@ const config: Config = {
           items: [
             {
               label: 'Términos y Condiciones',
-              href: '#',
+              href: 'https://matias-api.com/terminos',
             },
             {
               label: 'Política de Privacidad',
-              href: '#',
+              href: 'https://matias-api.com/privacidad',
             },
             {
               label: 'Soporte',

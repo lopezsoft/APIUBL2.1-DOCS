@@ -99,14 +99,11 @@ Donde `eyJ0eXAi...` es el token de acceso obtenido en el login.
 
 La URL base para acceder a la API se proporcionará por nuestro equipo al momento de iniciar la integración. En la documentación, utilizaremos el parámetro `{{URL}}` como marcador de posición, el cual debe ser sustituido por la URL base real proporcionada.
 
-## Ejemplo de Encabezado para Solicitudes
-
-A continuación, se muestra un ejemplo de cómo configurar el encabezado `Content-Type` y `Accept` para las solicitudes en formato JSON. Este encabezado es esencial para asegurar que la API interprete correctamente el tipo de contenido de la solicitud:
-
-```http
-headers.set('Content-Type', 'application/json');
-headers.set('Accept', 'application/json');
+:::info Ejemplo de URL base
 ```
+https://api.matias-api.com
+```
+:::
 
 ## Registro en la API
 
@@ -121,24 +118,28 @@ Para acceder y utilizar los servicios de nuestra API, es necesario que primero s
   - Realice una petición de tipo `POST` a la siguiente dirección: `{{URL}}/register`.
   - El cuerpo (`BODY`) de la petición debe incluir los siguientes parámetros:
 
-| Parámetro | Tipo | Descripción | Ejemplo |
-|-----------|------|-------------|----------|
-| `first_name` | string | Nombre del usuario | "Lewis" |
-| `last_name` | string | Apellido del usuario | "Lopez Gomez" |
-| `email` | string | Correo electrónico válido | "correo@correo.com" |
-| `password` | string | Contraseña (min 8 caracteres) | "MiPassword123!" |
-| `password_confirmation` | string | Confirmación de contraseña | "MiPassword123!" |
-| `address` | string | Dirección física | "Calle 123 #45-67" |
-| `city_id` | integer | ID de ciudad | 836 |
-| `company_name` | string | Nombre de la empresa | "Mi Empresa S.A." |
-| `dni` | string | Número de identificación (NIT) | "1234567890" |
-| `identity_document_id` | integer | Tipo de documento (1=CC, 3=NIT) | 3 |
-| `mobile` | string | Teléfono celular | "3108435431" |
-| `tax_level_id` | integer | Nivel fiscal | 5 |
-| `tax_regime_id` | integer | Régimen fiscal | 2 |
-| `type_organization_id` | integer | Tipo de organización | 1 |
+:::info Parámetros de Registro
 
-Ejemplo JSON completo:
+| Parámetro | Tipo | Requerido | Descripción | Ejemplo |
+|-----------|------|-----------|-------------|----------|
+| `first_name` | `string` | ✅ Sí | Nombre del usuario | "Lewis" |
+| `last_name` | `string` | ✅ Sí | Apellido del usuario | "Lopez Gomez" |
+| `email` | `string` | ✅ Sí | Correo electrónico válido | "correo@correo.com" |
+| `password` | `string` | ✅ Sí | Contraseña (min 8 caracteres) | "MiPassword123!" |
+| `password_confirmation` | `string` | ✅ Sí | Confirmación de contraseña | "MiPassword123!" |
+| `address` | `string` | ✅ Sí | Dirección física | "Calle 123 #45-67" |
+| `city_id` | `integer` | ✅ Sí | ID de ciudad ([ver tabla](/docs/glossary)) | 836 |
+| `company_name` | `string` | ✅ Sí | Nombre de la empresa | "Mi Empresa S.A." |
+| `dni` | `string` | ✅ Sí | Número de identificación (NIT) | "1234567890" |
+| `identity_document_id` | `integer` | ✅ Sí | Tipo de documento (1=CC, 3=NIT) | 3 |
+| `mobile` | `string` | ✅ Sí | Teléfono celular | "3108435431" |
+| `tax_level_id` | `integer` | ✅ Sí | Nivel fiscal ([ver tabla](/docs/glossary)) | 5 |
+| `tax_regime_id` | `integer` | ✅ Sí | Régimen fiscal ([ver tabla](/docs/glossary)) | 2 |
+| `type_organization_id` | `integer` | ✅ Sí | Tipo de organización ([ver tabla](/docs/glossary)) | 1 |
+
+:::
+
+**Ejemplo JSON completo:**
 ```json
 {
   "first_name": "Lewis",
@@ -245,140 +246,348 @@ Para obtener el token de acceso, se debe realizar los siguientes pasos:
     }
     ``` 
 ## Uso del Token de Acceso
-Tras obtener el token de acceso, este debe incluirse en el encabezado de autorización de todas las solicitudes a la API. El encabezado debe tener el siguiente formato:
+
+Tras obtener el token de acceso, este debe incluirse en el encabezado de autorización de todas las solicitudes a la API.
+
+### 📄 Formato del Encabezado
 
 ```http
-headers.set('Authorization', 'Bearer ' + token);
-headers.set('Content-Type', 'application/json');
-headers.set('Accept', 'application/json');
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM...
+Content-Type: application/json
+Accept: application/json
 ```
-Donde `token` es el valor del token de acceso obtenido.
-- **Ejemplo de Encabezado de Autorización en nodejs:** 🔵 Recomendado
-   ```javascript
-   const axios = require('axios');
-   const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM...'; // Token obtenido del login
-   const url = '{{URL}}/v1/user';
-   
-   const headers = {
-      'Content-Type': 'application/json', 
-      'Accept': 'application/json',
-      'Authorization': `Bearer ${token}`
-   };
-   axios.get('{{URL}}/v1/user', { headers: headers })
-   .then(response => {
-       console.log(response.data);
-   })
-   .catch(error => {
-       console.log(error);
-   });
-   ```
-- ### **Ejemplo de Encabezado de Autorización en PHP:** 🟢 Básico
-   ```php
-   $curl = curl_init();
-   curl_setopt_array($curl, array(
-     CURLOPT_URL => "{{URL}}/v1/user",
-     CURLOPT_RETURNTRANSFER => true,
-     CURLOPT_ENCODING => "",
-     CURLOPT_MAXREDIRS => 10,
-     CURLOPT_TIMEOUT => 0,
-     CURLOPT_FOLLOWLOCATION => true,
-     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-     CURLOPT_CUSTOMREQUEST => "GET",
-     CURLOPT_HTTPHEADER => array(
-       "Content-Type: application/json",
-       "Accept: application/json",
-       "Authorization: Bearer $token"
-     ),
-   ));
-   $response = curl_exec($curl);
-   curl_close($curl);
-   echo $response;
-   ```
-- ### **Ejemplo de Encabezado de Autorización en Python:** 🔵 Recomendado
-    ```python
-    import requests
-    url = "{{URL}}/v1/user"
-    headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer ' + token
-    }
-    response = requests.request("GET", url, headers=headers)
-    print(response.text)
-    ```
-- ### **Ejemplo de Encabezado de Autorización en Java:** 🟡 Avanzado
-    ```java
-    OkHttpClient client = new OkHttpClient().newBuilder()
-      .build();
-    Request request = new Request.Builder()
-      .url("{{URL}}/v1/user")
-      .method("GET", null)
-      .addHeader("Content-Type", "application/json")
-      .addHeader("Accept", "application/json")
-      .addHeader("Authorization", "Bearer " + token)
-      .build();
-    Response response = client.newCall(request).execute();
-    ```
-- ### **Ejemplo de Encabezado de Autorización en C#:** 🟢 Básico
-    ```csharp
-    var client = new RestClient("{{URL}}/v1/user");
-    client.Timeout = -1;
-    var request = new RestRequest(Method.GET);
-    request.AddHeader("Content-Type", "application/json");
-    request.AddHeader("Accept", "application/json");
-    request.AddHeader("Authorization", "Bearer " + token);
-    IRestResponse response = client.Execute(request);
-    Console.WriteLine(response.Content);
-    ```
-- ### **Ejemplo de Encabezado de Autorización en Ruby:** 🟡 Avanzado
-    ```ruby
-    require 'uri'
-    require 'net/http'
-    url = URI("{{URL}}/v1/user")
-    http = Net::HTTP.new(url.host, url.port)
-    http.use_ssl = true
-    request = Net::HTTP::Get.new(url)
-    request["Content-Type"] = "application/json"
-    request["Accept"] = "application/json"
-    request["Authorization"] = "Bearer " + token
-    response = http.request(request)
-    puts response.read_body
-    ```
-- ### **Ejemplo de Encabezado de Autorización en Go:** 🟡 Avanzado
-    ```go
-    package main
-    import (
-      "fmt"
-      "net/http"
-      "io/ioutil"
-    )
-    func main() {
-      url := "{{URL}}/v1/user"
-      method := "GET"
-      client := &http.Client {
-      }
-      req, err := http.NewRequest(method, url, nil)
-      if err != nil {
-        fmt.Println(err)
-        return
-      }
-      req.Header.Add("Content-Type", "application/json")
-      req.Header.Add("Accept", "application/json")
-      req.Header.Add("Authorization", "Bearer " + token)
-      res, err := client.Do(req)
-      if err != nil {
-        fmt.Println(err)
-        return
-      }
-      defer res.Body.Close()
-      body, err := ioutil.ReadAll(res.Body)
-      if err != nil {
-        fmt.Println(err)
-        return
-      }
-      fmt.Println(string(body))
-    }
-    ```
+
+### 💻 Ejemplos de Uso por Lenguaje
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="nodejs" label="Node.js" default>
+
+```javascript
+const axios = require('axios');
+const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM...'; // Token obtenido del login
+
+const headers = {
+   'Content-Type': 'application/json', 
+   'Accept': 'application/json',
+   'Authorization': `Bearer ${token}`
+};
+
+axios.get('{{URL}}/v1/user', { headers: headers })
+.then(response => {
+    console.log(response.data);
+})
+.catch(error => {
+    console.log(error);
+});
+```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+import requests
+
+url = "{{URL}}/v1/user"
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': 'Bearer ' + token
+}
+
+response = requests.request("GET", url, headers=headers)
+print(response.text)
+```
+
+</TabItem>
+<TabItem value="php" label="PHP">
+
+```php
+$curl = curl_init();
+curl_setopt_array($curl, array(
+  CURLOPT_URL => "{{URL}}/v1/user",
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => "",
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => "GET",
+  CURLOPT_HTTPHEADER => array(
+    "Content-Type: application/json",
+    "Accept: application/json",
+    "Authorization: Bearer $token"
+  ),
+));
+$response = curl_exec($curl);
+curl_close($curl);
+echo $response;
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+OkHttpClient client = new OkHttpClient().newBuilder()
+  .build();
+Request request = new Request.Builder()
+  .url("{{URL}}/v1/user")
+  .method("GET", null)
+  .addHeader("Content-Type", "application/json")
+  .addHeader("Accept", "application/json")
+  .addHeader("Authorization", "Bearer " + token)
+  .build();
+Response response = client.newCall(request).execute();
+```
+
+</TabItem>
+<TabItem value="csharp" label="C#">
+
+```csharp
+var client = new RestClient("{{URL}}/v1/user");
+client.Timeout = -1;
+var request = new RestRequest(Method.GET);
+request.AddHeader("Content-Type", "application/json");
+request.AddHeader("Accept", "application/json");
+request.AddHeader("Authorization", "Bearer " + token);
+IRestResponse response = client.Execute(request);
+Console.WriteLine(response.Content);
+```
+
+</TabItem>
+<TabItem value="ruby" label="Ruby">
+
+```ruby
+require 'uri'
+require 'net/http'
+
+url = URI("{{URL}}/v1/user")
+http = Net::HTTP.new(url.host, url.port)
+http.use_ssl = true
+
+request = Net::HTTP::Get.new(url)
+request["Content-Type"] = "application/json"
+request["Accept"] = "application/json"
+request["Authorization"] = "Bearer " + token
+
+response = http.request(request)
+puts response.read_body
+```
+
+</TabItem>
+<TabItem value="go" label="Go">
+
+```go
+package main
+
+import (
+  "fmt"
+  "net/http"
+  "io/ioutil"
+)
+
+func main() {
+  url := "{{URL}}/v1/user"
+  method := "GET"
+  
+  client := &http.Client {}
+  req, err := http.NewRequest(method, url, nil)
+  
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  
+  req.Header.Add("Content-Type", "application/json")
+  req.Header.Add("Accept", "application/json")
+  req.Header.Add("Authorization", "Bearer " + token)
+  
+  res, err := client.Do(req)
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  defer res.Body.Close()
+  
+  body, err := ioutil.ReadAll(res.Body)
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  fmt.Println(string(body))
+}
+```
+
+</TabItem>
+</Tabs>
+
+### 💻 Ejemplos de Uso por Lenguaje
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="nodejs" label="Node.js" default>
+
+```javascript
+const axios = require('axios');
+const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM...'; // Token obtenido del login
+
+const headers = {
+   'Content-Type': 'application/json', 
+   'Accept': 'application/json',
+   'Authorization': `Bearer ${token}`
+};
+
+axios.get('{{URL}}/v1/user', { headers: headers })
+.then(response => {
+    console.log(response.data);
+})
+.catch(error => {
+    console.log(error);
+});
+```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+import requests
+
+url = "{{URL}}/v1/user"
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': 'Bearer ' + token
+}
+
+response = requests.request("GET", url, headers=headers)
+print(response.text)
+```
+
+</TabItem>
+<TabItem value="php" label="PHP">
+
+```php
+$curl = curl_init();
+curl_setopt_array($curl, array(
+  CURLOPT_URL => "{{URL}}/v1/user",
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => "",
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => "GET",
+  CURLOPT_HTTPHEADER => array(
+    "Content-Type: application/json",
+    "Accept: application/json",
+    "Authorization: Bearer $token"
+  ),
+));
+$response = curl_exec($curl);
+curl_close($curl);
+echo $response;
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+OkHttpClient client = new OkHttpClient().newBuilder()
+  .build();
+Request request = new Request.Builder()
+  .url("{{URL}}/v1/user")
+  .method("GET", null)
+  .addHeader("Content-Type", "application/json")
+  .addHeader("Accept", "application/json")
+  .addHeader("Authorization", "Bearer " + token)
+  .build();
+Response response = client.newCall(request).execute();
+```
+
+</TabItem>
+<TabItem value="csharp" label="C#">
+
+```csharp
+var client = new RestClient("{{URL}}/v1/user");
+client.Timeout = -1;
+var request = new RestRequest(Method.GET);
+request.AddHeader("Content-Type", "application/json");
+request.AddHeader("Accept", "application/json");
+request.AddHeader("Authorization", "Bearer " + token);
+IRestResponse response = client.Execute(request);
+Console.WriteLine(response.Content);
+```
+
+</TabItem>
+<TabItem value="ruby" label="Ruby">
+
+```ruby
+require 'uri'
+require 'net/http'
+
+url = URI("{{URL}}/v1/user")
+http = Net::HTTP.new(url.host, url.port)
+http.use_ssl = true
+
+request = Net::HTTP::Get.new(url)
+request["Content-Type"] = "application/json"
+request["Accept"] = "application/json"
+request["Authorization"] = "Bearer " + token
+
+response = http.request(request)
+puts response.read_body
+```
+
+</TabItem>
+<TabItem value="go" label="Go">
+
+```go
+package main
+
+import (
+  "fmt"
+  "net/http"
+  "io/ioutil"
+)
+
+func main() {
+  url := "{{URL}}/v1/user"
+  method := "GET"
+  
+  client := &http.Client {}
+  req, err := http.NewRequest(method, url, nil)
+  
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  
+  req.Header.Add("Content-Type", "application/json")
+  req.Header.Add("Accept", "application/json")
+  req.Header.Add("Authorization", "Bearer " + token)
+  
+  res, err := client.Do(req)
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  defer res.Body.Close()
+  
+  body, err := ioutil.ReadAll(res.Body)
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  fmt.Println(string(body))
+}
+```
+
+</TabItem>
+</Tabs>
 ## Revocar el Token
 Para revocar un token generado anteriormente y que aún no ha vencido, debe enviarse una petición de tipo GET a `{{URL}}/auth/logout`. 
 - Si la revocación es correcta, la petición devolverá una respuesta HTTP 200 en formato JSON con la estructura:

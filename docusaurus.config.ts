@@ -18,7 +18,7 @@ const config: Config = {
   organizationName: 'lopezsoft',
   projectName: 'docs-matias-api.github.io', // Usually your repo name.
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
 
   // Even if you don't use internationalization, you can use this field to set

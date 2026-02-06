@@ -8,7 +8,7 @@ import Heading from '@theme/Heading';
 import styles from './index.module.css';
 
 function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
+  const { siteConfig } = useDocusaurusContext();
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
@@ -18,8 +18,13 @@ function HomepageHeader() {
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.badges}>
           <span className={styles.badge}>✅ 100% Conforme DIAN</span>
-          <span className={styles.badge}>🚀 v1.4.2</span>
+          <span className={styles.badge}>🚀 v3.0.0</span>
           <span className={styles.badge}>📄 Factura v1.9</span>
+        </div>
+        <div className={styles.badges} style={{ marginTop: '0.5rem' }}>
+          <span className={styles.badge}>🔑 Personal Access Tokens</span>
+          <span className={styles.badge}>🔔 Webhooks (26 eventos)</span>
+          <span className={styles.badge}>💳 Membresías & Límites</span>
         </div>
         <div className={styles.buttons}>
           <Link
@@ -30,13 +35,13 @@ function HomepageHeader() {
           <Link
             className="button button--outline button--secondary button--lg"
             to="/docs/jsons-billing/invoice"
-            style={{marginLeft: '1rem'}}>
+            style={{ marginLeft: '1rem' }}>
             📝 Ver ejemplos
           </Link>
           <Link
             className="button button--outline button--secondary button--lg"
             to="/docs/regulatory-framework/factura-electronica/intro"
-            style={{marginLeft: '1rem'}}>
+            style={{ marginLeft: '1rem' }}>
             📋 Marco Regulatorio
           </Link>
         </div>
@@ -46,7 +51,7 @@ function HomepageHeader() {
 }
 
 export default function Home(): JSX.Element {
-  const {siteConfig} = useDocusaurusContext();
+  const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
       title={`FACTURACIÓN ELECTRÓNICA ${siteConfig.title}`}

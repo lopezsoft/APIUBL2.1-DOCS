@@ -2,10 +2,35 @@
 sidebar_position: 4
 ---
 
-# Campos de todos los documentos electrónicos.
+# 📋 Campos de todos los documentos electrónicos
 
-En esta sección se describen los campos que se deben de considerar para la generación de la factura electrónica,
-nota de crédito y nota de débito, documento soporte y documento equivalente, con sus respectivas notas de ajuste.
+<div style={{backgroundColor: '#e7f3ff', padding: '1.5rem', borderRadius: '8px', border: '2px solid #0066cc', margin: '1.5rem 0'}}>
+  <strong>📖 Referencia Completa de Campos</strong><br/>
+  En esta sección se describen <strong>todos los campos</strong> que se deben considerar para la generación de factura electrónica, nota de crédito y nota de débito, documento soporte y documento equivalente, con sus respectivas notas de ajuste.
+</div>
+
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', margin: '1.5rem 0'}}>
+  <div style={{padding: '1rem', backgroundColor: '#fff3cd', borderRadius: '8px', border: '1px solid #ffc107', textAlign: 'center'}}>
+    <div style={{fontSize: '2rem'}}>📄</div>
+    <strong>Factura Electrónica</strong><br/>
+    <small>Tipos 7, 8, 9, 10</small>
+  </div>
+  <div style={{padding: '1rem', backgroundColor: '#d4edda', borderRadius: '8px', border: '1px solid #28a745', textAlign: 'center'}}>
+    <div style={{fontSize: '2rem'}}>📝</div>
+    <strong>Notas de Ajuste</strong><br/>
+    <small>Crédito (5) / Débito (4)</small>
+  </div>
+  <div style={{padding: '1rem', backgroundColor: '#d1ecf1', borderRadius: '8px', border: '1px solid #17a2b8', textAlign: 'center'}}>
+    <div style={{fontSize: '2rem'}}>🏪</div>
+    <strong>POS Electrónico</strong><br/>
+    <small>Tipo 20</small>
+  </div>
+  <div style={{padding: '1rem', backgroundColor: '#f8d7da', borderRadius: '8px', border: '1px solid #dc3545', textAlign: 'center'}}>
+    <div style={{fontSize: '2rem'}}>📑</div>
+    <strong>Documento Soporte</strong><br/>
+    <small>Tipo 11</small>
+  </div>
+</div>
 
 ## 📑 Tabla de Contenidos
 
@@ -341,10 +366,15 @@ nota de crédito y nota de débito, documento soporte y documento equivalente, c
 }
 ```
 
-## Referencia Rápida de Tipos de Documento
+## 🎯 Referencia Rápida de Tipos de Documento
 
-⚠️ **IMPORTANTE:** Los valores en la columna **ID (API)** son los que debes usar en `type_document_id`. El **Code (DIAN)** es solo para referencia con la normativa DIAN. 
-**REGLA DE ORO:** En el API SIEMPRE usas el ID de la DB, NUNCA el code DIAN.
+<div style={{backgroundColor: '#fff3cd', padding: '1.5rem', borderRadius: '8px', border: '2px solid #ffc107', margin: '1.5rem 0'}}>
+  <h4 style={{marginTop: 0}}>⚠️ IMPORTANTE: IDs del API vs Códigos DIAN</h4>
+  <p style={{marginBottom: 0}}>
+    Los valores en la columna <strong>ID (API)</strong> son los que debes usar en <code>type_document_id</code>. El <strong>Code (DIAN)</strong> es solo para referencia con la normativa DIAN.<br/>
+    <strong style={{color: '#856404'}}>🔑 REGLA DE ORO:</strong> En el API <strong>SIEMPRE</strong> usas el <code>ID de la DB</code>, <strong>NUNCA</strong> el code DIAN.
+  </p>
+</div>
 
 | ID (API) | Code (DIAN) | Tipo | Descripción | Normativa | Notas |
 |----------|-------------|------|-------------|-----------|-------|
@@ -359,7 +389,11 @@ nota de crédito y nota de débito, documento soporte y documento equivalente, c
 
 ---
 
-## Compatibilidad de Campos por Tipo
+## ✅ Compatibilidad de Campos por Tipo
+
+<div style={{backgroundColor: '#d4edda', padding: '1rem', borderRadius: '8px', border: '1px solid #28a745', marginBottom: '1rem'}}>
+  <strong>📊 Matriz de Compatibilidad:</strong> Verifica qué campos son obligatorios (🔴), opcionales (🟢) o condicionales (🟡) según el tipo de documento.
+</div>
 
 | Campo | Factura (1,2) | Contingencia (3,4) | Documento Soporte (7) | POS (9) | Nota Crédito (91) | Nota Débito (92) |
 |-------|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -378,14 +412,21 @@ nota de crédito y nota de débito, documento soporte y documento equivalente, c
 | `billing_reference` | 🟢 | 🟢 | 🟢 | 🟢 | 🔴 | 🔴 |
 | `order_reference` | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 |
 
-**Leyenda:**
-- 🔴 **Obligatorio**
-- 🟢 **Opcional**
-- 🟡 **Condicional**
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.75rem', margin: '1.5rem 0'}}>
+  <div style={{padding: '0.75rem', backgroundColor: '#f8d7da', borderRadius: '6px', border: '1px solid #dc3545'}}>
+    🔴 <strong>Obligatorio</strong>
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: '#d4edda', borderRadius: '6px', border: '1px solid #28a745'}}>
+    🟢 <strong>Opcional</strong>
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: '#fff3cd', borderRadius: '6px', border: '1px solid #ffc107'}}>
+    🟡 <strong>Condicional</strong>
+  </div>
+</div>
 
 ---
 
-## Descripción de los campos
+## 📖 Descripción de los campos
 
 A continuación se describen los campos que se deben de considerar para la generación de la factura electrónica.
 
@@ -568,10 +609,11 @@ A continuación se describen los campos que se deben de considerar para la gener
   }
 ```
 
-## Uso de los campos
+## 🔧 Uso de los campos
 
-A continuación se describe el uso de los campos de la factura electrónica, nota de crédito y nota de débito,
-documento soporte y documento equivalente, con sus respectivas notas de ajuste.
+<div style={{backgroundColor: '#e7f3ff', padding: '1rem', borderRadius: '8px', border: '1px solid #0066cc', marginBottom: '2rem'}}>
+  <strong>💡 Guía de Uso:</strong> A continuación se describe el uso detallado de los campos de la factura electrónica, nota de crédito y nota de débito, documento soporte y documento equivalente, con sus respectivas notas de ajuste.
+</div>
 
 ### `resolution_number` 🔴
 
@@ -1809,10 +1851,68 @@ Este es un ejemplo con **SOLO los campos obligatorios** para generar una factura
 }
 ```
 
-**Notas importantes sobre este ejemplo:**
-- ✅ Todos los campos 🔴 **Obligatorios** están presentes
-- ✅ Campos 🟢 **Opcionales** se omitieron para simplicidad
-- ✅ Puede extenderse con campos adicionales según necesidad
-- ✅ Para contingencia (tipo 03), debe agregar [`additional_document_reference`](#additional_document_reference-referencia-a-documento-adicional)
-- ✅ Para POS (tipo 9), debe agregar [`point_of_sale`](#point_of_sale)
+**📊 Notas importantes sobre este ejemplo:**
+
+<div style={{display: 'grid', gap: '0.75rem', margin: '1rem 0'}}>
+  <div style={{padding: '0.75rem', backgroundColor: '#d4edda', borderRadius: '6px', border: '1px solid #28a745'}}>
+    ✅ Todos los campos 🔴 <strong>Obligatorios</strong> están presentes
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: '#e7f3ff', borderRadius: '6px', border: '1px solid #0066cc'}}>
+    ✅ Campos 🟢 <strong>Opcionales</strong> se omitieron para simplicidad
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: '#fff3cd', borderRadius: '6px', border: '1px solid #ffc107'}}>
+    ✅ Puede extenderse con campos adicionales según necesidad
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: '#f8d7da', borderRadius: '6px', border: '1px solid #dc3545'}}>
+    ⚠️ Para contingencia (tipo 03), debe agregar <a href="#additional_document_reference-referencia-a-documento-adicional"><code>additional_document_reference</code></a>
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: '#f8d7da', borderRadius: '6px', border: '1px solid #dc3545'}}>
+    ⚠️ Para POS (tipo 9), debe agregar <a href="#point_of_sale"><code>point_of_sale</code></a>
+  </div>
+</div>
+
+---
+
+## 🎯 Próximos Pasos
+
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', margin: '2rem 0'}}>
+  <a href="/docs/use-cases/simple-invoice" style={{textDecoration: 'none', color: 'inherit'}}>
+    <div style={{padding: '1.5rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '2px solid #0066cc', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+      <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📄</div>
+      <strong>Factura Simple</strong><br/>
+      <small>Ejemplo práctico paso a paso</small>
+    </div>
+  </a>
+  <a href="/docs/use-cases/export-scenarios" style={{textDecoration: 'none', color: 'inherit'}}>
+    <div style={{padding: '1.5rem', backgroundColor: '#d4edda', borderRadius: '8px', border: '2px solid #28a745', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+      <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>🌎</div>
+      <strong>Exportaciones</strong><br/>
+      <small>Facturas internacionales</small>
+    </div>
+  </a>
+  <a href="/docs/endpoints" style={{textDecoration: 'none', color: 'inherit'}}>
+    <div style={{padding: '1.5rem', backgroundColor: '#fff3cd', borderRadius: '8px', border: '2px solid #ffc107', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+      <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>🔌</div>
+      <strong>Endpoints API</strong><br/>
+      <small>Referencia completa de endpoints</small>
+    </div>
+  </a>
+  <a href="/docs/use-cases/common-errors" style={{textDecoration: 'none', color: 'inherit'}}>
+    <div style={{padding: '1.5rem', backgroundColor: '#f8d7da', borderRadius: '8px', border: '2px solid #dc3545', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+      <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>⚠️</div>
+      <strong>Errores Comunes</strong><br/>
+      <small>Troubleshooting</small>
+    </div>
+  </a>
+</div>
+
+---
+
+<div style={{backgroundColor: '#f8f9fa', padding: '1rem', borderRadius: '8px', textAlign: 'center', marginTop: '2rem'}}>
+  <small>
+    📅 <strong>Última actualización:</strong> Febrero 2026 • 
+    📖 <strong>Tipo:</strong> Referencia Técnica Completa • 
+    🎯 <strong>Nivel:</strong> ⭐⭐⭐ Avanzado
+  </small>
+</div>
 ```

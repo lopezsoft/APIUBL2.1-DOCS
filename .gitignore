@@ -23,6 +23,7 @@ yarn-error.log*
 .codegpt
 
 /docs-dian
+/docs-2026
 
 *.log
 .htaccess

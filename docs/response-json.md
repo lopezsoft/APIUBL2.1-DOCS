@@ -2,9 +2,38 @@
 sidebar_position: 3
 ---
 
-# Respuestas de la API
+# 📬 Respuestas de la API
 
-La API de facturación emite respuestas en formato JSON. Estas respuestas contienen información sobre el estado de la solicitud y los documentos generados por la DIAN.
+<div style={{backgroundColor: '#e7f3ff', padding: '1.5rem', borderRadius: '8px', border: '2px solid #0066cc', margin: '1.5rem 0'}}>
+  <strong>📖 Guía Completa de Respuestas JSON</strong><br/>
+  Todas las respuestas que emite la API están en formato JSON y contienen información detallada sobre el estado de la solicitud, documentos generados y validaciones de la DIAN.
+</div>
+
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', margin: '1.5rem 0'}}>
+  <div style={{padding: '1rem', backgroundColor: '#d4edda', borderRadius: '8px', border: '1px solid #28a745', textAlign: 'center'}}>
+    <div style={{fontSize: '2rem'}}>✅</div>
+    <strong>HTTP 200/201</strong><br/>
+    <small>Procesamiento exitoso</small>
+  </div>
+
+  <div style={{padding: '1rem', backgroundColor: '#fff3cd', borderRadius: '8px', border: '1px solid #ffc107', textAlign: 'center'}}>
+    <div style={{fontSize: '2rem'}}>⏳</div>
+    <strong>StatusCode 98</strong><br/>
+    <small>En proceso</small>
+  </div>
+
+  <div style={{padding: '1rem', backgroundColor: '#f8d7da', borderRadius: '8px', border: '1px solid #dc3545', textAlign: 'center'}}>
+    <div style={{fontSize: '2rem'}}>❌</div>
+    <strong>HTTP 4xx/5xx</strong><br/>
+    <small>Errores</small>
+  </div>
+
+  <div style={{padding: '1rem', backgroundColor: '#d1ecf1', borderRadius: '8px', border: '1px solid #17a2b8', textAlign: 'center'}}>
+    <div style={{fontSize: '2rem'}}>🔄</div>
+    <strong>Contingencia</strong><br/>
+    <small>Timeouts y reintentos</small>
+  </div>
+</div>
 
 ## 📑 Tabla de Contenidos
 
@@ -19,65 +48,84 @@ La API de facturación emite respuestas en formato JSON. Estas respuestas contie
 
 ## 🚀 Quick Reference
 
+<div style={{backgroundColor: '#f8f9fa', padding: '1.5rem', borderRadius: '8px', border: '2px solid #6c757d', margin: '1.5rem 0'}}>
+  <strong>⚡ Referencia Rápida de Códigos HTTP</strong><br/>
+  Consulta instantánea de todos los códigos de estado y acciones recomendadas.
+</div>
+
 | Código | Tipo | Descripción | Acción |
 |--------|------|-------------|--------|
-| 200 | ✓ Éxito | Documento procesado correctamente | Descargar archivos |
-| 201 | ✓ Éxito | Documento creado en queue | Esperar procesamiento |
-| 400 | ✗ Error | JSON malformado | Validar formato |
-| 401 | ✗ Error | Sin autenticación | Verificar credenciales |
-| 402 | ✗ Error | Suscripción vencida | Renovar pago |
-| 403 | ✗ Error | Sin permisos | Contactar soporte |
-| 404 | ✗ Error | Recurso no existe | Verificar ID |
-| 422 | ✗ Error | Validación DIAN fallida | Leer ErrorMessage |
-| 500 | ✗ Error | Error servidor DIAN | Esperar e intentar |
-| 503 | ✗ Error | Servicio no disponible | Consultar estado DIAN |
+| 200 | ✅ Éxito | Documento procesado correctamente | Descargar archivos |
+| 201 | ✅ Éxito | Documento creado en queue | Esperar procesamiento |
+| 400 | ❌ Error | JSON malformado | Validar formato |
+| 401 | ❌ Error | Sin autenticación | Verificar credenciales |
+| 402 | ❌ Error | Suscripción vencida | Renovar pago |
+| 403 | ❌ Error | Sin permisos | Contactar soporte |
+| 404 | ❌ Error | Recurso no existe | Verificar ID |
+| 422 | ❌ Error | Validación DIAN fallida | Leer ErrorMessage |
+| 500 | ❌ Error | Error servidor DIAN | Esperar e intentar |
+| 503 | ❌ Error | Servicio no disponible | Consultar estado DIAN |
 | 504 | ⏳ Timeout | Respuesta tardía | Ver sección contingencias |
-| 507 | ✗ Error | Almacenamiento lleno | Contactar soporte |
-| 508 | ✗ Error | Bucle detectado | Revisar estructura |
+| 507 | ❌ Error | Almacenamiento lleno | Contactar soporte |
+| 508 | ❌ Error | Bucle detectado | Revisar estructura |
 
 ---
 
-## Guía Rápida de Inicio
+## 🎯 Guía Rápida de Inicio
 
-### Interpretar una respuesta en 3 pasos
+<div style={{backgroundColor: '#d1ecf1', padding: '1.5rem', borderRadius: '8px', border: '2px solid #17a2b8', margin: '1.5rem 0'}}>
+  <strong>🚦 Cómo Interpretar una Respuesta en 3 Pasos</strong><br/>
+  Sigue este proceso simple para entender rápidamente cualquier respuesta de la API.
+</div>
 
-**Paso 1: Revisar el código HTTP**
-```
-HTTP 200/201 → Éxito, descargar archivos
-HTTP 400-409 → Error de cliente, revisar solicitud
-HTTP 500-508 → Error de servidor, esperar e intentar
-```
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', margin: '1.5rem 0'}}>
+  <div style={{padding: '1.5rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '2px solid #0066cc'}}>
+    <strong>📊 Paso 1: Código HTTP</strong><br/><br/>
+    <code>HTTP 200/201</code> → ✅ Éxito<br/>
+    <code>HTTP 400-409</code> → ⚠️ Error cliente<br/>
+    <code>HTTP 500-508</code> → ❌ Error servidor
+  </div>
 
-**Paso 2: Verificar el campo `success`**
-```
-success: true  → Documento procesado exitosamente
-success: false → Error en procesamiento, leer errorMessage
-```
+  <div style={{padding: '1.5rem', backgroundColor: '#d4edda', borderRadius: '8px', border: '2px solid #28a745'}}>
+    <strong>🔍 Paso 2: Campo success</strong><br/><br/>
+    <code>success: true</code> → ✅ OK<br/>
+    <code>success: false</code> → ❌ Error<br/>
+    <small>Leer errorMessage detalladamente</small>
+  </div>
 
-**Paso 3: Según el StatusCode**
-```
-StatusCode: 1 o 02  → Documento duplicado/ya procesado
-StatusCode: 98      → En proceso, reintentar en 5 minutos
-StatusCode: OTROS   → Ver tabla de códigos HTTP
-```
+  <div style={{padding: '1.5rem', backgroundColor: '#fff3cd', borderRadius: '8px', border: '2px solid #ffc107'}}>
+    <strong>🏷️ Paso 3: StatusCode DIAN</strong><br/><br/>
+    <code>StatusCode: 00</code> → ✅ Procesado<br/>
+    <code>StatusCode: 98</code> → ⏳ En proceso<br/>
+    <code>StatusCode: 02</code> → 🔄 Duplicado
+  </div>
+</div>
 
-### Manejo de errores comunes
+### 🛠️ Manejo de Errores Comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| `400 - Bad Request` | JSON malformado | Valide estructura con JSONLint |
-| `401 - Unauthorized` | API key inválida | Verifique credenciales |
-| `422 - Unprocessable Entity` | Datos inválidos DIAN | Lea detalles en `response.ErrorMessage` |
-| `504 - Gateway Timeout` | Demora en DIAN | Siga procedimiento contingencia (sección 12.4) |
-| `StatusCode: 98` | Procesando | Consulte estado en 5 minutos |
+<div style={{backgroundColor: '#fff3cd', padding: '1.5rem', borderRadius: '8px', border: '2px solid #ffc107', margin: '1.5rem 0'}}>
+  <strong>⚠️ Errores Más Frecuentes y Soluciones</strong><br/>
+  Los 5 errores que encontrarás con mayor frecuencia y cómo resolverlos.
+</div>
+
+| Error | Emoji | Causa | Solución |
+|-------|-------|-------|----------|
+| `400 - Bad Request` | ❌ | JSON malformado | Valide estructura con JSONLint |
+| `401 - Unauthorized` | 🔒 | API key inválida | Verifique credenciales |
+| `422 - Unprocessable Entity` | ⚠️ | Datos inválidos DIAN | Lea detalles en `response.ErrorMessage` |
+| `504 - Gateway Timeout` | ⏳ | Demora en DIAN | Siga procedimiento contingencia |
+| `StatusCode: 98` | 🔄 | Procesando | Consulte estado en 5 minutos |
 
 ---
 
----
+## ✅ Estructura de la Respuesta Exitosa
 
-## Estructura de la respuesta, cuando se genera un documento de forma exitosa
+<div style={{backgroundColor: '#d4edda', padding: '1.5rem', borderRadius: '8px', border: '2px solid #28a745', margin: '1.5rem 0'}}>
+  <strong>🎉 HTTP 200/201 - Documento Procesado Exitosamente</strong><br/>
+  Cuando la DIAN acepta y valida el documento, recibirás una respuesta completa con archivos PDF, XML, QR y más.
+</div>
 
-### Resumen de estructura
+### 📋 Resumen de Estructura
 
 Todas las respuestas exitosas (HTTP 200/201) contienen estos elementos clave:
 
@@ -191,24 +239,36 @@ Todas las respuestas exitosas (HTTP 200/201) contienen estos elementos clave:
 | `url` | string | URL del PDF |
 | `data` | string | El PDF en base64 |
 
-## Estructura de la respuesta, cuando se intenta generar un documento que ya fue procesado o validado por la DIAN.
+## 🔄 Respuesta - Documento Duplicado
 
-    ```json title="response.json"
+<div style={{backgroundColor: '#fff3cd', padding: '1.5rem', borderRadius: '8px', border: '2px solid #ffc107', margin: '1.5rem 0'}}>
+  <strong>⚠️ StatusCode 02 - Documento Ya Procesado</strong><br/>
+  Cuando intentas generar un documento que ya fue validado por la DIAN, recibirás esta respuesta indicando que el documento ya existe.
+</div>
 
-    {
-        "success": false,
-        "message": "El documento (Factura electrónica) con numero LZT224, ya se encuentra validado"
-    }
-    ```
-### Descripción de los campos
+```json title="response.json"
+{
+    "success": false,
+    "message": "El documento (Factura electrónica) con numero LZT224, ya se encuentra validado"
+}
+```
 
-- `success`: Indica si la respuesta fue exitosa
-- `message`: Mensaje de error
-- `StatusCode`: 400 (Bad Request)
+### 📝 Descripción de los Campos
 
-## Códigos de estado y descripción de posibles respuestas
+| Campo | Descripción |
+|-------|-------------|
+| `success` | `false` - Indica que la operación no se pudo completar |
+| `message` | Mensaje explicativo del rechazo |
+| `StatusCode` | `400 - Bad Request` |
 
-A continuación se muestra una tabla completa con todos los códigos de estado, su descripción, causas y acciones recomendadas:
+## 📊 Códigos de Estado HTTP Completos
+
+<div style={{backgroundColor: '#f8f9fa', padding: '1.5rem', borderRadius: '8px', border: '2px solid #6c757d', margin: '1.5rem 0'}}>
+  <strong>📋 Tabla Completa de Códigos HTTP</strong><br/>
+  Referencia exhaustiva con todos los códigos de estado, causas posibles y acciones recomendadas para cada caso.
+</div>
+
+A continuación se muestra una tabla completa con todos los códigos de estado:
 
 | Código | Estado | Descripción | Posibles causas | Acciones recomendadas |
 |--------|--------|-------------|-----------------|----------------------|
@@ -240,18 +300,30 @@ A continuación se muestra una tabla completa con todos los códigos de estado, 
 - `message`: Mensaje de respuesta
 - `StatusCode`: código de estado de la respuesta
 
-## Errores generados por la DIAN
-A continuación se muestra una lista de posibles errores generados por la DIAN y sus descripciones.
+## ⚠️ Errores Generados por la DIAN
 
-### Recomendaciones generales
-- Reenviar las solicitudes que generen errores de la DIAN, en caso de que el error persista, se recomienda esperar 5 minutos y volver a intentar.
-- Si el error persiste, se recomienda contactar al soporte técnico de la DIAN.
+<div style={{backgroundColor: '#f8d7da', padding: '1.5rem', borderRadius: '8px', border: '2px solid #dc3545', margin: '1.5rem 0'}}>
+  <strong>🚨 Errores del Servidor DIAN</strong><br/>
+  Listado de posibles errores emitidos directamente por los servicios de la DIAN y cómo manejarlos.
+</div>
 
-### 12.4 Demoras en tiempos de respuesta
+### 💡 Recomendaciones Generales
 
-Se define demora cuando la respuesta toma más de **1 minuto**. Los servicios permanecen activos.
+<div style={{backgroundColor: '#fff3cd', padding: '1rem', borderRadius: '8px', border: '1px solid #ffc107', margin: '1rem 0'}}>
+  <strong>🔄 Protocolo de Reintentos:</strong><br/>
+  • Primer reintento: Inmediato<br/>
+  • Si persiste: Esperar 5 minutos<br/>
+  • Después de 3 fallos: Contactar soporte DIAN
+</div>
 
-#### Procedimiento en caso de demora (Resolución No. 000165 - DIAN):
+### ⏳ 12.4 Demoras en Tiempos de Respuesta
+
+<div style={{backgroundColor: '#d1ecf1', padding: '1.5rem', borderRadius: '8px', border: '2px solid #17a2b8', margin: '1.5rem 0'}}>
+  <strong>⏱️ Protocolo de Contingencia por Timeout</strong><br/>
+  Se considera demora cuando la respuesta de la DIAN toma más de <strong>1 minuto</strong>. Los servicios permanecen activos pero debes seguir este protocolo.
+</div>
+
+#### 📋 Procedimiento en Caso de Demora (Resolución No. 000165 - DIAN):
 
 | Paso | Acción | Tiempo |
 |------|--------|--------|
@@ -358,20 +430,31 @@ Se define demora cuando la respuesta toma más de **1 minuto**. Los servicios pe
 
 ---
 
-## Secciones Especiales
+## 🔄 Secciones Especiales
 
-### 98 - En Proceso
+### ⏳ StatusCode 98 - En Proceso
+
+<div style={{backgroundColor: '#fff3cd', padding: '1.5rem', borderRadius: '8px', border: '2px solid #ffc107', margin: '1.5rem 0'}}>
+  <strong>🔄 Documento en Procesamiento por la DIAN</strong><br/>
+  Cuando recibes este código, tu documento fue aceptado pero aún está siendo validado. No es un error, solo requiere paciencia y reintentos.
+</div>
 
 | Atributo | Valor |
 |----------|-------|
 | **Código** | 98 |
 | **Descripción** | Solicitud en procesamiento |
 | **Significado** | El documento está siendo procesado por la DIAN |
-| **Acción** | Consultar estado después de algunos minutos |
+| **Acción recomendada** | ⏱️ Consultar estado después de 5 minutos |
+| **Tiempo estimado** | 1-10 minutos |
 
-Cuando el estado es **98** (En Proceso), significa que su documento fue recibido pero aún está siendo procesado por los servidores de la DIAN.
+**¿Qué hacer cuando recibes StatusCode 98?**
 
-#### Ejemplo de respuesta - StatusCode 98
+1. ✅ **Esperar 5 minutos** antes del primer reintento
+2. 🔍 **Consultar estado del documento** usando el endpoint de consulta
+3. 🔄 **Reintentar** hasta 5 veces con intervalos de 5 minutos
+4. ⚠️ Si después de 30 minutos aún está en proceso, contactar soporte
+
+#### 📝 Ejemplo de Respuesta - StatusCode 98
 
 ```json title="response.json"
 {
@@ -387,7 +470,12 @@ Cuando el estado es **98** (En Proceso), significa que su documento fue recibido
 
 ---
 
-## Diagrama de Flujo - Cómo interpretar la respuesta
+## 🔀 Diagrama de Flujo - Cómo Interpretar la Respuesta
+
+<div style={{backgroundColor: '#e7f3ff', padding: '1.5rem', borderRadius: '8px', border: '2px solid #0066cc', margin: '1.5rem 0'}}>
+  <strong>📊 Flujo de Decisión Visual</strong><br/>
+  Sigue este diagrama para procesar cualquier respuesta de la API de forma sistemática.
+</div>
 
 ```
 ┌─────────────────────────────┐
@@ -442,22 +530,75 @@ Cuando el estado es **98** (En Proceso), significa que su documento fue recibido
 
 ---
 
-## Preguntas Frecuentes (FAQ)
+## ❓ Preguntas Frecuentes (FAQ)
 
-### ¿Qué debo hacer si recibo un error 504?
+<div style={{backgroundColor: '#fff3cd', padding: '1.5rem', borderRadius: '8px', border: '2px solid #ffc107', margin: '1.5rem 0'}}>
+  <strong>💡 Dudas Más Comunes</strong><br/>
+  Respuestas rápidas a las preguntas que recibimos con mayor frecuencia sobre las respuestas de la API.
+</div>
+
+### 🚨 ¿Qué debo hacer si recibo un error 504?
 En caso de timeout (error 504), siga el procedimiento de contingencia descrito en la sección **12.4**. Debe reintentar después de 2 minutos, hasta 5 veces máximo.
 
-### ¿Puedo omitir campos requeridos en la solicitud?
+### ✅ ¿Puedo omitir campos requeridos en la solicitud?
 No. Todos los campos marcados como requeridos en la documentación deben estar presentes. Revisar el errorMessage de la respuesta para identificar campos faltantes.
 
-### ¿Cuánto tiempo tarda el procesamiento de un documento?
+### ⏱️ ¿Cuánto tiempo tarda el procesamiento de un documento?
 Normalmente, entre 1-5 minutos. Si recibe StatusCode 98, el documento está en proceso. Use el endpoint de consulta de estado para verificar progreso.
 
-### ¿Qué significan los caracteres nil="true" en la respuesta?
+### 🔍 ¿Qué significan los caracteres nil="true" en la respuesta?
 Indica que ese campo es null/vacío en esa particular respuesta. Es normal en ciertos estados de procesamiento.
 
-### ¿Debo reintentar automáticamente ante errores?
+### 🔄 ¿Debo reintentar automáticamente ante errores?
 Sí, pero con cuidado. Use backoff exponencial: espere 2-5 segundos entre reintentos. Para error 504, ver sección de contingencias.
 
-### ¿Cómo consulto el estado de un documento después de 98?
+### 📋 ¿Cómo consulto el estado de un documento después de 98?
 Use el endpoint de consulta con el `XmlDocumentKey` (CUFE/CUDE/CUNE) retornado. Continúe consultando hasta recibir status 200 o 201.
+
+---
+
+## 🎯 Próximos Pasos
+
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', margin: '2rem 0'}}>
+  <a href="/docs/endpoints" style={{textDecoration: 'none', color: 'inherit'}}>
+    <div style={{padding: '1.5rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '2px solid #0066cc', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+      <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>🔌</div>
+      <strong>Endpoints API</strong><br/>
+      <small>50+ rutas documentadas</small>
+    </div>
+  </a>
+
+  <a href="/docs/use-cases/simple-invoice" style={{textDecoration: 'none', color: 'inherit'}}>
+    <div style={{padding: '1.5rem', backgroundColor: '#d4edda', borderRadius: '8px', border: '2px solid #28a745', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+      <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📄</div>
+      <strong>Factura Simple</strong><br/>
+      <small>Ejemplo práctico</small>
+    </div>
+  </a>
+
+  <a href="/docs/use-cases/common-errors" style={{textDecoration: 'none', color: 'inherit'}}>
+    <div style={{padding: '1.5rem', backgroundColor: '#fff3cd', borderRadius: '8px', border: '2px solid #ffc107', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+      <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>⚠️</div>
+      <strong>Errores Comunes</strong><br/>
+      <small>Troubleshooting</small>
+    </div>
+  </a>
+
+  <a href="/docs/billing-fields" style={{textDecoration: 'none', color: 'inherit'}}>
+    <div style={{padding: '1.5rem', backgroundColor: '#d1ecf1', borderRadius: '8px', border: '2px solid #17a2b8', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+      <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📋</div>
+      <strong>Campos de Documentos</strong><br/>
+      <small>Referencia completa</small>
+    </div>
+  </a>
+</div>
+
+---
+
+<div style={{backgroundColor: '#f8f9fa', padding: '1rem', borderRadius: '8px', textAlign: 'center', marginTop: '2rem'}}>
+  <small>
+    📅 <strong>Última actualización:</strong> Febrero 2026 (v3.0.0) • 
+    📨 <strong>Códigos HTTP:</strong> 13 códigos documentados • 
+    🎯 <strong>Nivel:</strong> ⭐⭐⭐ Referencia Técnica
+  </small>
+</div>

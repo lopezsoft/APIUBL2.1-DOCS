@@ -3,27 +3,62 @@ sidebar_position: 6
 description: "Glosario de términos técnicos, normativas y acrónimos de facturación electrónica"
 ---
 
-# Glosario Técnico
+# 📚 Glosario Técnico
 
-## Introducción
+<div style={{backgroundColor: '#e7f3ff', padding: '1.5rem', borderRadius: '8px', border: '2px solid #0066cc', margin: '1.5rem 0'}}>
+  Este glosario contiene los <strong>términos técnicos, normativas, acrónimos y conceptos principales</strong> relacionados con la facturación electrónica en Colombia.
+</div>
 
-Este glosario contiene los términos técnicos, normativas, acrónimos y conceptos principales relacionados con la facturación electrónica en Colombia.
+## 🗯️ Navegación Alfabetica
 
-### ⚠️ Nota Crítica sobre IDs de API vs Codes DIAN
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(40px, 1fr))', gap: '0.5rem', margin: '1.5rem 0'}}>
+  <a href="#a" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>A</a>
+  <a href="#b" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>B</a>
+  <a href="#c" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>C</a>
+  <a href="#d" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>D</a>
+  <a href="#e" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>E</a>
+  <a href="#f" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>F</a>
+  <a href="#g" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>G</a>
+  <a href="#h" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>H</a>
+  <a href="#i" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>I</a>
+  <a href="#j" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>J</a>
+  <a href="#l" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>L</a>
+  <a href="#m" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>M</a>
+  <a href="#n" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>N</a>
+  <a href="#o" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>O</a>
+  <a href="#p" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>P</a>
+  <a href="#q" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>Q</a>
+  <a href="#r" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>R</a>
+  <a href="#s" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>S</a>
+  <a href="#t" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>T</a>
+  <a href="#u" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>U</a>
+  <a href="#w" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>W</a>
+  <a href="#x" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>X</a>
+  <a href="#z" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>Z</a>
+</div>
 
-**Esta es la distinción MÁS IMPORTANTE para usar el API correctamente:**
-
-- **ID (de la DB del API):** Número único usado en las solicitudes al API (ej: `type_document_id: 9`)
-- **Code (DIAN):** Código normativo de la DIAN, usado solo para referencia legal (ej: Code 03 = Factura de Contingencia)
-
-**REGLA FUNDAMENTAL:** 
-> En el API SIEMPRE usas el **ID de la base de datos**, NUNCA el **code DIAN**
-
-Ejemplo:
-- ❌ **INCORRECTO:** `"type_document_id": "03"` 
-- ✅ **CORRECTO:** `"type_document_id": 9`
-
-Los códigos DIAN (01, 02, 03, 04, etc.) se incluyen en este glosario solo para que puedas correlacionar con la documentación normativa de la DIAN. Ver [Tablas de Referencia Rápida](#tablas-de-referencia-rápida) para la correspondencia completa.
+<div style={{backgroundColor: '#fff3cd', padding: '1.5rem', borderRadius: '8px', border: '2px solid #ffc107', margin: '1.5rem 0'}}>
+  <h3 style={{marginTop: 0}}>⚠️ Nota Crítica sobre IDs de API vs Codes DIAN</h3>
+  <p><strong>Esta es la distinción MÁS IMPORTANTE para usar el API correctamente:</strong></p>
+  <ul>
+    <li><strong>ID (de la DB del API):</strong> Número único usado en las solicitudes al API (ej: <code>type_document_id: 9</code>)</li>
+    <li><strong>Code (DIAN):</strong> Código normativo de la DIAN, usado solo para referencia legal (ej: Code 03 = Factura de Contingencia)</li>
+  </ul>
+  <div style={{backgroundColor: '#856404', color: 'white', padding: '1rem', borderRadius: '6px', marginTop: '1rem'}}>
+    <strong>🔑 REGLA FUNDAMENTAL:</strong> En el API SIEMPRE usas el <strong>ID de la base de datos</strong>, NUNCA el <strong>code DIAN</strong>
+  </div>
+  <div style={{marginTop: '1rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem'}}>
+    <div style={{backgroundColor: '#f8d7da', padding: '0.75rem', borderRadius: '6px', border: '1px solid #dc3545'}}>
+      ❌ <strong>INCORRECTO:</strong><br/>
+      <code>"type_document_id": "03"</code>
+    </div>
+    <div style={{backgroundColor: '#d4edda', padding: '0.75rem', borderRadius: '6px', border: '1px solid #28a745'}}>
+      ✅ <strong>CORRECTO:</strong><br/>
+      <code>"type_document_id": 9</code>
+    </div>
+  </div>
+  <p style={{marginBottom: 0, marginTop: '1rem'}}><small>Los códigos DIAN (01, 02, 03, 04, etc.) se incluyen en este glosario solo para que puedas correlacionar con la documentación normativa de la DIAN. Ver <a href="#tablas-de-referencia-rápida">Tablas de Referencia Rápida</a> para la correspondencia completa.</small></p>
+</div>
 
 ---
 
@@ -777,11 +812,13 @@ Esta letra no tiene términos específicos en facturación electrónica.
 
 ---
 
-## Tablas de Referencia Rápida
+## 📊 Tablas de Referencia Rápida
 
-### Códigos de Documentos
+### 📄 Códigos de Documentos
 
-⚠️ **IMPORTANTE:** La columna **ID (API)** es lo que usas en `type_document_id` en tus solicitudes. La columna **Code (DIAN)** es solo para referencia con la normativa. **REGLA: En el API SIEMPRE usas el ID de la DB, NUNCA el code DIAN.**
+<div style={{backgroundColor: '#fff3cd', padding: '1rem', borderRadius: '8px', border: '1px solid #ffc107', marginBottom: '1rem'}}>
+  <strong>⚠️ IMPORTANTE:</strong> La columna <strong>ID (API)</strong> es lo que usas en <code>type_document_id</code> en tus solicitudes. La columna <strong>Code (DIAN)</strong> es solo para referencia con la normativa. <strong style={{color: '#856404'}}>REGLA: En el API SIEMPRE usas el ID de la DB, NUNCA el code DIAN.</strong>
+</div>
 
 | ID (API) | Code (DIAN) | Tipo | Normativa | Notas |
 |----------|-------------|------|-----------|-------|
@@ -794,7 +831,7 @@ Esta letra no tiene términos específicos en facturación electrónica.
 | **5** | 91 | Nota Crédito | Res. 165 | `type_document_id: 5` - Genera CUDE |
 | **4** | 92 | Nota Débito | Res. 165 | `type_document_id: 4` - Genera CUDE |
 
-### Tipos de Identificación
+### 🆔 Tipos de Identificación
 | Código | Tipo |
 |--------|------|
 | 1 | Cédula de Ciudadanía |
@@ -803,7 +840,7 @@ Esta letra no tiene términos específicos en facturación electrónica.
 | 4 | Documento de Extranjería |
 | 5 | Tarjeta de Identidad |
 
-### Códigos de Países
+### 🌎 Códigos de Países
 | Código | País | ISO |
 |--------|------|-----|
 | 45 | Colombia | CO |
@@ -816,14 +853,39 @@ Esta letra no tiene términos específicos en facturación electrónica.
 
 ## 🔗 Enlaces Relacionados
 
-- 📋 [Validaciones Técnicas](/docs/regulatory-framework/factura-electronica/anexo-tecnico/validaciones)
-- ⚠️ [Excepciones y Casos Especiales](/docs/regulatory-framework/factura-electronica/anexo-tecnico/excepciones)
-- 🎓 [Guías de Caso de Uso](/docs/use-cases/simple-invoice)
-- 📖 [Marco Regulatorio DIAN](/docs/regulatory-framework/overview)
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', margin: '1.5rem 0'}}>
+  <a href="/docs/regulatory-framework/factura-electronica/anexo-tecnico/validaciones" style={{textDecoration: 'none', color: 'inherit'}}>
+    <div style={{padding: '1rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '1px solid #0066cc'}}>
+      📋 <strong>Validaciones Técnicas</strong><br/>
+      <small>Reglas DIAN</small>
+    </div>
+  </a>
+  <a href="/docs/regulatory-framework/factura-electronica/anexo-tecnico/excepciones" style={{textDecoration: 'none', color: 'inherit'}}>
+    <div style={{padding: '1rem', backgroundColor: '#fff3cd', borderRadius: '8px', border: '1px solid #ffc107'}}>
+      ⚠️ <strong>Excepciones</strong><br/>
+      <small>Casos especiales</small>
+    </div>
+  </a>
+  <a href="/docs/use-cases/simple-invoice" style={{textDecoration: 'none', color: 'inherit'}}>
+    <div style={{padding: '1rem', backgroundColor: '#d4edda', borderRadius: '8px', border: '1px solid #28a745'}}>
+      🎯 <strong>Guías de Uso</strong><br/>
+      <small>Casos prácticos</small>
+    </div>
+  </a>
+  <a href="/docs/regulatory-framework/overview" style={{textDecoration: 'none', color: 'inherit'}}>
+    <div style={{padding: '1rem', backgroundColor: '#d1ecf1', borderRadius: '8px', border: '1px solid #17a2b8'}}>
+      📖 <strong>Marco Regulatorio</strong><br/>
+      <small>Normativa DIAN</small>
+    </div>
+  </a>
+</div>
 
 ---
 
-**Última actualización**: Octubre 2025
-**Versión**: 1.1
-**Términos**: 120+ definiciones
-**Cobertura**: Facturación, impuestos, DIAN, operaciones, contingencia
+<div style={{backgroundColor: '#f8f9fa', padding: '1rem', borderRadius: '8px', textAlign: 'center', marginTop: '2rem'}}>
+  <small>
+    📅 <strong>Última actualización:</strong> Febrero 2026 • 
+    📚 <strong>Términos:</strong> 120+ definiciones • 
+    🎯 <strong>Nivel:</strong> ⭐⭐ Referencia
+  </small>
+</div>

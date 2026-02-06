@@ -37,24 +37,50 @@ Primero, necesitas autenticarte en la API:
 
 ### Solicitud
 ```bash
-curl -X POST https://api.matias.com/oauth/token \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "client_id=YOUR_CLIENT_ID" \
-  -d "client_secret=YOUR_CLIENT_SECRET" \
-  -d "grant_type=client_credentials"
+curl -X POST https://api-v2.matias-api.com/api/ubl2.1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "tu-email@empresa.com",
+    "password": "tu-contraseña",
+    "remember_me": 0
+  }'
 ```
 
 ### Respuesta
 ```json
 {
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "token_type": "Bearer",
-  "expires_in": 3600
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM...",
+  "user": {
+    "id": 1,
+    "email": "tu-email@empresa.com",
+    "name": "TU EMPRESA S.A.S."
+  },
+  "expires_at": "2026-05-06 14:30:00",
+  "message": "Bienvenido a Matias. Su sesión ha sido iniciada con éxito.",
+  "success": true
 }
 ```
 
 :::info
 Guarda este `access_token`, lo usarás en todos los próximos pasos.
+:::
+
+:::tip Alternativa: Personal Access Tokens
+En v3.0.0 puedes crear **Personal Access Tokens** directamente desde tu cuenta sin hacer login cada vez:
+
+```bash
+# 1. Primero haz login para obtener un token temporal
+# 2. Luego crea un PAT que dure más tiempo (1-90 días)
+curl -X POST https://api-v2.matias-api.com/api/ubl2.1/v3/auth/tokens \
+  -H "Authorization: Bearer {token_temporal}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Token Producción",
+    "expires_in_days": 60
+  }'
+```
+
+[📖 Ver guía completa de Personal Access Tokens](/docs/endpoints#personal-access-tokens)
 :::
 
 ## Paso 2: Preparar los Datos de la Factura

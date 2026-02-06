@@ -90,7 +90,7 @@ const config: Config = {
           position: 'right',
         },
         {
-          href: 'https://www.facebook.com/MatiasAppi',
+          href: 'https://www.facebook.com/MatiasERP',
           label: 'Facebook',
           position: 'right',
         },
@@ -176,7 +176,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} LOPEZSOFT SAS - Todos los derechos reservados. | MATIAS API v1.4.2`,
+      copyright: `Copyright © ${new Date().getFullYear()} LOPEZSOFT SAS - Todos los derechos reservados. | MATIAS API v3.0.0 🚀 PAT + Webhooks + Membresías`,
     },
     prism: {
       theme: prismThemes.github,

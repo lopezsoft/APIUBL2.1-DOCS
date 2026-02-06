@@ -49,9 +49,17 @@ Matias en v1.4.0 incluye **documentación completa** de todos los marcos regulat
 
 ## Flujo de Autenticación
 
+:::tip Nuevo en v3.0.0: Dos Métodos de Autenticación
+Ahora tienes **dos opciones** para autenticarte:
+- **OAuth2 Tradicional (login):** Para aplicaciones con usuarios que inician sesión
+- **Personal Access Tokens (PAT):** Para integraciones servidor-a-servidor y scripts automatizados
+:::
+
+### Opción 1: OAuth2 Tradicional (Login)
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                  FLUJO DE AUTENTICACIÓN                      │
+│              FLUJO OAUTH2 TRADICIONAL (v2.x)                │
 ├─────────────────────────────────────────────────────────────┤
 │                                                               │
 │  1. REGISTRO              2. OBTENER TOKEN                   │
@@ -59,7 +67,7 @@ Matias en v1.4.0 incluye **documentación completa** de todos los marcos regulat
 │      ↓                         ↓                              │
 │  [Email/Password]         [Credenciales]                     │
 │      ↓                         ↓                              │
-│  Confirmación Email       access_token + User Info           │
+│  Confirmación Email       access_token (90 días máx)         │
 │                                ↓                              │
 │  ────────────────────────────────────────────────────────    │
 │                                                               │
@@ -73,9 +81,58 @@ Matias en v1.4.0 incluye **documentación completa** de todos los marcos regulat
 └─────────────────────────────────────────────────────────────┘
 ```
 
+### Opción 2: Personal Access Tokens (PAT) - Nuevo en v3.0.0
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│           FLUJO PERSONAL ACCESS TOKENS (v3.0.0)             │
+├─────────────────────────────────────────────────────────────┤
+│                                                               │
+│  1. LOGIN INICIAL          2. CREAR PAT                      │
+│  POST /auth/login          POST /v3/auth/tokens              │
+│      ↓                           ↓                            │
+│  [Obtener token inicial]    [name, expires_in_days]          │
+│      ↓                           ↓                            │
+│  Token temporal (90 días)   Personal Token (1-90 días)       │
+│                                  ↓                            │
+│  ────────────────────────────────────────────────────────    │
+│                                                               │
+│  3. USAR PAT                  4. GESTIÓN                     │
+│  Bearer {pat_token}           GET /v3/auth/tokens (listar)   │
+│      ↓                        DELETE /v3/auth/tokens/{id}    │
+│  [Solicitudes API]                   ↓                       │
+│      ↓                        Token específico revocado      │
+│  Respuestas JSON                                             │
+│                                                               │
+│  VENTAJAS PAT:                                               │
+│  ✅ Expiración configurable (1-90 días)                     │
+│  ✅ Múltiples tokens por cuenta                             │
+│  ✅ Revocación selectiva instantánea                        │
+│  ✅ Autogestión completa (sin contactar soporte)            │
+│                                                               │
+└─────────────────────────────────────────────────────────────┘
+```
+
 ## Autenticación de API con OAuth2
 
 La autenticación para acceder a la API se gestiona mediante **Tokens de acceso** siguiendo el estándar de autenticación OAuth2. Esto asegura que las interacciones con la API sean seguras y estén autorizadas.
+
+:::info Nuevo en v3.0.0: Personal Access Tokens
+Además del flujo OAuth2 tradicional, ahora puedes crear **Personal Access Tokens (PAT)** directamente desde tu cuenta, sin necesidad de contactar a soporte técnico.
+
+**Ventajas de PAT:**
+- ✅ Creación self-service (tú mismo los creas)
+- ✅ Expiración configurable (1-90 días, recomendado: 30-60)
+- ✅ Revocación instantánea
+- ✅ Múltiples tokens por cuenta
+- ✅ Mejor control de seguridad
+
+**¿Cuándo usar cada método?**
+- **OAuth2 tradicional:** Para integrar en aplicaciones web con login de usuarios
+- **Personal Access Tokens:** Para scripts, integraciones servidor-a-servidor, o aplicaciones que no necesitan login de usuario
+
+[📖 Ver documentación completa de Personal Access Tokens](/docs/endpoints#personal-access-tokens)
+:::
 
 ## Formato de las Solicitudes
 
@@ -100,12 +157,24 @@ Donde `eyJ0eXAi...` es el token de acceso obtenido en el login.
 
 ## URL Base de la API
 
-La URL base para acceder a la API se proporcionará por nuestro equipo al momento de iniciar la integración. En la documentación, utilizaremos el parámetro `{{URL}}` como marcador de posición, el cual debe ser sustituido por la URL base real proporcionada.
+:::warning Acceso Exclusivo para Clientes
+La URL base de la API (`{{URL}}`) y el acceso al entorno sandbox **son proporcionados únicamente a clientes que adquieran nuestro servicio**. 
+
+**No ofrecemos:**
+- ❌ Cuentas gratuitas
+- ❌ Sandbox público o de prueba gratuito
+- ❌ Acceso de demostración sin contrato
+
+La URL base y las credenciales de acceso se entregarán una vez formalizada la contratación del servicio.
+:::
+
+En toda la documentación, utilizaremos el parámetro `{{URL}}` como marcador de posición, el cual debe ser sustituido por la URL base real que le será proporcionada al contratar el servicio.
 
 :::info Ejemplo de URL base
 ```
-https://api.matias-api.com
+https://api.ejemplo.com
 ```
+*Esta es solo una URL de ejemplo para fines ilustrativos en la documentación.*
 :::
 
 ## Registro en la API
@@ -193,13 +262,44 @@ Para acceder y utilizar los servicios de nuestra API, es necesario que primero s
             "message": "Error interno del servidor. Por favor",
         }
         ```
-## Token de Acceso
+---
 
-Después de completar el registro, para realizar acciones como la emisión de documentos al portal de la DIAN, es necesario contar con un token de acceso. Este token proporciona acceso a las URLs protegidas de nuestra API.
+## 🔑 Token de Acceso
 
-El TOKEN generado tiene una validez de 1 año y puede ser revocado en cualquier momento mediante una petición a nuestra API.
+:::info Información Importante
+Después de completar el registro, para realizar acciones como la **emisión de documentos al portal de la DIAN**, es necesario contar con un **token de acceso**. Este token proporciona acceso a las URLs protegidas de nuestra API.
 
-## Obtener el Token de Acceso
+**Duración del Token según el Método:**
+
+| Método | Duración | Configurabilidad |
+|--------|----------|------------------|
+| **OAuth2 (login tradicional)** | 90 días fijo | ❌ No configurable |
+| **Personal Access Token (PAT)** | 1-90 días | ✅ Configurable al crear |
+
+**Características Comunes:**
+- ✅ Puede ser revocado en cualquier momento
+- ✅ Necesario para todas las operaciones de la API
+- ✅ Incluir en header `Authorization: Bearer {token}`
+
+**Recomendaciones de Duración (PAT):**
+- **7-15 días:** Entornos de desarrollo/pruebas
+- **30 días:** Integración continua y scripts automatizados
+- **60-90 días:** Producción (balance seguridad/conveniencia) ⭐ Recomendado
+:::
+
+:::tip Migrar a Personal Access Tokens
+Si actualmente usas OAuth2 tradicional, considera migrar a **Personal Access Tokens** para:
+- ✅ Mayor control sobre la expiración
+- ✅ Crear múltiples tokens para diferentes propósitos
+- ✅ Revocar tokens específicos sin afectar otros
+- ✅ Autogestión sin contactar soporte
+
+[📖 Ver guía de migración a PAT](/docs/endpoints#personal-access-tokens)
+:::
+
+---
+
+## 📥 Obtener el Token de Acceso
 
 Para obtener el token de acceso, se debe realizar los siguientes pasos:
 
@@ -248,9 +348,13 @@ Para obtener el token de acceso, se debe realizar los siguientes pasos:
         "success": false
     }
     ``` 
-## Uso del Token de Acceso
+---
 
-Tras obtener el token de acceso, este debe incluirse en el encabezado de autorización de todas las solicitudes a la API.
+## 🔐 Uso del Token de Acceso
+
+:::tip Uso Correcto del Token
+Tras obtener el token de acceso, este **debe incluirse en el encabezado de autorización** de **TODAS** las solicitudes a la API.
+:::
 
 ### 📄 Formato del Encabezado
 
@@ -585,8 +689,16 @@ func main() {
 
 </TabItem>
 </Tabs>
-## Revocar el Token
-Para revocar un token generado anteriormente y que aún no ha vencido, debe enviarse una petición de tipo GET a `{{URL}}/auth/logout`. 
+
+---
+
+## 🚫 Revocar el Token
+
+:::caution Revocación de Token
+Para revocar un token generado anteriormente y que aún no ha vencido, debe enviarse una petición de tipo **GET** a `{{URL}}/auth/logout`.
+
+Una vez revocado, el token dejará de ser válido inmediatamente.
+::: 
 - Si la revocación es correcta, la petición devolverá una respuesta HTTP 200 en formato JSON con la estructura:
 
     ```json
@@ -619,9 +731,112 @@ Para revocar un token generado anteriormente y que aún no ha vencido, debe envi
 >
 > Sin estos requisitos, el API rechazará sus solicitudes de emisión de facturas.
 
+---
+
+## 🔔 Webhooks: Notificaciones en Tiempo Real
+
+:::tip Nuevo en v3.0.0
+El sistema de **Webhooks** te permite recibir notificaciones automáticas en tiempo real cuando ocurren eventos importantes en tu cuenta, sin necesidad de estar consultando constantemente la API (polling).
+:::
+
+### ✨ Ventajas de los Webhooks
+
+- **🚀 Tiempo Real:** Recibe notificaciones instantáneas cuando ocurre un evento
+- **⚡ Eficiente:** No necesitas hacer polling constante a la API
+- **🔐 Seguro:** Firmas HMAC-SHA256 para verificar autenticidad
+- **🔄 Confiable:** Sistema de reintentos automáticos (máx. 5 intentos)
+- **📊 Completo:** 26 tipos de eventos diferentes disponibles
+
+### 📋 Eventos Disponibles
+
+Puedes suscribirte a eventos como:
+
+- **Facturación:** `invoice.created`, `invoice.accepted`, `invoice.rejected`
+- **Nota Crédito:** `credit_note.created`, `credit_note.accepted`
+- **Página de Pagos:** `payment_page.paid`, `payment_page.expired`
+- **Membresías:** `membership.activated`, `membership.limit_reached`
+- **Tokens:** `token.created`, `token.revoked`
+- **Webhooks:** `webhook.created`, `webhook.test_sent`
+- **Y muchos más...**
+
+### 🔄 Flujo de Trabajo Típico
+
+1. **Registras tu webhook:** Indicas la URL donde quieres recibir notificaciones
+2. **Ocurre un evento:** Por ejemplo, una factura es aceptada por la DIAN
+3. **Enviamos POST a tu URL:** Con toda la información del evento
+4. **Verificas la firma:** Para asegurar que proviene de nuestra API
+5. **Respondes 200 OK:** Confirmando recepción exitosa
+
+### 📖 Documentación Completa
+
+Para información detallada sobre cómo configurar y usar webhooks, consulta:
+
+[📖 Ver documentación completa de Webhooks](/docs/endpoints#webhooks)
+
+Incluye:
+- Cómo crear y configurar webhooks
+- Lista completa de los 26 eventos disponibles
+- Ejemplos de verificación de firma HMAC en JavaScript y PHP
+- Manejo de reintentos y errores
+- Buenas prácticas de seguridad
+
+---
+
+## 📊 Límites de Consumo y Membresías
+
+:::info Nuevo en v3.0.0
+A partir de la versión 3.0.0, implementamos un **sistema de membresías con límites de consumo** para proporcionar un servicio más sostenible y escalable.
+:::
+
+### 🎯 Límites por Membresía
+
+Cada plan de membresía incluye límites específicos para:
+
+- **📄 Documentos electrónicos:** Facturas, notas crédito/débito emitidas por mes
+- **💾 Almacenamiento XML:** Espacio para archivos XML y attachments
+- **📧 Envíos de email:** Cantidad de correos mensuales
+- **🔗 Webhooks:** Número de webhooks configurables
+
+### ⚠️ Manejo de Límites Excedidos
+
+Cuando alcanzas un límite, la API retorna:
+
+```json
+{
+  "error": "Límite de documentos alcanzado",
+  "code": "DOCUMENT_LIMIT_REACHED",
+  "current_usage": 1000,
+  "limit": 1000,
+  "reset_date": "2026-03-01T00:00:00Z"
+}
+```
+
+**Código HTTP:** `402 Payment Required`
+
+### 📈 Consultar Consumo Actual
+
+Puedes consultar tu consumo actual en cualquier momento:
+
+```http
+GET /v3/memberships/consumption
+Authorization: Bearer {token}
+```
+
+[📖 Ver documentación de Membresías y Consumo](/docs/endpoints#memberships-consumption)
+
+---
+
 ## 🔗 Siguientes Pasos
 
 Ahora que comprende el flujo de autenticación, consulte:
+
+### 🆕 Nuevas Características v3.0.0
+
+- 🔑 **[Personal Access Tokens](/docs/endpoints#personal-access-tokens)** - Crea y gestiona tus propios tokens de acceso
+- 🔔 **[Webhooks](/docs/endpoints#webhooks)** - Recibe notificaciones en tiempo real de eventos
+- 📊 **[Membresías y Consumo](/docs/endpoints#memberships-consumption)** - Consulta tus límites y uso actual
+
+### 📚 Documentación Esencial
 
 - 📚 **[Referencia Completa de Campos](/docs/billing-fields)** - Todos los campos disponibles en facturas
 - 🔌 **[Endpoints Disponibles](/docs/endpoints)** - Lista completa de endpoints del API
@@ -636,29 +851,147 @@ Puede descargar la colección de ejemplos en el siguiente enlace:
 https://documenter.getpostman.com/view/8699065/2s9YyvBLby
 ```
 
-## 💬 Soporte y Ayuda
+## 📘 Documentación Interactiva con Swagger
 
-**Contacto por Email:**
-```
-📧 soporte@matias.com.co
-```
+Explore nuestra documentación interactiva de la API con Swagger/OpenAPI, donde podrá:
 
-**Centro de Ayuda (Tickets):**
-Para obtener ayuda especializada con la API, abra un ticket en nuestro portal:
-```
-🎟️ https://support.lopezsoft.net.co/portal
-```
+- ✅ Ver todos los endpoints disponibles
+- ✅ Probar las peticiones directamente desde el navegador
+- ✅ Revisar esquemas de request y response
+- ✅ Consultar parámetros y modelos de datos
 
-En su ticket, incluya:
-- Descripción clara del problema
-- Endpoint que está usando
-- Payload (JSON) que está enviando
-- Respuesta de error que recibe
-- Identificador de transacción (si aplica)
+:::info Acceso a Swagger UI
+<button 
+  onClick={() => window.open(atob('aHR0cHM6Ly9hcGktdjIubWF0aWFzLWFwaS5jb20vYXBpL2RvY3M='), '_blank')}
+  style={{
+    backgroundColor: '#4CAF50',
+    border: 'none',
+    color: 'white',
+    padding: '12px 24px',
+    textAlign: 'center',
+    textDecoration: 'none',
+    display: 'inline-block',
+    fontSize: '16px',
+    margin: '4px 2px',
+    cursor: 'pointer',
+    borderRadius: '4px'
+  }}
+>
+  🚀 Abrir Documentación Swagger
+</button>
+
+*Disponible únicamente para clientes con servicio activo*
+:::
 
 ---
 
-**Versión de Documentación:** 1.4 | **Última actualización:** Octubre 2025 | **API:** v1
+## 💬 Soporte y Ayuda
 
-### 📢 ¡Nuevo en v1.4!
-Hemos agregado documentación completa del **Marco Regulatorio DIAN** con 11,539 líneas de contenido técnico. Consulta las nuevas secciones en el menú lateral.
+:::warning Soporte Exclusivo para Clientes
+El soporte técnico para **integración de la API** está disponible **únicamente para clientes con servicio activo**. 
+
+Si aún no es cliente, por favor contacte a nuestro equipo comercial para adquirir el servicio.
+
+<button 
+  onClick={() => window.open(atob('aHR0cHM6Ly93YS5tZS81NzMwNDQzMzgxMDQ/dGV4dD1Ib2xhJTJDJTIwbWUlMjBpbnRlcmVzYSUyMGNvbm9jZXIlMjBtJUMzJUExcyUyMHNvYnJlJTIwbG9zJTIwc2VydmljaW9zJTIweSUyMHBsYW5lcyUyMGRlJTIwTUFUSUFTJTIwQVBJJTIwcGFyYSUyMGludGVncmFjaSVDMyVCM24lMjBkZSUyMGZhY3R1cmFjaSVDMyVCM24lMjBlbGVjdHIlQzMlQjNuaWNhLg=='), '_blank')}
+  style={{
+    backgroundColor: '#0088cc',
+    border: 'none',
+    color: 'white',
+    padding: '10px 20px',
+    textAlign: 'center',
+    textDecoration: 'none',
+    display: 'inline-block',
+    fontSize: '14px',
+    margin: '8px 0',
+    cursor: 'pointer',
+    borderRadius: '4px',
+    fontWeight: 'bold'
+  }}
+>
+  💼 Contactar Ventas por WhatsApp
+</button>
+:::
+
+¿Necesita ayuda con la integración? Nuestro equipo de soporte está disponible para asistirle.
+
+:::tip Canales de Atención
+
+### 📧 Contacto por Email
+```
+soporte@matias.com.co
+```
+Para consultas generales y asistencia técnica.
+
+### 💚 WhatsApp
+Atención directa y respuesta rápida a consultas técnicas.
+
+<button 
+  onClick={() => window.open(atob('aHR0cHM6Ly93YS5tZS81NzMxMDg0MzU0MzE/dGV4dD1Ib2xhJTIwZXF1aXBvJTIwZGUlMjBzb3BvcnRlJTJDJTIwbmVjZXNpdG8lMjBheXVkYSUyMGNvbiUyMGxhJTIwaW50ZWdyYWNpJUMzJUIzbiUyMGRlJTIwbGElMjBBUEklMjBkZSUyME1hdGlhcw=='), '_blank')}
+  style={{
+    backgroundColor: '#25D366',
+    border: 'none',
+    color: 'white',
+    padding: '10px 20px',
+    textAlign: 'center',
+    textDecoration: 'none',
+    display: 'inline-block',
+    fontSize: '14px',
+    margin: '8px 0',
+    cursor: 'pointer',
+    borderRadius: '4px'
+  }}
+>
+  📱 Abrir Chat de WhatsApp
+</button>
+
+### 🎟️ Centro de Ayuda (Sistema de Tickets)
+Para obtener ayuda especializada con la API, abra un ticket en nuestro portal:
+```
+https://support.lopezsoft.net.co/portal
+```
+
+**Al crear un ticket, incluya:**
+- ✅ Descripción clara del problema
+- ✅ Endpoint que está usando
+- ✅ Payload (JSON) que está enviando
+- ✅ Respuesta de error que recibe
+- ✅ Identificador de transacción (si aplica)
+
+:::
+
+---
+
+**Versión de Documentación:** 3.0 | **Última actualización:** Febrero 2026 | **API:** v3.0.0
+
+### 📢 ¡Nuevo en v3.0.0!
+
+#### 🔑 Personal Access Tokens (PAT)
+Ahora puedes crear y gestionar tus propios tokens de acceso sin necesidad de contactar a soporte:
+- ✅ Creación self-service
+- ✅ Expiración configurable (90 días recomendado)
+- ✅ Revocación instantánea
+- ✅ Múltiples tokens por cuenta
+
+[📖 Ver documentación de Personal Access Tokens](/docs/endpoints#personal-access-tokens)
+
+#### 🔔 Webhooks
+Recibe notificaciones en tiempo real cuando ocurren eventos importantes:
+- ✅ 26 tipos de eventos (documentos, emails, pagos, membresías)
+- ✅ Firma HMAC-SHA256 para seguridad
+- ✅ Reintentos automáticos
+- ✅ Testing integrado
+
+[📖 Ver documentación de Webhooks](/docs/endpoints#webhooks)
+
+#### 📊 Gestión de Límites y Consumo
+Consulta en tiempo real el consumo de tu plan:
+- ✅ Límites diarios y mensuales
+- ✅ Estadísticas de uso
+- ✅ Historial de consumo
+- ✅ Headers informativos en cada respuesta
+
+[📖 Ver documentación de Membresías](/docs/endpoints#membresías-y-consumo)
+
+### 📚 Marco Regulatorio DIAN
+Documentación completa de todos los marcos regulatorios emitidos por DIAN con 11,539 líneas de contenido técnico. Consulta las nuevas secciones en el menú lateral.

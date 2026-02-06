@@ -19,26 +19,26 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: 'Interfaz web',
+    title: 'Autogestión Completa',
     Svg: require('@site/static/img/web-inteface.svg').default,
     description: (
       <>
-        Interfaz web para configurar y administrar tus facturas electrónicas.
+        <strong>v3.0.0:</strong> Crea tus propios tokens de acceso, configura webhooks y gestiona límites sin contactar soporte.
       </>
     ),
   },
   {
-    title: 'Lenguaje de programación',
+    title: 'Notificaciones en Tiempo Real',
     Svg: require('@site/static/img/languages.svg').default,
     description: (
       <>
-        Soporta los lenguajes de programación más comunes, como <b>Node.js, Python, PHP, Java, C#, FoxPro</b>, entre otros.
+        <strong>Webhooks:</strong> Recibe notificaciones HTTP instantáneas de 26 eventos (documentos, emails, pagos, membresías).
       </>
     ),
   },
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
+function Feature({ title, Svg, description }: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">

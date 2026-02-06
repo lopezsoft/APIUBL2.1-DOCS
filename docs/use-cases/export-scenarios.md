@@ -1,36 +1,70 @@
 ---
-sidebar_position: 98
-description: "Guía paso a paso para ventas internacionales y exportaciones (DEPRECATED - usar export-scenarios-new.md)"
+sidebar_position: 3
+description: "Guía completa para emitir facturas de exportación y ventas internacionales"
 ---
 
-# Guía: Exportaciones e Internacionalización
+# 🌎 Guía: Exportaciones e Internacionalización
 
-## Introducción
+## 📋 Introducción
 
 Esta guía te enseñará cómo emitir facturas de **exportación**. Las facturas de exportación tienen características especiales: cliente en el exterior, moneda extranjera, y están exentas de IVA.
 
-## ¿Cuándo usar esta guía?
+---
 
-✅ Venta a cliente en el exterior
-✅ Transacción en moneda extranjera (USD, EUR)
-✅ Productos salen de Colombia
-✅ Cliente no tiene NIT colombiano
-✅ Necesitas especificar tasa de cambio
+## 🎯 ¿Cuándo usar esta guía?
 
-:::warning
-**Punto Crítico**: En API MATIAS, la exportación se marca con `type_document_id: 8` y `operation_type_id: 1` (NO `operation_type_id: 2`).
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', margin: '1rem 0'}}>
+  <div style={{padding: '1rem', border: '2px solid #17a2b8', borderRadius: '8px', backgroundColor: '#e7f7f9'}}>
+    ✅ <strong>Venta a cliente</strong> en el exterior
+  </div>
+  <div style={{padding: '1rem', border: '2px solid #17a2b8', borderRadius: '8px', backgroundColor: '#e7f7f9'}}>
+    ✅ <strong>Transacción en moneda</strong> extranjera (USD, EUR)
+  </div>
+  <div style={{padding: '1rem', border: '2px solid #17a2b8', borderRadius: '8px', backgroundColor: '#e7f7f9'}}>
+    ✅ <strong>Productos salen</strong> de Colombia
+  </div>
+  <div style={{padding: '1rem', border: '2px solid #17a2b8', borderRadius: '8px', backgroundColor: '#e7f7f9'}}>
+    ✅ <strong>Cliente sin NIT</strong> colombiano
+  </div>
+  <div style={{padding: '1rem', border: '2px solid #17a2b8', borderRadius: '8px', backgroundColor: '#e7f7f9'}}>
+    ✅ <strong>Requiere tasa</strong> de cambio especificada
+  </div>
+</div>
+
+:::warning ⚠️ Punto Crítico
+En API MATIAS, la exportación se marca con:
+- 📑 **`type_document_id: 8`** (Factura de Exportación)
+- 🔄 **`operation_type_id: 1`** (NO usar `operation_type_id: 2`)
 :::
 
-## Características Clave de Exportación
+---
 
-| Característica | Valor |
-|---|---|
-| **Tipo de Documento** | `type_document_id: 8` |
-| **Operación** | `operation_type_id: 1` |
-| **Moneda** | `currency_id: 272` (USD) |
-| **IVA** | Exento (0%) |
-| **Cliente** | País diferente de Colombia |
-| **Tasa de Cambio** | Especificar con `payment_exchange_rate` |
+## 📦 Requisitos Previos
+
+Antes de empezar, asegúrate de tener:
+
+- ✅ Token de autenticación válido ([ver guía](/docs/intro#obtener-el-token-de-acceso))
+- ✅ Resolución de facturación activa
+- ✅ Información del cliente extranjero
+- ✅ Tasa de cambio (TRM) del día
+- ✅ Documentos de exportación (si aplica)
+
+---
+
+## 🔑 Características Clave de Exportación
+
+<div style={{overflowX: 'auto'}}>
+
+| Característica | Valor | 📝 Descripción |
+|---|---|---|
+| **Tipo de Documento** | `type_document_id: 8` | 🌎 Factura de Exportación |
+| **Operación** | `operation_type_id: 1` | 🔄 Operación estándar |
+| **Moneda** | `currency_id: 272` | 💵 Dólares USD (u otra moneda) |
+| **IVA** | Exento (0%) | 🚫 Sin impuestos |
+| **Cliente** | País ≠ Colombia | 🌍 Extranjero |
+| **Tasa de Cambio** | `payment_exchange_rate` | 💱 TRM del día |
+
+</div>
 
 ## Paso 1: Información del Cliente Exterior
 
@@ -49,27 +83,51 @@ El cliente debe ser de otro país:
 }
 ```
 
-### Códigos de País Comunes
+### 🌍 Códigos de País Comunes
 
-| País | country_id |
-|------|-----------|
-| Estados Unidos | 239 |
-| México | 137 |
-| Brasil | 37 |
-| Panamá | 155 |
-| Ecuador | 70 |
-| Canadá | 41 |
-| España | 217 |
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem', margin: '1rem 0'}}>
+  <div style={{padding: '0.75rem', backgroundColor: '#e7f3ff', borderRadius: '6px', border: '1px solid #0066cc'}}>
+    🇺🇸 <strong>Estados Unidos:</strong> 239
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: '#e7f3ff', borderRadius: '6px', border: '1px solid #0066cc'}}>
+    🇲🇽 <strong>México:</strong> 137
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: '#e7f3ff', borderRadius: '6px', border: '1px solid #0066cc'}}>
+    🇧🇷 <strong>Brasil:</strong> 37
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: '#e7f3ff', borderRadius: '6px', border: '1px solid #0066cc'}}>
+    🇵🇦 <strong>Panamá:</strong> 155
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: '#e7f3ff', borderRadius: '6px', border: '1px solid #0066cc'}}>
+    🇪🇨 <strong>Ecuador:</strong> 70
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: '#e7f3ff', borderRadius: '6px', border: '1px solid #0066cc'}}>
+    🇨🇦 <strong>Canadá:</strong> 41
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: '#e7f3ff', borderRadius: '6px', border: '1px solid #0066cc'}}>
+    🇪🇸 <strong>España:</strong> 217
+  </div>
+</div>
 
-### identity_document_id para Extranjeros
+### 📍 Tipos de Documento para Extranjeros
 
-| Código | Tipo |
-|--------|------|
-| `10` | Pasaporte |
-| `3` | Cédula Extranjería |
-| `12` | NIT Extranjero |
+<div style={{overflowX: 'auto'}}>
 
-## Paso 2: Configurar Moneda y Tasa de Cambio
+| Código | Tipo de Documento | 📝 Uso |
+|--------|------------------|------|
+| `10` | **Pasaporte** | Personas naturales extranjeras |
+| `3` | **Cédula Extranjería** | Extranjeros residentes en Colombia |
+| `12` | **NIT Extranjero** | Empresas internacionales |
+
+</div>
+
+---
+
+## 💱 Paso 2: Configurar Moneda y Tasa de Cambio
+
+:::info TRM - Tasa Representativa del Mercado
+Usa la **TRM oficial** del día de la transacción. Puedes consultarla en el [Banco de la República](https://www.banrep.gov.co/es/estadisticas/trm).
+:::
 
 ```json
 {
@@ -83,22 +141,47 @@ El cliente debe ser de otro país:
 }
 ```
 
-**Campos:**
-- `currency_id: 272` → Dólares USD
-- `exchange_rate` → TRM del día (pesos por dólar)
-- `rate_date` → Fecha de la transacción
+### 📊 Descripción de Campos
 
-### Códigos de Moneda Comunes
+<div style={{overflowX: 'auto'}}>
 
-| Moneda | currency_id |
-|--------|-------------|
-| USD (Dólar) | 272 |
-| EUR (Euro) | 273 |
-| COP (Peso) | 170 |
-| MXN (Peso Mexicano) | 274 |
-| BRL (Real) | 275 |
+| Campo | Tipo | Descripción | Ejemplo |
+|-------|------|-------------|----------|
+| `currency_id` | integer | 💵 Moneda del documento | `272` (USD) |
+| `exchange_rate` | decimal | 💱 TRM del día (pesos/dólar) | `"4243.80"` |
+| `base_rate` | decimal | 📊 Tasa base (igual a exchange_rate) | `"4243.80"` |
+| `rate_date` | date | 📅 Fecha de la transacción | `"2025-05-05"` |
+| `currency_id` (dentro) | integer | 💴 Moneda base (COP = 188) | `188` |
 
-## Paso 3: Ejemplo Real de Exportación
+</div>
+
+### 💵 Códigos de Moneda Comunes
+
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', margin: '1rem 0'}}>
+  <div style={{padding: '0.75rem', backgroundColor: '#d4edda', borderRadius: '6px', border: '1px solid #28a745'}}>
+    💵 <strong>USD (Dólar):</strong> 272
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: '#d4edda', borderRadius: '6px', border: '1px solid #28a745'}}>
+    💶 <strong>EUR (Euro):</strong> 273
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: '#d4edda', borderRadius: '6px', border: '1px solid #28a745'}}>
+    💴 <strong>COP (Peso):</strong> 170
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: '#d4edda', borderRadius: '6px', border: '1px solid #28a745'}}>
+    💵 <strong>MXN (Peso MX):</strong> 274
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: '#d4edda', borderRadius: '6px', border: '1px solid #28a745'}}>
+    💶 <strong>BRL (Real):</strong> 275
+  </div>
+</div>
+
+---
+
+## 📄 Paso 3: Ejemplo Real de Exportación
+
+:::tip JSON Listo para Usar
+Este es el JSON **real y completo** para una factura de exportación a Estados Unidos.
+:::
 
 ```json title="factura-exportacion.json"
 {
@@ -161,20 +244,51 @@ El cliente debe ser de otro país:
 }
 ```
 
-**Cálculos:**
-```
-Precio unitario: $4,243.80 USD
-Cantidad: 1
-Subtotal: $4,243.80 USD
+### 🧮 Desglose de Cálculos
 
-Impuesto: $0.00 (Exento)
-Total: $4,243.80 USD
+<div style={{backgroundColor: '#e7f3ff', padding: '1.5rem', borderRadius: '8px', border: '2px solid #0066cc', margin: '1rem 0'}}>
+  <h4 style={{marginTop: 0}}>💰 Cálculo en USD</h4>
+  <table style={{width: '100%', borderCollapse: 'collapse'}}>
+    <tbody>
+      <tr style={{borderBottom: '1px solid #dee2e6'}}>
+        <td style={{padding: '0.5rem'}}>💵 Precio unitario (USD):</td>
+        <td style={{padding: '0.5rem', textAlign: 'right'}}><strong>$4,243.80</strong></td>
+      </tr>
+      <tr style={{borderBottom: '1px solid #dee2e6'}}>
+        <td style={{padding: '0.5rem'}}>📦 Cantidad:</td>
+        <td style={{padding: '0.5rem', textAlign: 'right'}}><strong>1</strong></td>
+      </tr>
+      <tr style={{borderBottom: '2px solid #0066cc', backgroundColor: '#f0f7ff'}}>
+        <td style={{padding: '0.5rem'}}>➕ Subtotal (USD):</td>
+        <td style={{padding: '0.5rem', textAlign: 'right'}}><strong>$4,243.80</strong></td>
+      </tr>
+      <tr style={{borderBottom: '1px solid #dee2e6'}}>
+        <td style={{padding: '0.5rem'}}>🚫 Impuesto:</td>
+        <td style={{padding: '0.5rem', textAlign: 'right', color: '#6c757d'}}><strong>$0.00 (Exento)</strong></td>
+      </tr>
+      <tr style={{backgroundColor: '#d4edda', fontWeight: 'bold'}}>
+        <td style={{padding: '0.5rem'}}>🎯 TOTAL (USD):</td>
+        <td style={{padding: '0.5rem', textAlign: 'right', fontSize: '1.2rem', color: '#28a745'}}><strong>$4,243.80</strong></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-TRM: 4,243.80 COP/USD
-Equivalente en COP: $18,000,000 aprox
-```
+<div style={{backgroundColor: '#fff3cd', padding: '1rem', borderRadius: '8px', border: '1px solid #ffc107', margin: '1rem 0'}}>
+  <h4 style={{marginTop: 0}}>💱 Conversión a COP</h4>
+  <div style={{fontSize: '1.1rem'}}>
+    <strong>TRM:</strong> 4,243.80 COP/USD<br/>
+    <strong>Equivalente en COP:</strong> $4,243.80 USD × 4,243.80 = <span style={{color: '#856404', fontWeight: 'bold'}}>~$18,000,000 COP</span>
+  </div>
+</div>
 
-## Paso 4: Exportación con Múltiples Líneas
+---
+
+## 📦 Paso 4: Exportación con Múltiples Líneas
+
+:::info Caso Real
+Exportación de **textiles a México** con múltiples productos.
+:::
 
 ```json
 {
@@ -251,10 +365,16 @@ Equivalente en COP: $18,000,000 aprox
 }
 ```
 
-## Paso 5: Enviar a la API
+---
+
+## 🚀 Paso 5: Enviar a la API
+
+:::warning 🔐 Requisito: Token de Autenticación
+Asegúrate de tener un token válido. Si no tienes uno, [obtén tu token aquí](/docs/intro#obtener-el-token-de-acceso).
+:::
 
 ```bash
-curl -X POST https://api.matias-app.com/api/invoices \
+curl -X POST https://api-v2.matias-api.com/api/ubl2.1/invoices \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d @factura-exportacion.json
@@ -289,58 +409,165 @@ curl -X POST https://api.matias-app.com/api/invoices \
 }
 ```
 
-:::success
-**Exportación Registrada**: El documento está en el sistema de DIAN y en proceso de validación
+:::tip ✅ Respuesta Exitosa
+**Indicadores de éxito:**
+- ✅ `success: true`
+- ✅ `StatusCode: "00"`
+- ✅ `IsValid: "true"`
+- ✅ CUFE generado (`XmlDocumentKey`)
+- ✅ URLs de PDF y XML disponibles
+- ✅ Documento registrado en DIAN
 :::
-
-## Documentación Requerida para DIAN
-
-- ✅ Certificado de origen (si aplica)
-- ✅ Documentos de aduanas
-- ✅ Declaración de exportación
-- ✅ Comprobante de cambio de moneda
-- ✅ Comprobante de envío internacional
-
-## Validaciones Críticas
-
-✅ Verificar ANTES de enviar:
-
-- [ ] `country_id` ≠ 45 (No es Colombia)
-- [ ] `identity_document_id` es de extranjero (10, 3, 12)
-- [ ] `type_document_id: 8` (Exportación)
-- [ ] `currency_id: 272` (USD) u otra moneda válida
-- [ ] `payment_exchange_rate` completado
-- [ ] IVA = 0% (exento)
-- [ ] Totales = suma de líneas
-- [ ] `payable_amount` = `tax_inclusive_amount`
-
-## Troubleshooting
-
-### ❌ "Invalid country for export"
-**Causa**: country_id es 45 (Colombia)  
-**Solución**: Especifica un country_id válido del exterior
-
-### ❌ "Currency mismatch"
-**Causa**: Moneda no coincide entre línea y total  
-**Solución**: Usa `currency_id: 272` en todo el documento
-
-### ❌ "Exchange rate required"
-**Causa**: payment_exchange_rate no está definido  
-**Solución**: Añade `payment_exchange_rate` con TRM del día
-
-### ❌ "Tax not allowed for exports"
-**Causa**: Se incluyó IVA en una exportación  
-**Solución**: Establece todos los tax_totals en vacío: `[]`
-
-## Próximos Pasos
-
-- 📖 [Factura Simple](/docs/use-cases/simple-invoice)
-- 📖 [Factura con Descuentos](/docs/use-cases/invoice-with-discounts)
-- 📖 [Casos de Error Común](/docs/use-cases/common-errors)
-- 📚 [Marco Regulatorio DIAN](/docs/regulatory-framework/overview)
 
 ---
 
-**Última actualización**: Octubre 2025
-**Tiempo estimado**: 25 minutos
-**Nivel de dificultad**: ⭐⭐⭐ Avanzado
+## 📃 Documentación Requerida para DIAN
+
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', margin: '1rem 0'}}>
+  <div style={{padding: '1rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '1px solid #0066cc'}}>
+    ✅ <strong>Certificado de origen</strong><br/>
+    <small>(si aplica según destino)</small>
+  </div>
+  <div style={{padding: '1rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '1px solid #0066cc'}}>
+    ✅ <strong>Documentos de aduanas</strong><br/>
+    <small>Declaración de exportación</small>
+  </div>
+  <div style={{padding: '1rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '1px solid #0066cc'}}>
+    ✅ <strong>Declaración de exportación</strong><br/>
+    <small>Formulario DIAN</small>
+  </div>
+  <div style={{padding: '1rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '1px solid #0066cc'}}>
+    ✅ <strong>Comprobante de cambio</strong><br/>
+    <small>TRM aplicada</small>
+  </div>
+  <div style={{padding: '1rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '1px solid #0066cc'}}>
+    ✅ <strong>Comprobante de envío</strong><br/>
+    <small>Guía internacional</small>
+  </div>
+</div>
+
+---
+
+## ✅ Validaciones Críticas
+
+:::danger ⚠️ Verificar ANTES de Enviar
+Estas validaciones son **obligatorias** para facturas de exportación:
+:::
+
+<div style={{backgroundColor: '#f8f9fa', padding: '1.5rem', borderRadius: '8px', border: '2px solid #dc3545', margin: '1rem 0'}}>
+
+### 🔐 Checklist de Validación
+
+<div style={{display: 'grid', gap: '0.75rem'}}>
+  <div style={{padding: '0.75rem', backgroundColor: 'white', borderRadius: '4px', border: '1px solid #dee2e6'}}>
+    ☐ <code>country_id</code> ≠ 45 (No es Colombia)<br/>
+    <small style={{color: '#6c757d'}}>El cliente debe ser de un país diferente a Colombia</small>
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: 'white', borderRadius: '4px', border: '1px solid #dee2e6'}}>
+    ☐ <code>identity_document_id</code> es de extranjero (10, 3, 12)<br/>
+    <small style={{color: '#6c757d'}}>Usar pasaporte, cédula extranjería o NIT extranjero</small>
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: 'white', borderRadius: '4px', border: '1px solid #dee2e6'}}>
+    ☐ <code>type_document_id: 8</code> (Exportación)<br/>
+    <small style={{color: '#6c757d'}}>Tipo de documento específico para exportación</small>
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: 'white', borderRadius: '4px', border: '1px solid #dee2e6'}}>
+    ☐ <code>currency_id: 272</code> (USD) u otra moneda válida<br/>
+    <small style={{color: '#6c757d'}}>Especificar moneda extranjera correcta</small>
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: 'white', borderRadius: '4px', border: '1px solid #dee2e6'}}>
+    ☐ <code>payment_exchange_rate</code> completado<br/>
+    <small style={{color: '#6c757d'}}>TRM del día con todos los campos requeridos</small>
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: 'white', borderRadius: '4px', border: '1px solid #dee2e6'}}>
+    ☐ IVA = 0% (exento)<br/>
+    <small style={{color: '#6c757d'}}>Las exportaciones no pagan IVA</small>
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: 'white', borderRadius: '4px', border: '1px solid #dee2e6'}}>
+    ☐ Totales = suma de líneas<br/>
+    <small style={{color: '#6c757d'}}>Verificar cálculos de totales</small>
+  </div>
+  <div style={{padding: '0.75rem', backgroundColor: 'white', borderRadius: '4px', border: '1px solid #dee2e6'}}>
+    ☐ <code>payable_amount</code> = <code>tax_inclusive_amount</code><br/>
+    <small style={{color: '#6c757d'}}>Monto a pagar coincide con total</small>
+  </div>
+</div>
+
+</div>
+
+---
+
+## 🔧 Troubleshooting
+
+### ❌ Error: "Invalid country for export"
+
+<div style={{backgroundColor: '#fff3cd', padding: '1rem', borderRadius: '8px', border: '1px solid #ffc107', marginBottom: '1rem'}}>
+  <strong>❌ Causa:</strong> <code>country_id</code> es 45 (Colombia)<br/>
+  <strong>✅ Solución:</strong> Especifica un <code>country_id</code> válido del exterior (ej: 239 para USA)
+</div>
+
+### ❌ Error: "Currency mismatch"
+
+<div style={{backgroundColor: '#fff3cd', padding: '1rem', borderRadius: '8px', border: '1px solid #ffc107', marginBottom: '1rem'}}>
+  <strong>❌ Causa:</strong> Moneda no coincide entre línea y totales<br/>
+  <strong>✅ Solución:</strong> Usa <code>currency_id: 272</code> (USD) en <strong>todo el documento</strong>
+</div>
+
+### ❌ Error: "Exchange rate required"
+
+<div style={{backgroundColor: '#fff3cd', padding: '1rem', borderRadius: '8px', border: '1px solid #ffc107', marginBottom: '1rem'}}>
+  <strong>❌ Causa:</strong> <code>payment_exchange_rate</code> no está definido<br/>
+  <strong>✅ Solución:</strong> Añade <code>payment_exchange_rate</code> con TRM del día
+</div>
+
+### ❌ Error: "Tax not allowed for exports"
+
+<div style={{backgroundColor: '#fff3cd', padding: '1rem', borderRadius: '8px', border: '1px solid #ffc107', marginBottom: '1rem'}}>
+  <strong>❌ Causa:</strong> Se incluyó IVA en una exportación<br/>
+  <strong>✅ Solución:</strong> Las exportaciones <strong>NO pagan IVA</strong>. Elimina <code>tax_totals</code> o ponlo vacío: <code>[]</code>
+</div>
+
+---
+
+## 🎯 Próximos Pasos
+
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', margin: '2rem 0'}}>
+  <a href="/docs/use-cases/simple-invoice" style={{textDecoration: 'none', color: 'inherit'}}>
+    <div style={{padding: '1.5rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '2px solid #0066cc', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+      <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📄</div>
+      <strong>Factura Simple</strong><br/>
+      <small>Guía básica nacional</small>
+    </div>
+  </a>
+  <a href="/docs/use-cases/invoice-with-discounts" style={{textDecoration: 'none', color: 'inherit'}}>
+    <div style={{padding: '1.5rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '2px solid #0066cc', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+      <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>🏷️</div>
+      <strong>Factura con Descuentos</strong><br/>
+      <small>Descuentos comerciales</small>
+    </div>
+  </a>
+  <a href="/docs/use-cases/common-errors" style={{textDecoration: 'none', color: 'inherit'}}>
+    <div style={{padding: '1.5rem', backgroundColor: '#fff3cd', borderRadius: '8px', border: '2px solid #ffc107', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+      <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>⚠️</div>
+      <strong>Errores Comunes</strong><br/>
+      <small>Troubleshooting</small>
+    </div>
+  </a>
+  <a href="/docs/regulatory-framework/overview" style={{textDecoration: 'none', color: 'inherit'}}>
+    <div style={{padding: '1.5rem', backgroundColor: '#d4edda', borderRadius: '8px', border: '2px solid #28a745', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+      <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📖</div>
+      <strong>Marco Regulatorio</strong><br/>
+      <small>Normativa DIAN</small>
+    </div>
+  </a>
+</div>
+
+---
+
+<div style={{backgroundColor: '#f8f9fa', padding: '1rem', borderRadius: '8px', textAlign: 'center', marginTop: '2rem'}}>
+  <small>
+    📅 <strong>Última actualización:</strong> Febrero 2026 • 
+    ⏱️ <strong>Tiempo estimado:</strong> 25 minutos • 
+    🎯 <strong>Nivel:</strong> ⭐⭐⭐ Avanzado
+  </small>
+</div>

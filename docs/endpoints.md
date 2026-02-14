@@ -63,10 +63,10 @@ sidebar_position: 2
   La API cuenta con <strong>dos categorías principales</strong> de endpoints según sus requisitos de autenticación:
 </div>
 
-| Tipo | Autenticación | Uso | Headers |
-|------|---------------|-----|--------|
-| **🟢 Públicos** | ❌ No | Tablas DIAN, autenticación | Ninguno |
-| **🔐 Privados** | ✅ Sí | Documentos, estado, eventos | `Authorization: Bearer {token}` |
+| Tipo            | Autenticación | Uso                         | Headers                         |
+| --------------- | ------------- | --------------------------- | ------------------------------- |
+| **🟢 Públicos** | ❌ No         | Tablas DIAN, autenticación  | Ninguno                         |
+| **🔐 Privados** | ✅ Sí         | Documentos, estado, eventos | `Authorization: Bearer {token}` |
 
 <div style={{backgroundColor: '#fff3cd', padding: '1rem', borderRadius: '8px', border: '1px solid #ffc107', marginTop: '1rem'}}>
   <strong>⚠️ Importante:</strong> Los endpoints privados requieren el header <code>Authorization: Bearer {'{token}'}</code> en todas las solicitudes.
@@ -85,16 +85,16 @@ Todas las respuestas siguen este patrón:
 
 ```json
 {
-    "dataRecords": {
-        "data": [
-            {
-                "id": 1,
-                "code": "01",
-                "name": "Factura de Venta"
-            }
-        ]
-    },
-    "success": true
+  "dataRecords": {
+    "data": [
+      {
+        "id": 1,
+        "code": "01",
+        "name": "Factura de Venta"
+      }
+    ]
+  },
+  "success": true
 }
 ```
 
@@ -112,91 +112,121 @@ Todos estos endpoints retornan un listado de valores permitidos en la DIAN.
 ### Documentos Electrónicos
 
 #### Ambiente de Destino - 🟢 GET
- ```http
+
+```http
 {{url}}/destination-environment
 ```
+
 **Respuesta:** Ambientes (Producción, Pruebas)
 
 #### Tipos de Documentos - 🟢 GET
- ```http
+
+```http
 {{url}}/document-type
 ```
+
 **Respuesta:** IDs y códigos DIAN (01=Factura, 02=Exportación, 03=Contingencia, etc.)
 
 #### Métodos de Pago - 🟢 GET
- ```http
+
+```http
 {{url}}/payment-methods
 ```
+
 **Respuesta:** Formas de pago válidas
 
 #### Medios de Pago - 🟢 GET
- ```http
+
+```http
 {{url}}/payment-means
 ```
+
 **Respuesta:** Medios (Efectivo, Tarjeta, Transferencia, etc.)
 
 #### Identidades de Documentos - 🟢 GET
- ```http
+
+```http
 {{url}}/identity-documents
 ```
+
 **Respuesta:** Tipos de identificación (CC, NIT, Pasaporte, etc.)
 
 #### Régimen Fiscal - 🟢 GET
- ```http
+
+```http
 {{url}}/fiscal-regime
 ```
+
 **Respuesta:** Responsabilidades fiscales
 
 #### Régimen Contable - 🟢 GET
- ```http
+
+```http
 {{url}}/accounting-regime
 ```
+
 **Respuesta:** Códigos contables
 
 #### Otros Endpoints de Referencia - 🟢 GET
 
-| Endpoint | Uso |
-|----------|-----|
-| `/delivery-conditions` | INCOTERMS |
-| `/correction-notes` | Motivos de corrección |
-| `/discount-codes` | Códigos de descuento |
-| `/operation-type` | Tipo de operación (Nacional, Exportación) |
-| `/taxes` | Tributos e impuestos |
-| `/quantity-units` | Unidades (Kg, Lt, Pz, etc.) |
-| `/reference-price` | Unidad de referencia |
-| `/cities` | Ciudades |
-| `/departments` | Departamentos |
-| `/countries` | Países |
-| `/currencies` | Monedas |
+| Endpoint               | Uso                                       |
+| ---------------------- | ----------------------------------------- |
+| `/delivery-conditions` | INCOTERMS                                 |
+| `/correction-notes`    | Motivos de corrección                     |
+| `/discount-codes`      | Códigos de descuento                      |
+| `/operation-type`      | Tipo de operación (Nacional, Exportación) |
+| `/taxes`               | Tributos e impuestos                      |
+| `/quantity-units`      | Unidades (Kg, Lt, Pz, etc.)               |
+| `/reference-price`     | Unidad de referencia                      |
+| `/cities`              | Ciudades                                  |
+| `/departments`         | Departamentos                             |
+| `/countries`           | Países                                    |
+| `/currencies`          | Monedas                                   |
+
 ### Nómina electrónica.
+
 - #### Tipo de ajuste a la nota de ajuste
- ```http
+
+```http
 {{url}}/ep/adjustment-note-type
 ```
+
 - #### Tipo de contrato
- ```http
+
+```http
 {{url}}/ep/contract-type
 ```
+
 - #### Tipo de discapacidad
- ```http
+
+```http
 {{url}}/ep/disability-type
 ```
+
 - #### Horas extras
- ```http
+
+```http
 {{url}}/ep/extra-hours
 ```
+
 - #### Periodicidad de la nómina
- ```http
+
+```http
 {{url}}/ep/payroll-period
 ```
+
 - #### Tipo de trabajo
- ```http
+
+```http
 {{url}}/ep/worker-type
 ```
+
 - #### Subtipo de trabajo
- ```http
+
+```http
 {{url}}/ep/worker-subtype
 ```
+
 ## Autenticación
 
 ### Iniciar Sesión - 🟘 POST
@@ -221,6 +251,7 @@ Content-Type: application/json
 Ver [Introducción - Token](/docs/intro#obtener-el-token-de-acceso) para detalles.
 
 ---
+
 ## Endpoints Privados
 
 > ✅ **Autenticación REQUERIDA**
@@ -249,6 +280,7 @@ Content-Type: application/json
 ```
 
 **Tipos soportados:**
+
 - Factura nacional (01)
 - Factura exportación (02)
 - Factura contingencia (03, 04)
@@ -268,6 +300,7 @@ Content-Type: application/json
 ```
 
 **Casos:**
+
 - Devoluciones
 - Descuentos
 - Correcciones hacia abajo
@@ -283,11 +316,13 @@ Content-Type: application/json
 ```
 
 **Casos:**
+
 - Intereses
 - Cargos adicionales
 - Correcciones hacia arriba
 
 **Campo:** `type_document_id: 4`
+
 ## Nómina Electrónica
 
 ### Enviar Nómina - 🟘 POST
@@ -336,155 +371,203 @@ Authorization: Bearer {token}
 ```
 
 ---
+
 ## Documentos 📄
 
 > 🟢 GET para búsquedas
 > 🟘 POST para descargas
 
 ### Búsqueda de Documentos - 🟢 GET
-- #### Buscar documentos. Tipo de petición: ``GET``
- ```http
+
+- #### Buscar documentos. Tipo de petición: `GET`
+
+```http
 {{url}}/documents?order_number=251956&query=&limit=1&resolution=&number=&prefix=
 ```
+
 Para realizar la búsqueda de documentos se pueden utilizar los siguientes parámetros, los cuales se pueden utilizar en cualquier combinación(**opcionales**):
+
 - #### Parámetros de búsqueda
+
 ```json
 {
-    "order_number": "Número de orden",
-    "number": "Número de documento",
-    "query": "Texto de búsqueda",
-    "limit": "Número de registros a traer",
-    "resolution": "Resolución de facturación",
-    "prefix": "Prefijo de la resolución",
-    "start_date": "Fecha de inicio: Fecha en la que se desea comenzar a buscar",
-    "end_date": "Fecha de fin: Fecha en la que se desea terminar de buscar",
-    "document_key": "Código del documento(CUFE,CUDE)",
-    "document_type": "Tipo de documento",
-    "document_status": "Estado del documento: -1: Indiferente, 0: Documento sin validar, 1: Documento validado correctamente",
+  "order_number": "Número de orden",
+  "number": "Número de documento",
+  "query": "Texto de búsqueda",
+  "limit": "Número de registros a traer",
+  "resolution": "Resolución de facturación",
+  "prefix": "Prefijo de la resolución",
+  "start_date": "Fecha de inicio: Fecha en la que se desea comenzar a buscar",
+  "end_date": "Fecha de fin: Fecha en la que se desea terminar de buscar",
+  "document_key": "Código del documento(CUFE,CUDE)",
+  "document_type": "Tipo de documento",
+  "document_status": "Estado del documento: -1: Indiferente, 0: Documento sin validar, 1: Documento validado correctamente"
 }
 ```
+
 ### Último documento generado
+
 Este endpoint es utilizado para obtener el último documento generado por la API.
-- #### Último documento. Tipo de petición: ``GET``
- ```http
+
+- #### Último documento. Tipo de petición: `GET`
+
+```http
 {{url}}/documents/last?resolution=18764074347312&prefix=LZT
 ```
+
 Para obtener el último documento generado se deben enviar los siguientes parámetros:
+
 - #### Parámetros de búsqueda
+
 ```json
 {
-    "resolution": "Resolución de facturación",
-    "prefix": "Prefijo de la resolución"
+  "resolution": "Resolución de facturación",
+  "prefix": "Prefijo de la resolución"
 }
 ```
+
 ### Consumo de documentos
+
 Este endpoint es utilizado para consultar el consumo de documentos generados por la API.
-- #### Consumo de documentos. Tipo de petición: ``GET``
- ```http
+
+- #### Consumo de documentos. Tipo de petición: `GET`
+
+```http
 {{url}}/documents/consume?p_year=2024&p_type=4&p_dni=901091403
 ```
-Para  obtener el consumo de documentos se deben enviar los siguientes parámetros:
+
+Para obtener el consumo de documentos se deben enviar los siguientes parámetros:
+
 - #### Parámetros de búsqueda
+
 ```json
 {
-    "p_year": "2024",
-    "p_type": "1",
-    "p_dni": "452121"
+  "p_year": "2024",
+  "p_type": "1",
+  "p_dni": "452121"
 }
 ```
+
 Descripción de los parámetros:
+
 - **p_year**: Año de consumo.
 - **p_dni**: DNI del cliente.
-- **p_type**: Tipo de solicitud. 
+- **p_type**: Tipo de solicitud.
   - 1: Consumo agrupado por mes y año, por cuenta desarrollador.
   - 2: Consumo agrupado por año, por cuenta desarrollador.
   - 3: Consumo agrupado por mes y año de cada cliente, por cuenta desarrollador.
   - 4: CConsumo agrupado por año de cada cliente, por cuenta desarrollador.
   - 5: Consumo agrupado por mes y año de cada cliente.
   - 6: Consumo agrupado por mes y año de cada cliente por tipo de documento
+
 ### Descargar PDF del documento
+
 Este endpoint es utilizado para descargar el PDF del documento generado por la API.
-- #### Descargar PDF. Tipo de petición: ``GET``
- ```http
+
+- #### Descargar PDF. Tipo de petición: `GET`
+
+```http
 {{url}}/documents/pdf/{trackId}
 ```
-Donde ``trackId`` es el código único de factura electrónica o documento soporte(**CUFE, CUDE**).
-Para descargar el PDF del documento se debe enviar el ``trackId`` del documento generado.
+
+Donde `trackId` es el código único de factura electrónica o documento soporte(**CUFE, CUDE**).
+Para descargar el PDF del documento se debe enviar el `trackId` del documento generado.
+
 - #### Parámetros de búsqueda
+
 ```json
 {
-    "regenerate": "Cuando es 1 le indica al API que debe reescribir representación grafica. Por defecto es 0"
+  "regenerate": "Cuando es 1 le indica al API que debe reescribir representación grafica. Por defecto es 0"
 }
 ```
+
 ### Descargar XML del documento
+
 Este endpoint es utilizado para descargar el XML del documento generado por la API.
-- #### Descargar XML. Tipo de petición: ``GET``
- ```http
+
+- #### Descargar XML. Tipo de petición: `GET`
+
+```http
 {{url}}/documents/xml/{trackId}
 ```
-Donde ``trackId`` es el código único de factura electrónica o documento soporte (**CUFE, CUDE**).
-Para descargar el XML del documento se debe enviar el ``trackId`` del documento generado.
+
+Donde `trackId` es el código único de factura electrónica o documento soporte (**CUFE, CUDE**).
+Para descargar el XML del documento se debe enviar el `trackId` del documento generado.
 
 ### Descargar ATTACHED del documento
+
 Este endpoint es utilizado para descargar el attachment del documento generado por la API.
-- #### Descargar ATTACHED. Tipo de petición: ``POST``
- ```http
+
+- #### Descargar ATTACHED. Tipo de petición: `POST`
+
+```http
 {{url}}/documents/attached/{trackId}
 ```
-Donde ``trackId`` es el código único de factura electrónica o documento soporte (**CUFE, CUDE**).
-Para descargar el PDF del documento se debe enviar el ``trackId`` del documento generado.
+
+Donde `trackId` es el código único de factura electrónica o documento soporte (**CUFE, CUDE**).
+Para descargar el PDF del documento se debe enviar el `trackId` del documento generado.
+
 - #### Parámetros de búsqueda
+
 ```json
 {
-    "regenerate": "Cuando es 1 le indica al API que debe reescribir representación grafica. Por defecto es 0"
+  "regenerate": "Cuando es 1 le indica al API que debe reescribir representación grafica. Por defecto es 0"
 }
 ```
-## Estado de documentos ``NEW``
+
+## Estado de documentos `NEW`
+
 Este endpoint es utilizado para consultar el estado de los documentos generados por la API y la DIAN.
+
 - ### ZIP - Estado del documento en la DIAN en modo de pruebas
-Este endpoint es utilizado para consultar el estado de los documentos en la DIAN en modo de pruebas.
-  - #### Estado del documento. Tipo de petición: ``GET``
-     ```https
+
+  Este endpoint es utilizado para consultar el estado de los documentos en la DIAN en modo de pruebas.
+  - #### Estado del documento. Tipo de petición: `GET`
+    ```https
     {{url}}/status/zip/53405404-0696-4418-9b76-7e63d7943bd0
     ```
+
     - #### Parámetros de búsqueda
     ```json
     {
-        "trackId": "Código único de factura electrónica o documento soporte (CUFE, CUDE)"
+      "trackId": "Código único de factura electrónica o documento soporte (CUFE, CUDE)"
     }
     ```
 
 - ### Estado del documento en la DIAN en producción
-Este endpoint es utilizado para consultar el estado de los documentos en la DIAN en producción.
-  - #### Estado del documento. Tipo de petición: ``GET``
-     ```https
+  Este endpoint es utilizado para consultar el estado de los documentos en la DIAN en producción.
+  - #### Estado del documento. Tipo de petición: `GET`
+    ```https
     {{url}}/status/document/6b0f76c1d3f9b783602c5e46a0dd2a0d833e01f4f969e5ed2dfbbd2692b2cdbbb0b6a9db2af4a98e0a6df70121ae0892
     ```
+
     - #### Parámetros de búsqueda
       ```json
       {
-          "trackId": "Código único de factura electrónica o documento soporte (CUFE, CUDE)"
+        "trackId": "Código único de factura electrónica o documento soporte (CUFE, CUDE)"
       }
       ```
 - ### Estado del documento en la API
-Este endpoint es utilizado para consultar el estado de los documentos generados por la API.
-  - #### Estado del documento. Tipo de petición: ``GET``
-     ```https
+  Este endpoint es utilizado para consultar el estado de los documentos generados por la API.
+  - #### Estado del documento. Tipo de petición: `GET`
+    ```https
     {{url}}/status?order_number=251956&resolution=&number=LZT836&prefix=
     ```
+
     - #### Parámetros de búsqueda
     ```json
     {
-        "order_number": "Número de orden",
-        "number": "Número del documento",
-        "resolution": "Resolución de facturación",
-        "prefix": "Prefijo de la resolución"
+      "order_number": "Número de orden",
+      "number": "Número del documento",
+      "resolution": "Resolución de facturación",
+      "prefix": "Prefijo de la resolución"
     }
     ```
+
     - #### Respuesta
-    ```json 
+    ```json
     {
-       "document": {
+      "document": {
         "uuid": "dde72910-eb42-11ef-9b27-f02f74cac485",
         "document_number": "LZT836",
         "order_number": null,
@@ -493,251 +576,301 @@ Este endpoint es utilizado para consultar el estado de los documentos generados 
         "is_valid": true,
         "invoice_date": "2025-02-14T05:00:00.000000Z",
         "qr": {
-            "qrDian": "https://catalogo-vpfe.dian.gov.co/document/searchqr?documentkey=cf9864294501e8a9578235dd2ab3c4fd1d9085fe5d3b345d191fbb8c9afa6ff8acec7a97a177393b2d32735d225a9f1d",
-            "data": "",
-            "path": "1/fv09010914030002500000033.png",
-            "url": "http://apidian.test/qr/1/fv09010914030002500000033.png"
+          "qrDian": "https://catalogo-vpfe.dian.gov.co/document/searchqr?documentkey=cf9864294501e8a9578235dd2ab3c4fd1d9085fe5d3b345d191fbb8c9afa6ff8acec7a97a177393b2d32735d225a9f1d",
+          "data": "",
+          "path": "1/fv09010914030002500000033.png",
+          "url": "http://apidian.test/qr/1/fv09010914030002500000033.png"
         }
-    },
+      },
       "status": "Validado por la DIAN",
       "message": "Consulta exitosa",
       "success": true
     }
     ```
-    - #### Descripción de la respuesta 
+
+    - #### Descripción de la respuesta
     ```json
     {
-        "document": {
-            "uuid": "dde72910-eb42-11ef-9b27-f02f74cac485", // UUID del documento
-            "document_number": "LZT836", // Número de documento
-            "order_number": null, // Número de orden
-            "document_key": "", // Código único de factura electrónica o documento soporte (CUFE, CUDE)
-            "document_name": "fv09010914030002500000033.xml", // Nombre del documento
-            "is_valid": true, // Indica si el documento es válido o no
-            "invoice_date": "2025-02-14T05:00:00.000000Z", // Fecha de la factura
-            "qr": { // Información del QR
-                "qrDian": "", // URL del QR en la DIAN
-                "data": "", // Datos del QR
-                "path": "1/fv09010914030002500000033.png", // Ruta del QR
-                "url": "" // URL del QR
-            }
-        },
-        "status": "Validado por la DIAN", // Estado del documento en la DIAN
-        "message": "Consulta exitosa", // Mensaje de respuesta
-        "success": true // Indica si la consulta fue exitosa o no
+      "document": {
+        "uuid": "dde72910-eb42-11ef-9b27-f02f74cac485", // UUID del documento
+        "document_number": "LZT836", // Número de documento
+        "order_number": null, // Número de orden
+        "document_key": "", // Código único de factura electrónica o documento soporte (CUFE, CUDE)
+        "document_name": "fv09010914030002500000033.xml", // Nombre del documento
+        "is_valid": true, // Indica si el documento es válido o no
+        "invoice_date": "2025-02-14T05:00:00.000000Z", // Fecha de la factura
+        "qr": {
+          // Información del QR
+          "qrDian": "", // URL del QR en la DIAN
+          "data": "", // Datos del QR
+          "path": "1/fv09010914030002500000033.png", // Ruta del QR
+          "url": "" // URL del QR
+        }
+      },
+      "status": "Validado por la DIAN", // Estado del documento en la DIAN
+      "message": "Consulta exitosa", // Mensaje de respuesta
+      "success": true // Indica si la consulta fue exitosa o no
     }
     ```
-    
+
 ## Envío de correos electrónicos personalizados
+
 Este endpoint es utilizado para enviar correos electrónicos personalizados a los clientes.
+
 - ### para enviar un correo electrónico se debe tener en cuenta lo siguiente:
-    - Mime type **(mime)** del documento a enviar. 
-    ```
-        https://help.accusoft.com/PrizmViewer/v10.1/Config/MIME_Types.html
-    ```
-    - Estilo del documento a enviar, usando el estandar 2.1 de CSS. 
-    ```
-        https://www.w3.org/TR/2011/REC-CSS2-20110607
-    ```
-- #### Enviar correo electrónico. Tipo de petición: ``POST``
- ```http
+  - Mime type **(mime)** del documento a enviar.
+  ```
+      https://help.accusoft.com/PrizmViewer/v10.1/Config/MIME_Types.html
+  ```
+
+  - Estilo del documento a enviar, usando el estandar 2.1 de CSS.
+  ```
+      https://www.w3.org/TR/2011/REC-CSS2-20110607
+  ```
+- #### Enviar correo electrónico. Tipo de petición: `POST`
+
+```http
 {{url}}/documents/sendmail/to
 ```
- - #### Parámetros del body
-    ```json 
-    {
-      "email_to"  : "lws_1234@hotmail.com;lopezsoft.com@gmail.com",
-      "subject"   : "Documento electrónico",
-      "title"     : "Titulo del correo",
-      "message"   : "Mensaje del correo electrónico",
-      "documents": [
-        "content" : "base64",
-        "mime"    : "application/pdf",
-        "name"    : "Factura.pdf"
-      ]
-    }
-    ```
+
+- #### Parámetros del body
+  ```json
+  {
+    "email_to"  : "lws_1234@hotmail.com;lopezsoft.com@gmail.com",
+    "subject"   : "Documento electrónico",
+    "title"     : "Titulo del correo",
+    "message"   : "Mensaje del correo electrónico",
+    "documents": [
+      "content" : "base64",
+      "mime"    : "application/pdf",
+      "name"    : "Factura.pdf"
+    ]
+  }
+  ```
 - #### Descripción de los parámetros
+
 ```json
 {
-    "email_to": "Dirección de correo electrónico del destinatario",
-    "subject": "Asunto del correo electrónico",
-    "title": "Título del correo electrónico",
-    "message": "Mensaje del correo electrónico",
-    "documents": [ // Arreglo de documentos a enviar
-        {
-            "content": "Contenido del documento en base64",
-            "mime": "Tipo de contenido del documento",
-            "name": "Nombre del documento"
-        }
-    ]
+  "email_to": "Dirección de correo electrónico del destinatario",
+  "subject": "Asunto del correo electrónico",
+  "title": "Título del correo electrónico",
+  "message": "Mensaje del correo electrónico",
+  "documents": [
+    // Arreglo de documentos a enviar
+    {
+      "content": "Contenido del documento en base64",
+      "mime": "Tipo de contenido del documento",
+      "name": "Nombre del documento"
+    }
+  ]
 }
 ```
+
 ## Reenvío de correos electrónicos
+
 Este endpoint es utilizado para reenviar correos electrónicos a los clientes.
-- #### Reenviar correo electrónico. Tipo de petición: ``POST``
- ```http
+
+- #### Reenviar correo electrónico. Tipo de petición: `POST`
+
+```http
 {{url}}//documents/sendmail/{{trackId}}
 ```
-Donde ``trackId`` es el código único de factura electrónica o documento soporte (**CUFE, CUDE**).
- - #### Parámetros del body
-    ```json 
-    {
-      "email_to"  : "lopezsoft.com@gmail.com;lws_1234@hotmail.com"
-    }
-    ```
- - #### Descripción de los parámetros
-     ```json
-     {
-         "email_to": "Dirección de correo electrónico del destinatario"
-     }
-     ```
-## Consulta de adquirente ``NEW``
+
+Donde `trackId` es el código único de factura electrónica o documento soporte (**CUFE, CUDE**).
+
+- #### Parámetros del body
+  ```json
+  {
+    "email_to": "lopezsoft.com@gmail.com;lws_1234@hotmail.com"
+  }
+  ```
+- #### Descripción de los parámetros
+  ```json
+  {
+    "email_to": "Dirección de correo electrónico del destinatario"
+  }
+  ```
+
+## Consulta de adquirente `NEW`
+
 Este endpoint es utilizado para consultar el adquirente de la factura electrónica.
 De acuerdo a la Resolución 000202 de 2025, el adquirente es la persona natural o jurídica que recibe el bien o servicio.
 
-- ### Consulta de adquirente. Tipo de petición: ``GET``
-     ```http
-    {{url}}/acquirer?identificationType=13&identificationNumber=1063279303
-    ```
- - #### Parámetros de búsqueda
-    ```json
-    {
-        "identificationType": "Tipo de identificación del adquirente",
-        "identificationNumber": "Número de identificación del adquirente"
-    }
-    ```
- - #### Tipos de identificación
-| CÓDIGO | NOMBRE DEL TIPO DE IDENTIFICACIÓN      |
-|--------|----------------------------------------|
-| 13     | Cédula de Ciudadanía                   |
-| 22     | Cédula de Extranjeria                  |
-| 31     | NIT                                    |
-| 11     | Registro civil de nacimiento           |
-| 12     | Tarjeta de identidad                   |
-| 21     | Tarjeta de extranjería                 |
-| 41     | Pasaporte                              |
-| 42     | Documento de identificación extranjero |
-| 50     | NIT de otro país                       |
-| 91     | NUIP                                   |
-| 48     | PPT (Permiso Protección Temporal)      |
-| 47     | PEP (Permiso Especial de Permanencia)  |
-| SC     | Salvoconducto                          |
-| CN     | Certificado de nacido vivo             |
-| AS     | Adulto sin identificar                 |
-| MS     | Menor sin identificar                  |
-| SI     | Sin identificación                     |
-| CD     | Carné diplomático                      |
+- ### Consulta de adquirente. Tipo de petición: `GET`
+  ```http
+  {{url}}/acquirer?identificationType=13&identificationNumber=1063279303
+  ```
+- #### Parámetros de búsqueda
+  ```json
+  {
+    "identificationType": "Tipo de identificación del adquirente",
+    "identificationNumber": "Número de identificación del adquirente"
+  }
+  ```
+- #### Tipos de identificación
+
+  | CÓDIGO | NOMBRE DEL TIPO DE IDENTIFICACIÓN      |
+  | ------ | -------------------------------------- |
+  | 13     | Cédula de Ciudadanía                   |
+  | 22     | Cédula de Extranjeria                  |
+  | 31     | NIT                                    |
+  | 11     | Registro civil de nacimiento           |
+  | 12     | Tarjeta de identidad                   |
+  | 21     | Tarjeta de extranjería                 |
+  | 41     | Pasaporte                              |
+  | 42     | Documento de identificación extranjero |
+  | 50     | NIT de otro país                       |
+  | 91     | NUIP                                   |
+  | 48     | PPT (Permiso Protección Temporal)      |
+  | 47     | PEP (Permiso Especial de Permanencia)  |
+  | SC     | Salvoconducto                          |
+  | CN     | Certificado de nacido vivo             |
+  | AS     | Adulto sin identificar                 |
+  | MS     | Menor sin identificar                  |
+  | SI     | Sin identificación                     |
+  | CD     | Carné diplomático                      |
 
 - #### Respuesta
-    ```json
-        {
-        "message": "Consulta generada con éxito",
-        "content": {
-            "Message": {
-                "_attributes": {
-                    "nil": "true"
-                }
-            },
-            "ReceiverEmail": "lopezsoft.com@gmail.com",
-            "ReceiverName": "LOPEZ GOMEZ LEWIS OSWALDO",
-            "StatusCode": "200"
-        },
-        "success": true
-    }
-    ```
+  ```json
+  {
+    "message": "Consulta generada con éxito",
+    "content": {
+      "Message": {
+        "_attributes": {
+          "nil": "true"
+        }
+      },
+      "ReceiverEmail": "lopezsoft.com@gmail.com",
+      "ReceiverName": "LOPEZ GOMEZ LEWIS OSWALDO",
+      "StatusCode": "200"
+    },
+    "success": true
+  }
+  ```
 
 ## Eventos - Acuses
+
 **NOTA:** La DIAN solo permite generar eventos para las facturas electrónicas a crédito.
+
 ### Mostrar en lista los eventos generados
+
 Este endpoint es utilizado para mostrar en lista los eventos generados por la API.
-- #### Mostrar eventos. Tipo de petición: ``GET``
- ```http
+
+- #### Mostrar eventos. Tipo de petición: `GET`
+
+```http
 {{url}}/events/document-receptions?startDate=&endDate=&trackId=&query&limit=20
 ```
+
 Para mostrar los eventos generados se pueden utilizar los siguientes parámetros (**opcionales**) de búsqueda:
+
 - #### Parámetros de búsqueda
+
 ```json
 {
-    "startDate": "Fecha de inicio (En la que se generó el evento en el API)",
-    "endDate": "Fecha de fin (En la que se generó el evento en el API)",
-    "trackId": "trackId del documento",
-    "query": "Texto de búsqueda (NIT, nombre del proveedor.)",
-    "limit": "Número de registros a traer, por defecto es 20 y máximo 50 registros"
+  "startDate": "Fecha de inicio (En la que se generó el evento en el API)",
+  "endDate": "Fecha de fin (En la que se generó el evento en el API)",
+  "trackId": "trackId del documento",
+  "query": "Texto de búsqueda (NIT, nombre del proveedor.)",
+  "limit": "Número de registros a traer, por defecto es 20 y máximo 50 registros"
 }
 ```
+
 ### Estado del documento en la DIAN
+
 Este endpoint es utilizado para obtener el documento en la DIAN y sus eventos, si tiene eventos generados.
 
-- #### Estado del documento. Tipo de petición: ``GET``
- ```http
+- #### Estado del documento. Tipo de petición: `GET`
+
+```http
 {{url}}/events/status/{{trackId}}
 ```
-Donde ``trackId`` es el trackId del documento.
+
+Donde `trackId` es el trackId del documento.
 
 ### Importar documentos de la DIAN a la API para generar los eventos(ACUSES)
+
 Estos endpoints son utilizados para importar los documentos de la DIAN a la API para generar los eventos(ACUSES).
-- #### Importar documento usando trackId. Tipo de petición: ``POST``
- ```http
+
+- #### Importar documento usando trackId. Tipo de petición: `POST`
+
+```http
 {{url}}/events/import-track-id
 ```
-En el body de la petición se debe enviar la propiedad ``{{trackId}}`` que debe contener el valor del trackId del documento.
 
-- #### Importar documento usando trackId. Tipo de petición: ``POST``
- ```http
+En el body de la petición se debe enviar la propiedad `{{trackId}}` que debe contener el valor del trackId del documento.
+
+- #### Importar documento usando trackId. Tipo de petición: `POST`
+
+```http
 {{url}}/events/{{trackId}}/import
 ```
-Donde ``trackId`` es el **CUDE** del documento.
 
-- #### Importar usando archivo excel. Tipo de petición: ``POST``
-Para importar un archivo, este debe ser en formato EXCEL y debe contener los campos necesarios para la importación. De lo contrario, la importación no se realizará correctamente.
-Estos campos son: **Tipo de documento, trackId, Folio, Prefijo, Fecha Emisión, Fecha Recepción, NIT Emisor, Nombre Emisor, NIT Receptor, Nombre Receptor, IVA, ICA, IPC, Total, Estado, Grupo**.
-El archivo debe contener una fila de encabezado con los nombres de los campos. Acorde a documento excel que se baja de la plataforma de la DIAN.
- ```http
+Donde `trackId` es el **CUDE** del documento.
+
+- #### Importar usando archivo excel. Tipo de petición: `POST`
+  Para importar un archivo, este debe ser en formato EXCEL y debe contener los campos necesarios para la importación. De lo contrario, la importación no se realizará correctamente.
+  Estos campos son: **Tipo de documento, trackId, Folio, Prefijo, Fecha Emisión, Fecha Recepción, NIT Emisor, Nombre Emisor, NIT Receptor, Nombre Receptor, IVA, ICA, IPC, Total, Estado, Grupo**.
+  El archivo debe contener una fila de encabezado con los nombres de los campos. Acorde a documento excel que se baja de la plataforma de la DIAN.
+
+```http
 {{url}}/events/import-excel
 ```
+
 Este listado lo puede bajar desde el portal de facturación de la DIAN.
 Nota: El archivo no debe contener más de 100 registros.
 
-- #### Importar usando el tipo de evento. Tipo de petición: ``POST``
-Este endpoint es utilizado para importar los documentos de la DIAN a la API para generar los eventos(ACUSES) por tipo de evento.
- ```http
+- #### Importar usando el tipo de evento. Tipo de petición: `POST`
+  Este endpoint es utilizado para importar los documentos de la DIAN a la API para generar los eventos(ACUSES) por tipo de evento.
+
+```http
 {{url}}/events/send/{{trackId}}
 ```
-Donde ``trackId`` es el trackId del documento.
+
+Donde `trackId` es el trackId del documento.
+
 - #### Parámetros del body
+
 ```json
 {
-    "code": "Código del evento(030, 031, 032, 033)",
-    "notes": "Notas del evento"
+  "code": "Código del evento(030, 031, 032, 033)",
+  "notes": "Notas del evento"
 }
 ```
+
 - #### Ejemplo de body Acuse de recibo
+
 ```json
 {
-    "code": "030",
-    "notes": "Acuso recibido de factura."
+  "code": "030",
+  "notes": "Acuso recibido de factura."
 }
 ```
+
 - #### Ejemplo de body Reclamo de la factura
+
 ```json
 {
-    "code": "031",
-    "notes": "Reclamo de factura."
+  "code": "031",
+  "notes": "Reclamo de factura."
 }
 ```
+
 - #### Ejemplo de body Recibo de la factura
+
 ```json
 {
-    "code": "032",
-    "notes": "Recibo del bien y/o prestación del servicio."
+  "code": "032",
+  "notes": "Recibo del bien y/o prestación del servicio."
 }
 ```
+
 - #### Ejemplo de body Aceptación expresa
+
 ```json
 {
-    "code": "033",
-    "notes": "Aceptación expresa."
+  "code": "033",
+  "notes": "Aceptación expresa."
 }
 ```
 
@@ -751,6 +884,7 @@ Donde ``trackId`` es el trackId del documento.
 </div>
 
 **¿Qué puedes hacer con PATs?**
+
 - ✅ Crear y renovar tokens sin contactar soporte
 - ✅ Configurar expiración personalizada (1-90 días)
 - ✅ Revocar tokens comprometidos instantáneamente
@@ -764,11 +898,13 @@ Donde ``trackId`` es el trackId del documento.
 ```
 
 **Headers requeridos:**
+
 ```
 Authorization: Bearer {tu_token_actual}
 ```
 
 **Respuesta exitosa (200):**
+
 ```json
 {
   "success": true,
@@ -792,12 +928,14 @@ Authorization: Bearer {tu_token_actual}
 ```
 
 **Headers requeridos:**
+
 ```
 Authorization: Bearer {tu_token_actual}
 Content-Type: application/json
 ```
 
 **Body:**
+
 ```json
 {
   "name": "Token Producción",
@@ -808,13 +946,14 @@ Content-Type: application/json
 
 **Parámetros:**
 
-| Campo | Tipo | Requerido | Descripción |
-|-------|------|-----------|-------------|
-| `name` | string | ✅ | Nombre identificador (máx 100 caracteres) |
-| `description` | string | ❌ | Descripción del uso (máx 500 caracteres) |
-| `expires_in_days` | integer | ❌ | Días hasta expiración (1-90, default: 30) |
+| Campo             | Tipo    | Requerido | Descripción                               |
+| ----------------- | ------- | --------- | ----------------------------------------- |
+| `name`            | string  | ✅        | Nombre identificador (máx 100 caracteres) |
+| `description`     | string  | ❌        | Descripción del uso (máx 500 caracteres)  |
+| `expires_in_days` | integer | ❌        | Días hasta expiración (1-90, default: 30) |
 
 **Respuesta exitosa (201):**
+
 ```json
 {
   "success": true,
@@ -839,6 +978,7 @@ El campo `token` solo se muestra una vez durante la creación. **Guárdalo en un
 ```
 
 **Respuesta exitosa (200):**
+
 ```json
 {
   "success": true,
@@ -864,6 +1004,7 @@ El campo `token` solo se muestra una vez durante la creación. **Guárdalo en un
 ```
 
 **Respuesta exitosa (200):**
+
 ```json
 {
   "success": true,
@@ -873,10 +1014,11 @@ El campo `token` solo se muestra una vez durante la creación. **Guárdalo en un
 
 :::tip Uso Recomendado
 Revoca tokens inmediatamente si:
+
 - Sospechas que fue comprometido
 - Ya no lo usarás
 - El desarrollador que lo usaba dejó el equipo
-:::
+  :::
 
 ### Revocar Todos los Tokens - 🔵 POST
 
@@ -887,6 +1029,7 @@ Revoca tokens inmediatamente si:
 Revoca todos tus tokens **excepto el que estás usando actualmente**.
 
 **Respuesta exitosa (200):**
+
 ```json
 {
   "success": true,
@@ -910,6 +1053,7 @@ Revoca todos tus tokens **excepto el que estás usando actualmente**.
 </div>
 
 **Características principales:**
+
 - 🔔 **26 tipos de eventos:** Documentos, emails, pagos, membresías
 - 🔐 **Firma HMAC-SHA256:** Verificación de autenticidad
 - 🔄 **Reintentos automáticos:** Hasta 6 intentos con backoff exponencial
@@ -924,33 +1068,34 @@ Revoca todos tus tokens **excepto el que estás usando actualmente**.
 ```
 
 **Respuesta exitosa (200):**
+
 ```json
 {
   "success": true,
   "data": {
     "documents": [
-      {"value": "document.created", "label": "Documento Creado"},
-      {"value": "document.emitted", "label": "Documento Emitido"},
-      {"value": "document.accepted", "label": "Documento Aceptado"},
-      {"value": "document.rejected", "label": "Documento Rechazado"},
-      {"value": "document.voided", "label": "Documento Anulado"}
+      { "value": "document.created", "label": "Documento Creado" },
+      { "value": "document.emitted", "label": "Documento Emitido" },
+      { "value": "document.accepted", "label": "Documento Aceptado" },
+      { "value": "document.rejected", "label": "Documento Rechazado" },
+      { "value": "document.voided", "label": "Documento Anulado" }
     ],
     "emails": [
-      {"value": "email.sent", "label": "Email Enviado"},
-      {"value": "email.delivered", "label": "Email Entregado"},
-      {"value": "email.bounced", "label": "Email Rebotado"},
-      {"value": "email.opened", "label": "Email Abierto"},
-      {"value": "email.clicked", "label": "Link Clickeado"}
+      { "value": "email.sent", "label": "Email Enviado" },
+      { "value": "email.delivered", "label": "Email Entregado" },
+      { "value": "email.bounced", "label": "Email Rebotado" },
+      { "value": "email.opened", "label": "Email Abierto" },
+      { "value": "email.clicked", "label": "Link Clickeado" }
     ],
     "payments": [
-      {"value": "payment.approved", "label": "Pago Aprobado"},
-      {"value": "payment.declined", "label": "Pago Rechazado"},
-      {"value": "payment.error", "label": "Error en Pago"}
+      { "value": "payment.approved", "label": "Pago Aprobado" },
+      { "value": "payment.declined", "label": "Pago Rechazado" },
+      { "value": "payment.error", "label": "Error en Pago" }
     ],
     "memberships": [
-      {"value": "membership.activated", "label": "Membresía Activada"},
-      {"value": "membership.expiring_soon", "label": "Próxima a Vencer"},
-      {"value": "membership.expired", "label": "Membresía Vencida"}
+      { "value": "membership.activated", "label": "Membresía Activada" },
+      { "value": "membership.expiring_soon", "label": "Próxima a Vencer" },
+      { "value": "membership.expired", "label": "Membresía Vencida" }
     ]
   }
 }
@@ -963,6 +1108,7 @@ Revoca todos tus tokens **excepto el que estás usando actualmente**.
 ```
 
 **Respuesta exitosa (200):**
+
 ```json
 {
   "success": true,
@@ -990,14 +1136,11 @@ Revoca todos tus tokens **excepto el que estás usando actualmente**.
 ```
 
 **Body:**
+
 ```json
 {
   "url": "https://tu-servidor.com/webhook/matias",
-  "events": [
-    "document.created",
-    "document.emitted",
-    "email.sent"
-  ],
+  "events": ["document.created", "document.emitted", "email.sent"],
   "headers": {
     "Authorization": "Bearer tu-token-secreto",
     "X-Custom-Header": "valor-personalizado"
@@ -1008,14 +1151,15 @@ Revoca todos tus tokens **excepto el que estás usando actualmente**.
 
 **Parámetros:**
 
-| Campo | Tipo | Requerido | Descripción |
-|-------|------|-----------|-------------|
-| `url` | string | ✅ | URL HTTPS donde recibirás las notificaciones |
-| `events` | array | ✅ | Array de eventos a los que te suscribes (mínimo 1) |
-| `headers` | object | ❌ | Headers personalizados para incluir en cada request |
-| `is_active` | boolean | ❌ | Si el webhook está activo (default: true) |
+| Campo       | Tipo    | Requerido | Descripción                                         |
+| ----------- | ------- | --------- | --------------------------------------------------- |
+| `url`       | string  | ✅        | URL HTTPS donde recibirás las notificaciones        |
+| `events`    | array   | ✅        | Array de eventos a los que te suscribes (mínimo 1)  |
+| `headers`   | object  | ❌        | Headers personalizados para incluir en cada request |
+| `is_active` | boolean | ❌        | Si el webhook está activo (default: true)           |
 
 **Respuesta exitosa (201):**
+
 ```json
 {
   "success": true,
@@ -1041,6 +1185,7 @@ El `secret` se muestra **solo una vez**. Guárdalo para verificar la firma HMAC 
 ```
 
 **Body:**
+
 ```json
 {
   "url": "https://nuevo-servidor.com/webhook",
@@ -1064,6 +1209,7 @@ El `secret` se muestra **solo una vez**. Guárdalo para verificar la firma HMAC 
 Envía un webhook de prueba para verificar tu configuración.
 
 **Respuesta exitosa (200):**
+
 ```json
 {
   "success": true,
@@ -1111,23 +1257,23 @@ Para garantizar que el webhook viene de Matias API:
 
 ```javascript
 // Node.js
-const crypto = require('crypto');
+const crypto = require("crypto");
 
 function verifyWebhook(payload, signature, secret) {
   const hash = crypto
-    .createHmac('sha256', secret)
+    .createHmac("sha256", secret)
     .update(JSON.stringify(payload))
-    .digest('hex');
-  
+    .digest("hex");
+
   return `sha256=${hash}` === signature;
 }
 
 // Uso
-const signature = request.headers['x-webhook-signature'];
-const isValid = verifyWebhook(request.body, signature, 'whsec_tu_secret');
+const signature = request.headers["x-webhook-signature"];
+const isValid = verifyWebhook(request.body, signature, "whsec_tu_secret");
 
 if (!isValid) {
-  return response.status(401).json({ error: 'Invalid signature' });
+  return response.status(401).json({ error: "Invalid signature" });
 }
 ```
 
@@ -1152,14 +1298,14 @@ if (!verifyWebhook($payload, $signature, 'whsec_tu_secret')) {
 
 Si tu servidor responde con error (status &gt; 299), reintentamos automáticamente con backoff exponencial:
 
-| Intento | Espera |
-|---------|--------|
-| 1 | 1 minuto |
-| 2 | 5 minutos |
-| 3 | 15 minutos |
-| 4 | 1 hora |
-| 5 | 6 horas |
-| 6 | 24 horas |
+| Intento | Espera     |
+| ------- | ---------- |
+| 1       | 1 minuto   |
+| 2       | 5 minutos  |
+| 3       | 15 minutos |
+| 4       | 1 hora     |
+| 5       | 6 horas    |
+| 6       | 24 horas   |
 
 Después de 6 intentos fallidos, el webhook se marca como fallido y debes reintentar manualmente.
 
@@ -1169,7 +1315,7 @@ Después de 6 intentos fallidos, el webhook se marca como fallido y debes reinte
 ✅ **Procesa async:** Usa colas para procesar el webhook después de responder  
 ✅ **Verifica firma:** Siempre valida el HMAC antes de procesar  
 ✅ **Idempotencia:** Guarda el `id` del webhook para evitar procesamiento duplicado  
-✅ **Monitorea:** Revisa el historial de entregas regularmente  
+✅ **Monitorea:** Revisa el historial de entregas regularmente
 
 ---
 
@@ -1181,6 +1327,7 @@ Después de 6 intentos fallidos, el webhook se marca como fallido y debes reinte
 </div>
 
 **Información disponible:**
+
 - 📊 **Consumo en tiempo real:** Documentos usados hoy y este mes
 - 📈 **Límites activos:** Máximo diario y mensual según tu plan
 - 📉 **Histórico de uso:** Últimos 7, 30 o 90 días con gráficos
@@ -1194,6 +1341,7 @@ Después de 6 intentos fallidos, el webhook se marca como fallido y debes reinte
 ```
 
 **Respuesta exitosa (200):**
+
 ```json
 {
   "success": true,
@@ -1228,25 +1376,201 @@ Después de 6 intentos fallidos, el webhook se marca como fallido y debes reinte
 
 **Parámetros query:**
 
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| `period` | string | `7days`, `30days`, `90days` (default: 30days) |
+| Parámetro | Tipo   | Descripción                                   |
+| --------- | ------ | --------------------------------------------- |
+| `period`  | string | `7days`, `30days`, `90days` (default: 30days) |
 
 **Respuesta exitosa (200):**
+
 ```json
 {
   "success": true,
   "data": {
     "period": "30days",
     "timeline": [
-      {"date": "2026-02-01", "count": 42},
-      {"date": "2026-02-02", "count": 38},
-      {"date": "2026-02-03", "count": 51}
+      { "date": "2026-02-01", "count": 42 },
+      { "date": "2026-02-02", "count": 38 },
+      { "date": "2026-02-03", "count": 51 }
     ],
     "total": 1250,
     "average_per_day": 41.6
   }
 }
+```
+
+### Asignar Cuota a Cliente - 🔵 POST
+
+```http
+{{url}}/ubl2.1/memberships/quotas
+```
+
+**Uso:** Permite a las casas de software asignar cuotas de documentos a sus clientes.
+
+**Headers requeridos:**
+
+```
+Authorization: Bearer {token}
+Content-Type: application/json
+Accept: application/json
+```
+
+**Body:**
+
+```json
+{
+  "client_company_id": "155",
+  "assigned_documents": "100",
+  "start_date": "2026-01-01",
+  "end_date": "2026-12-31"
+}
+```
+
+**Parámetros:**
+
+| Campo                | Tipo   | Requerido | Descripción                                             |
+| -------------------- | ------ | --------- | ------------------------------------------------------- |
+| `client_company_id`  | string | ✅        | ID de la empresa cliente a la que se asignará la cuota  |
+| `assigned_documents` | string | ✅        | Cantidad de documentos a asignar                        |
+| `start_date`         | string | ✅        | Fecha de inicio de la cuota (formato: YYYY-MM-DD)       |
+| `end_date`           | string | ✅        | Fecha de finalización de la cuota (formato: YYYY-MM-DD) |
+
+**Respuesta exitosa (200):**
+
+```json
+{
+  "message": "Cuota asignada correctamente.",
+  "quota": {
+    "id": 3,
+    "uuid": "25d8b421-8687-4600-bd14-db00a867460b",
+    "subscription_id": 1,
+    "client_company_id": 155,
+    "assigned_documents": 100,
+    "consumed_documents": 0,
+    "start_date": "2026-01-01T05:00:00.000000Z",
+    "end_date": "2026-12-31T05:00:00.000000Z",
+    "created_at": "2025-08-19T02:47:17.000000Z",
+    "updated_at": "2026-02-14T15:47:59.000000Z"
+  },
+  "success": true
+}
+```
+
+**Ejemplo cURL:**
+
+```bash
+curl --location 'http://apidian.test/api/ubl2.1/memberships/quotas' \
+--header 'Accept: application/json' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {token}' \
+--data '{
+    "client_company_id": "155",
+    "assigned_documents": "100",
+    "start_date": "2026-01-01",
+    "end_date": "2026-12-31"
+}'
+```
+
+### Consultar Resumen de Membresía - 🟢 GET
+
+```http
+{{url}}/ubl2.1/memberships/summary
+```
+
+**Uso:** Obtiene un resumen completo de la membresía incluyendo tipo de plan, límites, consumo y cuotas asignadas a clientes.
+
+**Headers requeridos:**
+
+```
+Authorization: Bearer {token}
+Accept: application/json
+Content-Type: application/json
+```
+
+**Respuesta exitosa (200):**
+
+```json
+{
+  "data": {
+    "type": "developer",
+    "plan_name": "PLAN EMPRENDEDOR",
+    "is_unlimited": 0,
+    "valid_until": "2027-01-30",
+    "limit": 3000,
+    "consumed": 1533,
+    "assigned_quotas": {
+      "current_page": 1,
+      "data": [
+        {
+          "id": 3,
+          "uuid": "25d8b421-8687-4600-bd14-db00a867460b",
+          "subscription_id": 1,
+          "client_company_id": 155,
+          "assigned_documents": 100,
+          "consumed_documents": 0,
+          "start_date": "2026-01-01T05:00:00.000000Z",
+          "end_date": "2026-12-31T05:00:00.000000Z",
+          "created_at": "2025-08-19T02:47:17.000000Z",
+          "updated_at": "2026-02-14T15:47:59.000000Z",
+          "client": {
+            "id": 155,
+            "company_name": "SALAS MACHADO CARLOS ALBERTO",
+            "full_path_image": ""
+          }
+        }
+      ],
+      "first_page_url": "http://apidian.test/api/ubl2.1/memberships/summary?page=1",
+      "from": 1,
+      "last_page": 1,
+      "last_page_url": "http://apidian.test/api/ubl2.1/memberships/summary?page=1",
+      "links": [
+        {
+          "url": null,
+          "label": "&laquo; Anterior",
+          "active": false
+        },
+        {
+          "url": "http://apidian.test/api/ubl2.1/memberships/summary?page=1",
+          "label": "1",
+          "active": true
+        },
+        {
+          "url": null,
+          "label": "Siguiente &raquo;",
+          "active": false
+        }
+      ],
+      "next_page_url": null,
+      "path": "http://apidian.test/api/ubl2.1/memberships/summary",
+      "per_page": 15,
+      "prev_page_url": null,
+      "to": 1,
+      "total": 1
+    }
+  }
+}
+```
+
+**Descripción de la respuesta:**
+
+| Campo                  | Descripción                                                  |
+| ---------------------- | ------------------------------------------------------------ |
+| `type`                 | Tipo de cuenta (developer, client)                           |
+| `plan_name`            | Nombre del plan contratado                                   |
+| `is_unlimited`         | Indica si el plan tiene documentos ilimitados (0: No, 1: Sí) |
+| `valid_until`          | Fecha de vencimiento de la membresía                         |
+| `limit`                | Límite total de documentos del plan                          |
+| `consumed`             | Documentos consumidos hasta el momento                       |
+| `assigned_quotas`      | Listado paginado de cuotas asignadas a clientes              |
+| `assigned_quotas.data` | Array de cuotas con información detallada de cada asignación |
+| `client`               | Información del cliente al que se asignó la cuota            |
+
+**Ejemplo cURL:**
+
+```bash
+curl --location 'http://apidian.test/api/ubl2.1/memberships/summary' \
+--header 'Accept: application/json' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {token}'
 ```
 
 ### Códigos de Error Relacionados
@@ -1315,7 +1639,7 @@ Todos los endpoints privados ahora retornan información de límites en headers.
 
 ✅ Todos los endpoints existentes siguen funcionando  
 ✅ Tokens anteriores (de 90 días) siguen válidos  
-✅ No hay breaking changes en la API  
+✅ No hay breaking changes en la API
 
 #### Migración Recomendada
 

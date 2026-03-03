@@ -10,6 +10,8 @@ date: 2025-10-17
 
 Estamos lanzando la versión **1.4.2** con una corrección crítica en el parser JSON del chat IA que previene que la página crashee cuando recibe respuestas con JSON malformado.
 
+<!--truncate-->
+
 ## 🐛 Problema Corregido
 
 ### Error Reportado

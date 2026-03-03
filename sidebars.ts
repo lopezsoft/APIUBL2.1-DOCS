@@ -1,4 +1,4 @@
-import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
+import type { SidebarsConfig } from '@docusaurus/plugin-content-docs';
 
 /**
  * Creating a sidebar enables you to:
@@ -123,7 +123,7 @@ const sidebars: SidebarsConfig = {
           link: {
             type: 'generated-index',
             title: 'Ejemplos de Factura Electrónica',
-            description: 'Colección completa de 26 ejemplos de facturas electrónicas, notas crédito/débito y casos especiales.',
+            description: 'Colección completa de 30 ejemplos de facturas electrónicas, notas crédito/débito y casos especiales.',
             slug: '/ejemplos-facturacion',
           },
           items: [

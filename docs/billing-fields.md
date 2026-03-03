@@ -1324,65 +1324,103 @@ Este campo es opcional y debe ser un arreglo de objetos.
 
 ### `lines->tax_totals`
 
-Grupo de campos para información relacionada con todos los impuestos de la línea. _Este campo es obligatorio_ solo cuanto la línea tiene impuestos y debe ser un arreglo de objetos.
+Grupo de campos para información relacionada con todos los impuestos de la línea. _Este campo es obligatorio_ solo cuando la línea tiene impuestos y debe ser un arreglo de objetos.
 
-- #### Ejemplo
+La estructura del objeto varía según el **tipo de tributo**: porcentual (ej. IVA) o **nominal/valor fijo por unidad** (ej. Código `18`, INC Bolsas - Código `22`, etc.).
+
+- #### Ejemplo (Impuesto Porcentual — IVA, Código `01`)
 
 ```json
 "tax_totals": [
     {
-        "tax_id": "01",
-        "tax_amount": "10000",
-        "taxable_amount": "725000",
-        "percent": 5
+        "tax_id": "1",
+        "tax_amount": 294.633000,
+        "taxable_amount": 1550.700000,
+        "percent": 19
     }
 ]
 ```
+
+- #### Ejemplo (Impuesto Nominal — Código `32`)
+
+:::warning Reglas DIAN para impuestos nominales
+La DIAN valida **matemáticamente** que `tax_amount = per_unit_amount × base_unit_measure`. Los campos `percent` y `taxable_amount` **deben enviarse con valor `0`** para este tipo de tributo. La regla de validación es `FAX07` (línea) / `FAS07` (cabecera).
+:::
+
+```json
+"tax_totals": [
+    {
+        "tax_id": "18",
+        "tax_amount": 387.675000,
+        "taxable_amount": 0,
+        "percent": 0,
+        "per_unit_amount": 387.675000,
+        "base_unit_measure": 1,
+        "quantity_units_id": 70
+    }
+]
+```
+
+> **Cálculo:** `387.675 × 1 = 387.675` (debe ser matemáticamente exacto). El valor de `quantity_units_id` debe corresponder al código numérico de la unidad de medida en el catálogo DIAN.
 
 - #### Detalle de los campos
   - #### `tax_id`
     ID del impuesto. _Este campo es obligatorio_ y debe ser un string.
   - #### `tax_amount`
     Monto o valor total del impuesto. _Este campo es obligatorio_ y debe ser un número flotante con máximo dos decimales.
+    - Para impuestos porcentuales: resultado de `taxable_amount × percent / 100`.
+    - Para impuestos nominales: resultado exacto de `per_unit_amount × base_unit_measure`.
   - #### `taxable_amount`
-    Base gravable del impuesto. _Este campo es obligatorio_ y debe ser un número flotante con máximo dos decimales
+    Base gravable del impuesto. _Este campo es obligatorio_ y debe ser un número flotante.
+    - Para impuestos porcentuales: valor sobre el que se aplica el porcentaje.
+    - Para impuestos nominales: **debe enviarse como `0`**.
   - #### `percent`
-    Porcentaje. _Este campo es obligatorio_ y debe ser un entero.
+    Porcentaje del impuesto. _Este campo es obligatorio_ y debe ser un número.
+    - Para impuestos porcentuales: valor del porcentaje (ej. `19` para IVA del 19%).
+    - Para impuestos nominales: **debe enviarse como `0`**.
+  - #### `per_unit_amount`
+    Valor monetario fijo del tributo por cada unidad de medida física. Obligatorio para impuestos nominales. Debe ser un número flotante con máximo dos decimales.
+  - #### `base_unit_measure`
+    Cantidad de unidades físicas sujetas al impuesto. Obligatorio para impuestos nominales. Debe ser un número flotante.
+  - #### `quantity_units_id`
+    Código numérico de la unidad de medida del catálogo DIAN para `base_unit_measure`. Obligatorio para impuestos nominales. Debe ser un número entero.
 
 ### `tax_totals` 🔴
 
 Arreglo que contiene la suma de todos los impuestos del documento, agrupados por tipo de impuesto. _Este campo es obligatorio_ solo cuando el documento tiene impuestos.
 
-La estructura del objeto dentro de este arreglo varía si el impuesto es porcentual (como IVA) o de valor fijo por unidad (como INC Bolsas, INCarbono, INCombustibles).
+La estructura del objeto dentro de este arreglo varía según el **tipo de tributo**: porcentual (ej. IVA) o **nominal/valor fijo por unidad** (ej. Código `18`, INC Bolsas - Código `22`, INCarbono, INCombustibles).
 
-- #### Ejemplo (Impuesto Porcentual - ej: IVA)
+- #### Ejemplo completo (Porcentual + Nominal)
+
+:::warning Reglas DIAN para impuestos nominales
+La DIAN valida **matemáticamente** que `tax_amount = per_unit_amount × base_unit_measure`. Los campos `percent` y `taxable_amount` **deben enviarse con valor `0`** para impuestos nominales.
+
+- Regla a nivel de línea: **`FAX07`** (Factura) / **`DEAX07`** (Doc. Equivalente).
+- Regla a nivel global: **`FAS07`** (Factura) / **`DEAS07`** (Doc. Equivalente).
+:::
 
 ```json
 "tax_totals": [
     {
-        "tax_id": "1", // ID para IVA
-        "tax_amount": 1900.00,
-        "taxable_amount": 10000.00,
+        "tax_id": "1",
+        "tax_amount": 294.633000,
+        "taxable_amount": 1550.700000,
         "percent": 19
-    }
-]
-```
-
-- #### Ejemplo (Impuesto de Valor Fijo - ej: INC Bolsas 2025)
-
-```json
-"tax_totals": [
+    },
     {
-      "tax_id": "22", // ID para INC Bolsas (según mapeo adjunto)
-      "tax_amount": 70.00, // Valor total del impuesto para este item/total
-      "taxable_amount": 0.00, // Opcional o cero para impuestos fijos
-      // Campos específicos para impuestos fijos por unidad:
-      "quantity_units_id": "886", // Código que representa la unidad base (ej: Unidad/NIU para bolsas)
-      "per_unit_amount": 70.00,   // Tarifa fija por unidad base ($70 por bolsa para 2025)
-      "base_unit_measure": 1      // Cantidad base para la tarifa (generalmente 1)
+        "tax_id": "18",
+        "tax_amount": 387.675000,
+        "per_unit_amount": 387.675000,
+        "base_unit_measure": 1,
+        "quantity_units_id": 70,
+        "taxable_amount": 0,
+        "percent": 0
     }
 ]
 ```
+
+> **Cálculo entrada nominal:** `387.675 × 1 = 387.675`. La multiplicación debe ser matemáticamente exacta y consistente con la suma de los valores de línea para no detonar la regla de descuadre general.
 
 - #### Detalle de los campos
   - #### `tax_id`
@@ -1391,33 +1429,29 @@ La estructura del objeto dentro de este arreglo varía si el impuesto es porcent
   - #### `tax_amount`
     - Monto o valor total del impuesto. _Este campo es obligatorio_ y debe ser un número flotante con máximo dos decimales.
     - Este campo agrupa la suma del monto o valor total de todos los impuestos que tengan el mismo ID.
+    - Para impuestos nominales: resultado exacto de `per_unit_amount × base_unit_measure`.
   - #### `taxable_amount`
     - Base gravable del impuesto. _Este campo es obligatorio_ y debe ser un número flotante con máximo dos decimales.
-    - Para impuestos de valor fijo por unidad (**códigos 21, 22, 23, 24**), este campo puede ser opcional, tener un valor de 0,
-    - ya que el impuesto (tax_amount) no se calcula como un porcentaje de este valor.
+    - Para impuestos porcentuales: valor sobre el que se aplica el porcentaje.
+    - Para impuestos de valor fijo por unidad (**códigos 21, 22, 23, 24, 18** y similares): **debe enviarse como `0`**.
   - #### `percent`
-    - Porcentaje del impuesto. Este campo es obligatorio y aplica únicamente para impuestos porcentuales (ej: IVA - Código 1).
-    - Para impuestos de valor fijo por unidad (**códigos 21, 22, 23, 24**), este campo debe omitirse o ser `0`.
-    - Debe ser un número entero o flotante si se incluye.
+    - Porcentaje del impuesto. _Este campo es obligatorio_ y debe ser un número.
+    - Para impuestos porcentuales (ej: IVA - Código `01`): valor del porcentaje (ej. `19`).
+    - Para impuestos de valor fijo por unidad (**códigos 21, 22, 23, 24, 18** y similares): **debe enviarse como `0`**.
 
   - ### `quantity_units_id`
-    - Código de la unidad de medida base sobre la cual se aplica la tarifa fija del tributo. Este campo es obligatorio y
-    - aplica únicamente para impuestos de valor fijo por unidad (**códigos 21, 22, 23, 24**).
-    - Debe ser un string que corresponda a un código de unidad válido según los catálogos de la DIAN
-    - (ej. "886" podría mapear a 'NIU' - Unidad para INC Bolsas; otros códigos mapearán a 'GLL' - Galón para INCombustibles, 'KGM' para INCarbono en carbón, etc.)
-    - Identifica la unidad referida en `per_unit_amount`.
+    - Código **numérico** de la unidad de medida base del catálogo DIAN sobre la cual se aplica la tarifa fija del tributo.
+    - Obligatorio para impuestos de valor fijo por unidad (**códigos 21, 22, 23, 24, 18** y similares).
+    - Debe ser un número entero (ej. `886` para NIU - Unidad en INC Bolsas; `821` para la unidad de medida en el código `18`).
 
   - ### `per_unit_amount`
-    - Tarifa o valor monetario fijo del tributo por cada unidad de medida base. Este campo es obligatorio y
-    - aplica únicamente para impuestos de valor fijo por unidad (**códigos 21, 22, 23, 24**).
-    - Debe ser un número flotante con máximo dos decimales, representando el monto fijo establecido por la normativa
-    - vigente (ej: 70.00 para INC Bolsas 2025, o la tarifa por galón/kg/m³ para INCarbono/INCombustibles).
+    - Tarifa o valor monetario fijo del tributo por cada unidad de medida física. Obligatorio para impuestos nominales (**códigos 21, 22, 23, 24, 18** y similares).
+    - Debe ser un número flotante con máximo dos decimales (ej. `39.16` para código `18`; `70.00` para INC Bolsas 2025).
 
   - ### `base_unit_measure`
-        - Cantidad de unidades base a la que se aplica la tarifa per_unit_amount. Este campo es obligatorio y
-        - aplica únicamente para impuestos de valor fijo por unidad (**códigos 21, 22, 23, 24**).
-        - Generalmente su valor es 1 (numérico), indicando que la tarifa en per_unit_amount es
-    por una unidad de la medida especificada en quantity_units_id.
+    - Cantidad de unidades físicas sujetas al impuesto. Obligatorio para impuestos nominales (**códigos 21, 22, 23, 24, 18** y similares).
+    - Para INC Bolsas su valor es generalmente `1`; para otros nominales corresponde al total de unidades físicas del ítem (ej. `9.90` para código `18`).
+    - Debe ser un número flotante.
 
 ## `additional_document_reference` (Referencia a Documento Adicional) {#additional_document_reference-referencia-a-documento-adicional}
 

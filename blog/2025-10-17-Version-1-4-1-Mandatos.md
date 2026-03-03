@@ -10,6 +10,8 @@ date: 2025-10-17
 
 Estamos emocionados de anunciar la versión **1.4.1** de nuestro API UBL 2.1, que incluye soporte completo para **mandatos en facturas electrónicas**.
 
+<!--truncate-->
+
 ## ✨ Nuevas Características
 
 ### 📌 Soporte de Mandatos

@@ -248,7 +248,17 @@ sidebar_position: 4
     "email": "correo@corre.com",
     "address": "dirección",
     "postal_code": "000000",
-    "points": 0
+    "points": 0,
+    "extra_data": [
+      {
+        "title": "No. Socio",
+        "value": "78-54121-454"
+      },
+      {
+        "title": "FECHA DE VINCULACIÓN",
+        "value": "02/02/2026"
+      }
+    ]
   },
   "discrepancy_response": {
     "reference_id": "EPOS2",
@@ -1014,6 +1024,27 @@ y debe ser un objeto.
   - #### `city_name:` **NEW**
     Nombre de la ciudad del cliente o proveedor extranjero. _Este campo es opcional_, solo se debe usar cuando el documento soporte
     es para no residente o cuando un cliente es extranjero.
+  - #### `extra_data`: **NEW**
+    Grupo de campos para información adicional del cliente. _Este campo es opcional_ y debe ser un arreglo de objetos.
+    Esta información adicional se mostrará en la representación gráfica del documento y no se enviará a la DIAN.
+
+    ```json
+    "extra_data": [
+      {
+        "title": "No. Socio",
+        "value": "78-54121-454"
+      },
+      {
+        "title": "FECHA DE VINCULACIÓN",
+        "value": "02/02/2026"
+      }
+    ]
+    ```
+
+    - #### `title`
+      Título del campo adicional. _Este campo es obligatorio_ y debe ser un string.
+    - #### `value`
+      Valor del campo adicional. _Este campo es obligatorio_ y debe ser un string.
 
 ### customer -> Documento P.O.S Electrónico.
 

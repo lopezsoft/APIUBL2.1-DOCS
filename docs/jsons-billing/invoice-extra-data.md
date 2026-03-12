@@ -11,7 +11,7 @@ A continuación se muestra un ejemplo de un JSON que representa una factura. Est
   "resolution_number": "18764074347312",
   "prefix": "LZT",
   "notes": "Nota del documento",
-  "document_number": "2015",
+  "document_number": "4068",
   "graphic_representation": 0,
   "send_email": 1,
   "operation_type_id": 1,
@@ -36,7 +36,17 @@ A continuación se muestra un ejemplo de un JSON que representa una factura. Est
     "mobile": "3108435423",
     "email": "lws_1234@hotmail.com",
     "address": "Calle 64 #1823",
-    "postal_code": "661002"
+    "postal_code": "661002",
+    "extra_data": [
+      {
+        "title": "No. Socio",
+        "value": "78-54121-454"
+      },
+      {
+        "title": "FECHA DE VINCULACIÓN",
+        "value": "02/02/2026"
+      }
+    ]
   },
   "lines": [
     {

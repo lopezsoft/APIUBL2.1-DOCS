@@ -682,4 +682,4 @@ Para dudas técnicas rápidas o verificación de estado de servicios:
 
 ---
 
-**Versión de Documentación:** 3.0.4 | **Última actualización:** Mayo 2026 | **API:** v3.0.4
+**Versión de Documentación:** 3.0.5 | **Última actualización:** Mayo 2026 | **API:** v3.0.5

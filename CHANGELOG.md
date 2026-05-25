@@ -4,6 +4,11 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.5] - 2026-05-25
+
+### Solucionado
+* **Sincronización de Adjuntos (S3):** Corregido el esquema técnico y de validación para el nodo de archivos adjuntos `attachments` en `docs/billing-fields.md` y `docs/jsons-billing/invoice.md`. Se actualizaron los parámetros a la nomenclatura de validación real (`filename`, `content`, `content_type`), y se documentó la cuota máxima de 4 archivos con almacenamiento en Amazon S3.
+
 ---
 
 ## [3.0.4] - 2026-05-25

@@ -153,7 +153,6 @@ A continuación se muestra un ejemplo de un JSON que representa una factura en e
   "payment_exchange_rate": {
     "exchange_rate": "4200.00",
     "rate_date": "2022-02-24",
-    "base_rate": "3800.00",
     "currency_id": 213
   }
 }

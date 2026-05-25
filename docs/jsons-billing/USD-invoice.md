@@ -22,7 +22,6 @@ A continuación se muestra un ejemplo de un JSON que representa una factura en d
   ],
   "payment_exchange_rate": {
     "exchange_rate": "4243.80",
-    "base_rate": "4243.80",
     "rate_date": "2025-05-05",
     "currency_id": 188
   },

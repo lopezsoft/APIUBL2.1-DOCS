@@ -44,6 +44,7 @@ A continuación se muestra un ejemplo de un JSON que representa una factura AIU.
       "line_extension_amount": "600000",
       "free_of_charge_indicator": false,
       "description": "ADMINISTRACIÓN",
+      "notes": "Contrato de servicios AIU por concepto de: Informacion del contrato",
       "code": "HMT82",
       "type_item_identifications_id": "4",
       "reference_price_id": "1",

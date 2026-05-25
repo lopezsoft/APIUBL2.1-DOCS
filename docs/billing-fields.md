@@ -103,31 +103,31 @@ A continuación se describe el uso detallado de cada campo del request body. Los
 
 ### `resolution_number` 🔴
 
-Número de resolución del documento, este valor debe ser el mismo que se configura en el portal web. _Este campo es obligatorio_ para todos los documentos.
+Número de resolución de facturación asignado por la DIAN. Debe coincidir exactamente con el valor configurado en el portal web del proveedor tecnológico. _Este campo es obligatorio_ para todos los documentos y debe ser un string.
 
 ### `prefix` 🟡
 
-Prefijo de la resolución del documento. _Este campo es obligatorio_ cuando se tiene más de una resolución y debe ser un string.
+Prefijo asociado a la resolución de facturación. Identifica la serie o rango del documento (ej. `"FEV"`, `"NC"`, `"DS"`). _Este campo es condicional_: obligatorio cuando la resolución tiene prefijo configurado. Debe ser un string.
 
 ### `date` 🟢
 
-Fecha de emisión del documento. _Este campo es opcional_ y en caso de enviarlo debe ser un string en formato **`YYYY-MM-DD`**. Si no envía este campo, la API tomará la fecha actual.
+Fecha de emisión del documento. _Este campo es opcional_. Si no se envía, la API asigna la **fecha actual del servidor**. Debe ser un string en formato **`YYYY-MM-DD`** (ej. `"2025-05-25"`).
 
 ### `expiration_date` 🟢
 
-Fecha de vencimiento del documento equivalente electrónico debe estar asociada con las fechas negociadas o acordadas según los registros de los campos **cac:PaymentTerms/cbc:PaymentDueDate**.
+Fecha de vencimiento del documento. _Este campo es opcional_ y debe ser un string en formato **`YYYY-MM-DD`**. Se utiliza principalmente en documentos equivalentes electrónicos y debe corresponder con las fechas negociadas o acordadas de pago.
 
 ### `time` 🟢
 
-Hora de emisión del documento. _Este campo es opcional_ y en caso de enviarlo y debe ser un string en formato **`H:i:s`**. Si no envía este campo, la API tomará la hora actual
+Hora de emisión del documento. _Este campo es opcional_. Si no se envía, la API asigna la **hora actual del servidor**. Debe ser un string en formato **`HH:mm:ss`** (ej. `"14:30:00"`).
 
 ### `notes` 🟢
 
-Si desea enviar información adicional sobre el documento, puede enviar este campo, el cual es opcional para algunos documentos y debe ser un string.
+Notas u observaciones adicionales del documento. Se imprime en la representación gráfica (PDF). _Este campo es opcional_ y debe ser un string. Acepta texto libre de cualquier longitud.
 
 ### `document_number` 🔴
 
-Número consecutivo del documento, sin prefijos. _Este campo es obligatorio_ para todos los documentos y debe ser un entero encerrado entre `""` sin prefijos.
+Número consecutivo del documento **sin prefijo**. _Este campo es obligatorio_ para todos los documentos. Debe ser un string numérico (ej. `"990000001"`). Este número debe estar dentro del rango autorizado por la resolución DIAN vigente.
 
 ### `operation_type_id` 🔴
 
@@ -287,7 +287,7 @@ En el API **SIEMPRE** se usa el **`id`** de la base de datos (columna izquierda)
 
 ### `graphic_representation` 🟢
 
-Indicador de representación gráfica. _Este campo es opcional_, se debe enviar cuando se espera que la API genere el PDF de la representación gráfica.
+Indicador para solicitar que la API genere el **PDF de representación gráfica** del documento. _Este campo es opcional_. Enviar `1` para generar el PDF, `0` o no enviar si no se requiere. Debe ser un entero.
 
 - #### Ejemplo
 
@@ -297,7 +297,7 @@ Indicador de representación gráfica. _Este campo es opcional_, se debe enviar 
 
 ### `send_email` 🟢
 
-Indicador de envío de email. _Este campo es opcional_, se debe enviar cuando se espera que la API envíe el email al cliente del documento.
+Indicador para solicitar que la API **envíe automáticamente por email** el documento al cliente (al correo definido en `customer.email`). _Este campo es opcional_. Enviar `1` para enviar, `0` o no enviar si no se requiere. Debe ser un entero.
 
 - #### Ejemplo
 
@@ -307,7 +307,8 @@ Indicador de envío de email. _Este campo es opcional_, se debe enviar cuando se
 
 ### `currency_id` 🟢
 
-Hace referencia a la moneda del documento. Este campo es opcional, solo se debe enviar cuando es una moneda extranjera y debe ser un entero.
+ID de la moneda del documento. _Este campo es opcional_: si no se envía, la API asume **Peso Colombiano (COP)**. Solo se debe enviar cuando el documento está en moneda extranjera. Debe ser un entero.
+Puede consultar las monedas disponibles en el **ENDPOINT** `{{url}}/currencies`.
 
 **Valores comunes:**
 
@@ -522,7 +523,7 @@ Información de anticipos recibidos que se deben descontar del total a pagar del
 
 ### `payments` 🔴
 
-Lista de pagos. _Este campo es obligatorio_ para todos los documentos y debe ser un arreglo de objetos.
+Información de los pagos del documento. Define el método (contado/crédito), medio de pago y valor. Permite múltiples pagos. _Este campo es obligatorio_ para todos los documentos y debe ser un arreglo de objetos.
 
 - #### Ejemplo
 
@@ -539,10 +540,10 @@ Lista de pagos. _Este campo es obligatorio_ para todos los documentos y debe ser
 
 - ### Detalle de los campos
   - #### `payment_method_id`
-    Método de pago, **`1`** cuado es de contado y **`2`** cuando es a crédito. _Este campo es obligatorio_ para todos los documentos y debe ser un entero.
+    Método de pago: **`1`** = Contado, **`2`** = Crédito. _Este campo es obligatorio_ y debe ser un entero.
   - #### `means_payment_id`
-    Medio de pago. Este campo es utiliza para indicar un medio de pago y es obligatorio para todos los documentos y debe ser un entero.
-    Puede consultar los diferentes medios de pago en el **ENDPOINT** `{{url}}/payment-means`.
+    Medio de pago (ej. `10` = Efectivo, `42` = Consignación bancaria, `47` = Transferencia). _Este campo es obligatorio_ y debe ser un entero.
+    Puede consultar todos los medios de pago disponibles en el **ENDPOINT** `{{url}}/payment-means`.
   - #### `value_paid`
     Valor pagado. _Este campo es obligatorio_ para todos los documentos y debe ser un número flotante con máximo dos decimales, encerrado entre `""`.
   - #### `payment_due_date`
@@ -553,9 +554,7 @@ Lista de pagos. _Este campo es obligatorio_ para todos los documentos y debe ser
 
 ### `report_header`: **NEW**
 
-Este objeto es una parte fundamental del cuerpo de la solicitud (request body).
-Contiene toda la información necesaria para que la API pueda renderizar dinámicamente el encabezado y/o
-pie de página del documento utilizando una plantilla de diseño predefinida.
+Plantilla para personalizar el encabezado y pie de página de la representación gráfica (PDF). La API renderiza dinámicamente los valores proporcionados sobre una plantilla prediseñada. _Este campo es opcional_ y debe ser un objeto.
 
 #### Descripción General
 
@@ -650,7 +649,7 @@ Información de la firma del documento. _Este campo es opcional_ y debe ser un o
 
 ### `payment_exchange_rate` 🟡
 
-Tasa de cambio para el pago. _Este campo es obligatorio_ solo para los documentos en moneda extranjera y debe ser un objeto.
+Tasa de cambio aplicada al documento. _Este campo es obligatorio_ cuando `currency_id` indica una moneda extranjera (diferente a COP). Define la equivalencia entre la moneda extranjera y el Peso Colombiano. Debe ser un objeto.
 
 - #### Ejemplo
 
@@ -674,7 +673,7 @@ Tasa de cambio para el pago. _Este campo es obligatorio_ solo para los documento
 
 ### `point_of_sale` 🟡
 
-Información del punto de venta. _Este campo es obligatorio_ solo para los documentos de tipo **P.O.S ELECTRÓNICO** (`type_document_id = 9`) y debe ser un objeto.
+Información del punto de venta físico donde se realizó la transacción. _Este campo es obligatorio_ para documentos de tipo **P.O.S Electrónico** (`type_document_id = 20`) y debe ser un objeto.
 
 - #### Ejemplo
 
@@ -705,7 +704,7 @@ Información del punto de venta. _Este campo es obligatorio_ solo para los docum
 
 ### `software_manufacturer` 🟡
 
-Información del fabricante del software. _Este campo es obligatorio_ solo para los documentos equivalentes P.O.S (`type_document_id = 9`) y debe ser un objeto.
+Información del fabricante del software POS que generó el documento. _Este campo es obligatorio_ para documentos equivalentes P.O.S (`type_document_id = 20`) y debe ser un objeto.
 
 - #### Ejemplo
 
@@ -751,7 +750,7 @@ Referencia de la orden de compra. _Este campo es opcional_ y debe ser usado de a
 
 ### `health` 🟢
 
-Información del sector salud. _Este campo es opcional_ y debe ser usado de acuerdo al giro del documento. Debe ser un objeto.
+Información específica para documentos del **sector salud** (Resolución 866 de 2021). _Este campo es opcional_ y aplica exclusivamente cuando el emisor pertenece al sector salud. Debe ser un objeto.
 
 - #### `operation_type`
   Tipo de operación. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un string.
@@ -824,7 +823,7 @@ y debe ser un objeto.
     **Responsabilidad tributaria** del cliente. _Este campo es opcional_, si no se envía por defecto toma el código(`R-99-PN`) de No aplica – Otros.
     Puede consultar los diferentes niveles tributarios en el **ENDPOINT** `{{url}}/fiscal-regime`.
   - #### `company_name`: Obligatorio para todos los documentos
-    Nombre de la empresa/persona natual. _Este campo es obligatorio_ para todos los documentos y debe ser un string.
+    Nombre de la empresa o persona natural. _Este campo es obligatorio_ para todos los documentos y debe ser un string.
   - #### `dni`: Obligatorio para todos los documentos
     Número del documento de identidad del cliente sin dígito de verificación. _Este campo es obligatorio_ para todos los documentos y debe ser un string.
   - #### `mobile`: valor por defecto `""`
@@ -970,7 +969,7 @@ Este campo es opcional, se debe informar cuando hay un cargo o descuento a nivel
 
 ### `legal_monetary_totals` 🔴
 
-Totales del documento. _Este campo es obligatorio_ para todos los documentos donde se usa y debe ser un objeto.
+Totales monetarios del documento. Agrupa los valores brutos, impuestos, cargos, descuentos y el total a pagar. La DIAN valida que estos valores sean **matemáticamente consistentes** con las líneas y los impuestos. _Este campo es obligatorio_ y debe ser un objeto.
 
 - #### Ejemplo
 
@@ -1017,7 +1016,7 @@ Totales del documento. _Este campo es obligatorio_ para todos los documentos don
 
 ### `lines` 🔴
 
-Líneas del detalle de cada item del documento. _Este campo es obligatorio_ para todos los documentos donde se usa y debe ser un arreglo de objetos.
+Líneas de detalle del documento. Cada elemento del arreglo representa un ítem (producto o servicio) con su cantidad, precio, impuestos y descripción. Mínimo **1 línea** por documento. _Este campo es obligatorio_ y debe ser un arreglo de objetos.
 
 - #### `invoiced_quantity`
   Cantidad del producto o servicio. _Este campo es obligatorio_ y debe ser un string.

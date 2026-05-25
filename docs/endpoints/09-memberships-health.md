@@ -12,7 +12,7 @@ Esta sección abarca dos grandes submódulos: la gestión analítica y cuotas de
 
 ---
 
-## Membresías y Consumo
+## Membresías y Consumo {#memberships-consumption}
 
 Permite a los integradores consultar los límites de plan, consumo diario/mensual y métricas avanzadas.
 

@@ -161,7 +161,7 @@ Hemos mejorado significativamente la documentación de endpoints:
 ✅ **Esquemas de respuesta** - Estructuras JSON detalladas  
 ✅ **Descripciones de campos** - Explicación de cada propiedad
 
-📖 **[Ver documentación completa de Membresías](/docs/endpoints#membresías-y-consumo)**
+📖 **[Ver documentación completa de Membresías](/docs/endpoints/memberships-health#memberships-consumption)**
 
 ---
 
@@ -197,7 +197,7 @@ No se requiere ninguna acción para usuarios actuales. Los nuevos endpoints est�
 ## 📚 Recursos
 
 - 📖 [Documentación de Endpoints](/docs/endpoints)
-- 📖 [Guía de Membresías](/docs/endpoints#membresías-y-consumo)
+- 📖 [Guía de Membresías](/docs/endpoints/memberships-health#memberships-consumption)
 - 💻 [Colección Postman](https://documenter.getpostman.com/view/8699065/2s9YyvBLby)
 - 💬 [Soporte Técnico](mailto:soporte@matias-api.com)
 

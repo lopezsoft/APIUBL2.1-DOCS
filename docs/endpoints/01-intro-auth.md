@@ -99,7 +99,7 @@ Authorization: Bearer {token}
 
 ---
 
-## Gestión de Tokens (Personal Access Tokens)
+## Gestión de Tokens (Personal Access Tokens) {#personal-access-tokens}
 
 ### Listar Tokens - 🟢 GET
 ```http

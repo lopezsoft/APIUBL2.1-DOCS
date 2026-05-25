@@ -11,51 +11,61 @@ Matias es una plataforma de **facturación electrónica** que permite a las empr
 
 Con Matias, los desarrolladores pueden integrar la funcionalidad de facturación electrónica en sus aplicaciones, automatizando completamente el proceso de emisión de documentos de forma segura, legal y eficiente.
 
-## 📋 Tabla de Contenidos
-
-1. [Flujo de Autenticación](#flujo-de-autenticación)
-2. [Registro en la API](#registro-en-la-api)
-3. [Obtener Token de Acceso](#obtener-el-token-de-acceso)
-4. [Uso del Token](#uso-del-token-de-acceso)
-5. [Revocar Token](#revocar-el-token)
-6. [Marco Regulatorio DIAN](#marco-regulatorio-dian)
-7. [Recursos Adicionales](#ejemplos-y-endpoints-en-postman)
-
 ---
 
-## 🏛️ Marco Regulatorio DIAN
+## 🌐 URL Base de la API {#url-base-de-la-api}
 
-Matias en v1.4.0 incluye **documentación completa** de todos los marcos regulatorios emitidos por DIAN para documentos electrónicos. Consulta las especificaciones técnicas, casos de uso y ejemplos prácticos:
+:::warning Acceso Exclusivo para Clientes
+La URL base de la API (`{{URL}}`) y el acceso al entorno sandbox **son proporcionados únicamente a clientes que adquieran nuestro servicio**. 
 
-### 📄 Documentos Disponibles
+**No ofrecemos:**
+- ❌ Cuentas gratuitas
+- ❌ Sandbox público o de prueba gratuito
+- ❌ Acceso de demostración sin contrato
 
-| Documento | Resolución | Versión | Estado |
-|-----------|-----------|---------|---------|
-| **Factura Electrónica** | 000165/2024 | v1.9 | ✅ Vigente |
-| **Nómina Electrónica** | 0000040/2024 | v3.0 | ✅ Vigente |
-| **RADIAN** | 000198/2024 | v2.0 | ✅ Vigente |
-| **Documento Soporte** | 000160/2024 | v1.1 | ✅ Vigente |
-
-### 🚀 Acceso Rápido
-
-- 📖 **[Factura Electrónica v1.9](/docs/regulatory-framework/factura-electronica/intro)** - Especificación técnica y anexos
-- 💼 **[Nómina Electrónica v3.0](/docs/regulatory-framework/nomina-electronica/intro)** - Guía completa de campos y cálculos
-- 🌐 **[RADIAN v2.0](/docs/regulatory-framework/radian/intro)** - Sistema de radicación y validación
-- 📋 **[Documento Soporte v1.1](/docs/regulatory-framework/documento-soporte/intro)** - Especificaciones técnicas
-- 📊 **[Tablas de Referencia](/docs/regulatory-framework/tablas-referencia)** - Todas las tablas DIAN consolidadas
-- 📥 **[Descargas PDF](/docs/regulatory-framework/descargas-pdf)** - Anexos técnicos oficiales DIAN
-
----
-
-## Flujo de Autenticación
-
-:::tip Nuevo en v3.0.0: Dos Métodos de Autenticación
-Ahora tienes **dos opciones** para autenticarte:
-- **OAuth2 Tradicional (login):** Para aplicaciones con usuarios que inician sesión
-- **Personal Access Tokens (PAT):** Para integraciones servidor-a-servidor y scripts automatizados
+La URL base y las credenciales de acceso se entregarán una vez formalizada la contratación del servicio.
 :::
 
-### Opción 1: OAuth2 Tradicional (Login)
+En toda la documentación, utilizaremos el parámetro `{{URL}}` como marcador de posición, el cual debe ser sustituido por la URL base real que le será proporcionada al contratar el servicio.
+
+:::info Ejemplo de URL base
+```
+https://api.ejemplo.com
+```
+*Esta es solo una URL de ejemplo para fines ilustrativos en la documentación.*
+:::
+
+### ⚠️ Requisitos Previos Obligatorios {#nota-importante}
+
+> [!IMPORTANT]
+> **Antes de usar la API para emitir documentos ante la DIAN, debe haber realizado:**
+>
+> 1. ✅ **Subida del certificado digital** (Resolución DIAN)
+> 2. ✅ **Información del Software** generada por portal DIAN
+> 3. ✅ **Resolución de facturación** (números de rango)
+>
+> Registre esta información de forma visual en el portal web:
+> `{{URL}}/#/auth/login`
+>
+> Sin estos requisitos previos, la API rechazará sus solicitudes de emisión de facturas.
+
+### 📤 Formato de las Solicitudes {#formato-de-las-solicitudes}
+
+- **Tipo de Formato:** Todas las solicitudes hacia la API deben estar en formato `JSON`. Este formato se aplica tanto para las peticiones enviadas como para las respuestas recibidas, facilitando la estandarización del intercambio de datos.
+- **Uso de HTTPS:** Es obligatorio realizar solicitudes a través de HTTPS, dado que la API no procesará peticiones enviadas mediante HTTP. Esta medida garantiza la seguridad y la integridad de los datos transmitidos.
+
+---
+
+## 🔐 Flujo de Autenticación {#flujo-de-autenticación}
+
+:::tip Nuevo en v3.0.0: Dos Métodos de Autenticación
+Ofrecemos **dos opciones** para autenticarte según las necesidades de tu integración:
+- **Personal Access Tokens (PAT):** Recomendado para integraciones servidor-a-servidor, scripts automatizados y tareas en segundo plano.
+- **OAuth2 Tradicional (login):** Para aplicaciones web con usuarios que inician sesión interactivamente.
+:::
+
+<details>
+<summary>🗺️ Ver Diagrama: Flujo OAuth2 Tradicional (login)</summary>
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -80,8 +90,10 @@ Ahora tienes **dos opciones** para autenticarte:
 │                                                               │
 └─────────────────────────────────────────────────────────────┘
 ```
+</details>
 
-### Opción 2: Personal Access Tokens (PAT) - Nuevo en v3.0.0
+<details>
+<summary>🗺️ Ver Diagrama: Flujo Personal Access Tokens (PAT)</summary>
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -112,106 +124,62 @@ Ahora tienes **dos opciones** para autenticarte:
 │                                                               │
 └─────────────────────────────────────────────────────────────┘
 ```
+</details>
 
-## Autenticación de API con OAuth2
+### 🛡️ Autenticación de API con OAuth2 {#autenticación-de-api-con-oauth2}
 
 La autenticación para acceder a la API se gestiona mediante **Tokens de acceso** siguiendo el estándar de autenticación OAuth2. Esto asegura que las interacciones con la API sean seguras y estén autorizadas.
 
-:::info Nuevo en v3.0.0: Personal Access Tokens
-Además del flujo OAuth2 tradicional, ahora puedes crear **Personal Access Tokens (PAT)** directamente desde tu cuenta, sin necesidad de contactar a soporte técnico.
+:::info Ventajas de Personal Access Tokens (PAT)
+- **Creación self-service:** Tú mismo los creas y los gestionas directamente.
+- **Expiración configurable:** Desde 1 hasta 90 días (recomendado: 30-60 días).
+- **Revocación instantánea:** Revoca cualquier token de forma selectiva.
+- **Múltiples tokens:** Usa tokens únicos para diferentes servidores o entornos de integración.
 
-**Ventajas de PAT:**
-- ✅ Creación self-service (tú mismo los creas)
-- ✅ Expiración configurable (1-90 días, recomendado: 30-60)
-- ✅ Revocación instantánea
-- ✅ Múltiples tokens por cuenta
-- ✅ Mejor control de seguridad
-
-**¿Cuándo usar cada método?**
-- **OAuth2 tradicional:** Para integrar en aplicaciones web con login de usuarios
-- **Personal Access Tokens:** Para scripts, integraciones servidor-a-servidor, o aplicaciones que no necesitan login de usuario
-
-[📖 Ver documentación completa de Personal Access Tokens](/docs/endpoints#personal-access-tokens)
+[📖 Ver documentación completa de Personal Access Tokens](/docs/endpoints/intro-auth#personal-access-tokens)
 :::
 
-## Formato de las Solicitudes
+### 📝 Encabezado de Autorización {#encabezado-de-autorización}
 
-- **Tipo de Formato:** Todas las solicitudes hacia la API deben estar en formato `JSON`. Este formato se aplica tanto para las peticiones enviadas como para las respuestas recibidas, facilitando la estandarización del intercambio de datos.
+Para acceder a los recursos protegidos de la API, incluya el encabezado de autorización en cada solicitud con el siguiente formato:
 
-- **Uso de HTTPS:** Es obligatorio realizar solicitudes a través de HTTPS, dado que la API no procesará peticiones enviadas mediante HTTP. Esta medida garantiza la seguridad y la integridad de los datos transmitidos.
-
-## Encabezado de Autorización
-
-Para acceder a los recursos de la API, es necesario incluir un encabezado de autorización en cada solicitud. Este encabezado debe contener el token de acceso obtenido durante el proceso de autenticación.
-
-### Formato Esperado
-
-```
+```http
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM...
 Content-Type: application/json
 Accept: application/json
 ```
 
-Donde `eyJ0eXAi...` es el token de acceso obtenido en el login.
+---
 
+## 📝 Paso 1: Registro en la API {#registro-en-la-api}
 
-## URL Base de la API
+Para acceder y utilizar los servicios de la API, el primer paso es registrarse en nuestra plataforma de autenticación.
 
-:::warning Acceso Exclusivo para Clientes
-La URL base de la API (`{{URL}}`) y el acceso al entorno sandbox **son proporcionados únicamente a clientes que adquieran nuestro servicio**. 
+### ⚙️ Opciones de Registro {#opciones-de-registro}
 
-**No ofrecemos:**
-- ❌ Cuentas gratuitas
-- ❌ Sandbox público o de prueba gratuito
-- ❌ Acceso de demostración sin contrato
-
-La URL base y las credenciales de acceso se entregarán una vez formalizada la contratación del servicio.
-:::
-
-En toda la documentación, utilizaremos el parámetro `{{URL}}` como marcador de posición, el cual debe ser sustituido por la URL base real que le será proporcionada al contratar el servicio.
-
-:::info Ejemplo de URL base
-```
-https://api.ejemplo.com
-```
-*Esta es solo una URL de ejemplo para fines ilustrativos en la documentación.*
-:::
-
-## Registro en la API
-
-Para acceder y utilizar los servicios de nuestra API, es necesario que primero se registre en nuestra base de datos de autenticación. Ofrecemos dos métodos para completar el proceso de registro, detallados a continuación:
-
-## Opciones de Registro
-
-1. **A través del formulario de registro en nuestro sitio web**: Complete el formulario disponible en nuestro sitio web. Tras enviar el formulario, recibirá por correo electrónico los datos necesarios para acceder a los servicios de la API.
-
-2. **Mediante una petición al servicio REST**: Si prefiere, puede registrarse realizando una petición al servicio REST, siguiendo estos pasos:
-
-  - Realice una petición de tipo `POST` a la siguiente dirección: `{{URL}}/register`.
-  - El cuerpo (`BODY`) de la petición debe incluir los siguientes parámetros:
-
-:::info Parámetros de Registro
+1. **A través de nuestro sitio web:** Complete el formulario de registro y recibirá las credenciales por correo electrónico.
+2. **Mediante el servicio REST:** Realice una petición `POST` al endpoint `{{URL}}/register` con los parámetros obligatorios.
 
 | Parámetro | Tipo | Requerido | Descripción | Ejemplo |
 |-----------|------|-----------|-------------|----------|
-| `first_name` | `string` | ✅ Sí | Nombre del usuario | "Lewis" |
-| `last_name` | `string` | ✅ Sí | Apellido del usuario | "Lopez Gomez" |
-| `email` | `string` | ✅ Sí | Correo electrónico válido | "correo@correo.com" |
-| `password` | `string` | ✅ Sí | Contraseña (min 8 caracteres) | "MiPassword123!" |
-| `password_confirmation` | `string` | ✅ Sí | Confirmación de contraseña | "MiPassword123!" |
-| `address` | `string` | ✅ Sí | Dirección física | "Calle 123 #45-67" |
-| `city_id` | `integer` | ✅ Sí | ID de ciudad ([ver tabla](/docs/glossary)) | 836 |
-| `company_name` | `string` | ✅ Sí | Nombre de la empresa | "Mi Empresa S.A." |
-| `dni` | `string` | ✅ Sí | Número de identificación (NIT) | "1234567890" |
-| `identity_document_id` | `integer` | ✅ Sí | Tipo de documento (1=CC, 3=NIT) | 3 |
-| `mobile` | `string` | ✅ Sí | Teléfono celular | "3108435431" |
-| `tax_level_id` | `integer` | ✅ Sí | Nivel fiscal ([ver tabla](/docs/glossary)) | 5 |
-| `tax_regime_id` | `integer` | ✅ Sí | Régimen fiscal ([ver tabla](/docs/glossary)) | 2 |
-| `type_organization_id` | `integer` | ✅ Sí | Tipo de organización ([ver tabla](/docs/glossary)) | 1 |
+| `first_name` | `string` | ✅ Sí | Nombre del usuario | `"Lewis"` |
+| `last_name` | `string` | ✅ Sí | Apellido del usuario | `"Lopez Gomez"` |
+| `email` | `string` | ✅ Sí | Correo electrónico válido | `"correo@correo.com"` |
+| `password` | `string` | ✅ Sí | Contraseña (mínimo 8 caracteres) | `"MiPassword123!"` |
+| `password_confirmation` | `string` | ✅ Sí | Confirmación de contraseña | `"MiPassword123!"` |
+| `address` | `string` | ✅ Sí | Dirección física | `"Calle 123 #45-67"` |
+| `city_id` | `integer` | ✅ Sí | ID de ciudad ([ver glosario](/docs/glossary)) | `836` |
+| `company_name` | `string` | ✅ Sí | Nombre de la empresa | `"Mi Empresa S.A."` |
+| `dni` | `string` | ✅ Sí | Número de identificación (NIT) | `"1234567890"` |
+| `identity_document_id` | `integer` | ✅ Sí | Tipo de documento (1=CC, 3=NIT) | `3` |
+| `mobile` | `string` | ✅ Sí | Teléfono celular | `"3108435431"` |
+| `tax_level_id` | `integer` | ✅ Sí | Nivel fiscal ([ver glosario](/docs/glossary)) | `5` |
+| `tax_regime_id` | `integer` | ✅ Sí | Régimen fiscal ([ver glosario](/docs/glossary)) | `2` |
+| `type_organization_id` | `integer` | ✅ Sí | Tipo de organización ([ver glosario](/docs/glossary)) | `1` |
 
-:::
+<details>
+<summary>📦 Ver JSON de Petición (Request Body)</summary>
 
-**Ejemplo JSON completo:**
 ```json
 {
   "first_name": "Lewis",
@@ -230,148 +198,135 @@ Para acceder y utilizar los servicios de nuestra API, es necesario que primero s
   "type_organization_id": 1
 }
 ```
-  - Si el registro es correcto, la petición devolverá una respuesta HTTP 200 en formato JSON con la estructura:
-    ```
-    {
-      "message": "Empresa creada con éxito. Verifique su dirección de correo electrónico: gerencia@lopezsoft.net.co",
-      "success": true
-    }
-    ```
-  - Si el registro es incorrecto, la petición devolverá una respuesta HTTP 422 o 500 en formato JSON con la estructura:
-    - respuesta HTTP 422
-      ```
-      {
-         "message": "El correo electrónico ya existe (and 2 more errors)",
-         "errors": {
-          "email": [
-              "El correo electrónico ya existe"
-          ],
-          "password": [
-              "El campo password debe contener al menos 8 caracteres."
-          ],
-          "dni": [
-              "El NIT ya existe"
-          ]
-        }
-      }           
-      ```
-    - respuesta HTTP 500
-        ```
-        {
-            "success": false,
-            "message": "Error interno del servidor. Por favor",
-        }
-        ```
----
+</details>
 
-## 🔑 Token de Acceso
-
-:::info Información Importante
-Después de completar el registro, para realizar acciones como la **emisión de documentos al portal de la DIAN**, es necesario contar con un **token de acceso**. Este token proporciona acceso a las URLs protegidas de nuestra API.
-
-**Duración del Token según el Método:**
-
-| Método | Duración | Configurabilidad |
-|--------|----------|------------------|
-| **OAuth2 (login tradicional)** | 90 días fijo | ❌ No configurable |
-| **Personal Access Token (PAT)** | 1-90 días | ✅ Configurable al crear |
-
-**Características Comunes:**
-- ✅ Puede ser revocado en cualquier momento
-- ✅ Necesario para todas las operaciones de la API
-- ✅ Incluir en header `Authorization: Bearer {token}`
-
-**Recomendaciones de Duración (PAT):**
-- **7-15 días:** Entornos de desarrollo/pruebas
-- **30 días:** Integración continua y scripts automatizados
-- **60-90 días:** Producción (balance seguridad/conveniencia) ⭐ Recomendado
-:::
-
-:::tip Migrar a Personal Access Tokens
-Si actualmente usas OAuth2 tradicional, considera migrar a **Personal Access Tokens** para:
-- ✅ Mayor control sobre la expiración
-- ✅ Crear múltiples tokens para diferentes propósitos
-- ✅ Revocar tokens específicos sin afectar otros
-- ✅ Autogestión sin contactar soporte
-
-[📖 Ver guía de migración a PAT](/docs/endpoints#personal-access-tokens)
-:::
-
----
-
-## 📥 Obtener el Token de Acceso
-
-Para obtener el token de acceso, se debe realizar los siguientes pasos:
-
-- **a.** Enviar una petición de tipo `POST` a `{{URL}}/auth/login`
-- **b.** El cuerpo (BODY) de la petición debe contener los siguientes parámetros:
+<details>
+<summary>📦 Ver Respuesta Exitosa (HTTP 200)</summary>
 
 ```json
 {
-  "email": "", // Correo electrónico registrado
-  "password": "", // Contraseña enviada al correo
-  "remember_me": 0 // Siempre debe ser 0
+  "message": "Empresa creada con éxito. Verifique su dirección de correo electrónico: gerencia@lopezsoft.net.co",
+  "success": true
 }
-```      
-- Si la autenticación es correcta, la petición devolverá una respuesta HTTP 200 en formato JSON con la estructura:
+```
+</details>
 
-    ```json
-    {
-        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM",
-        "user": {
-            "id": 1,
-            "type_id": 2,
-            "first_name": "LEWIS",
-            "last_name": "LOPEZ GOMEZ",
-            "email": "gerencia@lopezsoft.net.co",
-            "avatar": "users/1/profile/agente-de-servicio-al-cliente.png",
-            "active": 1,
-            "name": "LEWIS LOPEZ GOMEZ",
-            "avatarUrl": "{{URL}}/storage/users/1/profile/agente-de-servicio-al-cliente.png",
-            "user_type": {
-                "id": 1,
-                "user_type_name": "ADMINISTRADOR",
-                "type": 1,
-                "active": 1
-            }
-        },
-        "expires_at": "2025-02-02 19:55:42",
-        "message": "Bienvenido a Matias. Su sesión ha sido iniciada con éxito.",
-        "success": true
-    }
-    ```
-- Si la autenticación es incorrecta, la petición devolverá una respuesta HTTP 401 en formato JSON con la estructura:
+<details>
+<summary>📦 Ver Respuestas de Error (HTTP 422 / 500)</summary>
 
-    ```json
-    {
-        "message": "Credenciales inválidas",
-        "success": false
-    }
-    ``` 
+**Respuesta HTTP 422 (Error de Validación):**
+```json
+{
+  "message": "El correo electrónico ya existe (and 2 more errors)",
+  "errors": {
+    "email": [
+      "El correo electrónico ya existe"
+    ],
+    "password": [
+      "El campo password debe contener al menos 8 caracteres."
+    ],
+    "dni": [
+      "El NIT ya existe"
+    ]
+  }
+}
+```
+
+**Respuesta HTTP 500 (Error Interno):**
+```json
+{
+  "success": false,
+  "message": "Error interno del servidor. Por favor, intente más tarde."
+}
+```
+</details>
+
 ---
 
-## 🔐 Uso del Token de Acceso
+## 🔑 Paso 2: Obtener el Token de Acceso {#obtener-el-token-de-acceso}
 
-:::tip Uso Correcto del Token
-Tras obtener el token de acceso, este **debe incluirse en el encabezado de autorización** de **TODAS** las solicitudes a la API.
-:::
+Una vez registrado y con los requisitos previos configurados en el portal, obtenga su token de acceso enviando una petición `POST` al endpoint `{{URL}}/auth/login`.
+
+### Parámetros del Body
+
+| Campo | Tipo | Requerido | Descripción |
+|-------|------|-----------|-------------|
+| `email` | `string` | ✅ Sí | Correo electrónico registrado |
+| `password` | `string` | ✅ Sí | Contraseña de la cuenta |
+| `remember_me` | `integer` | ✅ Sí | Debe ser `0` |
+
+<details>
+<summary>📦 Ver JSON de Petición (Request Body)</summary>
+
+```json
+{
+  "email": "correo@correo.com",
+  "password": "MiPassword123!",
+  "remember_me": 0
+}
+```
+</details>
+
+<details>
+<summary>📦 Ver Respuesta Exitosa (HTTP 200)</summary>
+
+```json
+{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM",
+  "user": {
+    "id": 1,
+    "type_id": 2,
+    "first_name": "LEWIS",
+    "last_name": "LOPEZ GOMEZ",
+    "email": "gerencia@lopezsoft.net.co",
+    "avatar": "users/1/profile/agente-de-servicio-al-cliente.png",
+    "active": 1,
+    "name": "LEWIS LOPEZ GOMEZ",
+    "avatarUrl": "{{URL}}/storage/users/1/profile/agente-de-servicio-al-cliente.png",
+    "user_type": {
+      "id": 1,
+      "user_type_name": "ADMINISTRADOR",
+      "type": 1,
+      "active": 1
+    }
+  },
+  "expires_at": "2025-02-02 19:55:42",
+  "message": "Bienvenido a Matias. Su sesión ha sido iniciada con éxito.",
+  "success": true
+}
+```
+</details>
+
+<details>
+<summary>📦 Ver Respuesta de Credenciales Inválidas (HTTP 401)</summary>
+
+```json
+{
+  "message": "Credenciales inválidas",
+  "success": false
+}
+```
+</details>
+
+---
+
+## 🔐 Paso 3: Uso del Token de Acceso {#uso-del-token-de-acceso}
+
+Incluya el token obtenido en todas sus llamadas HTTP a endpoints protegidos.
 
 ### 📄 Formato del Encabezado
-
 ```http
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM...
-Content-Type: application/json
-Accept: application/json
 ```
 
-### 💻 Ejemplos de Uso por Lenguaje
+### 💻 Ejemplos de Implementación
 
 <Tabs>
 <TabItem value="nodejs" label="Node.js" default>
 
 ```javascript
 const axios = require('axios');
-const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM...'; // Token obtenido del login
+const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM...'; // Token de acceso
 
 const headers = {
    'Content-Type': 'application/json', 
@@ -379,12 +334,12 @@ const headers = {
    'Authorization': `Bearer ${token}`
 };
 
-axios.get('{{URL}}/v1/user', { headers: headers })
+axios.get('{{URL}}/v1/user', { headers })
 .then(response => {
     console.log(response.data);
 })
 .catch(error => {
-    console.log(error);
+    console.error(error);
 });
 ```
 
@@ -395,34 +350,33 @@ axios.get('{{URL}}/v1/user', { headers: headers })
 import requests
 
 url = "{{URL}}/v1/user"
+token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM..."
+
 headers = {
   'Content-Type': 'application/json',
   'Accept': 'application/json',
-  'Authorization': 'Bearer ' + token
+  'Authorization': f'Bearer {token}'
 }
 
-response = requests.request("GET", url, headers=headers)
-print(response.text)
+response = requests.get(url, headers=headers)
+print(response.json())
 ```
 
 </TabItem>
 <TabItem value="php" label="PHP">
 
 ```php
+$token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM...';
+
 $curl = curl_init();
 curl_setopt_array($curl, array(
   CURLOPT_URL => "{{URL}}/v1/user",
   CURLOPT_RETURNTRANSFER => true,
-  CURLOPT_ENCODING => "",
-  CURLOPT_MAXREDIRS => 10,
-  CURLOPT_TIMEOUT => 0,
-  CURLOPT_FOLLOWLOCATION => true,
-  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
   CURLOPT_CUSTOMREQUEST => "GET",
   CURLOPT_HTTPHEADER => array(
     "Content-Type: application/json",
     "Accept: application/json",
-    "Authorization: Bearer $token"
+    "Authorization: Bearer " . $token
   ),
 ));
 $response = curl_exec($curl);
@@ -434,8 +388,9 @@ echo $response;
 <TabItem value="java" label="Java">
 
 ```java
-OkHttpClient client = new OkHttpClient().newBuilder()
-  .build();
+OkHttpClient client = new OkHttpClient().newBuilder().build();
+String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM...";
+
 Request request = new Request.Builder()
   .url("{{URL}}/v1/user")
   .method("GET", null)
@@ -451,7 +406,8 @@ Response response = client.newCall(request).execute();
 
 ```csharp
 var client = new RestClient("{{URL}}/v1/user");
-client.Timeout = -1;
+var token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM...";
+
 var request = new RestRequest(Method.GET);
 request.AddHeader("Content-Type", "application/json");
 request.AddHeader("Accept", "application/json");
@@ -468,6 +424,8 @@ require 'uri'
 require 'net/http'
 
 url = URI("{{URL}}/v1/user")
+token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM..."
+
 http = Net::HTTP.new(url.host, url.port)
 http.use_ssl = true
 
@@ -494,174 +452,10 @@ import (
 
 func main() {
   url := "{{URL}}/v1/user"
-  method := "GET"
+  token := "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM..."
   
   client := &http.Client {}
-  req, err := http.NewRequest(method, url, nil)
-  
-  if err != nil {
-    fmt.Println(err)
-    return
-  }
-  
-  req.Header.Add("Content-Type", "application/json")
-  req.Header.Add("Accept", "application/json")
-  req.Header.Add("Authorization", "Bearer " + token)
-  
-  res, err := client.Do(req)
-  if err != nil {
-    fmt.Println(err)
-    return
-  }
-  defer res.Body.Close()
-  
-  body, err := ioutil.ReadAll(res.Body)
-  if err != nil {
-    fmt.Println(err)
-    return
-  }
-  fmt.Println(string(body))
-}
-```
-
-</TabItem>
-</Tabs>
-
-### 💻 Ejemplos de Uso por Lenguaje
-
-<Tabs>
-<TabItem value="nodejs" label="Node.js" default>
-
-```javascript
-const axios = require('axios');
-const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM...'; // Token obtenido del login
-
-const headers = {
-   'Content-Type': 'application/json', 
-   'Accept': 'application/json',
-   'Authorization': `Bearer ${token}`
-};
-
-axios.get('{{URL}}/v1/user', { headers: headers })
-.then(response => {
-    console.log(response.data);
-})
-.catch(error => {
-    console.log(error);
-});
-```
-
-</TabItem>
-<TabItem value="python" label="Python">
-
-```python
-import requests
-
-url = "{{URL}}/v1/user"
-headers = {
-  'Content-Type': 'application/json',
-  'Accept': 'application/json',
-  'Authorization': 'Bearer ' + token
-}
-
-response = requests.request("GET", url, headers=headers)
-print(response.text)
-```
-
-</TabItem>
-<TabItem value="php" label="PHP">
-
-```php
-$curl = curl_init();
-curl_setopt_array($curl, array(
-  CURLOPT_URL => "{{URL}}/v1/user",
-  CURLOPT_RETURNTRANSFER => true,
-  CURLOPT_ENCODING => "",
-  CURLOPT_MAXREDIRS => 10,
-  CURLOPT_TIMEOUT => 0,
-  CURLOPT_FOLLOWLOCATION => true,
-  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-  CURLOPT_CUSTOMREQUEST => "GET",
-  CURLOPT_HTTPHEADER => array(
-    "Content-Type: application/json",
-    "Accept: application/json",
-    "Authorization: Bearer $token"
-  ),
-));
-$response = curl_exec($curl);
-curl_close($curl);
-echo $response;
-```
-
-</TabItem>
-<TabItem value="java" label="Java">
-
-```java
-OkHttpClient client = new OkHttpClient().newBuilder()
-  .build();
-Request request = new Request.Builder()
-  .url("{{URL}}/v1/user")
-  .method("GET", null)
-  .addHeader("Content-Type", "application/json")
-  .addHeader("Accept", "application/json")
-  .addHeader("Authorization", "Bearer " + token)
-  .build();
-Response response = client.newCall(request).execute();
-```
-
-</TabItem>
-<TabItem value="csharp" label="C#">
-
-```csharp
-var client = new RestClient("{{URL}}/v1/user");
-client.Timeout = -1;
-var request = new RestRequest(Method.GET);
-request.AddHeader("Content-Type", "application/json");
-request.AddHeader("Accept", "application/json");
-request.AddHeader("Authorization", "Bearer " + token);
-IRestResponse response = client.Execute(request);
-Console.WriteLine(response.Content);
-```
-
-</TabItem>
-<TabItem value="ruby" label="Ruby">
-
-```ruby
-require 'uri'
-require 'net/http'
-
-url = URI("{{URL}}/v1/user")
-http = Net::HTTP.new(url.host, url.port)
-http.use_ssl = true
-
-request = Net::HTTP::Get.new(url)
-request["Content-Type"] = "application/json"
-request["Accept"] = "application/json"
-request["Authorization"] = "Bearer " + token
-
-response = http.request(request)
-puts response.read_body
-```
-
-</TabItem>
-<TabItem value="go" label="Go">
-
-```go
-package main
-
-import (
-  "fmt"
-  "net/http"
-  "io/ioutil"
-)
-
-func main() {
-  url := "{{URL}}/v1/user"
-  method := "GET"
-  
-  client := &http.Client {}
-  req, err := http.NewRequest(method, url, nil)
-  
+  req, err := http.NewRequest("GET", url, nil)
   if err != nil {
     fmt.Println(err)
     return
@@ -692,114 +486,55 @@ func main() {
 
 ---
 
-## 🚫 Revocar el Token
+## 🚫 Paso 4: Revocar el Token {#revocar-el-token}
 
-:::caution Revocación de Token
-Para revocar un token generado anteriormente y que aún no ha vencido, debe enviarse una petición de tipo **GET** a `{{URL}}/auth/logout`.
+:::caution Revocación de Sesión (Logout)
+Para invalidar un token activo antes de que venza, envíe una petición **GET** a `{{URL}}/auth/logout` con el token en la cabecera de autorización.
+:::
 
-Una vez revocado, el token dejará de ser válido inmediatamente.
-::: 
-- Si la revocación es correcta, la petición devolverá una respuesta HTTP 200 en formato JSON con la estructura:
+<details>
+<summary>📦 Ver Respuestas de Revocación</summary>
 
-    ```json
-    {
-        "message": "Successfully logged out",
-        "success": true
-    }
-    ```
-- Si la revocación es incorrecta, la petición devolverá una respuesta HTTP 401 en formato JSON con la estructura:
+**Respuesta Exitosa (HTTP 200):**
+```json
+{
+  "message": "Successfully logged out",
+  "success": true
+}
+```
 
-    ```json
-    {
-        "message": "Unauthenticated.",
-        "success": false
-    }
-    ```
-
-## ⚠️ Nota Importante
-
-> **REQUISITO PREVIO OBLIGATORIO:** Para que pueda dar continuidad a esta documentación y usar la API para emitir documentos ante la DIAN, debe haber realizado:
->
-> 1. ✅ Subida del **certificado digital** (Resolución DIAN)
-> 2. ✅ Información del **Software** generada por portal DIAN
-> 3. ✅ **Resolución de facturación** (números de rango)
->
-> Registre esta información de forma visual en el portal web:
-> ```
-> {{URL}}/#/auth/login
-> ```
->
-> Sin estos requisitos, el API rechazará sus solicitudes de emisión de facturas.
+**Respuesta de Error / No Autenticado (HTTP 401):**
+```json
+{
+  "message": "Unauthenticated.",
+  "success": false
+}
+```
+</details>
 
 ---
 
-## 🔔 Webhooks: Notificaciones en Tiempo Real
+## 🔗 Siguientes Pasos y Conceptos Avanzados {#siguientes-pasos}
 
-:::tip Nuevo en v3.0.0
-El sistema de **Webhooks** te permite recibir notificaciones automáticas en tiempo real cuando ocurren eventos importantes en tu cuenta, sin necesidad de estar consultando constantemente la API (polling).
+Una vez completada la autenticación, explore los temas avanzados y recursos clave para la integración:
+
+### 🔔 Webhooks: Notificaciones en Tiempo Real {#webhooks-notificaciones-en-tiempo-real}
+
+:::tip Eventos del Ciclo de Vida
+Los webhooks le permiten recibir notificaciones automáticas y seguras (firmadas con HMAC-SHA256) directamente en su servidor cuando ocurren eventos clave como:
+- **Facturas:** `invoice.created`, `invoice.accepted`, `invoice.rejected`
+- **Notas Crédito:** `credit_note.created`, `credit_note.accepted`
+- **Membresías:** `membership.limit_reached`, `membership.activated`
+
+[📖 Ver documentación de Webhooks y firma HMAC](/docs/endpoints/webhooks)
 :::
 
-### ✨ Ventajas de los Webhooks
+### 📊 Límites de Consumo y Membresías {#límites-de-consumo-y-membresías}
 
-- **🚀 Tiempo Real:** Recibe notificaciones instantáneas cuando ocurre un evento
-- **⚡ Eficiente:** No necesitas hacer polling constante a la API
-- **🔐 Seguro:** Firmas HMAC-SHA256 para verificar autenticidad
-- **🔄 Confiable:** Sistema de reintentos automáticos (máx. 5 intentos)
-- **📊 Completo:** 26 tipos de eventos diferentes disponibles
+Las cuentas cuentan con límites mensuales en la emisión de documentos, envíos de correo y espacio en la nube según su suscripción. Si excede su cupo, la API responderá con un error `402 Payment Required`.
 
-### 📋 Eventos Disponibles
-
-Puedes suscribirte a eventos como:
-
-- **Facturación:** `invoice.created`, `invoice.accepted`, `invoice.rejected`
-- **Nota Crédito:** `credit_note.created`, `credit_note.accepted`
-- **Página de Pagos:** `payment_page.paid`, `payment_page.expired`
-- **Membresías:** `membership.activated`, `membership.limit_reached`
-- **Tokens:** `token.created`, `token.revoked`
-- **Webhooks:** `webhook.created`, `webhook.test_sent`
-- **Y muchos más...**
-
-### 🔄 Flujo de Trabajo Típico
-
-1. **Registras tu webhook:** Indicas la URL donde quieres recibir notificaciones
-2. **Ocurre un evento:** Por ejemplo, una factura es aceptada por la DIAN
-3. **Enviamos POST a tu URL:** Con toda la información del evento
-4. **Verificas la firma:** Para asegurar que proviene de nuestra API
-5. **Respondes 200 OK:** Confirmando recepción exitosa
-
-### 📖 Documentación Completa
-
-Para información detallada sobre cómo configurar y usar webhooks, consulta:
-
-[📖 Ver documentación completa de Webhooks](/docs/endpoints#webhooks)
-
-Incluye:
-- Cómo crear y configurar webhooks
-- Lista completa de los 26 eventos disponibles
-- Ejemplos de verificación de firma HMAC en JavaScript y PHP
-- Manejo de reintentos y errores
-- Buenas prácticas de seguridad
-
----
-
-## 📊 Límites de Consumo y Membresías
-
-:::info Nuevo en v3.0.0
-A partir de la versión 3.0.0, implementamos un **sistema de membresías con límites de consumo** para proporcionar un servicio más sostenible y escalable.
-:::
-
-### 🎯 Límites por Membresía
-
-Cada plan de membresía incluye límites específicos para:
-
-- **📄 Documentos electrónicos:** Facturas, notas crédito/débito emitidas por mes
-- **💾 Almacenamiento XML:** Espacio para archivos XML y attachments
-- **📧 Envíos de email:** Cantidad de correos mensuales
-- **🔗 Webhooks:** Número de webhooks configurables
-
-### ⚠️ Manejo de Límites Excedidos
-
-Cuando alcanzas un límite, la API retorna:
+<details>
+<summary>📦 Ver JSON de Error de Límite (HTTP 402)</summary>
 
 ```json
 {
@@ -810,57 +545,47 @@ Cuando alcanzas un límite, la API retorna:
   "reset_date": "2026-03-01T00:00:00Z"
 }
 ```
+</details>
 
-**Código HTTP:** `402 Payment Required`
-
-### 📈 Consultar Consumo Actual
-
-Puedes consultar tu consumo actual en cualquier momento:
-
-```http
-GET /v3/memberships/consumption
-Authorization: Bearer {token}
-```
-
-[📖 Ver documentación de Membresías y Consumo](/docs/endpoints#memberships-consumption)
+[📖 Consultar consumo en tiempo real](/docs/endpoints/memberships-health#memberships-consumption)
 
 ---
 
-## 🔗 Siguientes Pasos
+### 🏛️ Marco Regulatorio DIAN {#marco-regulatorio-dian}
 
-Ahora que comprende el flujo de autenticación, consulte:
+Matias cumple rigurosamente con los marcos regulatorios y anexos técnicos oficiales vigentes de la DIAN para documentos electrónicos:
 
-### 🆕 Nuevas Características v3.0.0
+| Documento | Resolución | Versión | Estado |
+|-----------|-----------|---------|---------|
+| **Factura Electrónica** | 000165/2024 | v1.9 | ✅ Vigente |
+| **Nómina Electrónica** | 0000040/2024 | v3.0 | ✅ Vigente |
+| **RADIAN** | 000198/2024 | v2.0 | ✅ Vigente |
+| **Documento Soporte** | 000160/2024 | v1.1 | ✅ Vigente |
 
-- 🔑 **[Personal Access Tokens](/docs/endpoints#personal-access-tokens)** - Crea y gestiona tus propios tokens de acceso
-- 🔔 **[Webhooks](/docs/endpoints#webhooks)** - Recibe notificaciones en tiempo real de eventos
-- 📊 **[Membresías y Consumo](/docs/endpoints#memberships-consumption)** - Consulta tus límites y uso actual
+#### 🚀 Accesos Rápidos a Guías Técnicas
+- 📄 **[Factura Electrónica v1.9](/docs/regulatory-framework/factura-electronica/intro)** - Especificaciones técnicas y anexos.
+- 💼 **[Nómina Electrónica v3.0](/docs/regulatory-framework/nomina-electronica/intro)** - Guía completa de campos y cálculos.
+- 🌐 **[RADIAN v2.0](/docs/regulatory-framework/radian/intro)** - Sistema de radicación y registro.
+- 📋 **[Documento Soporte v1.1](/docs/regulatory-framework/documento-soporte/intro)** - Operaciones con no obligados a facturar.
+- 📊 **[Tablas de Referencia](/docs/regulatory-framework/tablas-referencia)** - Todas las tablas DIAN consolidadas.
+- 📥 **[Anexos Oficiales DIAN](https://www.dian.gov.co/impuestos/factura-electronica)** - Descargas directas del portal DIAN.
 
-### 📚 Documentación Esencial
+---
 
-- 📚 **[Referencia Completa de Campos](/docs/billing-fields)** - Todos los campos disponibles en facturas
-- 🔌 **[Endpoints Disponibles](/docs/endpoints)** - Lista completa de endpoints del API
-- 📖 **[Glosario Técnico](/docs/glossary)** - Términos y conceptos clave
-- 💡 **[Casos de Uso Comunes](/docs/use-cases/common-errors)** - Errores frecuentes
+### 🛠️ Herramientas de Desarrollo {#ejemplos-y-endpoints-en-postman}
 
-## Ejemplos y endpoints en Postman
+#### 📮 Colección Oficial de Postman
+Ponemos a su disposición una colección completa de Postman con payloads de ejemplo listos para importar y ejecutar:
 
-Para facilitar la comprensión de los ejemplos de uso de la API, hemos creado una colección de ejemplos en Postman.
-Puede descargar la colección de ejemplos en el siguiente enlace:
 ```
 https://documenter.getpostman.com/view/8699065/2s9YyvBLby
 ```
 
-## 📘 Documentación Interactiva con Swagger
+#### 📘 Documentación Interactiva con Swagger {#documentación-interactiva-con-swagger}
 
-Explore nuestra documentación interactiva de la API con Swagger/OpenAPI, donde podrá:
+Explore interactivamente y pruebe los endpoints de la API de forma ágil desde el navegador a través de Swagger UI:
 
-- ✅ Ver todos los endpoints disponibles
-- ✅ Probar las peticiones directamente desde el navegador
-- ✅ Revisar esquemas de request y response
-- ✅ Consultar parámetros y modelos de datos
-
-:::info Acceso a Swagger UI
+:::info Swagger UI
 <button 
   onClick={() => window.open(atob('aHR0cHM6Ly9hcGktdjIubWF0aWFzLWFwaS5jb20vYXBpL2RvY3M='), '_blank')}
   style={{
@@ -874,23 +599,24 @@ Explore nuestra documentación interactiva de la API con Swagger/OpenAPI, donde 
     fontSize: '16px',
     margin: '4px 2px',
     cursor: 'pointer',
-    borderRadius: '4px'
+    borderRadius: '4px',
+    fontWeight: 'bold'
   }}
 >
   🚀 Abrir Documentación Swagger
 </button>
 
-*Disponible únicamente para clientes con servicio activo*
+*Disponible únicamente para clientes con servicio activo.*
 :::
 
 ---
 
-## 💬 Soporte y Ayuda
+## 💬 Soporte y Ayuda {#soporte-y-ayuda}
 
-:::warning Soporte Exclusivo para Clientes
-El soporte técnico para **integración de la API** está disponible **únicamente para clientes con servicio activo**. 
+¿Necesita soporte durante su proceso de integración? Nuestro equipo técnico especializado está disponible para guiarle.
 
-Si aún no es cliente, por favor contacte a nuestro equipo comercial para adquirir el servicio.
+:::warning Canales de Atención Exclusivos
+El soporte técnico y de integración comercial se brinda **únicamente a clientes con suscripciones activas**.
 
 <button 
   onClick={() => window.open(atob('aHR0cHM6Ly93YS5tZS81NzMwNDQzMzgxMDQ/dGV4dD1Ib2xhJTJDJTIwbWUlMjBpbnRlcmVzYSUyMGNvbm9jZXIlMjBtJUMzJUExcyUyMHNvYnJlJTIwbG9zJTIwc2VydmljaW9zJTIweSUyMHBsYW5lcyUyMGRlJTIwTUFUSUFTJTIwQVBJJTIwcGFyYSUyMGludGVncmFjaSVDMyVCM24lMjBkZSUyMGZhY3R1cmFjaSVDMyVCM24lMjBlbGVjdHIlQzMlQjNuaWNhLg=='), '_blank')}
@@ -913,21 +639,28 @@ Si aún no es cliente, por favor contacte a nuestro equipo comercial para adquir
 </button>
 :::
 
-¿Necesita ayuda con la integración? Nuestro equipo de soporte está disponible para asistirle.
+:::tip Canales de Soporte Técnico
 
-:::tip Canales de Atención
+### 🎟️ Centro de Ayuda (Sistema de Tickets)
+Para reportar fallos, dudas o incidentes con integraciones activas, abra un ticket en:
+```
+https://support.lopezsoft.net.co/portal
+```
+
+**Al crear un caso, asegúrese de incluir:**
+- ✅ Descripción detallada del comportamiento esperado y obtenido.
+- ✅ Endpoint exacto utilizado y método HTTP.
+- ✅ Payload (JSON) completo de la petición.
+- ✅ JSON completo de la respuesta de error o código HTTP devuelto.
 
 ### 📧 Contacto por Email
-```
-soporte@matias.com.co
-```
-Para consultas generales y asistencia técnica.
+Escríbanos a: **soporte@matias.com.co** para consultas generales.
 
-### 💚 WhatsApp
-Atención directa y respuesta rápida a consultas técnicas.
+### 💚 Canal Rápido de WhatsApp
+Para dudas técnicas rápidas o verificación de estado de servicios:
 
 <button 
-  onClick={() => window.open(atob('aHR0cHM6Ly93YS5tZS81NzMxMDg0MzU0MzE/dGV4dD1Ib2xhJTIwZXF1aXBvJTIwZGUlMjBzb3BvcnRlJTJDJTIwbmVjZXNpdG8lMjBheXVkYSUyMGNvbiUyMGxhJTIwaW50ZWdyYWNpJUMzJUIzbiUyMGRlJTIwbGElMjBBUEklMjBkZSUyME1hdGlhcw=='), '_blank')}
+  onClick={() => window.open(atob('aHR0cHM6Ly93YS5tZS81NzMxMDg0MzU0MzE/dGV4dD1Ib2xhJTIwZXF1aXBvJTIwZGU%20c29wb3J0ZSUyQyUyMG5lY2VzaXRvJTIwYXl1ZGElMjBjb24lMjBsYSUyMGludGVncmFjaSVDMyVCM24lMjBkZSUyMGxhJTIwQVBJJTIwZGUlMjBNYXRpYXM='), '_blank')}
   style={{
     backgroundColor: '#25D366',
     border: 'none',
@@ -939,59 +672,14 @@ Atención directa y respuesta rápida a consultas técnicas.
     fontSize: '14px',
     margin: '8px 0',
     cursor: 'pointer',
-    borderRadius: '4px'
+    borderRadius: '4px',
+    fontWeight: 'bold'
   }}
 >
   📱 Abrir Chat de WhatsApp
 </button>
-
-### 🎟️ Centro de Ayuda (Sistema de Tickets)
-Para obtener ayuda especializada con la API, abra un ticket en nuestro portal:
-```
-https://support.lopezsoft.net.co/portal
-```
-
-**Al crear un ticket, incluya:**
-- ✅ Descripción clara del problema
-- ✅ Endpoint que está usando
-- ✅ Payload (JSON) que está enviando
-- ✅ Respuesta de error que recibe
-- ✅ Identificador de transacción (si aplica)
-
 :::
 
 ---
 
 **Versión de Documentación:** 3.0 | **Última actualización:** Febrero 2026 | **API:** v3.0.0
-
-### 📢 ¡Nuevo en v3.0.0!
-
-#### 🔑 Personal Access Tokens (PAT)
-Ahora puedes crear y gestionar tus propios tokens de acceso sin necesidad de contactar a soporte:
-- ✅ Creación self-service
-- ✅ Expiración configurable (90 días recomendado)
-- ✅ Revocación instantánea
-- ✅ Múltiples tokens por cuenta
-
-[📖 Ver documentación de Personal Access Tokens](/docs/endpoints#personal-access-tokens)
-
-#### 🔔 Webhooks
-Recibe notificaciones en tiempo real cuando ocurren eventos importantes:
-- ✅ 26 tipos de eventos (documentos, emails, pagos, membresías)
-- ✅ Firma HMAC-SHA256 para seguridad
-- ✅ Reintentos automáticos
-- ✅ Testing integrado
-
-[📖 Ver documentación de Webhooks](/docs/endpoints#webhooks)
-
-#### 📊 Gestión de Límites y Consumo
-Consulta en tiempo real el consumo de tu plan:
-- ✅ Límites diarios y mensuales
-- ✅ Estadísticas de uso
-- ✅ Historial de consumo
-- ✅ Headers informativos en cada respuesta
-
-[📖 Ver documentación de Membresías](/docs/endpoints#membresías-y-consumo)
-
-### 📚 Marco Regulatorio DIAN
-Documentación completa de todos los marcos regulatorios emitidos por DIAN con 11,539 líneas de contenido técnico. Consulta las nuevas secciones en el menú lateral.

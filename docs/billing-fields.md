@@ -144,7 +144,7 @@ En el API siempre se envía el **ID** (columna izquierda), **NUNCA** el code DIA
 |:--------:|:---------:|-------------------|-----|
 | **1** | 10 | Estándar | ✅ Valor por defecto para la mayoría de facturas |
 | **2** | 09 | Servicios AIU | Administración, Imprevistos y Utilidad |
-| **3** | 11 | Mandatos | Operaciones de mandato ([ver `lines->mandate`](#linesmandato)) |
+| **3** | 11 | Mandatos | Operaciones de mandato ([ver `lines->mandate`](#lines-mandate)) |
 | **4** | 12 | Transporte | Sector transporte |
 | **5** | 14 | Notarios | Sector notarial |
 | **6** | 15 | Compra Divisas | Operaciones de compra de divisas |

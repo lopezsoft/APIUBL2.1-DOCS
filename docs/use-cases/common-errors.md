@@ -90,7 +90,7 @@ curl -X POST https://api-v2.matias-api.com/api/ubl2.1/invoices \
 ```
 
 :::tip 💡 Pro tip
-**Novedad v3.0.0:** Puedes crear **Personal Access Tokens** con duración configurable (1-90 días) para evitar estar renovando constantemente. [Ver guía de PAT](/docs/endpoints#personal-access-tokens)
+**Novedad v3.0.0:** Puedes crear **Personal Access Tokens** con duración configurable (1-90 días) para evitar estar renovando constantemente. [Ver guía de PAT](/docs/endpoints/intro-auth#personal-access-tokens)
 :::
 
 ---

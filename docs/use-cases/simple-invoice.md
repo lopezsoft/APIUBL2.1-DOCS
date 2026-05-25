@@ -81,7 +81,7 @@ curl -X POST https://api-v2.matias-api.com/api/ubl2.1/v3/auth/tokens \
   }'
 ```
 
-[📖 Ver guía completa de Personal Access Tokens](/docs/endpoints#personal-access-tokens)
+[📖 Ver guía completa de Personal Access Tokens](/docs/endpoints/intro-auth#personal-access-tokens)
 :::
 
 ## Paso 2: Preparar los Datos de la Factura

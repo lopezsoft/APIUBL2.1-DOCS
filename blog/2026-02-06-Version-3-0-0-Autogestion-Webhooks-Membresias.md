@@ -110,7 +110,7 @@ await fetch(`https://api.matias-api.com/v3/auth/tokens/${tokenId}`, {
 });
 ```
 
-📖 **[Ver documentación completa de Personal Access Tokens](/docs/endpoints#personal-access-tokens)**
+📖 **[Ver documentación completa de Personal Access Tokens](/docs/endpoints/intro-auth#personal-access-tokens)**
 
 ---
 
@@ -243,7 +243,7 @@ Después de 5 intentos fallidos, el webhook se marca como fallido y debes verifi
 }
 ```
 
-📖 **[Ver documentación completa de Webhooks](/docs/endpoints#webhooks)**
+📖 **[Ver documentación completa de Webhooks](/docs/endpoints/webhooks)**
 
 ---
 
@@ -362,7 +362,7 @@ console.log(consumption);
 }
 ```
 
-📖 **[Ver documentación de Membresías y Consumo](/docs/endpoints#memberships-consumption)**
+📖 **[Ver documentación de Membresías y Consumo](/docs/endpoints/memberships-health#memberships-consumption)**
 
 ---
 
@@ -478,9 +478,9 @@ const headers = {
 ## 🎓 Recursos de Aprendizaje
 
 ### Documentación
-- 📖 [Guía de Personal Access Tokens](/docs/endpoints#personal-access-tokens)
-- 📖 [Guía de Webhooks](/docs/endpoints#webhooks)
-- 📖 [Guía de Membresías](/docs/endpoints#memberships-consumption)
+- 📖 [Guía de Personal Access Tokens](/docs/endpoints/intro-auth#personal-access-tokens)
+- 📖 [Guía de Webhooks](/docs/endpoints/webhooks)
+- 📖 [Guía de Membresías](/docs/endpoints/memberships-health#memberships-consumption)
 
 ### Ejemplos de Código
 - 💻 [Colección Postman v3.0.0](https://documenter.getpostman.com/view/8699065/2s9YyvBLby)

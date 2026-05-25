@@ -1,10 +1,10 @@
 ---
 sidebar_position: 19
-sidebar_label: Factura Exportación Avanzada (USD)
+sidebar_label: Factura Exportación (USD)
 description: "Ejemplo de JSON avanzado para una factura de exportación en USD con Incoterms, remisiones, datos de entrega y transportadora."
 ---
 
-# ✈️ Factura de Exportación Avanzada (USD)
+# ✈️ Factura de Exportación (USD)
 
 Una **Factura de Exportación Avanzada** incluye información logística de alto valor requerida habitualmente en el comercio internacional. 
 

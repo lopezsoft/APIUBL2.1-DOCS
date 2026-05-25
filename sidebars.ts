@@ -14,6 +14,12 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Ejemplos JSON',
+      link: {
+        type: 'generated-index',
+        slug: '/jsons-billing',
+        title: 'Ejemplos JSON',
+        description: 'Ejemplos de payloads en formato JSON divididos por categorías de documentos electrónicos.',
+      },
       collapsible: true,
       collapsed: true,
       items: [

@@ -1,7 +1,8 @@
 {
-  "label": "JSONs POS electrónico",
-  "position": 4,
+  "label": "POS",
+  "position": 2,
   "link": {
-    "type": "generated-index"
+    "type": "generated-index",
+    "slug": "/jsons-pos/receipts"
   }
 }

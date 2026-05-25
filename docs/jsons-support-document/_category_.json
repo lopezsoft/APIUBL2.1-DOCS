@@ -1,7 +1,8 @@
 {
-  "label": "JSONs Documentos soporte",
-  "position": 4,
+  "label": "Documento Soporte",
+  "position": 3,
   "link": {
-    "type": "generated-index"
+    "type": "generated-index",
+    "slug": "/jsons-support-document/details"
   }
 }

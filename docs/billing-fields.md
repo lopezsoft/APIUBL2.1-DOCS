@@ -307,36 +307,61 @@ Indicador para solicitar que la API **envíe automáticamente por email** el doc
 
 ### `currency_id` 🟢
 
-ID de la moneda del documento. _Este campo es opcional_: si no se envía, la API asume **Peso Colombiano (COP)**. Solo se debe enviar cuando el documento está en moneda extranjera. Debe ser un entero.
-Puede consultar las monedas disponibles en el **ENDPOINT** `{{url}}/currencies`.
+ID de la moneda del documento (`cbc:DocumentCurrencyCode`). _Este campo es opcional_: si no se envía, la API asume **Peso Colombiano (COP)** (`id: 272`). Solo se debe enviar cuando el documento está en moneda extranjera. Debe ser un entero.
 
-**Valores comunes:**
+:::warning Importante
+La moneda debe estar **habilitada en su cuenta** del proveedor tecnológico. Si envía un `currency_id` de una moneda no configurada en su cuenta, el API rechazará el documento. Consulte las monedas disponibles en el **ENDPOINT** `{{url}}/currencies`.
+:::
 
-- `170` - Peso Colombiano (COP) - Predeterminado
-- `188` - Dólar Estadounidense (USD)
-- `978` - Euro (EUR)
+<details open>
+<summary>💱 <strong>Monedas activas</strong></summary>
+
+| `id` | ISO | Moneda | Símbolo |
+|:----:|:---:|--------|:-------:|
+| **272** | COP | Peso Colombiano _(predeterminado)_ | $ |
+| **188** | USD | Dólar Americano | $ |
+| **213** | EUR | Euro | € |
+| **277** | MXN | Peso Mexicano | $ |
+| **270** | ARS | Peso Argentino | $ |
+| **271** | CLP | Peso Chileno | $ |
+| **194** | CAD | Dólar Canadiense | $ |
+| **266** | PEN | Nuevo Sol (Perú) | S |
+| **278** | UYU | Peso Uruguayo | $ |
+| **274** | DOP | Peso Dominicano | R |
+| **273** | CUP | Peso Cubano | $ |
+| **225** | PYG | Guaraní (Paraguay) | ₲ |
+| **165** | BOB | Boliviano (Bolivia) | B |
+| **164** | VEF | Bolívar Fuerte (Venezuela) | B |
+| **168** | CRC | Colón Costarricense | ₡ |
+| **169** | SVC | Colón Salvadoreño | ₡ |
+| **195** | GYD | Dólar de Guyana | G |
+
+</details>
+
+- #### Ejemplo
+
+```json
+"currency_id": 188
+```
+
 
 ### `send_to_queue` 🟢
 
-Indicador para enviar el documento a una cola de procesamiento asíncrono. _Este campo es opcional_ y debe ser un entero (`0` o `1`). Cuando es `1`, la API encola el documento y retorna un UUID para consultar el estado posteriormente. Útil en envíos masivos.
+:::caution NO IMPLEMENTADO
+Este campo **aún no está disponible** en la versión actual de la API. Se documenta como referencia para futuras versiones. No lo envíe en el request body, será ignorado.
+:::
 
-- #### Ejemplo
-
-```json
-"send_to_queue": 1
-```
+Indicador para enviar el documento a una cola de procesamiento asíncrono. Cuando esté disponible, al enviar `1` la API encolará el documento y retornará un UUID para consultar el estado posteriormente. Será útil en envíos masivos.
 
 ### `rounding` 🟢
 
-Valor de redondeo aplicado al total del documento. _Este campo es opcional_ y debe ser un string con valor flotante. Se utiliza para ajustar centavos o decimales en el total pagable.
+Valor de redondeo aplicado al total del documento (`cbc:PayableRoundingAmount`). _Este campo es opcional_ y debe ser un string con valor flotante. Se utiliza principalmente en **Nómina Electrónica** para ajustar centavos o decimales en el total pagable.
 
-- #### Ejemplo
+:::info Uso principal
+Este campo aplica para documentos de **Nómina Electrónica** (`type_document_id: 13, 14`). En facturación electrónica estándar generalmente no se requiere.
+:::
 
-```json
-"rounding": "0.50"
-```
-
-### `attachments` 🟢
+### `attachments`: **NEW**
 
 Arreglo de archivos adjuntos para incluir en el documento (por ejemplo, informes, contratos o soportes adicionales). _Este campo es opcional_ y debe ser un arreglo de objetos.
 
@@ -362,7 +387,13 @@ Arreglo de archivos adjuntos para incluir en el documento (por ejemplo, informes
 
 ### `invoice_period` 🟢
 
-Periodo de facturación del documento a nivel general (diferente al `invoice_period` dentro de `lines`). _Este campo es opcional_ y debe ser un objeto. Se utiliza principalmente en el sector salud y en documentos soporte.
+Periodo de facturación del documento a nivel general (`cac:InvoicePeriod`). Diferente al `invoice_period` dentro de `lines`. _Este campo es opcional_ y debe ser un objeto.
+
+:::tip ¿Cuándo se usa?
+- **Documento Soporte** (`type_document_id: 11`): para indicar el periodo de prestación del servicio.
+- **Sector Salud**: periodo de facturación del servicio médico.
+- **Notas Crédito/Débito sin referencia a factura** (`operation_type_id: 15, 16`): obligatorio para indicar el periodo que cubre la nota.
+:::
 
 - #### Ejemplo
 
@@ -385,38 +416,97 @@ Periodo de facturación del documento a nivel general (diferente al `invoice_per
   - #### `end_time`
     Hora de fin del periodo. Formato `HH:mm:ss`.
 
-### `deliveries` 🟢
+### `deliveries`: **NEW**
 
-Información de entregas o despachos asociados al documento. _Este campo es opcional_ y debe ser un arreglo de objetos. Utilizado para indicar la dirección, fecha y datos de contacto de la entrega de mercancías.
+Grupo de información de la entrega de bienes o prestación de servicios (`cac:Delivery`). _Este campo es opcional_ y debe ser un arreglo de objetos. Permite informar la dirección, fecha, transportador y contacto de la entrega física de mercancías.
 
-- #### Ejemplo
+<details>
+<summary>📦 <strong>Ejemplo JSON completo</strong></summary>
 
 ```json
 "deliveries": [
     {
-      "address": "Cra 45 #26-85",
-      "country_id": "45",
-      "date": "2024-03-01",
-      "time": "10:00:00",
-      "delivery_party": "Transportes XYZ",
-      "delivery_contact": "Juan Pérez"
+      "date": "2026-05-21",
+      "time": "14:00:00",
+      "address": "NORTE DE VIRGINIA H10",
+      "country_id": "239",
+      "delivery_party": {
+        "identity_document_id": "10",
+        "type_organization_id": 1,
+        "tax_regime_id": 2,
+        "tax_level_id": "5",
+        "company_name": "Nombre de la empresa transportadora",
+        "address": "cra prueba",
+        "dni": "1019016005",
+        "country_id": "45",
+        "city_id": "149",
+        "postal_code": "110121",
+        "merchant_registration": "12454"
+      },
+      "delivery_contact": {
+        "email": "empresatransport@gmail.com",
+        "mobile": "3164444444",
+        "contact_name": "Nombre del contacto",
+        "note": "Nota adicional de contacto"
+      }
     }
   ]
 ```
 
-- #### Detalle de los campos
-  - #### `address`
-    Dirección de entrega. _Este campo es obligatorio_ y debe ser un string.
-  - #### `country_id`
-    País de entrega. _Este campo es opcional_, por defecto `"45"` (Colombia).
-  - #### `date`
-    Fecha de entrega. Formato `YYYY-MM-DD`.
-  - #### `time`
-    Hora de entrega. Formato `HH:mm:ss`.
-  - #### `delivery_party`
-    Nombre de la empresa o persona responsable de la entrega. _Este campo es opcional_ y debe ser un string.
-  - #### `delivery_contact`
-    Nombre de contacto de la entrega. _Este campo es opcional_ y debe ser un string.
+</details>
+
+<details open>
+<summary>📍 <strong>Campos del delivery</strong> — Lugar y fecha de entrega</summary>
+
+| Campo | Tipo | Requerido | XPath UBL | Descripción |
+|-------|:----:|:---------:|-----------|-------------|
+| `date` | string | Opcional | `cbc:ActualDeliveryDate` | Fecha real o estimada de entrega. Formato `YYYY-MM-DD` |
+| `time` | string | Opcional | `cbc:ActualDeliveryTime` | Hora real o estimada de entrega. Formato `HH:mm:ss` |
+| `address` | string | **Sí** | `cac:DeliveryAddress` | Dirección del lugar de entrega |
+| `country_id` | string | Opcional | `cac:Country` | ID del país de entrega. Por defecto `"45"` (Colombia). **Endpoint:** `{{url}}/countries` |
+| `city_id` | string | ⚠️ Condicional | `cac:DeliveryAddress` | Ciudad/municipio de entrega. **Obligatorio si `country_id = "45"` (Colombia)**. **Endpoint:** `{{url}}/cities` |
+| `postal_code` | string | ⚠️ Condicional | `cac:DeliveryAddress` | Código postal de entrega. **Obligatorio si `country_id = "45"` (Colombia)** |
+
+:::warning Entregas en Colombia
+Cuando el país de entrega es **Colombia** (`country_id: "45"`), los campos `city_id` y `postal_code` son **obligatorios**. La DIAN rechazará el documento si no se informan.
+:::
+
+</details>
+
+<details>
+<summary>🏢 <strong>delivery_party</strong> — Transportador o parte que entrega</summary>
+
+Información fiscal y de identificación del transportador (`cac:DeliveryParty`). _Opcional_.
+
+| Campo | Tipo | Requerido | Descripción |
+|-------|:----:|:---------:|-------------|
+| `identity_document_id` | string | **Sí** | Tipo de documento de identidad. **Endpoint:** `{{url}}/identity-documents` |
+| `type_organization_id` | int | **Sí** | `1` = Persona Jurídica, `2` = Persona Natural |
+| `company_name` | string | **Sí** | Razón social o nombre completo del transportador |
+| `dni` | string | **Sí** | Número de identificación sin dígito de verificación |
+| `tax_regime_id` | int | Opcional | Régimen fiscal. Por defecto `2` (No responsable de IVA). **Endpoint:** `{{url}}/accounting-regime` |
+| `tax_level_id` | string | Opcional | Responsabilidad tributaria. Por defecto `"5"` (No aplica). **Endpoint:** `{{url}}/fiscal-regime` |
+| `address` | string | Opcional | Dirección fiscal del transportador |
+| `country_id` | string | Opcional | País del transportador. Por defecto `"45"` (Colombia) |
+| `city_id` | string | ⚠️ Condicional | Ciudad/municipio. **Obligatorio si `country_id = "45"`**. **Endpoint:** `{{url}}/cities` |
+| `postal_code` | string | ⚠️ Condicional | Código postal. **Obligatorio si `country_id = "45"`**. Por defecto `"000000"` |
+| `merchant_registration` | string | Opcional | Matrícula mercantil (`cbc:CorporateRegistrationScheme`) |
+
+</details>
+
+<details>
+<summary>👤 <strong>delivery_contact</strong> — Contacto de la entrega</summary>
+
+Persona responsable de recibir o coordinar la entrega (`cac:Contact`). _Opcional_.
+
+| Campo | Tipo | Requerido | Descripción |
+|-------|:----:|:---------:|-------------|
+| `contact_name` | string | Opcional | Nombre de la persona de contacto |
+| `email` | string | Opcional | Correo electrónico de contacto |
+| `mobile` | string | Opcional | Teléfono o celular de contacto |
+| `note` | string | Opcional | Nota adicional sobre la entrega |
+
+</details>
 
 ### `delivery_terms` 🟢
 
@@ -480,6 +570,10 @@ Referencias a documentos de recepción asociados al documento electrónico. _Est
     Fecha del documento de recepción. Formato `YYYY-MM-DD`.
 
 ### `showroomInformation` 🟢
+
+:::caution NO IMPLEMENTADO
+Este campo **aún no está disponible** en la versión actual de la API. Se documenta como referencia para futuras versiones. No lo envíe en el request body, será ignorado.
+:::
 
 Información de la sala de ventas o punto de exhibición. _Este campo es opcional_ y debe ser un objeto. Utilizado cuando la venta se realiza en una ubicación diferente a la sede principal.
 
@@ -556,31 +650,29 @@ Información de los pagos del documento. Define el método (contado/crédito), m
 
 Plantilla para personalizar el encabezado y pie de página de la representación gráfica (PDF). La API renderiza dinámicamente los valores proporcionados sobre una plantilla prediseñada. _Este campo es opcional_ y debe ser un objeto.
 
-#### Descripción General
+:::info ¿Cómo funciona?
+Se proporciona el `uuid` de una plantilla previamente creada en el sistema y un arreglo de `vars` con los valores a inyectar. La API busca la plantilla y reemplaza los marcadores de posición (placeholders) con los valores proporcionados.
+:::
 
-La lógica se basa en un sistema de plantillas. Se proporciona
-el identificador de una plantilla **(`uuid`)** y un conjunto de variables **(`vars`)**.
-La API utilizará estos datos para buscar la plantilla correspondiente y reemplazar los
-"marcadores de posición" (placeholders) en ella con los valores proporcionados.
+<details open>
+<summary>🧩 <strong>Estructura del objeto</strong></summary>
 
-#### Estructura de Campos - Tabla de Parámetros
-
-| Campo | Tipo             | Requerido | Descripción                                                                                                                                            |
-| ----- | ---------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| uuid  | String           | Sí        | El Identificador Único Universal de la plantilla de diseño a utilizar. Este `uuid` debe corresponder a una plantilla previamente creada en el sistema. |
-| vars  | Array de Objetos | Sí        | Una lista que contiene todas las variables y sus valores para reemplazar los marcadores de posición en la plantilla.                                   |
-
-#### Estructura de los objetos dentro del array `vars`
-
-Cada objeto dentro del array vars debe tener la siguiente estructura de clave-valor:
 | Campo | Tipo | Requerido | Descripción |
-|-------|--------|-----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| name | String | Sí | El nombre del marcador de posición definido en la plantilla. Importante: Debe enviarse sin las llaves {}. Por ejemplo, si en la plantilla el marcador es `{sucursal}`, el valor de name debe ser `"sucursal"`. |
-| value | String | Sí | El valor de texto o HTML con el que se reemplazará el marcador correspondiente. La API insertará este valor tal cual en la plantilla |
+|-------|:----:|:---------:|-------------|
+| `uuid` | string | **Sí** | UUID de la plantilla de diseño previamente creada en el sistema |
+| `vars` | array | **Sí** | Lista de variables para reemplazar los placeholders de la plantilla |
 
-#### Ejemplo Completo del Objeto
+**Cada objeto dentro de `vars`:**
 
-A continuación se muestra un ejemplo válido del objeto `report_header` que se debe incluir en el cuerpo de la solicitud a la API.
+| Campo | Tipo | Requerido | Descripción |
+|-------|:----:|:---------:|-------------|
+| `name` | string | **Sí** | Nombre del placeholder **sin llaves `{}`**. Ej: si el marcador es `{sucursal}`, enviar `"sucursal"` |
+| `value` | string | **Sí** | Valor de texto o HTML que reemplazará el marcador. Se inserta tal cual en la plantilla |
+
+</details>
+
+<details>
+<summary>📦 <strong>Ejemplo JSON</strong></summary>
 
 ```json
 "report_header": {
@@ -601,6 +693,8 @@ A continuación se muestra un ejemplo válido del objeto `report_header` que se 
   ]
 }
 ```
+
+</details>
 
 ### `due_diligence`: **NEW**
 
@@ -657,25 +751,24 @@ Tasa de cambio aplicada al documento. _Este campo es obligatorio_ cuando `curren
 "payment_exchange_rate": {
     "exchange_rate": "3950.00",
     "rate_date": "2022-06-28",
-    "base_rate" : "3950.00",
     "currency_id": 188
   }
 ```
 
 - #### Detalle de los campos
   - #### `exchange_rate`
-    Valor de la tasa de cambio. _Este campo es obligatorio_ solo para los documentos en moneda extranjera y debe ser un string.
+    Valor equivalente de **1 unidad de la moneda extranjera en Pesos Colombianos (COP)**. Por ejemplo, si el documento es en USD y 1 USD = 3950 COP, el valor debe ser `"3950.00"`. _Este campo es obligatorio_ y debe ser un string con valor flotante.
   - #### `rate_date`
-    Fecha de la tasa de cambio. _Este campo es obligatorio_ solo para los documentos en moneda extranjera y debe ser un string.
-  - #### `base_rate`
-    Tasa base. _Este campo es obligatorio_ solo para los documentos en moneda extranjera y debe ser un string.
-    Base monetaria de la divisa COP que se deberá convertir a moneda extranjera, ejemplo: si es USD el valor a informar es el valor equivalente de un dólar en pesos.
+    Fecha de la tasa de cambio utilizada. _Este campo es obligatorio_ y debe ser un string en formato `YYYY-MM-DD`.
+  - #### `currency_id`
+    ID de la moneda extranjera del documento. _Este campo es obligatorio_ y debe ser un entero. Consulte los valores en [`currency_id`](#currency_id-).
 
 ### `point_of_sale` 🟡
 
 Información del punto de venta físico donde se realizó la transacción. _Este campo es obligatorio_ para documentos de tipo **P.O.S Electrónico** (`type_document_id = 20`) y debe ser un objeto.
 
-- #### Ejemplo
+<details>
+<summary>📦 <strong>Ejemplo JSON</strong></summary>
 
 ```json
 "point_of_sale": {
@@ -688,19 +781,24 @@ Información del punto de venta físico donde se realizó la transacción. _Este
   }
 ```
 
-- #### Detalle de los campos
-  - #### `cashier_name`
-    Nombre del cajero. _Este campo es obligatorio_ solo para los documentos de tipo **P.O.S ELECTRÓNICO** y debe ser un string.
-  - #### `terminal_number`
-    Número de términal del punto de venta. _Este campo es obligatorio_ solo para los documentos de tipo **P.O.S ELECTRÓNICO** y debe ser un string.
-  - #### `cashier_type`
-    Tipo de caja del punto de venta, ejemplo(`GENÉRICA`). _Este campo es obligatorio_ solo para los documentos de tipo **P.O.S ELECTRÓNICO** y debe ser un string.
-  - #### `sales_code`
-    Código de la venta, puede ser ID de la venta ejemplo(`45212`). _Este campo es obligatorio_ solo para los documentos de tipo **P.O.S ELECTRÓNICO** y debe ser un string.
-  - #### `address`
-    Dirección del punto de venta. _Este campo es obligatorio_ solo para los documentos de tipo **P.O.S ELECTRÓNICO** y debe ser un string.
-  - #### `sub_total`
-    Subtotal de la venta, total venta sin IVA. _Este campo es obligatorio_ solo para los documentos de tipo **P.O.S ELECTRÓNICO** y debe ser un string.
+</details>
+
+<details open>
+<summary>🏪 <strong>Campos del punto de venta</strong></summary>
+
+| Campo | Tipo | Descripción |
+|-------|:----:|-------------|
+| `cashier_name` | string | Nombre del cajero que realiza la venta |
+| `terminal_number` | string | Número de terminal del punto de venta (ej. `"CJ001aB"`) |
+| `cashier_type` | string | Tipo de caja (ej. `"GENÉRICA"`, `"Caja de apoyo"`) |
+| `sales_code` | string | Código o ID de la venta (ej. `"POS01"`, `"45212"`) |
+| `address` | string | Dirección física del punto de venta |
+| `sub_total` | string | Subtotal de la venta (total sin IVA). Formato `"0.00"` |
+
+:::info Todos los campos son **obligatorios** para `type_document_id = 20`.
+:::
+
+</details>
 
 ### `software_manufacturer` 🟡
 
@@ -752,126 +850,117 @@ Referencia de la orden de compra. _Este campo es opcional_ y debe ser usado de a
 
 Información específica para documentos del **sector salud** (Resolución 866 de 2021). _Este campo es opcional_ y aplica exclusivamente cuando el emisor pertenece al sector salud. Debe ser un objeto.
 
-- #### `operation_type`
-  Tipo de operación. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un string.
-- #### `invoice_period`
-  Periodo de facturación. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un objeto.
-  - - ##### `start_date`
-      Fecha de inicio. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un string.
-  - - ##### `start_time`
-      Hora de inicio. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un string.
-  - - ##### `end_date`
-      Fecha de fin. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un string.
-  - - ##### `end_time`
-      Hora de fin. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un string.
-- #### `download_attachments`
-  Descargar archivos adjuntos. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un objeto.
-  - - ##### `url`
-      URL. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un string.
-  - - ##### `arguments`
-      Argumentos. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un arreglo de objetos.
-- - ###### `name`
-    Nombre. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un string.
-- - ###### `value`
-    Valor. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un string.
-- #### `document_delivery`
-  Entrega de documentos. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un objeto.
-  - - ##### `ws`
-      URL del servicio web. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un string.
-  - - ##### `arguments`
-      Argumentos. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un arreglo de objetos.
-- - ###### `name`
-    Nombre. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un string.
-- - ###### `value`
-    Valor. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un string.
-- #### `user_collections`
-  Colecciones de usuario. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un arreglo de objetos.
-  - - ##### `information`
-      Información. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un arreglo de objetos.
-- - ###### `name`
-    Nombre. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un string.
-- - ###### `value`
-    Valor. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un string.
-- - ###### `schemeName`
-    Nombre del esquema. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un string.
-- - ###### `schemeID`
-    ID del esquema. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un string.
+<details open>
+<summary>🏥 <strong>Campos principales</strong></summary>
+
+| Campo | Tipo | Descripción |
+|-------|:----:|-------------|
+| `operation_type` | string | Tipo de operación del sector salud |
+
+</details>
+
+<details>
+<summary>📅 <strong>invoice_period</strong> — Periodo de facturación</summary>
+
+| Campo | Tipo | Descripción |
+|-------|:----:|-------------|
+| `start_date` | string | Fecha de inicio. Formato `YYYY-MM-DD` |
+| `start_time` | string | Hora de inicio. Formato `HH:mm:ss` |
+| `end_date` | string | Fecha de fin. Formato `YYYY-MM-DD` |
+| `end_time` | string | Hora de fin. Formato `HH:mm:ss` |
+
+</details>
+
+<details>
+<summary>📎 <strong>download_attachments</strong> — Descarga de adjuntos</summary>
+
+| Campo | Tipo | Descripción |
+|-------|:----:|-------------|
+| `url` | string | URL del servicio de descarga |
+| `arguments` | array | Arreglo de objetos `{name, value}` con parámetros |
+
+</details>
+
+<details>
+<summary>📤 <strong>document_delivery</strong> — Entrega de documentos</summary>
+
+| Campo | Tipo | Descripción |
+|-------|:----:|-------------|
+| `ws` | string | URL del servicio web |
+| `arguments` | array | Arreglo de objetos `{name, value}` con parámetros |
+
+</details>
+
+<details>
+<summary>👥 <strong>user_collections</strong> — Colecciones de usuario</summary>
+
+Arreglo de objetos con un campo `information` que contiene:
+
+| Campo | Tipo | Descripción |
+|-------|:----:|-------------|
+| `name` | string | Nombre del dato |
+| `value` | string | Valor del dato |
+| `schemeName` | string | Nombre del esquema |
+| `schemeID` | string | ID del esquema |
+
+</details>
 
 ### `customer` 🔴
 
-#### Factura Electrónica
+Información del cliente o proveedor. _Este campo es obligatorio_ para todos los documentos y debe ser un objeto.
 
-Información del cliente. _Este campo es obligatorio_ para todos los documentos relacionados con la factura electrónica y documento soporte, y sus respectivas notas
-y debe ser un objeto.
+<details open>
+<summary>📄 <strong>Factura Electrónica y Documento Soporte</strong></summary>
 
-- Debido a que el cliente puede ser una persona natural o jurídica, se deben enviar los siguientes campos:
-  - #### `country_id`: Valor por defecto `45`, Colombia(CO)
-    País del cliente. _Este campo es opcional_.
-    Puede consultar los diferentes países en el **ENDPOINT** `{{url}}/countries`.
-  - #### `city_id`
-    Ciudad del cliente. _Este campo es opcional_.
-    Puede consultar las diferentes ciudades en el **ENDPOINT** `{{url}}/cities`.
-  - #### `identity_document_id`: Valor por defecto `3`, NIT(31)
-    Documento de identidad del cliente. _Este campo es opcional_.
-    Puede consultar los diferentes documentos de identidad en el **ENDPOINT** `{{url}}/identity-documents`.
-  - #### `type_organization_id`: Valor por defecto `2`, Persona Natural(2)
-    Tipo de organización del cliente, 1 (Persona Jurídica), 2 (Persona natural). _Este campo es opcional_.
-  - #### `tax_regime_id`: Valor por defecto `2`, No responsable de IVA(49)
-    **Régimen fiscal** del cliente. _Este campo es opcional_, si no se envía por defecto toma el código(`49`) de No responsable de IVA.
-    Puede consultar los diferentes regímenes tributarios en el **ENDPOINT** `{{url}}/accounting-regime`.
-  - #### `tax_level_id`: Valor por defecto `5`, No aplica – Otros(R-99-PN)
-    **Responsabilidad tributaria** del cliente. _Este campo es opcional_, si no se envía por defecto toma el código(`R-99-PN`) de No aplica – Otros.
-    Puede consultar los diferentes niveles tributarios en el **ENDPOINT** `{{url}}/fiscal-regime`.
-  - #### `company_name`: Obligatorio para todos los documentos
-    Nombre de la empresa o persona natural. _Este campo es obligatorio_ para todos los documentos y debe ser un string.
-  - #### `dni`: Obligatorio para todos los documentos
-    Número del documento de identidad del cliente sin dígito de verificación. _Este campo es obligatorio_ para todos los documentos y debe ser un string.
-  - #### `mobile`: valor por defecto `""`
-    Móvil del cliente. _Este campo es opcional_, si no se envía por defecto toma el valor de `""`.
-  - #### `email`
-    Email del cliente, a donde se enviará el documento electrónico. _Este campo es obligatorio_ para todos los documentos que deben ser enviados al cliente y debe ser un string.
-  - #### `address`: valor por defecto `""`
-    Dirección del cliente. Este documento es opcional, si no se envía por defecto toma el valor de `""`.
-  - #### `postal_code`: valor por defecto `"000000"`
-    Código postal del cliente. _Este campo es opcional_, si no se envía por defecto toma el valor de `"000000"`.
-  - #### `city_name:` **NEW**
-    Nombre de la ciudad del cliente o proveedor extranjero. _Este campo es opcional_, solo se debe usar cuando el documento soporte
-    es para no residente o cuando un cliente es extranjero.
-  - #### `extra_data`: **NEW**
-    Grupo de campos para información adicional del cliente. _Este campo es opcional_ y debe ser un arreglo de objetos.
-    Esta información adicional se mostrará en la representación gráfica del documento y no se enviará a la DIAN.
+| Campo | Tipo | Requerido | Default | Descripción |
+|-------|:----:|:---------:|:-------:|-------------|
+| `company_name` | string | **Sí** | — | Razón social o nombre de persona natural |
+| `dni` | string | **Sí** | — | Número de identificación **sin dígito de verificación** |
+| `email` | string | **Sí** | — | Correo para envío del documento electrónico |
+| `identity_document_id` | int | Opcional | `3` (NIT) | Tipo de documento de identidad. **Endpoint:** `{{url}}/identity-documents` |
+| `type_organization_id` | int | Opcional | `2` | `1` = Persona Jurídica, `2` = Persona Natural |
+| `tax_regime_id` | int | Opcional | `2` | Régimen fiscal (código `49` = No responsable IVA). **Endpoint:** `{{url}}/accounting-regime` |
+| `tax_level_id` | int | Opcional | `5` | Responsabilidad tributaria (`R-99-PN` = No aplica). **Endpoint:** `{{url}}/fiscal-regime` |
+| `country_id` | int | Opcional | `45` | País del cliente (Colombia). **Endpoint:** `{{url}}/countries` |
+| `city_id` | int | Opcional | — | Ciudad del cliente. **Endpoint:** `{{url}}/cities` |
+| `address` | string | Opcional | `""` | Dirección del cliente |
+| `postal_code` | string | Opcional | `"000000"` | Código postal del cliente |
+| `mobile` | string | Opcional | `""` | Teléfono o celular del cliente |
+| `city_name` | string | Opcional | — | **NEW** — Nombre de la ciudad. Solo para clientes/proveedores extranjeros |
+| `extra_data` | array | Opcional | — | **NEW** — Información adicional para la representación gráfica (no se envía a DIAN) |
 
-    ```json
-    "extra_data": [
-      {
-        "title": "No. Socio",
-        "value": "78-54121-454"
-      },
-      {
-        "title": "FECHA DE VINCULACIÓN",
-        "value": "02/02/2026"
-      }
-    ]
-    ```
+</details>
 
-    - #### `title`
-      Título del campo adicional. _Este campo es obligatorio_ y debe ser un string.
-    - #### `value`
-      Valor del campo adicional. _Este campo es obligatorio_ y debe ser un string.
+<details>
+<summary>🏷️ <strong>extra_data</strong> — Campos adicionales del cliente</summary>
 
-### customer -> Documento P.O.S Electrónico.
+Arreglo de objetos `{title, value}` que se muestran en el PDF pero **no se envían a la DIAN**.
 
-Información del cliente. _Este campo es obligatorio_ solo para los documentos equivalentes P.O.S y debe ser un objeto.
+```json
+"extra_data": [
+  { "title": "No. Socio", "value": "78-54121-454" },
+  { "title": "FECHA DE VINCULACIÓN", "value": "02/02/2026" }
+]
+```
 
-- #### Descripción de los campos
-  - #### `company_name`: Obligatorio para todos los documentos
-    Nombre de la empresa/persona natual. _Este campo es obligatorio_ y debe ser un string.
-  - #### `dni`: Obligatorio para todos los documentos
-    Número del documento de identidad del cliente sin dígito de verificación. _Este campo es obligatorio_ y debe ser un string.
-  - #### `email`
-    Email del cliente, a donde se enviará el documento electrónico. _Este campo es opcional_ y debe ser un string.
-  - #### `points`
-    Puntos del cliente. _Este campo es opcional_, si no se envía por defecto toma el valor de `0`.
+| Campo | Tipo | Requerido | Descripción |
+|-------|:----:|:---------:|-------------|
+| `title` | string | **Sí** | Etiqueta del campo adicional |
+| `value` | string | **Sí** | Valor del campo adicional |
+
+</details>
+
+<details>
+<summary>🏪 <strong>Documento P.O.S Electrónico</strong> — Campos del cliente POS</summary>
+
+| Campo | Tipo | Requerido | Default | Descripción |
+|-------|:----:|:---------:|:-------:|-------------|
+| `company_name` | string | **Sí** | — | Nombre de la empresa o persona natural |
+| `dni` | string | **Sí** | — | Número de identificación sin dígito de verificación |
+| `email` | string | Opcional | — | Correo para envío del documento |
+| `points` | int | Opcional | `0` | Puntos acumulados del cliente |
+
+</details>
 
 ### `discrepancy_response` 🟢
 
@@ -895,40 +984,43 @@ Respuesta a discrepancias. _Este campo es obligatorio_ solo para las notas de cr
 
 ### `billing_reference` 🟡
 
-**Uso:**
-
 - 🔴 **Obligatorio** para Notas Crédito/Débito (referencia a factura original)
 - 🟢 **Opcional** para otros documentos
 
-Referencia de facturación. _Este campo es obligatorio_ solo para las notas de crédito, débito y de ajustes de todos los documentos y debe ser un objeto.
+Referencia al documento original sobre el cual se emite la nota. _Debe ser un objeto_.
 
-- #### Ejemplo
+<details>
+<summary>📦 <strong>Ejemplo JSON</strong></summary>
 
 ```json
 "billing_reference": {
     "number": "EPOS2",
     "date": "2023-12-22",
-    "uuid": "b1b5d93a2918407a2ef0048ed3092e5d96c94f73db178779463f202f8c52dd53ef5b9888d804d4b609521b1d031aea39",
+    "uuid": "b1b5d93a2918...031aea39",
     "scheme_name": "CUDE-SHA384"
   }
 ```
 
-- ### Detalle de los campos
-  - #### `number`
-    Número del documento de referencia, con el prefijo, **ejemplo(FE4578)**. _Este campo es obligatorio_ solo para las notas de crédito, débito y de ajustes de todos los documentos y debe ser un string.
-  - #### `date`
-    Fecha del documento de referencia. _Este campo es obligatorio_ solo para las notas de crédito, débito y de ajustes de todos los documentos y debe ser un string.
-  - #### `uuid`
-    UUID del documento de referencia(`CUFE/CUDE`). _Este campo es obligatorio_ solo para las notas de crédito, débito y de ajustes de todos los documentos y debe ser un string.
-  - #### `scheme_name`
-    Nombre del esquema. _Este campo es obligatorio_ solo para las notas de crédito, débito del **POS ELECTRÓNICO** y para las notas de ajuste del **DOCUMENTO SOPORTE**. Debe ser un string.
+</details>
+
+<details open>
+<summary>🧾 <strong>Campos de la referencia</strong></summary>
+
+| Campo | Tipo | Requerido | Descripción |
+|-------|:----:|:---------:|-------------|
+| `number` | string | **Sí** | Número del documento referenciado **con prefijo** (ej. `"FE4578"`) |
+| `date` | string | **Sí** | Fecha del documento referenciado. Formato `YYYY-MM-DD` |
+| `uuid` | string | **Sí** | CUFE o CUDE del documento referenciado |
+| `scheme_name` | string | ⚠️ Condicional | **Obligatorio** para notas POS Electrónico y notas de ajuste Doc. Soporte. Valores: `CUFE-SHA384`, `CUDE-SHA384`, `CUDS-SHA384` |
+
+</details>
 
 ### `allowance_charges` 🟢
 
-Descuentos o cargos **a nivel de factura**, es decir descuentos o cargos que no afectan las bases gravables. Los descuentos o cargos que afectan bases gravables se informan a nivel de ítem.
-Este campo es opcional, se debe informar cuando hay un cargo o descuento a nivel global de la factura y debe ser un arreglo de objetos.
+Descuentos o cargos **a nivel de factura** que no afectan las bases gravables. Los que afectan bases gravables se informan a nivel de ítem. _Este campo es opcional_ y debe ser un arreglo de objetos.
 
-- #### Ejemplo
+<details>
+<summary>📦 <strong>Ejemplo JSON</strong></summary>
 
 ```json
 "allowance_charges": [
@@ -948,30 +1040,28 @@ Este campo es opcional, se debe informar cuando hay un cargo o descuento a nivel
   ]
 ```
 
-- #### Detalle de los campos
-  - #### `amount`
-    Valor total del cargo o descuento. Valor numérico del Cargo o el Descuento. Si es descuento, no puede ser superior al valor base. _Este campo es obligatorio_ y debe ser un string.
-  - #### `base_amount`
-    Valor Base para calcular el descuento o el cargo. _Este campo es obligatorio_ y debe ser un string.
-  - #### `charge_indicator`
-    Indica que el elemento es un Cargo y no un descuento. Cargo es true, es un Débito aumenta el valor de la factura y se debe reportar en el `LegalMonetary`.
-    Descuento es `false`, un Crédito descuenta el valor de la factura antes de tributos y debe reportarse en el LegalMonetary
-    El elemento solamente puede identificar una de la información.
-    Rechazo: Si este elemento contiene una información diferente de `true` o `false`.
-  - #### `allowance_charge_reason`
-    Texto libre para informar de la razón del descuento. Obligatorio si hay un recargo o descuento, entonces este elemento debe ser informado y debe ser un string.
-  - #### `discount_id`
-    Código para categorizar el descuento. Solo para descuentos a nivel de factura.
-    Obligatorio de informar si es descuento a nivel de factura y debe ser un entero.
-    Puede consultar los diferentes tipos de descuentos en el **ENDPOINT** `{{url}}/discount-codes`.
-  - #### `multiplier_factor_numeric`
-    Factor numérico multiplicador para el cálculo del descuento o cargo (porcentaje expresado como decimal, ej. `10.00` para un 10%). _Este campo es opcional_ y debe ser un string.
+</details>
+
+<details open>
+<summary>🧾 <strong>Campos del cargo/descuento</strong></summary>
+
+| Campo | Tipo | Requerido | Descripción |
+|-------|:----:|:---------:|-------------|
+| `charge_indicator` | boolean | **Sí** | `true` = Cargo (aumenta el total), `false` = Descuento (reduce el total) |
+| `amount` | string | **Sí** | Valor del cargo o descuento. Si es descuento, no puede superar `base_amount` |
+| `base_amount` | string | **Sí** | Valor base sobre el cual se calcula el cargo o descuento |
+| `allowance_charge_reason` | string | **Sí** | Razón o motivo del cargo/descuento |
+| `discount_id` | int | ⚠️ Condicional | **Obligatorio si es descuento** (`charge_indicator: false`). **Endpoint:** `{{url}}/discount-codes` |
+| `multiplier_factor_numeric` | string | Opcional | Porcentaje como decimal (ej. `"10.00"` = 10%) |
+
+</details>
 
 ### `legal_monetary_totals` 🔴
 
 Totales monetarios del documento. Agrupa los valores brutos, impuestos, cargos, descuentos y el total a pagar. La DIAN valida que estos valores sean **matemáticamente consistentes** con las líneas y los impuestos. _Este campo es obligatorio_ y debe ser un objeto.
 
-- #### Ejemplo
+<details>
+<summary>📦 <strong>Ejemplo JSON</strong></summary>
 
 ```json
 "legal_monetary_totals": {
@@ -984,82 +1074,69 @@ Totales monetarios del documento. Agrupa los valores brutos, impuestos, cargos, 
   }
 ```
 
-- #### Detalle de los campos
-  - #### `line_extension_amount`
-    Total de las líneas antes de iva **(Total Valor Bruto antes de tributos)**.
-    El Valor Bruto antes de tributos tiene que ser la suma de los valores de las líneas de la factura que contienen el valor comercial.
-    _Este campo es obligatorio_ y debe ser un string con valor flotante de máximo dos decimales.
-  - #### `tax_exclusive_amount`
-    Base gravable de las líneas que tienen impuesto, si no tiene impuesto se deja en **`0`**.
-    Total Valor Base Imponible: base imponible para el cálculo de los tributos.
-    El Valor Base Imponible tiene que ser la suma de los valores de las bases imponibles de todas líneas de detalle.
-    _Este campo es obligatorio_ y debe ser un string con valor flotante de máximo dos decimales.
-  - #### `tax_inclusive_amount`
-    Total de líneas + Impuestos. Total de Valor Bruto más tributos.
-    El Valor Bruto más tributos tiene que ser igual a Valor Bruto de la factura que contienen el valor comercial, más la suma
-    de los tributos de todas las líneas de detalle. _Este campo es obligatorio_ y debe ser un string con valor flotante de máximo dos decimales.
-  - #### `total_charges`
-    Total de cargos. El Valor del Cargo Total, es igual a la suma de todos los cargos globales aplicados al total de la factura.
-    _Este campo es opcional_ y debe ser un string con valor flotante de máximo dos decimales. Si no se envía por defecto toma el valor de **`0`**.
-  - #### `total_allowance`
-    Total de descuentos. El Valor del Descuento Total es igual a la suma de todos los descuentos globales aplicados al total de la factura.
-    _Este campo es opcional_ y debe ser un string con valor flotante de máximo dos decimales. Si no se envía por defecto toma el valor de **`0`**.
-  - #### `payable_amount`
-    Monto total del documento. Valor total de ítems **(incluyendo cargos y descuentos a nivel de ítems) +valor tributos + valor cargos globales – valor descuentos globales**.
-    _Este campo es obligatorio_ y debe ser un string con valor flotante de máximo dos decimales.
-  - #### `allowance_total_amount`
-    Valor total de los descuentos aplicados al documento. _Este campo es opcional_ y debe ser un string con valor flotante de máximo dos decimales. Alternativa detallada a `total_allowance`.
-  - #### `charge_total_amount`
-    Valor total de los cargos aplicados al documento. _Este campo es opcional_ y debe ser un string con valor flotante de máximo dos decimales. Alternativa detallada a `total_charges`.
-  - #### `pre_paid_amount`
-    Valor total de los anticipos o prepagos que se descuentan del total del documento. _Este campo es opcional_ y debe ser un string con valor flotante de máximo dos decimales.
+</details>
+
+<details open>
+<summary>🔴 <strong>Campos obligatorios</strong></summary>
+
+| Campo | Tipo | Descripción |
+|-------|:----:|-------------|
+| `line_extension_amount` | string | Suma de las líneas antes de impuestos **(Valor Bruto)** |
+| `tax_exclusive_amount` | string | Base imponible total. Si no hay impuestos = `"0"` |
+| `tax_inclusive_amount` | string | Valor Bruto + tributos de todas las líneas |
+| `payable_amount` | string | **Total a pagar:** ítems + tributos + cargos globales − descuentos globales |
+
+</details>
+
+<details>
+<summary>🟢 <strong>Campos opcionales</strong></summary>
+
+| Campo | Tipo | Default | Descripción |
+|-------|:----:|:-------:|-------------|
+| `total_charges` | string | `0` | Suma de todos los cargos globales |
+| `total_allowance` | string | `0` | Suma de todos los descuentos globales |
+| `allowance_total_amount` | string | — | Alternativa detallada a `total_allowance` |
+| `charge_total_amount` | string | — | Alternativa detallada a `total_charges` |
+| `pre_paid_amount` | string | — | Anticipos o prepagos que se descuentan del total |
+
+</details>
 
 ### `lines` 🔴
 
 Líneas de detalle del documento. Cada elemento del arreglo representa un ítem (producto o servicio) con su cantidad, precio, impuestos y descripción. Mínimo **1 línea** por documento. _Este campo es obligatorio_ y debe ser un arreglo de objetos.
 
-- #### `invoiced_quantity`
-  Cantidad del producto o servicio. _Este campo es obligatorio_ y debe ser un string.
-- #### `quantity_units_id`
-  Hace referencia a la unidad de medida, se recomienda dejar el valor `1093`. _Este campo es obligatorio_ y debe ser un string.
-  Puede consultar las diferentes unidades de medida en el **ENDPOINT** `{{url}}/quantity-units`.
-- #### `line_extension_amount`
-  Valor total de la línea sin impuesto.
-  El Valor Total de la línea es igual al producto de: _Cantidad x Precio Unidad menos Descuentos más Recargos_ **(C X PU - D + R)**,
-  que apliquen para la línea.
-  _Este campo es obligatorio_ y debe ser un string con valor flotante de máximo dos decimales ("`0.00`").
-- #### `free_of_charge_indicator`: Valor por defecto `false`
-  Indicador de gratuidad: Para indicar que es un producto gratis o muestra se debe enviar el valor `true`. _Este campo es obligatorio_ y debe ser un booleano.
-- #### `description`
-  Descripción del artículo o servicio a que se refiere esta línea de la factura. _Este campo es obligatorio_ y debe ser un string.
-- #### `note`
-  Nota adicional del detalle de la línea. Obligatorio de informar para el caso de facturas por contratos de `servicio tipo AIU`. Para el ítem Administración.
-  En este caso la cbc:Note debe empezar por el texto: `“Contrato de servicios AIU por concepto de:”`
-  El contribuyente debe incluir el objeto del contrato facturado. _Este campo es opcional_ y debe ser un string.
-- #### `code`
-  Código interno del artículo o servicio de la línea. _Este campo es obligatorio_ y debe ser un string.
-- #### `type_item_identifications_id`: Valor por defecto `4`
-  Estandar de identificación del ítem, se recomienda que siempre sea `4`. _Este campo es obligatorio_ y debe ser un string.
-  Puede consultar los diferentes tipos de identificación de ítem en el **ENDPOINT** `{{url}}/type-item-identifications`.
-- #### `reference_price_id`: Valor por defecto `1`
-  Precio de referencia. _Este campo es obligatorio_ y debe ser un string.
-  Puede consultar los diferentes precios de referencia en el **ENDPOINT** `{{url}}/reference-price`.
-- #### `price_amount`
-  Valor del artículo o servicio. _Este campo es obligatorio_ y debe ser un string con valor flotante de máximo dos decimales ("`0.00`").
-- #### `base_quantity`
-  La cantidad real sobre la cual el precio aplica, se recomienda ser igual a `invoiced_quantity`. _Este campo es obligatorio_ y debe ser un string.
-- #### `brand_name`
-  Nombre de la marca del producto. _Este campo es opcional_ y debe ser un string. Se mostrará en la representación gráfica del documento.
-- #### `model_name`
-  Nombre del modelo del producto. _Este campo es opcional_ y debe ser un string.
-- #### `sellers_item_identification`
-  Identificación del artículo por parte del vendedor (código interno alterno). _Este campo es opcional_ y debe ser un string.
-- #### `pack_size_numeric`
-  Número de unidades por paquete o empaque. _Este campo es opcional_ y debe ser un string.
-- #### `notes`
-  Notas adicionales a nivel de la línea del documento. _Este campo es opcional_ y puede ser un string o un arreglo de strings.
-- #### `um` / `mu` / `unit_measure_code`
-  Código o descripción textual de la unidad de medida del ítem. _Estos campos son opcionales_ y deben ser strings. Son alternativos a `quantity_units_id` para mostrar la unidad en la representación gráfica.
+<details open>
+<summary>📋 <strong>Campos obligatorios del ítem</strong></summary>
+
+| Campo | Tipo | Default | Descripción |
+|-------|:----:|:-------:|-------------|
+| `invoiced_quantity` | string | — | Cantidad del producto o servicio |
+| `line_extension_amount` | string | — | Valor total de la línea sin impuesto: **C × PU - D + R**. Formato `"0.00"` |
+| `description` | string | — | Descripción del artículo o servicio |
+| `code` | string | — | Código interno del artículo o servicio |
+| `price_amount` | string | — | Valor unitario del artículo o servicio. Formato `"0.00"` |
+| `base_quantity` | string | — | Cantidad sobre la que aplica el precio. Se recomienda igual a `invoiced_quantity` |
+| `quantity_units_id` | string | `1093` | Unidad de medida. **Endpoint:** `{{url}}/quantity-units` |
+| `type_item_identifications_id` | string | `4` | Estándar de identificación del ítem. **Endpoint:** `{{url}}/type-item-identifications` |
+| `reference_price_id` | string | `1` | Precio de referencia. **Endpoint:** `{{url}}/reference-price` |
+| `free_of_charge_indicator` | boolean | `false` | `true` = producto gratis o muestra |
+
+</details>
+
+<details>
+<summary>📝 <strong>Campos opcionales del ítem</strong></summary>
+
+| Campo | Tipo | Descripción |
+|-------|:----:|-------------|
+| `note` | string | Nota adicional. **Obligatorio para AIU**, debe iniciar con: `"Contrato de servicios AIU por concepto de:"` |
+| `brand_name` | string | Marca del producto. Se muestra en la representación gráfica |
+| `model_name` | string | Modelo del producto |
+| `sellers_item_identification` | string | Código interno alterno del vendedor |
+| `pack_size_numeric` | string | Unidades por paquete o empaque |
+| `notes` | string / array | Notas adicionales a nivel de línea |
+| `um` / `mu` / `unit_measure_code` | string | Unidad de medida alternativa para la representación gráfica |
+
+</details>
 
 ### `lines->mandate`
 

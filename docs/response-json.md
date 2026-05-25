@@ -7,7 +7,7 @@ sidebar_label: Respuestas API
 
 <div style={{backgroundColor: '#e7f3ff', padding: '1.5rem', borderRadius: '8px', border: '2px solid #0066cc', margin: '1.5rem 0'}}>
   <strong>📖 Guía Completa de Respuestas JSON</strong><br/>
-  Todas las respuestas que emite la API están en formato JSON y contienen información detallada sobre el estado de la solicitud, documentos generados y validaciones de la DIAN.
+  Todas las respuestas que emite la API están estructuradas en formato JSON estandarizado, proporcionando información detallada sobre el estado de la solicitud, documentos generados y las validaciones emitidas por la DIAN.
 </div>
 
 <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', margin: '1.5rem 0'}}>
@@ -20,30 +20,21 @@ sidebar_label: Respuestas API
   <div style={{padding: '1rem', backgroundColor: '#fff3cd', borderRadius: '8px', border: '1px solid #ffc107', textAlign: 'center'}}>
     <div style={{fontSize: '2rem'}}>⏳</div>
     <strong>StatusCode 98</strong><br/>
-    <small>En proceso</small>
+    <small>En proceso / Reintente</small>
   </div>
 
   <div style={{padding: '1rem', backgroundColor: '#f8d7da', borderRadius: '8px', border: '1px solid #dc3545', textAlign: 'center'}}>
     <div style={{fontSize: '2rem'}}>❌</div>
     <strong>HTTP 4xx/5xx</strong><br/>
-    <small>Errores</small>
+    <small>Errores y Rechazos</small>
   </div>
 
   <div style={{padding: '1rem', backgroundColor: '#d1ecf1', borderRadius: '8px', border: '1px solid #17a2b8', textAlign: 'center'}}>
     <div style={{fontSize: '2rem'}}>🔄</div>
     <strong>Contingencia</strong><br/>
-    <small>Timeouts y reintentos</small>
+    <small>Manejo de Timeouts</small>
   </div>
 </div>
-
-## 📑 Tabla de Contenidos
-
-- [Respuestas Exitosas](#estructura-de-la-respuesta-cuando-se-genera-un-documento-de-forma-exitosa) - HTTP 200, 201
-- [Documentos Duplicados](#estructura-de-la-respuesta-cuando-se-intenta-generar-un-documento-que-ya-fue-procesado) - StatusCode 02
-- [Códigos HTTP](#códigos-de-estado-y-descripción-de-posibles-respuestas) - Tabla de referencia rápida
-- [Errores DIAN](#errores-generados-por-la-dian) - Detalles y soluciones
-- [Contingencias](#124-demoras-en-los-tiempos-de-respuesta-en-los-servicios-de-facturación-electrónica-de-la-dian) - Manejo de timeouts
-- [Errores 500+](#500---internal-server-error) - Problemas del servidor DIAN
 
 ---
 
@@ -51,71 +42,56 @@ sidebar_label: Respuestas API
 
 <div style={{backgroundColor: '#f8f9fa', padding: '1.5rem', borderRadius: '8px', border: '2px solid #6c757d', margin: '1.5rem 0'}}>
   <strong>⚡ Referencia Rápida de Códigos HTTP</strong><br/>
-  Consulta instantánea de todos los códigos de estado y acciones recomendadas.
+  Consulte rápidamente todos los códigos de estado HTTP y las acciones de integración recomendadas.
 </div>
 
-| Código | Tipo | Descripción | Acción |
-|--------|------|-------------|--------|
-| 200 | ✅ Éxito | Documento procesado correctamente | Descargar archivos |
-| 201 | ✅ Éxito | Documento creado en queue | Esperar procesamiento |
-| 400 | ❌ Error | JSON malformado | Validar formato |
-| 401 | ❌ Error | Sin autenticación | Verificar credenciales |
-| 402 | ❌ Error | Suscripción vencida | Renovar pago |
-| 403 | ❌ Error | Sin permisos | Contactar soporte |
-| 404 | ❌ Error | Recurso no existe | Verificar ID |
-| 422 | ❌ Error | Validación DIAN fallida | Leer ErrorMessage |
-| 500 | ❌ Error | Error servidor DIAN | Esperar e intentar |
-| 503 | ❌ Error | Servicio no disponible | Consultar estado DIAN |
-| 504 | ⏳ Timeout | Respuesta tardía | Ver sección contingencias |
-| 507 | ❌ Error | Almacenamiento lleno | Contactar soporte |
-| 508 | ❌ Error | Bucle detectado | Revisar estructura |
+| Código | Tipo | Descripción | Acción Recomendada |
+|--------|------|-------------|--------------------|
+| **200** | ✅ Éxito | Documento procesado y validado correctamente por la DIAN | Descargar y almacenar archivos generados |
+| **201** | ✅ Éxito | Documento encolado para procesamiento | Esperar procesamiento asíncrono |
+| **400** | ❌ Error | Petición incorrecta o JSON malformado | Validar sintaxis y estructura del JSON |
+| **401** | ❌ Error | Sin autorización (Falta token o expirado) | Renovar token de acceso en cabecera |
+| **402** | ❌ Error | Pago requerido / Plan excedido | Renovar suscripción o ampliar plan |
+| **403** | ❌ Error | Acción prohibida (Permisos insuficientes) | Contactar soporte para verificar perfil |
+| **404** | ❌ Error | Recurso no encontrado | Verificar identificador y endpoint |
+| **422** | ❌ Error | Validación DIAN fallida (Documento rechazado) | Analizar detalles en `response.ErrorMessage` |
+| **500** | ❌ Error | Error interno en los servidores de la DIAN | Seguir protocolo de reintentos |
+| **503** | ❌ Error | Servicio temporalmente fuera de servicio (DIAN) | Esperar a restablecimiento de servicios |
+| **504** | ⏳ Timeout | Tiempo de espera de respuesta agotado | Aplicar protocolo de contingencia |
+| **507** | ❌ Error | Almacenamiento temporal lleno | Contactar al equipo de soporte |
+| **508** | ❌ Error | Bucle detectado en el procesamiento de datos | Validar referencias en estructura XML |
 
 ---
 
-## 🎯 Guía Rápida de Inicio
+## 🎯 Guía Rápida de Interpretación
 
 <div style={{backgroundColor: '#d1ecf1', padding: '1.5rem', borderRadius: '8px', border: '2px solid #17a2b8', margin: '1.5rem 0'}}>
   <strong>🚦 Cómo Interpretar una Respuesta en 3 Pasos</strong><br/>
-  Sigue este proceso simple para entender rápidamente cualquier respuesta de la API.
+  Siga este flujo sencillo para diagnosticar cualquier respuesta de la API de forma ágil y correcta.
 </div>
 
 <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', margin: '1.5rem 0'}}>
   <div style={{padding: '1.5rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '2px solid #0066cc'}}>
     <strong>📊 Paso 1: Código HTTP</strong><br/><br/>
-    <code>HTTP 200/201</code> → ✅ Éxito<br/>
-    <code>HTTP 400-409</code> → ⚠️ Error cliente<br/>
-    <code>HTTP 500-508</code> → ❌ Error servidor
+    <code>HTTP 200/201</code> ➔ ✅ Éxito<br/>
+    <code>HTTP 400-409</code> ➔ ⚠️ Error en Cliente<br/>
+    <code>HTTP 500-508</code> ➔ ❌ Error en Servidor (DIAN)
   </div>
 
   <div style={{padding: '1.5rem', backgroundColor: '#d4edda', borderRadius: '8px', border: '2px solid #28a745'}}>
-    <strong>🔍 Paso 2: Campo success</strong><br/><br/>
-    <code>success: true</code> → ✅ OK<br/>
-    <code>success: false</code> → ❌ Error<br/>
-    <small>Leer errorMessage detalladamente</small>
+    <strong>🔍 Paso 2: Propiedad success</strong><br/><br/>
+    <code>success: true</code> ➔ ✅ OK<br/>
+    <code>success: false</code> ➔ ❌ Fallo<br/>
+    <small>Examine los campos de error para detalles técnicos.</small>
   </div>
 
   <div style={{padding: '1.5rem', backgroundColor: '#fff3cd', borderRadius: '8px', border: '2px solid #ffc107'}}>
     <strong>🏷️ Paso 3: StatusCode DIAN</strong><br/><br/>
-    <code>StatusCode: 00</code> → ✅ Procesado<br/>
-    <code>StatusCode: 98</code> → ⏳ En proceso<br/>
-    <code>StatusCode: 02</code> → 🔄 Duplicado
+    <code>StatusCode: 00</code> ➔ ✅ Autorizado por DIAN<br/>
+    <code>StatusCode: 98</code> ➔ ⏳ En Procesamiento<br/>
+    <code>StatusCode: 02</code> ➔ 🔄 Documento Duplicado
   </div>
 </div>
-
-### 🛠️ Manejo de Errores Comunes
-
-<div style={{backgroundColor: '#fff3cd', padding: '1.5rem', borderRadius: '8px', border: '2px solid #ffc107', margin: '1.5rem 0'}}>
-  <strong>⚠️ Errores Más Frecuentes y Soluciones</strong><br/>
-  Los 5 errores que encontrarás con mayor frecuencia y cómo resolverlos.
-</div>
-
-| Error | Emoji | Causa | Solución |
-|-------|-------|-------|----------|
-| `400 - Bad Request` | ❌ | JSON malformado | Valide estructura con JSONLint |
-| `401 - Unauthorized` | 🔒 | API key inválida | Verifique credenciales |
-| `422 - Unprocessable Entity` | ⚠️ | Datos inválidos DIAN | Lea detalles en `response.ErrorMessage` |
-| `504 - Gateway Timeout` | ⏳ | Demora en DIAN | Siga procedimiento contingencia |
-| `StatusCode: 98` | 🔄 | Procesando | Consulte estado en 5 minutos |
 
 ---
 
@@ -123,25 +99,23 @@ sidebar_label: Respuestas API
 
 <div style={{backgroundColor: '#d4edda', padding: '1.5rem', borderRadius: '8px', border: '2px solid #28a745', margin: '1.5rem 0'}}>
   <strong>🎉 HTTP 200/201 - Documento Procesado Exitosamente</strong><br/>
-  Cuando la DIAN acepta y valida el documento, recibirás una respuesta completa con archivos PDF, XML, QR y más.
+  Cuando la DIAN acepta y autoriza legalmente el documento, la API responde con un objeto rico que incluye la clave única, el XML firmado, el PDF y el código QR de validación.
 </div>
 
-### 📋 Resumen de Estructura
-
-Todas las respuestas exitosas (HTTP 200/201) contienen estos elementos clave:
+### 📋 Resumen de la Estructura Principal
 
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
-| `message` | string | Descripción legible del resultado |
-| `success` | boolean | `true` si fue exitoso, `false` si hubo error |
-| `XmlDocumentKey` | string | CUFE/CUDE/CUNE del documento (identificador único) |
-| `response` | object | Detalles de la validación DIAN |
-| `AttachedDocument` | object | Contenedor ZIP con documentos |
-| `qr` | object | Códigos QR en diferentes formatos |
-| `pdf` | object | Representación PDF del documento |
+| `message` | `string` | Resumen inteligible del resultado del procesamiento. |
+| `success` | `boolean` | `true` si la operación se completó exitosamente. |
+| `XmlDocumentKey` | `string` | CUFE (Factura) / CUDE (Notas) / CUNE (Nómina) generado. |
+| `response` | `object` | Objeto contenedor de la respuesta directa de la DIAN. |
+| `AttachedDocument` | `object` | Enlaces y metadatos del XML firmado y el contenedor Zip. |
+| `qr` | `object` | Rutas y base64 para la renderización del código QR de validación. |
+| `pdf` | `object` | Enlaces de descarga y metadatos del archivo PDF generado. |
 
-### Ejemplo completo de respuesta exitosa
-
+<details>
+<summary>📦 Ver JSON Completo de Respuesta Exitosa</summary>
 
 ```json title="response.json"
 {
@@ -189,63 +163,68 @@ Todas las respuestas exitosas (HTTP 200/201) contienen estos elementos clave:
     "success": true
 }
 ```
+</details>
 
-### Descripción de los campos
+<details>
+<summary>🔍 Ver Diccionario Detallado de Campos de la Respuesta</summary>
 
+#### Campos de la Respuesta Raíz
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
-| `message` | string | Mensaje genérico generado por el API |
-| `send_to_queue` | boolean | Indicador de si el documento fue enviado a procesar en segundo plano (**En desarrollo**) |
-| `XmlDocumentKey` | string | CUFE, CUDE O CUNE DEL DOCUMENTO |
-| `success` | boolean | Indica si la respuesta fue exitosa |
-| `StatusCode` | number | 200 (OK) |
+| `message` | `string` | Mensaje informativo general del resultado. |
+| `send_to_queue` | `integer` | Indicador si el documento fue encolado asíncronamente (0: No, 1: Sí). |
+| `XmlDocumentKey` | `string` | Identificador único fiscal generado (CUFE, CUDE, CUNE). |
+| `success` | `boolean` | Confirma si la petición finalizó satisfactoriamente. |
 
-#### response - Respuesta emitida por la DIAN
-
+#### Objeto response (Validación Directa DIAN)
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
-| `ErrorMessage` | string | Mensajes de error |
-| `IsValid` | boolean | Indica si el documento es válido |
-| `StatusCode` | number | Código de estado |
-| `StatusDescription` | string | Descripción del estado |
-| `StatusMessage` | string | Mensaje del estado |
-| `XmlBase64Bytes` | string | Application response generado por la DIAN, en base64 |
-| `XmlBytes` | string | Documento en base64 generado por la DIAN |
-| `XmlDocumentKey` | string | CUFE, CUDE O CUNE DEL DOCUMENTO |
-| `XmlFileName` | string | Nombre del documento en el portal de la DIAN |
+| `ErrorMessage` | `object` | Contenedor de notificaciones de advertencia de la DIAN que no impiden la aprobación. |
+| `IsValid` | `string` | Indica si el documento cumple los estándares oficiales (`"true"` o `"false"`). |
+| `StatusCode` | `string` | Estado interno del portal de la DIAN (`"00"`: Autorizado). |
+| `StatusDescription` | `string` | Glosa de estado oficial (ej. `"Procesado Correctamente."`). |
+| `StatusMessage` | `string` | Detalle específico (ej. `"La Factura electrónica LZT2002, ha sido autorizada."`). |
+| `XmlBase64Bytes` | `string` | ApplicationResponse oficial DIAN serializado en Base64. |
+| `XmlBytes` | `object` | Bytes del XML DIAN (retorna `nil` si no aplica). |
+| `XmlDocumentKey` | `string` | CUFE / CUDE del documento. |
+| `XmlFileName` | `string` | Nombre bajo el cual el XML firmado se registra en la base de datos de la DIAN. |
 
-#### AttachedDocument - Contenedor de documentos
-
+#### Objeto AttachedDocument (Archivos XML)
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
-| `pathZip` | string | Ruta del contenedor de documentos |
-| `path` | string | Ruta del contenedor de documentos |
-| `url` | string | URL del contenedor de documentos |
-| `data` | string | El contenedor de documentos en base64 |
+| `pathZip` | `string` | Ruta física de almacenamiento del archivo .ZIP en el servidor. |
+| `path` | `string` | Ruta física de almacenamiento del XML firmado. |
+| `url` | `string` | Enlace público para la descarga directa del XML firmado (formato AttachedDocument). |
+| `data` | `string` | Contenido del XML codificado en Base64. |
 
-#### qr - Representación gráfica QR del documento
-
+#### Objeto qr (Código QR)
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
-| `qrDian` | string | URL del QR en el portal de la DIAN |
-| `url` | string | URL del QR |
-| `path` | string | Ruta del QR |
-| `data` | string | El QR en base64 |
+| `qrDian` | `string` | Enlace directo del QR hacia el portal de validación oficial DIAN. |
+| `url` | `string` | Enlace para descargar la imagen del QR generado. |
+| `path` | `string` | Ruta física del recurso de imagen QR. |
+| `data` | `string` | Representación de imagen QR codificada en Base64. |
 
-#### pdf - Representación gráfica PDF del documento
-
+#### Objeto pdf (Representación Gráfica)
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
-| `path` | string | Ruta del PDF |
-| `url` | string | URL del PDF |
-| `data` | string | El PDF en base64 |
+| `path` | `string` | Ruta física de almacenamiento de la representación gráfica. |
+| `url` | `string` | Enlace público de descarga del documento en formato PDF. |
+| `data` | `string` | PDF codificado en Base64. |
+
+</details>
+
+---
 
 ## 🔄 Respuesta - Documento Duplicado
 
 <div style={{backgroundColor: '#fff3cd', padding: '1.5rem', borderRadius: '8px', border: '2px solid #ffc107', margin: '1.5rem 0'}}>
-  <strong>⚠️ StatusCode 02 - Documento Ya Procesado</strong><br/>
-  Cuando intentas generar un documento que ya fue validado por la DIAN, recibirás esta respuesta indicando que el documento ya existe.
+  <strong>⚠️ StatusCode 02 - Documento Ya Procesado (Duplicado)</strong><br/>
+  Si intenta retransmitir o generar un documento usando un prefijo y número consecutivo que ya fue validado y registrado ante la DIAN, la API rechazará la solicitud para proteger la integridad y evitar multas fiscales.
 </div>
+
+<details>
+<summary>📦 Ver JSON de Respuesta por Documento Duplicado</summary>
 
 ```json title="response.json"
 {
@@ -253,99 +232,79 @@ Todas las respuestas exitosas (HTTP 200/201) contienen estos elementos clave:
     "message": "El documento (Factura electrónica) con numero LZT224, ya se encuentra validado"
 }
 ```
+</details>
 
-### 📝 Descripción de los Campos
+### 📝 Análisis de Campos
+* **`success`:** `false` (Indica que la factura no fue regenerada).
+* **`message`:** Mensaje explicativo con el número e identificación del documento preexistente.
+* **Código de respuesta HTTP:** `400 Bad Request`.
 
-| Campo | Descripción |
-|-------|-------------|
-| `success` | `false` - Indica que la operación no se pudo completar |
-| `message` | Mensaje explicativo del rechazo |
-| `StatusCode` | `400 - Bad Request` |
+---
 
 ## 📊 Códigos de Estado HTTP Completos
 
 <div style={{backgroundColor: '#f8f9fa', padding: '1.5rem', borderRadius: '8px', border: '2px solid #6c757d', margin: '1.5rem 0'}}>
-  <strong>📋 Tabla Completa de Códigos HTTP</strong><br/>
-  Referencia exhaustiva con todos los códigos de estado, causas posibles y acciones recomendadas para cada caso.
+  <strong>📋 Catálogo Técnico Completo de Respuestas HTTP</strong><br/>
+  Consulte detalladamente las causas más probables de cada código y las sugerencias operacionales.
 </div>
 
-A continuación se muestra una tabla completa con todos los códigos de estado:
+| Código HTTP | Estado | Causa Probable | Sugerencia Operacional |
+|:---:|:---:|---|---|
+| **200** | ✓ OK | Transacción procesada correctamente por la DIAN. | Almacenar PDFs/XMLs y enviar al adquiriente. |
+| **201** | ✓ Created | Transacción encolada en procesamiento en segundo plano. | Consultar estado mediante webhook o pooling posterior. |
+| **400** | ✗ Bad Request | Sintaxis JSON incorrecta, campos no coincidentes o duplicación. | Verificar validez del JSON con herramientas de linting. |
+| **401** | ✗ Unauthorized | API Key / Token ausente o incorrectamente enviado en la cabecera. | Verificar que el Header contiene `Authorization: Bearer {token}`. |
+| **402** | ✗ Payment Required | Saldo insuficiente de folios o cuenta de membresía inactiva. | Ampliar paquete o realizar pago de suscripción. |
+| **403** | ✗ Forbidden | Intento de realizar operaciones sin privilegios o fuera de entorno. | Validar roles de usuario en el portal de Matias. |
+| **404** | ✗ Not Found | Endpoint inexistente o identificador de documento no registrado. | Validar la URL base y el consecutivo de consulta. |
+| **422** | ✗ Unprocessable Entity | Fallo de regla en las validaciones lógicas y estructurales de la DIAN. | Revisar y corregir los campos fallidos en `ErrorMessage`. |
+| **500** | ✗ Server Error | Caída de servicios internos o error de persistencia de la DIAN. | Aplicar protocolo de reintentos escalonados. |
+| **503** | ✗ Service Unavailable | Los servidores de la DIAN no responden por saturación o mantenimiento. | Esperar y retransmitir en bloques de tiempo prudenciales. |
+| **504** | ⏳ Timeout | El portal DIAN no retornó respuesta en menos de 60 segundos. | Seguir el protocolo de contingencia 12.4. |
+| **507** | ✗ Storage Error | El servidor ha excedido su capacidad física de guardado de XML. | Levantar ticket de soporte técnico de forma prioritaria. |
+| **508** | ✗ Loop Detected | Referencia circular encontrada en estructura o totalizadores. | Verificar el balance y cálculo matemático de las líneas. |
 
-| Código | Estado | Descripción | Posibles causas | Acciones recomendadas |
-|--------|--------|-------------|-----------------|----------------------|
-| **200** | ✓ OK | La solicitud se ha procesado correctamente | Documento validado exitosamente | Descargar archivos generados |
-| **201** | ✓ Created | El recurso se ha creado correctamente | Documento enviado a cola | Esperar procesamiento |
-| **400** | ✗ Bad Request | La solicitud es incorrecta o malformada | JSON inválido, falta información | Validar estructura del JSON |
-| **401** | ✗ Unauthorized | No está autorizado para acceder | Credenciales inválidas o ausentes | Verificar API key y autenticación |
-| **402** | ✗ Payment Required | Se requiere un pago actualizado | Suscripción vencida o inactiva | Renovar suscripción |
-| **403** | ✗ Forbidden | No tiene permiso para esta operación | Falta de permisos en cuenta | Contactar soporte para habilitar |
-| **404** | ✗ Not Found | El recurso solicitado no existe | URL inválida o ID incorrecto | Verificar URL y parámetros |
-| **422** | ✗ Unprocessable Entity | Validación DIAN rechazó el documento | Errores en datos del documento | Leer ErrorMessage detalladamente |
-| **500** | ✗ Internal Server Error | Error en el servidor DIAN | Problema servidor DIAN | Esperar e intentar después |
-| **503** | ✗ Service Unavailable | Servicio temporalmente no disponible | DIAN en mantenimiento | Consultar estado DIAN |
-| **504** | ⏳ Gateway Timeout | Timeout en respuesta del servidor | Demora en procesamiento DIAN | Ver sección contingencias |
-| **507** | ✗ Insufficient Storage | Almacenamiento insuficiente en servidor | Servidor lleno | Contactar soporte |
-| **508** | ✗ Loop Detected | Se detectó bucle en procesamiento | Estructura circular en datos | Revisar estructura XML |
-
-### Respuesta genérica en caso de error
+<details>
+<summary>📦 Ver JSON Genérico de Error (HTTP 4xx / 5xx)</summary>
 
 ```json title="response.json"
 {
     "success": false,
-    "message": "Mensaje de respuesta descriptivo del error"
+    "message": "Mensaje detallado descriptivo del error o la excepción encontrada."
 }
 ```
-### Descripción de los campos
-
-- `success`: Indica si la respuesta fue exitosa
-- `message`: Mensaje de respuesta
-- `StatusCode`: código de estado de la respuesta
-
-## ⚠️ Errores Generados por la DIAN
-
-<div style={{backgroundColor: '#f8d7da', padding: '1.5rem', borderRadius: '8px', border: '2px solid #dc3545', margin: '1.5rem 0'}}>
-  <strong>🚨 Errores del Servidor DIAN</strong><br/>
-  Listado de posibles errores emitidos directamente por los servicios de la DIAN y cómo manejarlos.
-</div>
-
-### 💡 Recomendaciones Generales
-
-<div style={{backgroundColor: '#fff3cd', padding: '1rem', borderRadius: '8px', border: '1px solid #ffc107', margin: '1rem 0'}}>
-  <strong>🔄 Protocolo de Reintentos:</strong><br/>
-  • Primer reintento: Inmediato<br/>
-  • Si persiste: Esperar 5 minutos<br/>
-  • Después de 3 fallos: Contactar soporte DIAN
-</div>
-
-### ⏳ 12.4 Demoras en Tiempos de Respuesta
-
-<div style={{backgroundColor: '#d1ecf1', padding: '1.5rem', borderRadius: '8px', border: '2px solid #17a2b8', margin: '1.5rem 0'}}>
-  <strong>⏱️ Protocolo de Contingencia por Timeout</strong><br/>
-  Se considera demora cuando la respuesta de la DIAN toma más de <strong>1 minuto</strong>. Los servicios permanecen activos pero debes seguir este protocolo.
-</div>
-
-#### 📋 Procedimiento en Caso de Demora (Resolución No. 000165 - DIAN):
-
-| Paso | Acción | Tiempo |
-|------|--------|--------|
-| 1 | Notificar demora a DIAN | Inmediato |
-| 2 | Detectar "Time out" | Demora declarada |
-| 3 | Reintentar | 2 min, máx 5 intentos |
-| 4 | Si persiste | Contingencia tipo 04 |
-| 5 | Generar documento | InvoiceTypeCode = 04 |
-| 6 | Monitorear | 30 min después |
-
-**Nota**: Documentos CreditNote, DebitNote, ApplicationResponse no tienen esquemas de contingencia.
+</details>
 
 ---
 
-### 500 - Internal Server Error
+## ⚠️ Errores Generados por la DIAN y Servidores
 
-| Atributo | Valor |
-|----------|-------|
-| **Descripción** | Error en el servidor de la DIAN |
-| **Causa** | El servidor experimentó un error inesperado |
-| **Acción** | Intente nuevamente más tarde o contacte soporte |
+<div style={{backgroundColor: '#f8d7da', padding: '1.5rem', borderRadius: '8px', border: '2px solid #dc3545', margin: '1.5rem 0'}}>
+  <strong>🚨 Errores Críticos del Servidor y Plataforma DIAN</strong><br/>
+  Listado de fallos devueltos directamente por los Web Services de validación previa de la DIAN.
+</div>
+
+### 💡 Protocolo de Reintentos Recomendado
+
+:::tip Recomendación de Transmisión
+Ante errores HTTP 500, 503 o 504 originados por indisponibilidad de la DIAN, aplique este protocolo de backoff exponencial para evitar bloqueos por rate limits:
+1. **Primer Reintento:** Inmediato (dentro de los primeros 10 segundos).
+2. **Segundo Reintento:** Esperar 5 minutos.
+3. **Tercer Reintento:** Esperar 15 minutos.
+4. **Si persiste tras 3 intentos:** Consultar canales de soporte de la DIAN o validar si se ha decretado estado de contingencia oficial.
+:::
+
+---
+
+### 🚨 Catálogo de Respuestas de Error 5xx
+
+Para facilitar el diagnóstico rápido, se agrupan las respuestas típicas arrojadas por la infraestructura en momentos de inestabilidad:
+
+<details>
+<summary>❌ HTTP 500 — Internal Server Error (Error en Servidor DIAN)</summary>
+
+* **Causa:** El Web Service de la DIAN experimentó un error inesperado al parsear el XML de la factura.
+* **Acción:** Retransmitir el documento transcurridos unos minutos.
 
 ```json title="response.json"
 {
@@ -353,109 +312,114 @@ A continuación se muestra una tabla completa con todos los códigos de estado:
     "message": "Error 500: Internal Server Error"
 }
 ```
+</details>
 
----
+<details>
+<summary>❌ HTTP 503 — Service Unavailable (Servidor DIAN Inaccesible)</summary>
 
-### 503 - Service Unavailable
+* **Causa:** Mantenimiento programado de la base de datos DIAN o congestión severa de fin de mes.
+* **Acción:** Retransmitir en horarios de menor concurrencia o esperar el aviso de restablecimiento.
 
-| Atributo | Valor |
-|----------|-------|
-| **Descripción** | Servicio de la DIAN no disponible |
-| **Causa** | Mantenimiento programado o alta demanda |
-| **Acción** | Intente después de unos minutos |
-
-```json title="response.json"
+```json
 {
     "success": false,
     "message": "Error 503: Service Unavailable"
 }
 ```
+</details>
 
----
+<details>
+<summary>❌ HTTP 504 — Gateway Timeout (Retraso en el Retorno del CUFE)</summary>
 
-### 504 - Gateway Timeout
+* **Causa:** El documento fue enviado a la DIAN, pero la firma y respuesta tomó más de 60 segundos.
+* **Acción:** No retransmitir inmediatamente con un nuevo número. Debe consultar primero si el documento ya fue procesado con el mismo número, o seguir el protocolo de contingencia 12.4.
 
-| Atributo | Valor |
-|----------|-------|
-| **Descripción** | Timeout en conexión con DIAN |
-| **Causa** | Respuesta tardía del servidor (>1 minuto) |
-| **Acción** | Ver sección contingencias 12.4 |
-
-```json title="response.json"
+```json
 {
     "success": false,
     "message": "Error 504: Gateway Timeout"
 }
 ```
+</details>
 
----
+<details>
+<summary>❌ HTTP 507 — Insufficient Storage (Problemas de Almacenamiento)</summary>
 
-### 507 - Insufficient Storage
+* **Causa:** Capacidad física límite alcanzada en los sistemas de logs y almacenamiento.
+* **Acción:** Abrir un ticket de soporte indicando el incidente.
 
-| Atributo | Valor |
-|----------|-------|
-| **Descripción** | Almacenamiento insuficiente en servidor |
-| **Causa** | Servidor ha alcanzado capacidad máxima |
-| **Acción** | Intente más tarde o contacte soporte |
-
-```json title="response.json"
+```json
 {
     "success": false,
     "message": "Error 507: Insufficient Storage"
 }
 ```
+</details>
+
+<details>
+<summary>❌ HTTP 508 — Loop Detected (Error en la Construcción Estructural)</summary>
+
+* **Causa:** Se detectó una referencia circular en las dependencias lógicas del JSON de la factura.
+* **Acción:** Auditar el orden de cálculo matemático en impuestos por línea.
+
+```json
+{
+    "success": false,
+    "message": "Error 508: Loop Detected"
+}
+```
+</details>
 
 ---
 
-### 508 - Loop Detected
+### ⏳ 12.4 Demoras en Tiempos de Respuesta (Timeouts) {#124-demoras-en-los-tiempos-de-respuesta-en-los-servicios-de-facturacion-electronica-de-la-dian}
 
-| Atributo | Valor |
-|----------|-------|
-| **Descripción** | Se detectó bucle en servidor |
-| **Causa** | Estructura circular en solicitud |
-| **Acción** | Revise estructura XML y contacte soporte |
+<div style={{backgroundColor: '#d1ecf1', padding: '1.5rem', borderRadius: '8px', border: '2px solid #17a2b8', margin: '1.5rem 0'}}>
+  <strong>⏱️ Protocolo de Contingencia por Timeout (Resolución 000165 DIAN)</strong><br/>
+  Se declara retraso oficial cuando la respuesta del servicio DIAN excede el límite de <strong>60 segundos</strong>. La API maneja la contingencia de la siguiente manera.
+</div>
 
-```json title="response.json"
-{
-    "success": false,
-    "message": "Error 508: Loop Detected"
-}
-```
+#### 📋 Procedimiento de Transmisión ante Contingencia:
 
-```json title="response.json"
-{
-    "success": false,
-    "message": "Error 508: Loop Detected"
-}
-```
+| Paso | Acción Requerida | Límite Temporal / Observación |
+|:---:|---|---|
+| **1** | Validar estado del documento en la API | Consultar con `prefix` y `document_number` antes de retransmitir. |
+| **2** | Declarar Timeout temporal | Si la API retorna HTTP 504 persistente. |
+| **3** | Intentar retransmisiones escalonadas | Intervalo de 2 minutos, máximo 5 intentos. |
+| **4** | Declarar Contingencia DIAN (Tipo 04) | Si la caída del portal DIAN es prolongada e informada. |
+| **5** | Emitir Factura de Contingencia | Cambiar parámetro `InvoiceTypeCode = "04"` en el JSON. |
+| **6** | Transmisión posterior | Sincronizar documentos emitidos en contingencia máximo 48 horas después de superada la caída. |
+
+:::warning Excepciones
+Tenga en cuenta que las Notas Crédito, Notas Débito y las notificaciones de ApplicationResponse **no disponen** de mecanismos o tipos de contingencia bajo la legislación colombiana.
+:::
 
 ---
 
 ## 🔄 Secciones Especiales
 
-### ⏳ StatusCode 98 - En Proceso
+### ⏳ StatusCode 98 - En Procesamiento {#statuscode-98-en-procesamiento}
 
 <div style={{backgroundColor: '#fff3cd', padding: '1.5rem', borderRadius: '8px', border: '2px solid #ffc107', margin: '1.5rem 0'}}>
-  <strong>🔄 Documento en Procesamiento por la DIAN</strong><br/>
-  Cuando recibes este código, tu documento fue aceptado pero aún está siendo validado. No es un error, solo requiere paciencia y reintentos.
+  <strong>⏳ Documento Aceptado pero Pendiente de Validación</strong><br/>
+  StatusCode 98 indica que la API recibió correctamente el documento y la DIAN lo tiene encolado, pero la respuesta final (Aprobado/Rechazado) sigue pendiente. <strong>No es un error</strong>, es un estado transitorio de alta demanda del regulador.
 </div>
 
-| Atributo | Valor |
-|----------|-------|
-| **Código** | 98 |
-| **Descripción** | Solicitud en procesamiento |
-| **Significado** | El documento está siendo procesado por la DIAN |
-| **Acción recomendada** | ⏱️ Consultar estado después de 5 minutos |
-| **Tiempo estimado** | 1-10 minutos |
+#### Ficha del Estado de Procesamiento
+* **Código:** `98`
+* **Definición:** Solicitud en Procesamiento
+* **Significado:** El documento se encuentra en la cola de validación DIAN.
+* **Tiempo Promedio de Resolución:** 1 a 10 minutos.
 
-**¿Qué hacer cuando recibes StatusCode 98?**
+:::important Protocolo de Acción para StatusCode 98
+1. **No retransmita** el documento inmediatamente para evitar colisiones.
+2. **Espere un lapso de 3 a 5 minutos**.
+3. **Consulte el estado** de procesamiento utilizando el endpoint de consulta correspondiente.
+4. **Repita el ciclo** hasta un máximo de 5 veces. Si el estado persiste por más de 30 minutos, póngase en contacto con soporte técnico.
+:::
 
-1. ✅ **Esperar 5 minutos** antes del primer reintento
-2. 🔍 **Consultar estado del documento** usando el endpoint de consulta
-3. 🔄 **Reintentar** hasta 5 veces con intervalos de 5 minutos
-4. ⚠️ Si después de 30 minutos aún está en proceso, contactar soporte
-
-#### 📝 Ejemplo de Respuesta - StatusCode 98
+<details>
+<summary>📦 Ver Ejemplo JSON de Respuesta - StatusCode 98</summary>
 
 ```json title="response.json"
 {
@@ -468,65 +432,57 @@ A continuación se muestra una tabla completa con todos los códigos de estado:
   }
 }
 ```
+</details>
 
 ---
 
-## 🔀 Diagrama de Flujo - Cómo Interpretar la Respuesta
+## 🔀 Diagrama de Flujo de Interpretación
 
-<div style={{backgroundColor: '#e7f3ff', padding: '1.5rem', borderRadius: '8px', border: '2px solid #0066cc', margin: '1.5rem 0'}}>
-  <strong>📊 Flujo de Decisión Visual</strong><br/>
-  Sigue este diagrama para procesar cualquier respuesta de la API de forma sistemática.
-</div>
+Siga de forma ordenada este flujo lógico para procesar la respuesta de la API en su aplicación o backend:
 
 ```
-┌─────────────────────────────┐
-│ Recibir respuesta de API    │
-└──────────────┬──────────────┘
-               │
-        ┌──────▼──────┐
-        │ ¿HTTP 200?  │
-        └──┬───────┬──┘
-           │ SÍ    │ NO
-           │       └─────────────────────┐
-           │                             │
-    ┌──────▼──────┐          ┌───────────▼─────┐
-    │success=true?│          │ ¿HTTP 4xx-5xx? │
-    └──┬───────┬──┘          └────┬──────┬─────┘
-       │ SÍ    │ NO               │ SÍ   │ NO
-       │       │                  │      │
-       │   ┌───▼─────────────┐   │  ┌───▼──────────────┐
-       │   │ Leer error en   │   │  │ Otro código HTTP │
-       │   │ ErrorMessage    │   │  │ (contactar soport│
-       │   │ del response    │   │  └────────────────┘
-       │   └─────────────────┘   │
-       │                          │
-  ┌────▼──────────────────┐      │
-  │ ¿StatusCode = 00?     │      │
-  │  (Procesado OK)       │      │
-  └──┬────────────┬───────┘      │
-     │ SÍ         │ NO            │
-     │            │               │
-     │     ┌──────▼──────┐       │
-     │     │StatusCode=98│       │
-     │     │(En proceso)?│       │
-     │     └──┬───────┬──┘       │
-     │        │ SÍ    │ NO       │
-     │        │   ┌───▼────────┐ │
-     │        │   │Reintentar  │ │
-     │        │   │en 5 min    │ │
-     │        │   └────────────┘ │
-     │        │                   │
-     │        │  ┌────────────────▼──┐
-     │        └──│Ver tabla códigos  │
-     │           │StatusCode en 12.2 │
-     │           └───────────────────┘
+┌──────────────────────────────────────────────┐
+│        Recibir Respuesta JSON de la API      │
+└──────────────────────┬───────────────────────┘
+                       │
+             ┌─────────▼─────────┐
+             │ ¿Es HTTP 200/201? │
+             └─┬───────────────┬─┘
+            SÍ │               │ NO
+               │               └──────────────────────────┐
+        ┌──────▼──────┐                           ┌───────▼────────┐
+        │success=true?│                           │ ¿HTTP 4xx-5xx? │
+        └─┬─────────┬─┘                           └─┬────────────┬─┘
+       SÍ │         │ NO                         SÍ │            │ NO
+          │         └──────────────┐                │            │
+          │                        │                │     ┌──────▼──────────┐
+   ┌──────▼──────────┐   ┌─────────▼────────┐       │     │ Otro Estado     │
+   │ ¿StatusCode=00? │   │ Leer errores en  │       │     │ Contactar       │
+   └─┬─────────────┬─┘   │ response.        │       │     │ Soporte Técnico │
+  SÍ │             │ NO  │ ErrorMessage     │       │     └─────────────────┘
+     │             │     └──────────────────┘       │
+     │     ┌───────▼────────┐               ┌───────▼───────────┐
+     │     │ ¿StatusCode=98 │               │ Excepción Cliente │
+     │     │  (En Proceso)? │               │ o Caída DIAN      │
+     │     └─┬────────────┬─┘               │ Leer JSON error   │
+     │    SÍ │            │ NO              └───────────────────┘
+     │       │            │
+     │       │    ┌───────▼─────────┐
+     │       │    │ StatusCode = 02 │
+     │       │    │   (Duplicado)   │
+     │       │    └─────────────────┘
+     │       │
+     │       │  ┌────────────────────────┐
+     │       └──│ Esperar 3-5 minutos y  │
+     │          │ consultar de nuevo.    │
+     │          └────────────────────────┘
      │
-  ┌──▼────────────────────────────┐
-  │ ✓ Procesado Exitosamente      │
-  │ • Descargar PDF, XML, QR      │
-  │ • Guardar XmlDocumentKey      │
-  │ • Confirmar con cliente       │
-  └───────────────────────────────┘
+┌────▼────────────────────────────────────────┐
+│  ✓ PROCESAMIENTO EXITOSO                    │
+│  • Almacenar el XmlDocumentKey (CUFE)       │
+│  • Descargar los recursos adjuntos (PDF/XML)│
+│  • Despachar e-mail al adquiriente          │
+└─────────────────────────────────────────────┘
 ```
 
 ---
@@ -534,27 +490,21 @@ A continuación se muestra una tabla completa con todos los códigos de estado:
 ## ❓ Preguntas Frecuentes (FAQ)
 
 <div style={{backgroundColor: '#fff3cd', padding: '1.5rem', borderRadius: '8px', border: '2px solid #ffc107', margin: '1.5rem 0'}}>
-  <strong>💡 Dudas Más Comunes</strong><br/>
-  Respuestas rápidas a las preguntas que recibimos con mayor frecuencia sobre las respuestas de la API.
+  <strong>💡 Resolución de Dudas de Integración</strong><br/>
+  Respuestas directas a las preguntas frecuentes que recibimos en los canales de asistencia técnica.
 </div>
 
-### 🚨 ¿Qué debo hacer si recibo un error 504?
-En caso de timeout (error 504), siga el procedimiento de contingencia descrito en la sección **12.4**. Debe reintentar después de 2 minutos, hasta 5 veces máximo.
+**¿Qué diferencia hay entre `success` y `response.IsValid`?**  
+`success` es un indicador a nivel de API del transporte y validez de la petición JSON. `response.IsValid` es la decisión final de aprobación de la DIAN sobre la validez fiscal del documento electrónico.
 
-### ✅ ¿Puedo omitir campos requeridos en la solicitud?
-No. Todos los campos marcados como requeridos en la documentación deben estar presentes. Revisar el errorMessage de la respuesta para identificar campos faltantes.
+**Recibí un error 504 Gateway Timeout, ¿el documento se emitió?**  
+Es probable que sí. Cuando ocurre un Timeout, el XML pudo llegar a la DIAN y procesarse, pero la respuesta de retorno se perdió. **Nunca intente retransmitir** con el mismo número sin antes consultar el estado de dicho consecutivo para evitar el error `StatusCode 02 (Duplicado)`.
 
-### ⏱️ ¿Cuánto tiempo tarda el procesamiento de un documento?
-Normalmente, entre 1-5 minutos. Si recibe StatusCode 98, el documento está en proceso. Use el endpoint de consulta de estado para verificar progreso.
+**¿Qué significa `nil="true"` en algunos nodos XML de respuesta?**  
+Es un estándar de serialización SOAP/XML integrado en la respuesta JSON. Indica de forma explícita que la variable o nodo no contiene información (es equivalente a un valor `null` en JavaScript).
 
-### 🔍 ¿Qué significan los caracteres nil="true" en la respuesta?
-Indica que ese campo es null/vacío en esa particular respuesta. Es normal en ciertos estados de procesamiento.
-
-### 🔄 ¿Debo reintentar automáticamente ante errores?
-Sí, pero con cuidado. Use backoff exponencial: espere 2-5 segundos entre reintentos. Para error 504, ver sección de contingencias.
-
-### 📋 ¿Cómo consulto el estado de un documento después de 98?
-Use el endpoint de consulta con el `XmlDocumentKey` (CUFE/CUDE/CUNE) retornado. Continúe consultando hasta recibir status 200 o 201.
+**¿Cómo automatizar la recuperación de documentos ante StatusCode 98?**  
+Debe programar una rutina (Job) en su sistema que se dispare asíncronamente cada 5 minutos, consultando el endpoint de consulta del documento hasta que el portal responda con éxito o rechazo definitivo.
 
 ---
 
@@ -564,8 +514,8 @@ Use el endpoint de consulta con el `XmlDocumentKey` (CUFE/CUDE/CUNE) retornado. 
   <a href="/docs/endpoints" style={{textDecoration: 'none', color: 'inherit'}}>
     <div style={{padding: '1.5rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '2px solid #0066cc', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
       <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>🔌</div>
-      <strong>Endpoints API</strong><br/>
-      <small>50+ rutas documentadas</small>
+      <strong>Endpoints de la API</strong><br/>
+      <small>Explore las 50+ rutas disponibles.</small>
     </div>
   </a>
 
@@ -573,7 +523,7 @@ Use el endpoint de consulta con el `XmlDocumentKey` (CUFE/CUDE/CUNE) retornado. 
     <div style={{padding: '1.5rem', backgroundColor: '#d4edda', borderRadius: '8px', border: '2px solid #28a745', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
       <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📄</div>
       <strong>Factura Simple</strong><br/>
-      <small>Ejemplo práctico</small>
+      <small>Vea un ejemplo práctico paso a paso.</small>
     </div>
   </a>
 
@@ -581,7 +531,7 @@ Use el endpoint de consulta con el `XmlDocumentKey` (CUFE/CUDE/CUNE) retornado. 
     <div style={{padding: '1.5rem', backgroundColor: '#fff3cd', borderRadius: '8px', border: '2px solid #ffc107', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
       <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>⚠️</div>
       <strong>Errores Comunes</strong><br/>
-      <small>Troubleshooting</small>
+      <small>Guía rápida de resolución de problemas.</small>
     </div>
   </a>
 
@@ -589,7 +539,7 @@ Use el endpoint de consulta con el `XmlDocumentKey` (CUFE/CUDE/CUNE) retornado. 
     <div style={{padding: '1.5rem', backgroundColor: '#d1ecf1', borderRadius: '8px', border: '2px solid #17a2b8', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
       <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📋</div>
       <strong>Campos de Documentos</strong><br/>
-      <small>Referencia completa</small>
+      <small>Diccionario de campos del JSON.</small>
     </div>
   </a>
 </div>
@@ -599,7 +549,7 @@ Use el endpoint de consulta con el `XmlDocumentKey` (CUFE/CUDE/CUNE) retornado. 
 <div style={{backgroundColor: '#f8f9fa', padding: '1rem', borderRadius: '8px', textAlign: 'center', marginTop: '2rem'}}>
   <small>
     📅 <strong>Última actualización:</strong> Febrero 2026 (v3.0.0) • 
-    📨 <strong>Códigos HTTP:</strong> 13 códigos documentados • 
-    🎯 <strong>Nivel:</strong> ⭐⭐⭐ Referencia Técnica
+    📨 <strong>Respuestas Documentadas:</strong> 13 escenarios estándar • 
+    🎯 <strong>Nivel:</strong> ⭐⭐⭐ Referencia Técnica de Integración
   </small>
 </div>

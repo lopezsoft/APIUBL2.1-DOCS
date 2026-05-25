@@ -245,7 +245,7 @@ CUFE: f8e5c3a9b2d1e6f4g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3
 - Cédulas
 - Códigos de productos
 
-**Algoritmo para NIT**: Ver [Validaciones de NIT](/docs/regulatory-framework/factura-electronica/anexo-tecnico/validaciones#31-identificación-del-emisor)
+**Algoritmo para NIT**: Ver [Validaciones de NIT](/docs/regulatory-framework/factura-electronica/anexo-tecnico/validaciones#41-identificación-del-emisor)
 
 ---
 

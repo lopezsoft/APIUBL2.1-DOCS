@@ -249,4 +249,4 @@ Usar el CUFE asignado en `billing_reference.uuid` (como se muestra en el ejemplo
 - Anexo Técnico de Factura Electrónica v1.9
 - Resolución DIAN No. 000165 (01/NOV/2023)
 - [Factura de Contingencia Tipo 03](/docs/jsons-billing/contingency-invoice-type-03)
-- [Campos de Facturación - billing_reference](/docs/billing-fields#billing_reference)
+- [Campos de Facturación - billing_reference](/docs/billing-fields#billing_reference-)

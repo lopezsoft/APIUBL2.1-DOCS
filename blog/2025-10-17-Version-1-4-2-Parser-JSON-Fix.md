@@ -114,7 +114,7 @@ Este release incluye además:
 
 ## 📚 Recursos
 
-- 💬 [Chat Asistente IA](/chat)
+- 💬 [Chat Asistente IA](/)
 - 📖 [Documentación de Campos](/docs/billing-fields)
 - 📋 [Ejemplos JSON - Factura Estándar](/docs/jsons-billing/invoice)
 
@@ -133,7 +133,7 @@ Validado con:
 
 ---
 
-**¡Actualiza ahora para disfrutar de un chat más estable!** Prueba el [Chat Asistente IA](/chat) sin preocuparte por errores de parsing.
+**¡Actualiza ahora para disfrutar de un chat más estable!** Prueba el [Chat Asistente IA](/) sin preocuparte por errores de parsing.
 
 **Versión**: 1.4.2  
 **Fecha**: 17 de Octubre de 2025  

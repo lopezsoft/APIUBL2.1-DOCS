@@ -99,7 +99,7 @@ Este tipo de facturas es ideal para:
 - 📖 [Documentación de Mandatos](/docs/billing-fields#lines-mandate)
 - 📋 [Ejemplo JSON Completo](/docs/jsons-billing/mandate-invoice)
 - 🔧 [Campos de Facturación](/docs/billing-fields)
-- 💬 [Chat Asistente IA](/chat)
+- 💬 [Chat Asistente IA](/)
 
 ## ✅ Compatibilidad
 
@@ -116,7 +116,7 @@ Este tipo de facturas es ideal para:
 
 ---
 
-**¡Comienza a usar mandatos hoy mismo!** Consulta nuestra documentación completa o prueba con nuestro [Chat Asistente IA](/chat) para recibir ayuda personalizada.
+**¡Comienza a usar mandatos hoy mismo!** Consulta nuestra documentación completa o prueba con nuestro [Chat Asistente IA](/) para recibir ayuda personalizada.
 
 **Versión**: 1.4.1  
 **Fecha**: 17 de Octubre de 2025  

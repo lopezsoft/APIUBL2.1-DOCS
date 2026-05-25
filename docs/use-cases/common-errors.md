@@ -1,6 +1,7 @@
 ---
 sidebar_position: 4
 description: "Guía para identificar y solucionar errores comunes"
+sidebar_label: Errores Comunes
 ---
 
 # ⚠️ Guía: Errores Comunes y Soluciones

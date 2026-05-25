@@ -1,5 +1,6 @@
 ---
-sidebar_position: 4
+sidebar_position: 2
+sidebar_label: Campos del Request
 ---
 
 # 📋 Campos de todos los documentos electrónicos
@@ -32,349 +33,7 @@ sidebar_position: 4
   </div>
 </div>
 
-## 📑 Tabla de Contenidos
-
-- [Ejemplo Completo de Factura](#ejemplo-completo)
-- [Descripción de los campos](#descripción-de-los-campos)
-- [Referencia Rápida de Tipos de Documento](#referencia-rápida-de-tipos-de-documento)
-- [Compatibilidad de Campos por Tipo](#compatibilidad-de-campos-por-tipo)
-- [Uso de los campos](#uso-de-los-campos)
-- [Additional Document Reference](#additional_document_reference-referencia-a-documento-adicional)
-- [Ejemplo Mínimo Requerido](#ejemplo-mínimo-requerido)
-
 ---
-
-```json
-{
-  "resolution_number": "18760000001",
-  "prefix": "FEV",
-  "date": "2021-09-12",
-  "expiration_date": "2021-09-12",
-  "time": "2021-09-12 22:46:53",
-  "notes": "Nota del documento",
-  "document_number": 990000001,
-  "operation_type_id": 1,
-  "type_document_id": 7,
-  "graphic_representation": 1,
-  "send_email": 1,
-  "currency_id": 272,
-  "payments": [
-    {
-      "payment_method_id": 1,
-      "means_payment_id": 10,
-      "value_paid": "141100.00",
-      "payment_due_date": "2024-02-22"
-    }
-  ],
-  "report_header": {
-    "uuid": "101413670038274164",
-    "vars": [
-      {
-        "name": "sucursal",
-        "value": "Bodega Principal Cali"
-      },
-      {
-        "name": "direccion",
-        "value": "Zona Franca Palmaseca Bodega 5"
-      },
-      {
-        "name": "celular",
-        "value": "315 112 4411"
-      }
-    ]
-  },
-  "payment_exchange_rate": {
-    "exchange_rate": "3950.00",
-    "rate_date": "2022-06-28",
-    "base_rate": "3950.00",
-    "currency_id": 188
-  },
-  "point_of_sale": {
-    "cashier_name": "LEWIS LOPEZ",
-    "terminal_number": "CJ001aB",
-    "cashier_type": "Caja de apoyo",
-    "sales_code": "POS01",
-    "address": "Gilbarco Encore 4 L1 Mangue ra 17 AC",
-    "sub_total": "2000.10"
-  },
-  "software_manufacturer": {
-    "owner_name": "LEWIS LOPEZ GOMEZ",
-    "company_name": "LOPEZSOFT SAS",
-    "software_name": "SOFTWARE POS MATIAS APP"
-  },
-  "document_signature": {
-    "cashier": "Nombre del cajero(a)",
-    "seller": "Nombre del vendedor(a)"
-  },
-  "order_reference": {
-    "reference_number": "4545478787",
-    "reference_date": "2021-05-19"
-  },
-  "health": {
-    "operation_type": "SS-CUFE",
-    "invoice_period": {
-      "start_date": "9999-12-31",
-      "start_time": "23:59:59",
-      "end_date": "9999-12-31",
-      "end_time": "23:59:59"
-    },
-    "download_attachments": {
-      "url": "www.ips-1.com.co",
-      "arguments": [
-        {
-          "name": "excelFile",
-          "value": "a1b2c3.xlsx"
-        },
-        {
-          "name": "txtFile",
-          "value": "a1b2c3.txt"
-        }
-      ]
-    },
-    "document_delivery": {
-      "ws": "https://ws4erp.ips-987.com.co/WcfRecibiendoDocs4ERP.svc?wsdl",
-      "arguments": [
-        {
-          "name": "Método-1",
-          "value": "ClienteEntregaAcuseDeReciboDeFEV-VP"
-        },
-        {
-          "name": "Método-2",
-          "value": "ClienteEntregaConstanciaDeMercanciaEntregada"
-        }
-      ]
-    },
-    "user_collections": [
-      {
-        "information": [
-          {
-            "name": "CODIGO_PRESTADOR",
-            "value": "codigo_prestador_de_servicios"
-          },
-          {
-            "name": "TIPO_DOCUMENTO_IDENTIFICACION",
-            "value": "Cédula de ciudadanía",
-            "schemeName": "salud_identificacion.gc",
-            "schemeID": "CC"
-          },
-          {
-            "name": "NUMERO_DOCUMENTO_IDENTIFICACION",
-            "value": "1234567891"
-          },
-          {
-            "name": "PRIMER_APELLIDO",
-            "value": "Primer_Apellido_del_usuario"
-          },
-          {
-            "name": "SEGUNDO_APELLIDO",
-            "value": "Segundo_Apellido_del_usuario"
-          },
-          {
-            "name": "PRIMER_NOMBRE",
-            "value": "Primer_Nombre_del_usuario"
-          },
-          {
-            "name": "SEGUNDO_NOMBRE",
-            "value": "Segundo_Nombre_del_usuario"
-          },
-          {
-            "name": "TIPO_USUARIO",
-            "value": "Contributivo cotizante",
-            "schemeName": "salud_tipo_usuario.gc",
-            "schemeID": "01"
-          },
-          {
-            "name": "MODALIDAD_CONTRATACION",
-            "value": "Grupos Relacionados por Diagnóstico",
-            "schemeName": "salud_modalidad_pago.gc",
-            "schemeID": "02"
-          },
-          {
-            "name": "OBERTURA_PLAN_BENEFICIOS",
-            "value": "Cobertura Póliza SOAT",
-            "schemeName": "salud_cobertura.gc",
-            "schemeID": "04"
-          },
-          {
-            "name": "NUMERO_AUTORIZACION",
-            "value": "A1234;604567;AX-2345"
-          },
-          {
-            "name": "NUMERO_MIPRES",
-            "value": "1 A1234;604567;AX-234534566"
-          },
-          {
-            "name": "NUMERO_ENTREGA_MIPRES",
-            "value": "2 A1234;604567;AX-234534566"
-          },
-          {
-            "name": "NUMERO_CONTRATO",
-            "value": "XPTO3"
-          },
-          {
-            "name": "NUMERO_POLIZA",
-            "value": "NUMERO de POLIZA"
-          },
-          {
-            "name": "COPAGO",
-            "value": "1000000"
-          },
-          {
-            "name": "CUOTA_MODERADORA",
-            "value": "2000000"
-          },
-          {
-            "name": "CUOTA_RECUPERACION",
-            "value": "3000000"
-          },
-          {
-            "name": "PAGOS_COMPARTIDOS",
-            "value": "4000000"
-          }
-        ]
-      }
-    ]
-  },
-  "customer": {
-    "country_id": "45",
-    "city_id": "836",
-    "identity_document_id": "1",
-    "type_organization_id": 2,
-    "tax_regime_id": 2,
-    "tax_level_id": 5,
-    "company_name": "NOMBRE DEL CLIENTE",
-    "dni": "1234564",
-    "mobile": "1234156465",
-    "email": "correo@corre.com",
-    "address": "dirección",
-    "postal_code": "000000",
-    "points": 0,
-    "extra_data": [
-      {
-        "title": "No. Socio",
-        "value": "78-54121-454"
-      },
-      {
-        "title": "FECHA DE VINCULACIÓN",
-        "value": "02/02/2026"
-      }
-    ]
-  },
-  "discrepancy_response": {
-    "reference_id": "EPOS2",
-    "response_id": "9"
-  },
-  "billing_reference": {
-    "number": "EPOS2",
-    "date": "2023-12-22",
-    "uuid": "b1b5d93a2918407a2ef0048ed3092e5d96c94f73db178779463f202f8c52dd53ef5b9888d804d4b609521b1d031aea39"
-  },
-  "allowance_charges": [
-    {
-      "amount": "10000",
-      "base_amount": "725000",
-      "charge_indicator": true,
-      "allowance_charge_reason": "Motivo del cargo a la factura"
-    },
-    {
-      "amount": "10000",
-      "base_amount": "725000",
-      "charge_indicator": false,
-      "discount_id": 8,
-      "allowance_charge_reason": "Motivo del descuento a la factura"
-    }
-  ],
-  "legal_monetary_totals": {
-    "line_extension_amount": "131600.00",
-    "tax_exclusive_amount": "50000",
-    "tax_inclusive_amount": "141100.00",
-    "total_charges": 0,
-    "total_allowance": 0,
-    "payable_amount": "141100.00"
-  },
-  "prepaid_payments": {
-    "id": "SFR3123856",
-    "paid_amount": "10.00",
-    "received_date": "2018-09-29",
-    "paid_date": "2018-09-29",
-    "instruction_id": "Prepago recibido"
-  },
-  "lines": [
-    {
-      "invoiced_quantity": "3",
-      "quantity_units_id": "1093",
-      "line_extension_amount": "81600",
-      "free_of_charge_indicator": false,
-      "description": "Hunters Mini Tumaco 82%",
-      "note": "Información adicional del producto, es opcional cuando no es AUI",
-      "code": "HMT82",
-      "type_item_identifications_id": "4",
-      "reference_price_id": "1",
-      "price_amount": "27200",
-      "base_quantity": "3",
-      "extra_data": [
-        {
-          "title": "LOTE",
-          "value": "45413",
-          "align": "left"
-        },
-        {
-          "title": "FECHA DE EXPIRACIÓN",
-          "value": "02/02/2026",
-          "align": "center"
-        }
-      ],
-      "invoice_period": {
-        "start_date": "2022-08-30",
-        "description_code": 1
-      },
-      "allowance_charges": [
-        {
-          "amount": "10000",
-          "base_amount": "725000",
-          "charge_indicator": true,
-          "allowance_charge_reason": "Motivo del cargo a la linea"
-        },
-        {
-          "amount": "10000",
-          "base_amount": "725000",
-          "charge_indicator": false,
-          "discount_id": 8,
-          "allowance_charge_reason": "Motivo del descuento a la linea"
-        }
-      ]
-    },
-    {
-      "invoiced_quantity": "1",
-      "quantity_units_id": "1093",
-      "line_extension_amount": "50000",
-      "free_of_charge_indicator": false,
-      "description": "TIJERA NECROPSIA AVES",
-      "code": "HMT83",
-      "type_item_identifications_id": "4",
-      "reference_price_id": "1",
-      "price_amount": "59500",
-      "base_quantity": "1",
-      "tax_totals": [
-        {
-          "tax_id": "1",
-          "tax_amount": 9500,
-          "taxable_amount": 50000,
-          "percent": 19
-        }
-      ]
-    }
-  ],
-  "tax_totals": [
-    {
-      "tax_id": "1",
-      "tax_amount": 9500,
-      "taxable_amount": 50000,
-      "percent": 19
-    }
-  ]
-}
-```
 
 ## 🎯 Referencia Rápida de Tipos de Documento
 
@@ -436,194 +95,11 @@ sidebar_position: 4
 
 ---
 
-## 📖 Descripción de los campos
+## 🔧 Referencia de Campos
 
-A continuación se describen los campos que se deben de considerar para la generación de la factura electrónica.
-
-```
-{
-	"resolution_number": str,  # Número de resolución del documento
-  "prefix": str,  # Prefijo del documento
-	"date": str,  # Fecha de emisión del documento
-	"expiration_date": str,  # Fecha de expiración del documento
-	"time": str,  # Hora de emisión del documento
-	"notes": str,  # Notas adicionales del documento
-	"document_number": int,  # Número del documento
-	"operation_type_id": int,  # ID del tipo de operación
-	"type_document_id": int,  # ID del tipo de documento
-	"graphic_representation": int,  # Indicador de representación gráfica
-	"send_email": int,  # Indicador de envío de email
-	"currency_id": int,  # ID de la moneda utilizada
-	"payments": [  # Lista de pagos
-	  {
-		"payment_method_id": int,  # ID del método de pago
-		"means_payment_id": int,  # ID del medio de pago
-		"value_paid": str,  # Valor pagado
-		"payment_due_date": str,  # Fecha de vencimiento del pago
-	  }
-	],
-	"payment_exchange_rate": {  # Tasa de cambio para el pago
-	  "exchange_rate": str,  # Valor de la tasa de cambio
-	  "rate_date": str,  # Fecha de la tasa de cambio
-      "base_rate": str,  # Tasa base
-      "currency_id": int,  # ID de la moneda
-	},
-	"point_of_sale": {  # Información del punto de venta
-	  "cashier_name": str,  # Nombre del cajero
-	  "terminal_number": str,  # Número de terminal
-	  "cashier_type": str,  # Tipo de cajero
-	  "sales_code": str,  # Código de ventas
-	  "address": str,  # Dirección
-	  "sub_total": str,  # Subtotal
-	},
-	"software_manufacturer": {  # Información del fabricante del software
-	  "owner_name": str,  # Nombre del propietario
-	  "company_name": str,  # Nombre de la compañía
-	  "software_name": str,  # Nombre del software
-	},
-	"order_reference": {  # Referencia de la orden
-	  "reference_number": str,  # Número de referencia
-	  "reference_date": str,  # Fecha de referencia
-	},
-  "health": {  # Información del sector salud
-      "operation_type": str,  # Tipo de operación
-      "invoice_period": {  # Periodo de facturación
-        "start_date": str,  # Fecha de inicio
-        "start_time": str,  # Hora de inicio
-        "end_date": str,  # Fecha de fin
-        "end_time": str,  # Hora de fin
-      },
-      "download_attachments": {  # Descargar archivos adjuntos
-        "url": str,  # URL
-        "arguments": [  # Argumentos
-          {
-            "name": str,  # Nombre
-            "value": str,  # Valor
-          }
-        ]
-      },
-      "document_delivery": {  # Entrega de documentos
-        "ws": str,  # URL del servicio web
-        "arguments": [  # Argumentos
-          {
-            "name": str,  # Nombre
-            "value": str,  # Valor
-          }
-        ]
-      },
-      "user_collections": [  # Colecciones de usuario
-        {
-          "information": [  # Información
-            {
-              "name": str,  # Nombre
-              "value": str,  # Valor
-              "schemeName": str,  # Nombre del esquema
-              "schemeID": str,  # ID del esquema
-            }
-          ]
-        }
-      ]
-    },
-	"customer": {  # Información del cliente
-	  "country_id": str,  # ID del país
-	  "city_id": str,  # ID de la ciudad
-	  "identity_document_id": str,  # ID del documento de identidad
-	  "type_organization_id": int,  # ID del tipo de organización
-	  "tax_regime_id": int,  # ID del régimen tributario
-	  "tax_level_id": int,  # ID del nivel tributario
-	  "company_name": str,  # Nombre de la compañía
-	  "dni": str,  # DNI del cliente
-	  "mobile": str,  # Móvil del cliente
-	  "email": str,  # Email del cliente
-	  "address": str,  # Dirección del cliente
-	  "postal_code": str,  # Código postal del cliente,
-	  "points": int,  # Puntos del cliente
-	},
-	"discrepancy_response": {  # Respuesta a discrepancias
-	  "reference_id": str,  # ID de referencia
-	  "response_id": str,  # ID de respuesta
-	},
-	"billing_reference": {  # Referencia de facturación
-	  "number": str,  # Número
-	  "date": str,  # Fecha
-	  "uuid": str,  # UUID
-	},
-	"allowance_charges": [  # Cargos y descuentos
-	  {
-		"amount": str,  # Monto
-		"base_amount": str,  # Monto base
-		"charge_indicator": bool,  # Indicador de cargo
-		"allowance_charge_reason": str,  # Motivo del cargo o descuento
-		"discount_id": int,  # ID del descuento (opcional)
-	  }
-	],
-	"legal_monetary_totals": {  # Totales monetarios legales
-	  "line_extension_amount": str,  # Monto de extensión de línea
-	  "tax_exclusive_amount": str,  # Monto exclusivo de impuestos
-	  "tax_inclusive_amount": str,  # Monto incluyente de impuestos
-	  "total_charges": int,  # Total de cargos
-	  "total_allowance": int,  # Total de descuentos
-	  "payable_amount": str,  # Monto pagable
-	},
-    "prepaid_payments": {  # Anticipos
-      "id": str,  # ID
-      "paid_amount": str,  # Monto pagado
-      "received_date": str,  # Fecha de recibido
-      "paid_date": str,  # Fecha de pago
-      "instruction_id": str,  # ID de instrucción
-    },
-	"lines": [  # Líneas de detalle
-	  {
-		"invoiced_quantity": str,  # Cantidad facturada
-		"quantity_units_id": str,  # ID de unidad de medida
-		"line_extension_amount": str,  # Monto de extensión de línea
-		"free_of_charge_indicator": bool,  # Indicador de gratuidad
-		"description": str,  # Descripción
-		"note": str,  # Nota
-		"code": str,  # Código
-		"type_item_identifications_id": str,  # ID de tipo de identificación del ítem
-		"reference_price_id": str,  # ID de precio de referencia
-		"price_amount": str,  # Monto del precio
-		"base_quantity": str,  # Cantidad base
-    "invoice_period": {  # Periodo de facturación de la línea del documento soporte
-      "start_date": str,  # Fecha de inicio
-      "description_code": int,  # Código de descripción
-    },
-		"allowance_charges": [  # Cargos y descuentos en la línea
-		  {
-			"amount": str,  # Monto
-			"base_amount": str,  # Monto base
-			"charge_indicator": bool,  # Indicador de cargo
-			"allowance_charge_reason": str,  # Motivo del cargo o descuento
-			"discount_id": int,  # ID del descuento (opcional)
-		  }
-		],
-		"tax_totals": [  # Totales de impuestos
-		  {
-			"tax_id": str,  # ID del impuesto
-			"tax_amount": int,  # Monto del impuesto
-			"taxable_amount": int,  # Monto imponible
-			"percent": int,  # Porcentaje
-		  }
-		],
-	  }
-	],
-	"tax_totals": [  # Totales de impuestos
-	  {
-		"tax_id": str,  # ID del impuesto
-		"tax_amount": int,  # Monto del impuesto
-		"taxable_amount": int,  # Monto imponible
-		"percent": int,  # Porcentaje
-	  }
-	]
-  }
-```
-
-## 🔧 Uso de los campos
-
-<div style={{backgroundColor: '#e7f3ff', padding: '1rem', borderRadius: '8px', border: '1px solid #0066cc', marginBottom: '2rem'}}>
-  <strong>💡 Guía de Uso:</strong> A continuación se describe el uso detallado de los campos de la factura electrónica, nota de crédito y nota de débito, documento soporte y documento equivalente, con sus respectivas notas de ajuste.
-</div>
+:::info Guía de Uso
+A continuación se describe el uso detallado de cada campo del request body. Los campos están agrupados por función para facilitar la navegación.
+:::
 
 ### `resolution_number` 🔴
 
@@ -655,7 +131,50 @@ Número consecutivo del documento, sin prefijos. _Este campo es obligatorio_ par
 
 ### `operation_type_id` 🔴
 
-Se refiere al tipo de operación que afecta al documento, en la mayoría de los documentos es 1 (Estándar). _Este campo es obligatorio_ para todos los documentos y debe ser un entero.
+Se refiere al tipo de operación que afecta al documento. _Este campo es obligatorio_ para todos los documentos y debe ser un entero que corresponda al **ID** de la tabla `operation_types` del API.
+
+:::warning IMPORTANTE
+En el API siempre se envía el **ID** (columna izquierda), **NUNCA** el code DIAN. El valor más común es `1` (Estándar).
+:::
+
+<details open>
+<summary>📄 <strong>Factura Electrónica y Documento Soporte</strong></summary>
+
+| ID (API) | Code DIAN | Tipo de Operación | Uso |
+|:--------:|:---------:|-------------------|-----|
+| **1** | 10 | Estándar | ✅ Valor por defecto para la mayoría de facturas |
+| **2** | 09 | Servicios AIU | Administración, Imprevistos y Utilidad |
+| **3** | 11 | Mandatos | Operaciones de mandato ([ver `lines->mandate`](#linesmandato)) |
+| **4** | 12 | Transporte | Sector transporte |
+| **5** | 14 | Notarios | Sector notarial |
+| **6** | 15 | Compra Divisas | Operaciones de compra de divisas |
+| **7** | 16 | Venta Divisas | Operaciones de venta de divisas |
+
+</details>
+
+<details>
+<summary>📑 <strong>Documento Soporte (Residente / No Residente)</strong></summary>
+
+| ID (API) | Code DIAN | Tipo de Operación | Uso |
+|:--------:|:---------:|-------------------|-----|
+| **9** | 10 | Residente | Proveedor residente en Colombia |
+| **10** | 11 | No Residente | Proveedor no residente — Requiere [`payment_exchange_rate`](#payment_exchange_rate-) |
+
+</details>
+
+<details>
+<summary>📝 <strong>Notas de Ajuste (Crédito / Débito)</strong></summary>
+
+| ID (API) | Code DIAN | Tipo de Operación | Uso |
+|:--------:|:---------:|-------------------|-----|
+| **11** | 20 | Nota ajuste Doc. Equivalente POS | Ajuste al documento equivalente POS |
+| **12** | 20 | Nota Crédito → Factura Electrónica | Referencia una factura electrónica existente |
+| **13** | 24 | Nota Ajuste → FE Aceptada | Para facturas electrónicas de venta aceptadas |
+| **14** | 30 | Nota Débito → Factura Electrónica | Referencia una factura electrónica existente |
+| **15** | 22 | Nota Crédito sin referencia FE | Sin referencia a una factura electrónica |
+| **16** | 32 | Nota Débito sin referencia FE | Sin referencia a una factura electrónica |
+
+</details>
 
 - #### Ejemplo
 
@@ -665,22 +184,106 @@ Se refiere al tipo de operación que afecta al documento, en la mayoría de los 
 
 ### `type_document_id` 🔴
 
-Se refiere al tipo de documento que se está enviando a la DIAN. _Este campo es obligatorio_ para todos los documentos y debe ser un **entero que corresponda al ID de la base de datos del API** (NO el code DIAN).
+Se refiere al tipo de documento que se está enviando a la DIAN. _Este campo es obligatorio_ para todos los documentos y debe ser un **entero que corresponda al `id` de la tabla `accounting_documents` del API** (NO el `code` DIAN).
 
-**Valores permitidos (ID de API):**
+:::danger CRÍTICO
+En el API **SIEMPRE** se usa el **`id`** de la base de datos (columna izquierda). **NUNCA** el `code` DIAN. Confundir estos valores es el error más común de integración.
+:::
 
-- `7` - Factura de Venta (code DIAN: 01)
-- `8` - Factura de Exportación (code DIAN: 02)
-- `9` - **Factura de Contingencia Tipo 03** (code DIAN: 03) - Requiere [`additional_document_reference`](#additional_document_reference-referencia-a-documento-adicional)
-- `10` - **Factura de Contingencia Tipo 04** (code DIAN: 04)
-- `11` - Documento Soporte (code DIAN: 05)
-- `20` - **Documento Equivalente POS** (code DIAN: 20) - Requiere [`point_of_sale`](#point_of_sale)
-- `5` - Nota Crédito (code DIAN: 91)
-- `4` - Nota Débito (code DIAN: 92)
+:::info Columnas de referencia
+- **`id`** → Valor que se envía en `type_document_id`
+- **`code`** → Código DIAN (solo referencia normativa)
+- **`cufe_algorithm`** → Algoritmo de hash que genera la DIAN para el documento
+- **`apply_notes`** → `1` si el documento acepta notas de crédito/débito
+:::
 
-**⚠️ CRÍTICO:** En el API SIEMPRE usas el ID (números de la izquierda), NUNCA el code DIAN (números entre paréntesis).
+<details open>
+<summary>📄 <strong>Facturas Electrónicas</strong></summary>
 
-**Consultar también:** [Referencia Rápida de Tipos de Documento](#referencia-rápida-de-tipos-de-documento) | [Glosario: Contingencia](/docs/glossary#contingencia)
+| `id` | `code` | Documento | Algoritmo | Notas | Requisitos especiales |
+|:----:|:------:|-----------|:---------:|:-----:|----------------------|
+| **7** | 01 | Factura electrónica | CUFE-SHA384 | ✅ | — |
+| **8** | 02 | Factura de Exportación | CUFE-SHA384 | ✅ | Requiere [`payment_exchange_rate`](#payment_exchange_rate-) |
+| **9** | 03 | Factura por Contingencia Facturador | CUDE-SHA384 | ✅ | ⚠️ Requiere [`additional_document_reference`](#additional_document_reference-referencia-a-documento-adicional) |
+| **10** | 04 | Factura por Contingencia DIAN | CUFE-SHA384 | ✅ | — |
+
+</details>
+
+<details open>
+<summary>📑 <strong>Documento Soporte</strong></summary>
+
+| `id` | `code` | Documento | Algoritmo | Notas | Requisitos especiales |
+|:----:|:------:|-----------|:---------:|:-----:|----------------------|
+| **11** | 05 | Documento de Soporte | CUDS-SHA384 | ✅ | Requiere `invoice_period` en cada línea |
+| **15** | 95 | Nota de ajuste documento soporte | CUDS-SHA384 | ❌ | Requiere [`billing_reference`](#billing_reference-) |
+
+</details>
+
+<details open>
+<summary>🏪 <strong>Documento Equivalente POS</strong></summary>
+
+| `id` | `code` | Documento | Algoritmo | Notas | Requisitos especiales |
+|:----:|:------:|-----------|:---------:|:-----:|----------------------|
+| **20** | 20 | P.O.S Electrónico | CUDE-SHA384 | ✅ | ⚠️ Requiere [`point_of_sale`](#point_of_sale-) y [`software_manufacturer`](#software_manufacturer-) |
+| **93** | 93 | Nota débito P.O.S Electrónico | CUDE-SHA384 | ❌ | Requiere [`billing_reference`](#billing_reference-) |
+| **94** | 94 | Nota crédito P.O.S Electrónico | CUDE-SHA384 | ❌ | Requiere [`billing_reference`](#billing_reference-) con `scheme_name` |
+
+</details>
+
+<details>
+<summary>📝 <strong>Notas Crédito y Débito</strong></summary>
+
+| `id` | `code` | Documento | Algoritmo | Requisitos especiales |
+|:----:|:------:|-----------|:---------:|----------------------|
+| **5** | 91 | Nota crédito | CUDE-SHA384 | Requiere [`discrepancy_response`](#discrepancy_response-) y [`billing_reference`](#billing_reference-) |
+| **4** | 92 | Nota débito | CUDE-SHA384 | Requiere [`discrepancy_response`](#discrepancy_response-) y [`billing_reference`](#billing_reference-) |
+
+</details>
+
+<details>
+<summary>👷 <strong>Nómina Electrónica</strong></summary>
+
+| `id` | `code` | Documento | Algoritmo | Notas |
+|:----:|:------:|-----------|:---------:|:-----:|
+| **13** | 102 | Documento Soporte Nómina Electrónica | CUNE-SHA384 | ✅ |
+| **14** | 103 | Nota de Ajuste Nómina Electrónica | CUNE-SHA384 | ✅ |
+
+</details>
+
+<details>
+<summary>🔔 <strong>Eventos y Otros</strong></summary>
+
+| `id` | `code` | Documento | Algoritmo | Descripción |
+|:----:|:------:|-----------|:---------:|-------------|
+| **12** | 96 | Eventos (ApplicationResponse) | CUDE-SHA384 | Acuse de recibo, aceptación/rechazo |
+| **99** | 999 | Attached Document | CUDS-SHA384 | Documento adjunto |
+
+</details>
+
+<details>
+<summary>🎫 <strong>Otros Documentos Equivalentes</strong> <small>(próximamente)</small></summary>
+
+| `id` | `code` | Documento | Estado |
+|:----:|:------:|-----------|:------:|
+| **25** | 25 | Boleta de ingreso a cine | 🔜 Inactivo |
+| **27** | 27 | Boleta espectáculos públicos | 🔜 Inactivo |
+| **30** | 30 | Juegos localizados y no localizados | 🔜 Inactivo |
+| **35** | 35 | Tiquete transporte terrestre de pasajeros | 🔜 Inactivo |
+| **40** | 40 | Cobro de peajes | 🔜 Inactivo |
+| **45** | 45 | Extracto sociedades financieras y fondos | 🔜 Inactivo |
+| **50** | 50 | Tiquete transporte aéreo de pasajeros | 🔜 Inactivo |
+| **55** | 55 | Operación bolsa de valores y comodities | 🔜 Inactivo |
+| **60** | 60 | Servicios públicos domiciliarios | 🔜 Inactivo |
+
+</details>
+
+- #### Ejemplo
+
+  ```json
+    "type_document_id": 7
+  ```
+
+**Consultar también:** [Referencia Rápida de Tipos de Documento](#-referencia-rápida-de-tipos-de-documento) | [Glosario: Contingencia](/docs/glossary#contingencia)
 
 ### `graphic_representation` 🟢
 
@@ -712,6 +315,211 @@ Hace referencia a la moneda del documento. Este campo es opcional, solo se debe 
 - `188` - Dólar Estadounidense (USD)
 - `978` - Euro (EUR)
 
+### `send_to_queue` 🟢
+
+Indicador para enviar el documento a una cola de procesamiento asíncrono. _Este campo es opcional_ y debe ser un entero (`0` o `1`). Cuando es `1`, la API encola el documento y retorna un UUID para consultar el estado posteriormente. Útil en envíos masivos.
+
+- #### Ejemplo
+
+```json
+"send_to_queue": 1
+```
+
+### `rounding` 🟢
+
+Valor de redondeo aplicado al total del documento. _Este campo es opcional_ y debe ser un string con valor flotante. Se utiliza para ajustar centavos o decimales en el total pagable.
+
+- #### Ejemplo
+
+```json
+"rounding": "0.50"
+```
+
+### `attachments` 🟢
+
+Arreglo de archivos adjuntos para incluir en el documento (por ejemplo, informes, contratos o soportes adicionales). _Este campo es opcional_ y debe ser un arreglo de objetos.
+
+- #### Ejemplo
+
+```json
+"attachments": [
+    {
+      "content": "base64EncodedContent...",
+      "mime": "application/pdf",
+      "name": "Soporte.pdf"
+    }
+  ]
+```
+
+- #### Detalle de los campos
+  - #### `content`
+    Contenido del archivo codificado en base64. _Este campo es obligatorio_ y debe ser un string.
+  - #### `mime`
+    Tipo MIME del archivo (ej. `application/pdf`, `image/png`). _Este campo es obligatorio_ y debe ser un string.
+  - #### `name`
+    Nombre del archivo con extensión. _Este campo es obligatorio_ y debe ser un string.
+
+### `invoice_period` 🟢
+
+Periodo de facturación del documento a nivel general (diferente al `invoice_period` dentro de `lines`). _Este campo es opcional_ y debe ser un objeto. Se utiliza principalmente en el sector salud y en documentos soporte.
+
+- #### Ejemplo
+
+```json
+"invoice_period": {
+    "start_date": "2024-01-01",
+    "start_time": "00:00:00",
+    "end_date": "2024-01-31",
+    "end_time": "23:59:59"
+  }
+```
+
+- #### Detalle de los campos
+  - #### `start_date`
+    Fecha de inicio del periodo. Formato `YYYY-MM-DD`.
+  - #### `start_time`
+    Hora de inicio del periodo. Formato `HH:mm:ss`.
+  - #### `end_date`
+    Fecha de fin del periodo. Formato `YYYY-MM-DD`.
+  - #### `end_time`
+    Hora de fin del periodo. Formato `HH:mm:ss`.
+
+### `deliveries` 🟢
+
+Información de entregas o despachos asociados al documento. _Este campo es opcional_ y debe ser un arreglo de objetos. Utilizado para indicar la dirección, fecha y datos de contacto de la entrega de mercancías.
+
+- #### Ejemplo
+
+```json
+"deliveries": [
+    {
+      "address": "Cra 45 #26-85",
+      "country_id": "45",
+      "date": "2024-03-01",
+      "time": "10:00:00",
+      "delivery_party": "Transportes XYZ",
+      "delivery_contact": "Juan Pérez"
+    }
+  ]
+```
+
+- #### Detalle de los campos
+  - #### `address`
+    Dirección de entrega. _Este campo es obligatorio_ y debe ser un string.
+  - #### `country_id`
+    País de entrega. _Este campo es opcional_, por defecto `"45"` (Colombia).
+  - #### `date`
+    Fecha de entrega. Formato `YYYY-MM-DD`.
+  - #### `time`
+    Hora de entrega. Formato `HH:mm:ss`.
+  - #### `delivery_party`
+    Nombre de la empresa o persona responsable de la entrega. _Este campo es opcional_ y debe ser un string.
+  - #### `delivery_contact`
+    Nombre de contacto de la entrega. _Este campo es opcional_ y debe ser un string.
+
+### `delivery_terms` 🟢
+
+Términos de entrega o condiciones INCOTERM del documento. _Este campo es opcional_ y debe ser un objeto. Aplicable en facturas de exportación o cuando se negocian condiciones de entrega.
+
+- #### Ejemplo
+
+```json
+"delivery_terms": {
+    "delivery_id": "1",
+    "terms": "FOB"
+  }
+```
+
+- #### Detalle de los campos
+  - #### `delivery_id`
+    ID de la condición de entrega. Puede consultar las diferentes condiciones en el **ENDPOINT** `{{url}}/delivery-conditions`.
+  - #### `terms`
+    Texto descriptivo de los términos de entrega. _Este campo es opcional_ y debe ser un string.
+
+### `despatch_document_references` 🟢
+
+Referencias a documentos de despacho asociados al documento electrónico. _Este campo es opcional_ y debe ser un arreglo de objetos.
+
+- #### Ejemplo
+
+```json
+"despatch_document_references": [
+    {
+      "number": "DESP-001",
+      "date": "2024-02-28"
+    }
+  ]
+```
+
+- #### Detalle de los campos
+  - #### `number`
+    Número del documento de despacho referenciado. _Obligatorio_ y debe ser un string.
+  - #### `date`
+    Fecha del documento de despacho. Formato `YYYY-MM-DD`.
+
+### `receipt_document_references` 🟢
+
+Referencias a documentos de recepción asociados al documento electrónico. _Este campo es opcional_ y debe ser un arreglo de objetos.
+
+- #### Ejemplo
+
+```json
+"receipt_document_references": [
+    {
+      "number": "REC-001",
+      "date": "2024-03-01"
+    }
+  ]
+```
+
+- #### Detalle de los campos
+  - #### `number`
+    Número del documento de recepción referenciado. _Obligatorio_ y debe ser un string.
+  - #### `date`
+    Fecha del documento de recepción. Formato `YYYY-MM-DD`.
+
+### `showroomInformation` 🟢
+
+Información de la sala de ventas o punto de exhibición. _Este campo es opcional_ y debe ser un objeto. Utilizado cuando la venta se realiza en una ubicación diferente a la sede principal.
+
+- #### Ejemplo
+
+```json
+"showroomInformation": {
+    "showroom": "Sala de Ventas Norte",
+    "showroomAddress": "Cra 15 #100-45 Local 201",
+    "dataShow": "Información adicional de la sala"
+  }
+```
+
+### `prepaid_payments` 🟢
+
+Información de anticipos recibidos que se deben descontar del total a pagar del documento. _Este campo es opcional_ y debe ser un objeto.
+
+- #### Ejemplo
+
+```json
+"prepaid_payments": {
+    "id": "SFR3123856",
+    "paid_amount": "10.00",
+    "received_date": "2018-09-29",
+    "paid_date": "2018-09-29",
+    "instruction_id": "Prepago recibido"
+  }
+```
+
+- #### Detalle de los campos
+  - #### `id`
+    Identificador del anticipo o prepago. _Este campo es obligatorio_ y debe ser un string.
+  - #### `paid_amount`
+    Monto del anticipo pagado. _Este campo es obligatorio_ y debe ser un string con valor flotante de máximo dos decimales.
+  - #### `received_date`
+    Fecha en que se recibió el anticipo. _Este campo es obligatorio_ y debe ser un string en formato `YYYY-MM-DD`.
+  - #### `paid_date`
+    Fecha en que se realizó el pago del anticipo. _Este campo es obligatorio_ y debe ser un string en formato `YYYY-MM-DD`.
+  - #### `instruction_id`
+    Descripción o instrucción del prepago. _Este campo es opcional_ y debe ser un string.
+
 ### `payments` 🔴
 
 Lista de pagos. _Este campo es obligatorio_ para todos los documentos y debe ser un arreglo de objetos.
@@ -740,6 +548,8 @@ Lista de pagos. _Este campo es obligatorio_ para todos los documentos y debe ser
   - #### `payment_due_date`
     Fecha de vencimiento del pago. Este campo es usado para indicar la fecha de vencimiento de un pago a **crédito**.
     **Es obligatorio solo para las ventas a crédito** y debe ser un string en formato `YYYY-MM-DD`.
+  - #### `duration_measure`
+    Duración de la medida del pago en días. _Este campo es opcional_ y se utiliza para indicar la duración del periodo de pago a crédito. Debe ser un string.
 
 ### `report_header`: **NEW**
 
@@ -831,8 +641,12 @@ Información de la firma del documento. _Este campo es opcional_ y debe ser un o
 - #### Detalle de los campos
   - #### `cashier`
     Nombre del cajero(a). _Este campo es opcional_ y debe ser un string.
+  - #### `cashier_title`
+    Título o etiqueta que se muestra debajo de la firma del cajero en la representación gráfica. _Este campo es opcional_ y debe ser un string.
   - #### `seller`
     Nombre del vendedor(a). _Este campo es opcional_ y debe ser un string.
+  - #### `seller_title`
+    Título o etiqueta que se muestra debajo de la firma del vendedor en la representación gráfica. _Este campo es opcional_ y debe ser un string.
 
 ### `payment_exchange_rate` 🟡
 
@@ -1151,6 +965,8 @@ Este campo es opcional, se debe informar cuando hay un cargo o descuento a nivel
     Código para categorizar el descuento. Solo para descuentos a nivel de factura.
     Obligatorio de informar si es descuento a nivel de factura y debe ser un entero.
     Puede consultar los diferentes tipos de descuentos en el **ENDPOINT** `{{url}}/discount-codes`.
+  - #### `multiplier_factor_numeric`
+    Factor numérico multiplicador para el cálculo del descuento o cargo (porcentaje expresado como decimal, ej. `10.00` para un 10%). _Este campo es opcional_ y debe ser un string.
 
 ### `legal_monetary_totals` 🔴
 
@@ -1192,6 +1008,12 @@ Totales del documento. _Este campo es obligatorio_ para todos los documentos don
   - #### `payable_amount`
     Monto total del documento. Valor total de ítems **(incluyendo cargos y descuentos a nivel de ítems) +valor tributos + valor cargos globales – valor descuentos globales**.
     _Este campo es obligatorio_ y debe ser un string con valor flotante de máximo dos decimales.
+  - #### `allowance_total_amount`
+    Valor total de los descuentos aplicados al documento. _Este campo es opcional_ y debe ser un string con valor flotante de máximo dos decimales. Alternativa detallada a `total_allowance`.
+  - #### `charge_total_amount`
+    Valor total de los cargos aplicados al documento. _Este campo es opcional_ y debe ser un string con valor flotante de máximo dos decimales. Alternativa detallada a `total_charges`.
+  - #### `pre_paid_amount`
+    Valor total de los anticipos o prepagos que se descuentan del total del documento. _Este campo es opcional_ y debe ser un string con valor flotante de máximo dos decimales.
 
 ### `lines` 🔴
 
@@ -1227,6 +1049,18 @@ Líneas del detalle de cada item del documento. _Este campo es obligatorio_ para
   Valor del artículo o servicio. _Este campo es obligatorio_ y debe ser un string con valor flotante de máximo dos decimales ("`0.00`").
 - #### `base_quantity`
   La cantidad real sobre la cual el precio aplica, se recomienda ser igual a `invoiced_quantity`. _Este campo es obligatorio_ y debe ser un string.
+- #### `brand_name`
+  Nombre de la marca del producto. _Este campo es opcional_ y debe ser un string. Se mostrará en la representación gráfica del documento.
+- #### `model_name`
+  Nombre del modelo del producto. _Este campo es opcional_ y debe ser un string.
+- #### `sellers_item_identification`
+  Identificación del artículo por parte del vendedor (código interno alterno). _Este campo es opcional_ y debe ser un string.
+- #### `pack_size_numeric`
+  Número de unidades por paquete o empaque. _Este campo es opcional_ y debe ser un string.
+- #### `notes`
+  Notas adicionales a nivel de la línea del documento. _Este campo es opcional_ y puede ser un string o un arreglo de strings.
+- #### `um` / `mu` / `unit_measure_code`
+  Código o descripción textual de la unidad de medida del ítem. _Estos campos son opcionales_ y deben ser strings. Son alternativos a `quantity_units_id` para mostrar la unidad en la representación gráfica.
 
 ### `lines->mandate`
 
@@ -1556,7 +1390,8 @@ Los campos obligatorios son:
 
 ### Ejemplo Completo JSON para Tipo 03
 
-A continuación se muestra un ejemplo completo de una factura de contingencia Tipo 03 con todos los campos obligatorios y opcionales comunes:
+<details>
+<summary>📋 Click para ver/ocultar el ejemplo completo de Factura de Contingencia Tipo 03</summary>
 
 ```json
 {
@@ -1690,6 +1525,8 @@ A continuación se muestra un ejemplo completo de una factura de contingencia Ti
 - ✅ **NO incluye `uuid`** - Correcto, el papel no tiene CUFE
 - ✅ Todos los campos obligatorios presentes
 - ✅ Debe transmitirse dentro de las **48 horas** siguientes a la superación del inconveniente
+
+</details>
 
 ### Estructura XML Generada
 
@@ -1962,7 +1799,6 @@ UUID = NO INFORMADO
 - **Dirección de Gestión de Impuestos**
 - **Documento:** Anexo Técnico de Facturación Electrónica v2.1
 
----
 
 ## Ejemplo Mínimo Requerido {#ejemplo-mínimo-requerido}
 

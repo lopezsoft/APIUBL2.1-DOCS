@@ -1,6 +1,7 @@
 ---
 sidebar_position: 2
 description: "Guía completa para emitir facturas electrónicas con descuentos comerciales"
+sidebar_label: Factura con Descuentos
 ---
 
 # 🏷️ Guía: Factura con Descuentos

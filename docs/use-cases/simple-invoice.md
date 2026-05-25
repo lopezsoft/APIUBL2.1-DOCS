@@ -1,6 +1,7 @@
 ---
 sidebar_position: 1
 description: "Guía paso a paso para emitir una factura electrónica simple"
+sidebar_label: Factura Simple
 ---
 
 # Guía: Factura Electrónica Simple

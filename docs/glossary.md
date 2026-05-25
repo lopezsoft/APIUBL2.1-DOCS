@@ -1,6 +1,7 @@
 ---
-sidebar_position: 6
+sidebar_position: 5
 description: "Glosario de términos técnicos, normativas y acrónimos de facturación electrónica"
+sidebar_label: Glosario
 ---
 
 # 📚 Glosario Técnico

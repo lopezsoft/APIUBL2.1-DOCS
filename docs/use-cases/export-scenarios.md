@@ -1,6 +1,7 @@
 ---
 sidebar_position: 3
 description: "Guía completa para emitir facturas de exportación y ventas internacionales"
+sidebar_label: Exportaciones
 ---
 
 # 🌎 Guía: Exportaciones e Internacionalización

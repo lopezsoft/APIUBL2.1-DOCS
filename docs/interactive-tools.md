@@ -1,6 +1,7 @@
 ---
-sidebar_position: 7
+sidebar_position: 6
 description: "Herramientas interactivas para validar y calcular valores de facturas"
+sidebar_label: Herramientas
 ---
 
 # Herramientas Interactivas

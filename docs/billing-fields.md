@@ -363,27 +363,38 @@ Este campo aplica para documentos de **Nómina Electrónica** (`type_document_id
 
 ### `attachments`: **NEW**
 
-Arreglo de archivos adjuntos para incluir en el documento (por ejemplo, informes, contratos o soportes adicionales). _Este campo es opcional_ y debe ser un arreglo de objetos.
+Archivos adjuntos opcionales cargados y vinculados al documento (máximo 4 archivos, almacenados de forma segura en Amazon S3). _Este campo es opcional (nullable)_ y debe ser un arreglo de objetos con los siguientes campos:
 
 - #### Ejemplo
 
 ```json
 "attachments": [
-    {
-      "content": "base64EncodedContent...",
-      "mime": "application/pdf",
-      "name": "Soporte.pdf"
-    }
-  ]
+  {
+    "filename": "Soporte.pdf",
+    "content": "JVBERi0xLjQKJeLjz9MKMyAwIG9iago...",
+    "content_type": "application/pdf"
+  }
+]
 ```
 
-- #### Detalle de los campos
+- #### Detalle de los campos de cada archivo adjunto:
+
+  - #### `filename`
+    Nombre del archivo adjunto con su extensión. **Obligatorio si se envía el arreglo `attachments`**.
+    * **Tipo:** `string`
+    * **Longitud Máxima:** 255 caracteres
+    * **Regla de Validación:** `required_with:attachments|string|max:255`
+
   - #### `content`
-    Contenido del archivo codificado en base64. _Este campo es obligatorio_ y debe ser un string.
-  - #### `mime`
-    Tipo MIME del archivo (ej. `application/pdf`, `image/png`). _Este campo es obligatorio_ y debe ser un string.
-  - #### `name`
-    Nombre del archivo con extensión. _Este campo es obligatorio_ y debe ser un string.
+    Contenido del archivo codificado en base64. **Obligatorio si se envía el arreglo `attachments`**.
+    * **Tipo:** `string` (Base64)
+    * **Regla de Validación:** `required_with:attachments|string`
+
+  - #### `content_type`
+    Tipo de contenido MIME del archivo (ej. `application/pdf`, `image/png`). _Este campo es opcional (nullable)_.
+    * **Tipo:** `string`
+    * **Longitud Máxima:** 100 caracteres
+    * **Regla de Validación:** `nullable|string|max:100`
 
 ### `invoice_period` 🟢
 

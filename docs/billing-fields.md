@@ -1394,486 +1394,56 @@ La DIAN valida **matemáticamente** que `tax_amount = per_unit_amount × base_un
     - Para INC Bolsas su valor es generalmente `1`; para otros nominales corresponde al total de unidades físicas del ítem (ej. `9.90` para código `18`).
     - Debe ser un número flotante.
 
-## `additional_document_reference` (Referencia a Documento Adicional) {#additional_document_reference-referencia-a-documento-adicional}
+### `additional_document_reference` 🟡 {#additional_document_reference-referencia-a-documento-adicional}
 
-<div style={{backgroundColor: '#fff3cd', padding: '1.5rem', borderRadius: '8px', border: '2px solid #ffc107', margin: '1.5rem 0'}}>
-  <strong>⚠️ IMPORTANTE: Contingencia Tipo 03 - Transmisión de Factura de Papel</strong><br/>
-  Este nodo es <strong>OBLIGATORIO</strong> para facturas tipo 03 (Contingencia del Facturador). Cuando tuvo un inconveniente tecnológico y expidió una factura física (talonario/papel), ahora debe transmitir esa información digitalmente a la DIAN. Este nodo le indica al sistema que <strong>NO es una factura nueva</strong>, sino el reporte digital de una que ya existe físicamente.
-</div>
+Arreglo de objetos utilizado para referenciar documentos adicionales. **Es OBLIGATORIO** para Facturas de Contingencia (Tipo 03) para relacionar el documento físico entregado. Para otros documentos, es **opcional** y sirve para referenciar documentos comerciales (múltiples órdenes, contratos, etc).
 
-**Ubicación en XPath:** `/Invoice/cac:AdditionalDocumentReference`
+<details open>
+<summary>🧾 <strong>Campos de la referencia</strong></summary>
 
-**Normativa:** Anexo Técnico de Factura Electrónica v1.9 - Resolución No. 000165 (01/NOV/2023) - DIAN
-
-### ¿Por qué se requiere este nodo para Tipo 03?
-
-Cuando usted marca una factura como **Tipo 03** (Contingencia por facturador), este nodo se vuelve **obligatorio** según la regla **FAI01**:
-
-> **Rechazo:** Si `/Invoice/cbc:InvoiceTypeCode = "03"` (Contingencia) y el grupo `/Invoice/cac:AdditionalDocumentReference` no es informado.
-
-**El propósito es relacionar el XML que está transmitiendo ahora con el papel que entregó previamente al cliente.**
-
-### ¿Qué información debe colocar en este nodo?
-
-<div style={{backgroundColor: '#f8d7da', padding: '1.5rem', borderRadius: '8px', border: '2px solid #dc3545', margin: '1.5rem 0'}}>
-  <strong>🚨 CRÍTICO: NO use CUFE en este nodo para Tipo 03</strong><br/>
-  En este grupo <strong>NO debe colocar un CUFE</strong> (porque el papel no lo tiene), sino los <strong>datos de la factura de papel</strong> que tiene en la mano.
-</div>
-
-Los campos obligatorios son:
-
-#### 1. `number` (cbc:ID) - Número del Papel 🔴 OBLIGATORIO
-
-- **Descripción:** Prefijo y Número de la factura de talonario o papel que le entregó al cliente.
-- **Ejemplo:** `"PAPEL-001"`, `"TALONARIO-123"`
-- **Regla FAI02:** Es obligatorio informar el ID del documento referenciado.
-- **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:ID`
-
-#### 2. `date` (cbc:IssueDate) - Fecha del Papel 🔴 OBLIGATORIO
-
-- **Descripción:** Fecha en la que **generó y entregó** la factura de papel al cliente (NO la fecha de hoy en que está transmitiendo el XML).
-- **Formato:** `YYYY-MM-DD`
-- **Ejemplo:** `"2025-02-10"`
-- **Regla FAI05:** Es obligatorio para facturas tipo 03. La fecha debe corresponder a la fecha de generación de la factura de talonario o papel.
-- **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:IssueDate`
-
-#### 3. `code` (cbc:DocumentTypeCode) - Código Interno 🟢 OPCIONAL
-
-- **Descripción:** Código interno o propio de la empresa que identifica que es una referencia a un documento físico.
-- **Observación:** Corresponde a una codificación propia de la empresa (NO estandarizada por DIAN).
-- **Ejemplos sugeridos:** `"TALONARIO"`, `"PAPEL"`, `"FC"` (Factura Contingencia), `"01"`
-- **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:DocumentTypeCode`
-
-<div style={{backgroundColor: '#d1ecf1', padding: '1rem', borderRadius: '8px', border: '1px solid #17a2b8', margin: '1rem 0'}}>
-  <strong>💡 Recomendación:</strong> Utilice un código alfanumérico que tenga sentido para su control interno. El objetivo es meramente informativo para clasificar internamente qué tipo de documento físico está referenciando el XML.
-</div>
-
-### Proceso Correcto de Transmisión - Tipo 03
-
-1. **Expedir factura física:** Cuando tuvo el inconveniente tecnológico, expidió una factura física (talonario o papel) y la entregó al cliente.
-
-2. **Superar el inconveniente:** Una vez restablecido el servicio tecnológico.
-
-3. **Transmitir el XML:** Dentro de las **48 horas siguientes** a la superación del inconveniente, debe transmitir el XML con:
-   - `type_document_id = 9` (Tipo 03 en API)
-   - `InvoiceTypeCode = "03"` (en el XML)
-   - Nodo `AdditionalDocumentReference` con los datos del papel:
-     - `number`: Prefijo y número del papel
-     - `date`: Fecha del papel
-     - `code`: Código interno (ej: "TALONARIO")
-
-4. **Firmar y enviar:** Firme digitalmente el XML y envíelo a la DIAN.
-
-### Ejemplo Completo JSON para Tipo 03
-
-<details>
-<summary>📋 Click para ver/ocultar el ejemplo completo de Factura de Contingencia Tipo 03</summary>
-
-```json
-{
-  "resolution_number": "18764100103754",
-  "prefix": "LCON",
-  "notes": "Factura de contingencia generada durante inconveniente tecnológico",
-  "document_number": "5",
-  "report_header": {
-    "uuid": "101413670038274164",
-    "vars": [
-      {
-        "name": "sucursal",
-        "value": "Bodega Principal Cali"
-      },
-      {
-        "name": "direccion",
-        "value": "Zona Franca Palmaseca Bodega 5"
-      },
-      {
-        "name": "celular",
-        "value": "315 112 4411"
-      }
-    ]
-  },
-  "graphic_representation": 0,
-  "send_email": 1,
-  "operation_type_id": 1,
-  "type_document_id": 9,
-  "payments": [
-    {
-      "payment_method_id": 1,
-      "means_payment_id": 10,
-      "value_paid": "224.00"
-    }
-  ],
-  "order_reference": {
-    "reference_number": "4541212",
-    "reference_date": "2025-06-01"
-  },
-  "additional_document_reference": [
-    {
-      "number": "LZT2119",
-      "code": "TALONARIO",
-      "date": "2025-08-18"
-    }
-  ],
-  "document_signature": {
-    "cashier": "Nombre del cajero(a)",
-    "cashier_title": "Firma Cajero(a)",
-    "seller": "Nombre del vendedor(a)",
-    "seller_title": "Firma del vendedor(a)"
-  },
-  "customer": {
-    "identity_document_id": "3",
-    "company_name": "LOPEZ GOMEZ LEWIS OSWALDO",
-    "dni": "1063279307",
-    "email": "lopezsoft.com@gmail.com"
-  },
-  "lines": [
-    {
-      "invoiced_quantity": "2",
-      "quantity_units_id": "1093",
-      "line_extension_amount": "100.00",
-      "free_of_charge_indicator": false,
-      "description": "TIJERA NECROPSIA AVES",
-      "code": "HMT83",
-      "type_item_identifications_id": "4",
-      "reference_price_id": "1",
-      "price_amount": "50",
-      "base_quantity": "2",
-      "tax_totals": [
-        {
-          "tax_id": "1",
-          "tax_amount": 19,
-          "taxable_amount": 100,
-          "percent": 19
-        }
-      ]
-    },
-    {
-      "invoiced_quantity": "2",
-      "quantity_units_id": "1093",
-      "line_extension_amount": "100.00",
-      "free_of_charge_indicator": false,
-      "description": "TIJERA NECROPSIA AVES 2",
-      "code": "HMT84",
-      "type_item_identifications_id": "4",
-      "reference_price_id": "1",
-      "price_amount": "50",
-      "base_quantity": "2",
-      "tax_totals": [
-        {
-          "tax_id": "1",
-          "tax_amount": 5,
-          "taxable_amount": 100,
-          "percent": 5
-        }
-      ]
-    }
-  ],
-  "legal_monetary_totals": {
-    "line_extension_amount": "200.00",
-    "tax_exclusive_amount": "200.00",
-    "tax_inclusive_amount": "224.00",
-    "payable_amount": 224.0
-  },
-  "tax_totals": [
-    {
-      "tax_id": "1",
-      "tax_amount": 19,
-      "taxable_amount": 100,
-      "percent": 19
-    },
-    {
-      "tax_id": "1",
-      "tax_amount": 5,
-      "taxable_amount": 100,
-      "percent": 5
-    }
-  ]
-}
-```
-
-**Puntos clave del ejemplo:**
-
-- ✅ `type_document_id: 9` - Factura de Contingencia Tipo 03
-- ✅ `additional_document_reference` - **OBLIGATORIO** con datos de la factura de papel:
-  - `number`: "LZT2119" - Número de la factura de papel
-  - `date`: "2025-08-18" - Fecha en que se generó el papel
-  - `code`: "TALONARIO" - Código interno de la empresa
-- ✅ **NO incluye `uuid`** - Correcto, el papel no tiene CUFE
-- ✅ Todos los campos obligatorios presentes
-- ✅ Debe transmitirse dentro de las **48 horas** siguientes a la superación del inconveniente
+| Campo | Tipo | Requerido | Descripción |
+|-------|:----:|:---------:|-------------|
+| `number` | string | **Sí** | Prefijo y Número del documento referenciado (ej. `"PAPEL-001"`) |
+| `date` | string | ⚠️ Condicional | Fecha de emisión del documento. **Obligatorio para Tipo 03**. Formato `YYYY-MM-DD` |
+| `uuid` | string | ⚠️ Condicional | CUFE/CUDE del documento referenciado. **Obligatorio para referencias electrónicas**. _(No aplica para papel)_ |
+| `code` | string | Opcional | Código interno de la empresa (ej. `"TALONARIO"`, `"OC"`) |
+| `scheme_name` | string | Opcional | Algoritmo del UUID (ej. `"CUFE-SHA384"`) |
 
 </details>
 
-### Estructura XML Generada
+<details>
+<summary>🚨 <strong>Uso en Factura de Contingencia (Tipo 03)</strong></summary>
 
-```xml
-<Invoice>
-  <cbc:InvoiceTypeCode>03</cbc:InvoiceTypeCode>
-  <!-- ... otros campos ... -->
-  <cac:AdditionalDocumentReference>
-    <cbc:ID>PAPEL-001</cbc:ID>
-    <cbc:IssueDate>2025-02-10</cbc:IssueDate>
-    <cbc:DocumentTypeCode>TALONARIO</cbc:DocumentTypeCode>
-  </cac:AdditionalDocumentReference>
-</Invoice>
-```
-
-### Notas Crédito y Débito para Facturas Tipo 03
-
-<div style={{backgroundColor: '#fff3cd', padding: '1.5rem', borderRadius: '8px', border: '2px solid #ffc107', margin: '1.5rem 0'}}>
-  <strong>⚠️ IMPORTANTE: NO existe "Contingencia" para Notas Crédito/Débito</strong><br/>
-  Las notas crédito y débito <strong>NO tienen esquema de contingencia (Tipo 03)</strong>. No puede expedir una nota crédito en papel/talonario y luego transmitirla como "Tipo 03".
-</div>
-
-**Proceso correcto:**
-
-1. **Transmitir la factura Tipo 03:** Primero debe transmitir la factura de papel (XML Tipo 03) a la DIAN.
-
-2. **Obtener validación:** La DIAN valida este documento y le asigna un **CUFE**.
-
-3. **Generar Nota Electrónica:** Solo entonces puede generar la Nota Crédito/Débito electrónica estándar, referenciando ese CUFE recién generado.
-
-**Referencia en la Nota:**
-
-Aunque la nota crédito se genera electrónicamente (igual que si fuera para una factura 01), al llenarla debe referenciar la factura de contingencia ya transmitida usando el nodo `billing_reference`:
+Cuando expide una factura física por contingencia, luego debe transmitirla con `type_document_id = 9`. En este caso, informe los datos del papel y **no envíe CUFE**.
 
 ```json
-{
-  "type_document_id": 5,
-  "billing_reference": {
-    "number": "LCON2",
+"additional_document_reference": [
+  {
+    "number": "TALONARIO-123",
     "date": "2025-02-10",
-    "uuid": "[CUFE_ASIGNADO_POR_DIAN_A_LA_FACTURA_TIPO_03]"
+    "code": "TALONARIO"
   }
-}
+]
 ```
+</details>
 
-### Comparación: Factura Tipo 01 vs Tipo 03
+<details>
+<summary>🏢 <strong>Uso para Referencias Comerciales</strong></summary>
 
-| Característica                           | Factura Electrónica (Tipo 01)                                | Factura de Contingencia (Tipo 03)                                                            |
-| :--------------------------------------- | :----------------------------------------------------------- | :------------------------------------------------------------------------------------------- |
-| **Generación de Nota**                   | Se puede hacer inmediatamente después de validar la factura. | Se debe esperar a superar la contingencia, transmitir la factura 03 y obtener su validación. |
-| **Tipo de Nota**                         | Electrónica Estándar.                                        | Electrónica Estándar (No existe Nota tipo 03).                                               |
-| **Soporte Legal**                        | El XML validado.                                             | El papel físico hasta que se transmita; luego el XML.                                        |
-| **Nodo `additional_document_reference`** | Opcional (para referencias comerciales).                     | **Obligatorio** (datos de la factura de papel).                                              |
-
-### Otros Usos de `additional_document_reference`
-
-Para **otros tipos de documentos** (NO Tipo 03), este grupo es **opcional** y se usa para:
-
-- 📌 Referenciar **órdenes de entrega** (si son múltiples; para una sola usar `order_reference`)
-- 🏢 Referenciar **documentos comerciales** a voluntad del facturador electrónico
-- 📄 Referenciar **documentos de soporte** (ej: recibos, órdenes, contratos)
-
-**Estructura para referencias comerciales:**
+Sirve para referenciar múltiples órdenes de compra, contratos u otros documentos electrónicos.
 
 ```json
-{
-  "additional_document_reference": [
-    {
-      "number": "OC-2025-001",
-      "uuid": "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567",
-      "scheme_name": "CUFE-SHA384",
-      "date": "2025-01-15",
-      "code": "OC"
-    }
-  ]
-}
+"additional_document_reference": [
+  {
+    "number": "OC-2025-001",
+    "uuid": "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567",
+    "scheme_name": "CUFE-SHA384",
+    "date": "2025-01-15",
+    "code": "OC"
+  }
+]
 ```
-
-### Reglas de Validación DIAN
-
-| ID    | Elemento                    | Tipo  | Descripción                                                | Regla                                               | Mensaje de Rechazo                                                            | XPath                                                           |
-| ----- | --------------------------- | ----- | ---------------------------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| FAI01 | AdditionalDocumentReference | **R** | Valida que exista grupo de referencia para factura tipo 03 | Solo obligatorio si `InvoiceTypeCode = "03"`        | "El grupo AdditionalDocumentReference no está informado para factura tipo 03" | `/Invoice/cac:AdditionalDocumentReference`                      |
-| FAI02 | ID                          | **R** | Prefijo y Número del documento referenciado                | Requerido cuando existe AdditionalDocumentReference | "ID de Documento de referencia no relacionado"                                | `/Invoice/cac:AdditionalDocumentReference/cbc:ID`               |
-| FAI05 | IssueDate                   | **R** | Fecha de emisión del documento referenciado                | **Obligatorio para Tipo 03**                        | "No se informó la fecha de emisión del documento referenciado"                | `/Invoice/cac:AdditionalDocumentReference/cbc:IssueDate`        |
-| FAI06 | DocumentTypeCode            | **N** | Identificador del tipo de documento de referencia          | Opcional (asignado por facturador)                  | "No está informado el tipo de documento referenciado"                         | `/Invoice/cac:AdditionalDocumentReference/cbc:DocumentTypeCode` |
-
-**Leyenda de Tipo:**
-
-- **R** = Rechazo (campo obligatorio)
-- **N** = Notificación (campo opcional, genera advertencia si falta)
-
-### Resumen Ejecutivo
-
-<div style={{backgroundColor: '#d4edda', padding: '1.5rem', borderRadius: '8px', border: '2px solid #28a745', margin: '1.5rem 0'}}>
-  <strong>✅ Para Facturas Tipo 03 (Contingencia):</strong>
-  <ul>
-    <li>El nodo <code>additional_document_reference</code> es <strong>OBLIGATORIO</strong></li>
-    <li>Debe contener los datos de la <strong>factura de papel</strong> (número, fecha)</li>
-    <li><strong>NO</strong> debe contener CUFE (el papel no lo tiene)</li>
-    <li>El <code>code</code> es de asignación libre (ej: "TALONARIO", "PAPEL", "01")</li>
-    <li>Debe transmitirse dentro de las <strong>48 horas</strong> siguientes a la superación del inconveniente</li>
-  </ul>
-</div>
-
-<div style={{backgroundColor: '#d1ecf1', padding: '1.5rem', borderRadius: '8px', border: '2px solid #17a2b8', margin: '1.5rem 0'}}>
-  <strong>✅ Para Notas Crédito/Débito de Facturas Tipo 03:</strong>
-  <ul>
-    <li><strong>NO existe</strong> Nota tipo 03 (contingencia)</li>
-    <li>Primero debe transmitir la factura Tipo 03 y obtener su CUFE</li>
-    <li>Luego generar la Nota electrónica estándar referenciando ese CUFE en <code>billing_reference</code></li>
-  </ul>
-</div>
-
-### Referencias DIAN
-
-- **Anexo Técnico:** Factura Electrónica de Venta v1.9
-- **Resolución:** No. 000165 (01/NOV/2023)
-- **Manuales:** Contingencia de la DIAN
-- **Dirección de Gestión de Impuestos**
-
-#### Caso 3: Documentos Comerciales de Soporte
-
-Facturas que amparan transacciones con múltiples documentos de soporte (ej: recibos, órdenes, etc.).
-
-### Referencias DIAN
-
-- **Resolución:** No. 000165 (01/NOV/2023)
-- **Página:** 389 de 753
-- **Dirección de Gestión de Impuestos**
-- **Documento:** Anexo Técnico de Facturación Electrónica v2.1
-
-### Campos Obligatorios
-
-- #### `number` (FAI02)
-  - **Etiqueta XML:** `cbc:ID`
-  - **Requerido:** Sí (cuando AdditionalDocumentReference existe)
-  - **Tipo:** String
-  - **Descripción:** Prefijo y Número del documento referenciado.
-  - **Ejemplo:** "LZT2119"
-  - **Validación DIAN:** ID de Documento de referencia no relacionado
-  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:ID`
-
-- #### `uuid` (FAI03) ⚠️ CRÍTICO
-  - **Etiqueta XML:** `cbc:ID/UUID`
-  - **Requerido:** Sí (cuando AdditionalDocumentReference existe)
-  - **Tipo:** String
-  - **Longitud máxima:** 96 caracteres
-  - **Descripción:** CUFE o CUDE del documento referenciado.
-  - **Ejemplo:** "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567"
-  - **Validación DIAN:** "No fue informado el CUFE o CUDE del documento referenciado"
-  - **Rechazo:** Si no se informa CUFE o CUDE
-  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:ID/UUID`
-
-- #### `scheme_name` (FAI04)
-  - **Etiqueta XML:** `@schemeName` (atributo)
-  - **Requerido:** No (pero recomendado)
-  - **Tipo:** String
-  - **Descripción:** Identificador del esquema de identificación del UUID.
-  - **Valores válidos:**
-    - `CUFE-SHA384` - Código Único de Factura Electrónica con algoritmo SHA384
-    - `CUDE-SHA384` - Código Único de Documento Equivalente con algoritmo SHA384
-    - Otros algoritmos permitidos por DIAN
-  - **Ejemplo:** "CUFE-SHA384"
-  - **Validación DIAN:** "No fue utilizado o informado uno de los algoritmos permitidos para el cálculo del CUFE o CUDE"
-  - **Rechazo:** Si se utiliza algoritmo no permitido
-  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:UUID/@schemeName`
-
-### Campos Opcionales
-
-- #### `date` (FAI05)
-  - **Etiqueta XML:** `cbc:IssueDate`
-  - **Requerido:** No
-  - **Tipo:** String (Formato: YYYY-MM-DD)
-  - **Descripción:** Fecha de emisión del documento referenciado.
-  - **Ejemplo:** "2025-08-18"
-  - **Validación DIAN:** "No se informó la fecha de emisión del documento referenciado"
-  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:IssueDate`
-
-- #### `code` (FAI06)
-  - **Etiqueta XML:** `cbc:DocumentTypeCode`
-  - **Requerido:** No
-  - **Tipo:** String
-  - **Descripción:** Identificador del tipo de documento de referencia (codificación propia de la empresa).
-  - **Ejemplo:** "01"
-  - **Validación DIAN:** "No está informado el tipo de documento referenciado"
-  - **XPath:** `/Invoice/cac:AdditionalDocumentReference/cbc:DocumentTypeCode`
-
-### Reglas de Validación DIAN
-
-| ID    | Elemento                    | Tipo  | Descripción                                                | Regla                                               | Mensaje de Rechazo                                                                              | XPath                                                           |
-| ----- | --------------------------- | ----- | ---------------------------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| FAI01 | AdditionalDocumentReference | **R** | Valida que exista grupo de referencia para factura tipo 03 | Solo obligatorio si `InvoiceTypeCode = "03"`        | "El grupo AdditionalDocumentReference no está informado para factura tipo 03"                   | `/Invoice/cac:AdditionalDocumentReference`                      |
-| FAI02 | ID                          | **R** | Prefijo y Número del documento referenciado                | Requerido cuando existe AdditionalDocumentReference | "ID de Documento de referencia no relacionado"                                                  | `/Invoice/cac:AdditionalDocumentReference/cbc:ID`               |
-| FAI03 | UUID                        | **R** | CUFE o CUDE del documento referenciado                     | Requerido cuando existe AdditionalDocumentReference | "No fue informado el CUFE o CUDE del documento referenciado"                                    | `/Invoice/cac:AdditionalDocumentReference/cbc:ID/UUID`          |
-| FAI04 | @schemeName                 | **N** | Identificador del esquema de identificación                | Debe ser algoritmo permitido                        | "No fue utilizado o informado uno de los algoritmos permitidos para el cálculo del CUFE o CUDE" | `/Invoice/cac:AdditionalDocumentReference/cbc:UUID/@schemeName` |
-| FAI05 | IssueDate                   | **N** | Fecha de emisión del documento referenciado                | Opcional                                            | "No se informó la fecha de emisión del documento referenciado"                                  | `/Invoice/cac:AdditionalDocumentReference/cbc:IssueDate`        |
-| FAI06 | DocumentTypeCode            | **N** | Identificador del tipo de documento de referencia          | Opcional                                            | "No está informado el tipo de documento referenciado"                                           | `/Invoice/cac:AdditionalDocumentReference/cbc:DocumentTypeCode` |
-
-**Leyenda de Tipo:**
-
-- **R** = Rechazo (campo obligatorio cuando grupo existe)
-- **N** = Notificación (campo opcional, genera advertencia si falta)
-
-### Notas Importantes
-
-- ✅ `additional_document_reference` es **OBLIGATORIO solo para InvoiceTypeCode = "03"** (Factura de Contingencia)
-- ✅ Para otros tipos de documentos, este grupo **NO se valida**
-- ✅ Si `type_document_id = 9` (tipo 03), el grupo es obligatorio
-- ✅ `number` (ID) y `uuid` son críticos - DIAN rechaza si faltan
-- ✅ `scheme_name` debe ser un algoritmo válido (típicamente CUFE-SHA384)
-- ✅ `date` e `code` son opcionales pero recomendados para trazabilidad
-
-### Ejemplos de Rechazo
-
-**❌ Rechazo 1: Falta AdditionalDocumentReference para tipo 03**
-
-```
-InvoiceTypeCode = "03"
-AdditionalDocumentReference = NO INFORMADO
-→ RECHAZO: El grupo AdditionalDocumentReference no está informado para factura tipo 03
-```
-
-**❌ Rechazo 2: Falta UUID (CUFE)**
-
-```
-AdditionalDocumentReference informado
-UUID = NO INFORMADO
-→ RECHAZO: No fue informado el CUFE o CUDE del documento referenciado
-```
-
-**❌ Rechazo 3: Esquema inválido**
-
-```
-@schemeName = "HASH-MD5" (no permitido)
-→ RECHAZO: No fue utilizado o informado uno de los algoritmos permitidos
-```
-
-### Ejemplo Correcto - JSON
-
-```json
-{
-  "additional_document_reference": [
-    {
-      "number": "LZT2119",
-      "uuid": "0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567",
-      "scheme_name": "CUFE-SHA384",
-      "date": "2025-08-18",
-      "code": "01"
-    }
-  ]
-}
-```
-
-### Ejemplo Correcto - XML
-
-```xml
-<AdditionalDocumentReference>
-  <cbc:ID>LZT2119</cbc:ID>
-  <cbc:IssueDate>2025-08-18</cbc:IssueDate>
-  <cbc:DocumentTypeCode>01</cbc:DocumentTypeCode>
-  <cbc:UUID schemeName="CUFE-SHA384">0bd41b047f40dbca91ab0cdebdb89f6a41b57aa821ca92be68f05a58acbad48f04f66301e2df014965d588734c4ee567</cbc:UUID>
-</AdditionalDocumentReference>
-```
-
-### Referencias DIAN
-
-- **Resolución:** No. 000165 (01/NOV/2023)
-- **Página:** 389 de 753
-- **Dirección de Gestión de Impuestos**
-- **Documento:** Anexo Técnico de Facturación Electrónica v2.1
+</details>
 
 
 ## Ejemplo Mínimo Requerido {#ejemplo-mínimo-requerido}

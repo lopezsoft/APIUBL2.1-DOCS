@@ -18,6 +18,8 @@ A continuación se muestra un ejemplo de un JSON que representa una factura. Est
   "type_document_id": 7,
   "attachments": [
     {
+      "mime": "application/pdf",
+      "name": "Factura.pdf",
       "content": "JVBERi0xLjQKJeLjz9MKMyAwIG9iago8PC9UeXBlIC9QYWdlCi9QYXJlbnQgMSAwIFIK...[contenido base64 PDF truncado para el ejemplo]...=="
     }
   ],

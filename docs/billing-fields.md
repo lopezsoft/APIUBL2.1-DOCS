@@ -1185,34 +1185,71 @@ Este campo se informa a nivel de ítem y aplica solo para mandatos. Un mandante 
 - Este campo es utilizado para enviar información adicional que no se encuentra en los campos estándar de la línea.
 - Esta información adicional se mostrará en la representación gráfica del documento y no se enviará a la DIAN.
 
+- #### Detalle de los campos
+
+**NOTA**: Es importante que el campo `title` sea igual en cada línea donde se envía el mismo valor para la columna en la representación gráfica.
+
+| Campo | Tipo | Requerido | Descripción |
+|------------|---------|-----------|-------------|
+| `title` | string | ✅ Sí | Título/nombre del campo adicional. Se convierte en cabecera de columna en la representación gráfica. |
+| `value` | string | ✅ Sí | Valor del campo adicional. Se muestra en la celda correspondiente. |
+| `align` | string | ❌ No | Alineación del texto en la columna. Valores: `left`, `center`, `right`. Default: `left`. |
+| `position` | integer | ❌ No | **🆕 NEW** — Posición de la columna en el PDF. Controla dónde se ubica el campo respecto a las columnas base. Default: después de recargos, antes de impuestos. Ver tabla de posiciones. |
+
+#### Tabla de posiciones (`position`)
+El valor de `position` indica **después de qué columna base** se inserta la columna `extra_data` en la representación gráfica (PDF):
+
+| `position` | Columna insertada después de... | Ejemplo visual |
+|:----------:|--------------------------------|----------------|
+| `1` | **CÓDIGO** | `CÓDIGO | 👉 MI_CAMPO | DETALLE | CANT | ...` |
+| `2` | **DETALLE** | `CÓDIGO | DETALLE | 👉 MI_CAMPO | CANT | ...` |
+| `3` | **CANT** | `... | CANT | 👉 MI_CAMPO | U.M | ...` |
+| `4` | **U.M** | `... | U.M | 👉 MI_CAMPO | PRECIO | ...` |
+| `5` | **PRECIO** | `... | PRECIO | 👉 MI_CAMPO | DESCUENTO | ...` |
+| `6` | **DESCUENTO** (si aplica) | `... | DESCUENTO | 👉 MI_CAMPO | RECARGO | ...` |
+| `7` | **RECARGO** (si aplica) | `... | RECARGO | 👉 MI_CAMPO | IVA | ...` |
+| _sin valor_ | _(comportamiento legacy)_ | `... | RECARGO | 👉 MI_CAMPO | IVA | ...` |
+
+:::info Comportamiento por defecto
+Si **no se envía** `position`, la columna extra se ubica en la posición legacy: después de los recargos y antes de los impuestos. Esto garantiza **compatibilidad total** con implementaciones existentes.
+:::
+
+:::warning Reglas importantes
+- **Rango válido:** 1-7. Valores mayores a 7 se ignoran silenciosamente y se aplica el comportamiento legacy.
+- **Resolución de conflictos:** Si múltiples líneas definen el mismo `title` con diferente `position`, la **primera línea** que define el título determina la posición para toda la tabla.
+- `position` es **por columna** (por `title`), no por línea individual. Todas las líneas del documento comparten el mismo layout de tabla.
+:::
+
 - #### Ejemplo
 
 ```json
 "extra_data": [
   {
-    "title": "LOTE",
-    "value": "45413",
-    "align": "left"
+    "title": "CODIGO_BARRAS",
+    "value": "7703672001889",
+    "align": "center",
+    "position": 1
   },
   {
-    "title": "FECHA DE EXPIRACIÓN",
-    "value": "02/02/2026",
+    "title": "LOTE",
+    "value": "L-2025-001",
+    "align": "left",
+    "position": 2
+  },
+  {
+    "title": "FECHA_VENCIMIENTO",
+    "value": "2026-10-28",
     "align": "center"
   }
 ]
 ```
 
-- #### Detalle de los campos
-  **NOTA**: Es importante que el campo `title` sea igual en cada línea donde se envía el mismo valor para la columna en la representación gráfica.
-  - #### `title`
-    Título del campo adicional. _Este campo es obligatorio_ y debe ser un string.
-  - #### `value`
-    Valor del campo adicional. _Este campo es obligatorio_ y debe ser un string.
-  - #### `align`: default `left`
-    Alineación del campo adicional. _Este campo es obligatorio_ y debe ser un string.
-    - `left`: Alineación a la izquierda.
-    - `center`: Alineación al centro.
-    - `right`: Alineación a la derecha.
+:::tip Resultado visual del ejemplo
+```
+CÓDIGO | CODIGO BARRAS | DETALLE | LOTE | CANT | U.M | PRECIO | FECHA VENCIMIENTO | IVA | Vr. IVA | TOTAL
+         (position=1)              (position=2)                    (sin position → legacy)
+```
+:::
 
 ### `lines->invoice_period`
 

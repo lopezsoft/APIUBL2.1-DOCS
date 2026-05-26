@@ -4,6 +4,13 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.6] - 2026-05-26
+
+### Añadido
+* **Posicionamiento en `extra_data` de líneas:** Añadida la documentación técnica del parámetro `position` (`docs/billing-fields.md`) para controlar la ubicación exacta de las columnas de datos adicionales (`extra_data`) en la representación gráfica del PDF. Incluye tabla explicativa de posiciones base (1 a 7), reglas de resolución de conflictos, y el ejemplo JSON de integración de ítem actualizado.
+
+---
+
 ## [3.0.5] - 2026-05-25
 
 ### Solucionado

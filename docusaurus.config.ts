@@ -176,7 +176,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} LOPEZSOFT SAS - Todos los derechos reservados. | MATIAS API v3.0.5 🚀 PAT + Webhooks + Membresías`,
+      copyright: `Copyright © ${new Date().getFullYear()} LOPEZSOFT SAS - Todos los derechos reservados. | MATIAS API v3.0.6 🚀 PAT + Webhooks + Membresías`,
     },
     prism: {
       theme: prismThemes.github,

@@ -1185,7 +1185,8 @@ Este campo se informa a nivel de ítem y aplica solo para mandatos. Un mandante 
 - Este campo es utilizado para enviar información adicional que no se encuentra en los campos estándar de la línea.
 - Esta información adicional se mostrará en la representación gráfica del documento y no se enviará a la DIAN.
 
-- #### Detalle de los campos
+<details open>
+<summary>📋 Campos disponibles y Estructura Técnica</summary>
 
 **NOTA**: Es importante que el campo `title` sea igual en cada línea donde se envía el mismo valor para la columna en la representación gráfica.
 
@@ -1196,7 +1197,11 @@ Este campo se informa a nivel de ítem y aplica solo para mandatos. Un mandante 
 | `align` | string | ❌ No | Alineación del texto en la columna. Valores: `left`, `center`, `right`. Default: `left`. |
 | `position` | integer | ❌ No | **🆕 NEW** — Posición de la columna en el PDF. Controla dónde se ubica el campo respecto a las columnas base. Default: después de recargos, antes de impuestos. Ver tabla de posiciones. |
 
-#### Tabla de posiciones (`position`)
+</details>
+
+<details>
+<summary>🗺️ Guía de Posicionamiento y Reglas de Maquetación (PDF)</summary>
+
 El valor de `position` indica **después de qué columna base** se inserta la columna `extra_data` en la representación gráfica (PDF):
 
 | `position` | Columna insertada después de... | Ejemplo visual |
@@ -1220,7 +1225,10 @@ Si **no se envía** `position`, la columna extra se ubica en la posición legacy
 - `position` es **por columna** (por `title`), no por línea individual. Todas las líneas del documento comparten el mismo layout de tabla.
 :::
 
-- #### Ejemplo
+</details>
+
+<details>
+<summary>📝 Ejemplo JSON Completo y Simulación de Layout</summary>
 
 ```json
 "extra_data": [
@@ -1244,12 +1252,14 @@ Si **no se envía** `position`, la columna extra se ubica en la posición legacy
 ]
 ```
 
-:::tip Resultado visual del ejemplo
+:::tip Resultado visual del ejemplo en el PDF
 ```
 CÓDIGO | CODIGO BARRAS | DETALLE | LOTE | CANT | U.M | PRECIO | FECHA VENCIMIENTO | IVA | Vr. IVA | TOTAL
          (position=1)              (position=2)                    (sin position → legacy)
 ```
 :::
+
+</details>
 
 ### `lines->invoice_period`
 

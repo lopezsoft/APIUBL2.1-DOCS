@@ -52,7 +52,11 @@ curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auth/token \
 
 > Tu PAT tendrá prefijo `sk_test_*` en sandbox (vs `sk_live_*` en producción).
 
-## 4. Enviar primera factura
+## 4. Enviar documentos electrónicos
+
+El sandbox soporta **todos los tipos de documento** de la API. A continuación los endpoints disponibles:
+
+### 4.1 Factura electrónica
 
 ```bash
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/invoice \
@@ -61,24 +65,117 @@ curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/invoice \
   -d @tu-factura.json
 ```
 
-Sin header `X-Sandbox-Force-Status`, recibirás `ACCEPTED` automáticamente.
+### 4.2 Notas crédito y débito
+
+```bash
+# Nota Crédito
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/notes/credit \
+  -H "Authorization: Bearer sk_test_..." \
+  -H "Content-Type: application/json" \
+  -d @nota-credito.json
+
+# Nota Débito
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/notes/debit \
+  -H "Authorization: Bearer sk_test_..." \
+  -H "Content-Type: application/json" \
+  -d @nota-debito.json
+```
+
+### 4.3 Documento soporte y nota de ajuste
+
+```bash
+# Documento Soporte
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ds/document \
+  -H "Authorization: Bearer sk_test_..." \
+  -H "Content-Type: application/json" \
+  -d @documento-soporte.json
+
+# Nota de Ajuste al Documento Soporte
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ds/adjustment-note \
+  -H "Authorization: Bearer sk_test_..." \
+  -H "Content-Type: application/json" \
+  -d @nota-ajuste-ds.json
+```
+
+### 4.4 Nómina electrónica
+
+```bash
+# Nómina individual
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll \
+  -H "Authorization: Bearer sk_test_..." \
+  -H "Content-Type: application/json" \
+  -d @nomina.json
+
+# Reemplazo de nómina
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll/replace \
+  -H "Authorization: Bearer sk_test_..." \
+  -H "Content-Type: application/json" \
+  -d @nomina-replace.json
+
+# Eliminación de nómina
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll/delete \
+  -H "Authorization: Bearer sk_test_..." \
+  -H "Content-Type: application/json" \
+  -d @nomina-delete.json
+```
+
+### 4.5 Documentos con consecutivo automático (auto-increment)
+
+Todos los endpoints de auto-incremento también funcionan en el sandbox:
+
+```bash
+# Factura con consecutivo automático
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/invoices \
+  -H "Authorization: Bearer sk_test_..." \
+  -H "Content-Type: application/json" \
+  -d @factura-auto.json
+
+# Nota Crédito con consecutivo automático
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/credit-notes \
+  -H "Authorization: Bearer sk_test_..." \
+  -d @nc-auto.json
+
+# Nota Débito con consecutivo automático
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/debit-notes \
+  -H "Authorization: Bearer sk_test_..." \
+  -d @nd-auto.json
+
+# Documento Soporte con consecutivo automático
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/support-documents \
+  -H "Authorization: Bearer sk_test_..." \
+  -d @ds-auto.json
+
+# Nota de Ajuste con consecutivo automático
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/adjustment-notes \
+  -H "Authorization: Bearer sk_test_..." \
+  -d @ajuste-auto.json
+
+# Documento POS con consecutivo automático
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/pos-documents \
+  -H "Authorization: Bearer sk_test_..." \
+  -d @pos-auto.json
+```
+
+> Todos los endpoints de auto-incremento también soportan `PATCH /{uuid}` para reenvío.
+
+Sin header `X-Sandbox-Force-Status`, todos devuelven `ACCEPTED` automáticamente.
 
 ## 5. Probar errores
 
-Simula diferentes respuestas de la DIAN con el header `X-Sandbox-Force-Status`:
+Simula diferentes respuestas de la DIAN con el header `X-Sandbox-Force-Status`. Funciona en **cualquier** endpoint de documentos (factura, notas, DS, nómina, auto-increment):
 
 ```bash
-# Documento rechazado
+# Documento rechazado (funciona en /invoice, /notes/credit, /ep/payroll, etc.)
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/invoice \
   -H "Authorization: Bearer sk_test_..." \
   -H "X-Sandbox-Force-Status: ERROR_REJECTED" \
   -d @tu-factura.json
 
-# Timeout de DIAN
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/invoice \
+# Timeout de DIAN (funciona en cualquier endpoint de documentos)
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll \
   -H "Authorization: Bearer sk_test_..." \
   -H "X-Sandbox-Force-Status: ERROR_TIMEOUT" \
-  -d @tu-factura.json
+  -d @nomina.json
 ```
 
 Ver la lista completa de magic values en [MAGIC-VALUES.md](./MAGIC-VALUES.md).
@@ -91,6 +188,39 @@ Todas las respuestas del sandbox incluyen el header:
 X-MATIAS-Environment: sandbox
 ```
 
+## Endpoints soportados en sandbox
+
+### Documentos electrónicos (todos con respuesta DIAN simulada)
+
+| Endpoint | Método | Tipo de Documento |
+|---|---|---|
+| `/invoice` | POST | Factura electrónica |
+| `/notes/credit` | POST | Nota crédito |
+| `/notes/debit` | POST | Nota débito |
+| `/ds/document` | POST | Documento soporte |
+| `/ds/adjustment-note` | POST | Nota de ajuste DS |
+| `/ep/payroll` | POST | Nómina electrónica individual |
+| `/ep/payroll/replace` | POST | Reemplazo de nómina |
+| `/ep/payroll/delete` | POST | Eliminación de nómina |
+| `/auto-increment/invoices` | POST | Factura auto-incremento |
+| `/auto-increment/credit-notes` | POST | NC auto-incremento |
+| `/auto-increment/debit-notes` | POST | ND auto-incremento |
+| `/auto-increment/support-documents` | POST | DS auto-incremento |
+| `/auto-increment/adjustment-notes` | POST | Nota ajuste auto-incremento |
+| `/auto-increment/pos-documents` | POST | POS auto-incremento |
+
+### CRUD y configuración (misma lógica que producción)
+
+| Endpoint | Descripción |
+|---|---|
+| `/certificate/*` | Gestión de certificados digitales |
+| `/resolutions/*` | Gestión de resoluciones DIAN |
+| `/software/*` | Configuración de software DIAN |
+| `/company/*` | Datos de la empresa |
+| `/documents/*` | Consulta de documentos enviados, PDF, XML |
+| `/tokens/*` | Personal Access Tokens |
+| `/currency/*` | Monedas y TRM (con fallback simulado) |
+
 ## Diferencias con producción
 
 | Aspecto | Producción | Sandbox |
@@ -101,6 +231,7 @@ X-MATIAS-Environment: sandbox
 | Datos | Persistentes | Persistentes (Stripe-like) |
 | PAT prefijo | `sk_live_*` | `sk_test_*` |
 | Endpoints | Idénticos | **Idénticos** |
+| TRM (tasa cambio) | API externa real | Valores hardcoded de fallback |
 
 ## Soporte
 

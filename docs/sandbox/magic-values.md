@@ -6,25 +6,69 @@ description: 8 valores de simulación para probar diferentes respuestas de la DI
 
 # Magic Values — MATIAS API Sandbox
 
-El entorno sandbox de MATIAS API soporta **8 valores mágicos (Magic Values)** a través de cabeceras HTTP especiales. Esto te permite forzar y testear cómo reacciona tu integración ante diferentes estados y códigos de error reales de la DIAN, sin necesidad de alterar tu base de datos o registrar payloads de prueba incorrectos.
+El entorno sandbox de MATIAS API soporta **8 valores mágicos (Magic Values)** a través de cabeceras HTTP especiales. Esto te permite forzar y testear cómo reacciona tu integración ante diferentes estados y códigos de error reales de la DIAN en **cualquiera de nuestros endpoints**, sin necesidad de alterar tu base de datos o registrar payloads de prueba incorrectos.
 
 ---
 
 ## Cómo Utilizar los Magic Values
 
-Para forzar un estado, incluye la cabecera HTTP **`X-Sandbox-Force-Status`** en cualquiera de tus solicitudes de emisión o envío de documentos electrónicos (`POST /invoice`, `POST /notes/credit`, `POST /notes/debit`, `POST /ep/payroll`, etc.).
+Para forzar un estado, incluye la cabecera HTTP **`X-Sandbox-Force-Status`** en cualquiera de tus solicitudes de emisión o envío de documentos electrónicos:
+
+### Mapeo de Endpoints Compatibles
+
+*   `POST /invoice` — Factura electrónica estándar
+*   `POST /notes/credit` — Nota crédito electrónica
+*   `POST /notes/debit` — Nota débito electrónica
+*   `POST /ds/document` — Documento soporte electrónico
+*   `POST /ds/adjustment-note` — Nota de ajuste a Documento Soporte
+*   `POST /ep/payroll` — Nómina electrónica individual
+*   `POST /ep/payroll/replace` — Reemplazo de nómina
+*   `POST /ep/payroll/delete` — Anulación/Eliminación de nómina
+*   `POST /auto-increment/invoices` — Factura auto-incrementable
+*   `POST /auto-increment/credit-notes` — Nota Crédito auto-incrementable
+*   `POST /auto-increment/debit-notes` — Nota Débito auto-incrementable
+*   `POST /auto-increment/support-documents` — Documento Soporte auto-incrementable
+*   `POST /auto-increment/adjustment-notes` — Nota ajuste auto-incrementable
+*   `POST /auto-increment/pos-documents` — POS auto-incrementable
+
+---
+
+## Ejemplos de Comandos de Simulación
+
+A continuación se exponen ejemplos de peticiones forzadas para diferentes tipos de flujos y documentos:
 
 ```bash
-# Ejemplo: Forzar un rechazo por validaciones de negocio de la DIAN
+# Ejemplo 1: Forzar un rechazo por validaciones de negocio en Factura Electrónica
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/invoice \
   -H "Authorization: Bearer {token}" \
   -H "X-Sandbox-Force-Status: ERROR_REJECTED" \
   -H "Content-Type: application/json" \
   -d @invoice.json
+
+# Ejemplo 2: Forzar un timeout de la DIAN en Nómina Electrónica
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll \
+  -H "Authorization: Bearer {token}" \
+  -H "X-Sandbox-Force-Status: ERROR_TIMEOUT" \
+  -H "Content-Type: application/json" \
+  -d @payroll.json
+
+# Ejemplo 3: Forzar una validación de documento duplicado en Nota Crédito
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/notes/credit \
+  -H "Authorization: Bearer {token}" \
+  -H "X-Sandbox-Force-Status: ERROR_DUPLICATE" \
+  -H "Content-Type: application/json" \
+  -d @credit-note.json
+
+# Ejemplo 4: Forzar error estructural XSD en Documento Soporte Auto-incrementable
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/support-documents \
+  -H "Authorization: Bearer {token}" \
+  -H "X-Sandbox-Force-Status: ERROR_SCHEMA" \
+  -H "Content-Type: application/json" \
+  -d @ds-auto.json
 ```
 
 :::info Comportamiento por Defecto
-Si no especificas la cabecera `X-Sandbox-Force-Status` en tu solicitud, el sandbox procesará el documento de forma exitosa y devolverá un estado de aceptación estándar de la DIAN (**`ACCEPTED`**).
+Si no especificas la cabecera `X-Sandbox-Force-Status` en tu solicitud, el sandbox procesará el documento de forma exitosa y devolverá un estado de aceptación estándar de la DIAN (**`ACCEPTED`**) en cualquiera de los módulos.
 :::
 
 ---
@@ -32,8 +76,6 @@ Si no especificas la cabecera `X-Sandbox-Force-Status` en tu solicitud, el sandb
 ## Catálogo de Magic Values
 
 ### 1. Errores DIAN (6)
-
-Utiliza estos valores para testear la tolerancia a fallos, reintentos o el flujo de alerta para tus usuarios finales ante rechazos de la DIAN:
 
 | Header `X-Sandbox-Force-Status` | Estado HTTP | Código DIAN | Descripción del Comportamiento |
 |:---|:---:|:---:|:---|
@@ -48,8 +90,6 @@ Utiliza estos valores para testear la tolerancia a fallos, reintentos o el flujo
 
 ### 2. Estados de Certificado Digital (2)
 
-Permite verificar las notificaciones o flujos preventivos de tu sistema ante problemas de vigencia del certificado:
-
 | Header `X-Sandbox-Force-Status` | Comportamiento Simulado | Objetivo de Prueba |
 |:---|:---|:---|
 | **`CERT_EXPIRED`** | Fuerza un error por certificado de firma expirado. | Validar bloqueos e instructivos de renovación en tu ERP. |
@@ -57,14 +97,35 @@ Permite verificar las notificaciones o flujos preventivos de tu sistema ante pro
 
 ---
 
+## Compatibilidad por Tipo de Documento
+
+Todos los 8 magic values son **100% compatibles** con todas las tipologías de documentos electrónicos en el sandbox:
+
+| Tipo de Documento | Endpoint Relativo | Magic Values Soportados |
+|:---|:---|:---:|
+| Factura electrónica | `POST /invoice` | ✅ Los 8 |
+| Nota crédito | `POST /notes/credit` | ✅ Los 8 |
+| Nota débito | `POST /notes/debit` | ✅ Los 8 |
+| Documento soporte | `POST /ds/document` | ✅ Los 8 |
+| Nota de ajuste DS | `POST /ds/adjustment-note` | ✅ Los 8 |
+| Nómina individual | `POST /ep/payroll` | ✅ Los 8 |
+| Reemplazo nómina | `POST /ep/payroll/replace` | ✅ Los 8 |
+| Eliminación nómina | `POST /ep/payroll/delete` | ✅ Los 8 |
+| Factura auto-increment | `POST /auto-increment/invoices` | ✅ Los 8 |
+| NC auto-increment | `POST /auto-increment/credit-notes` | ✅ Los 8 |
+| ND auto-increment | `POST /auto-increment/debit-notes` | ✅ Los 8 |
+| DS auto-increment | `POST /auto-increment/support-documents` | ✅ Los 8 |
+| Ajuste auto-increment | `POST /auto-increment/adjustment-notes` | ✅ Los 8 |
+| POS auto-increment | `POST /auto-increment/pos-documents` | ✅ Los 8 |
+
+---
+
 ## Ejemplos de Respuestas del Sandbox
 
-A continuación se exponen las estructuras de respuesta HTTP completas que devuelve el sandbox según el caso:
+Aplica con idéntica consistencia estructural para cualquier tipo de documento electrónico:
 
 <details open>
 <summary>🟢 Respuesta Happy Path — ACCEPTED (Sin Magic Value)</summary>
-
-Esta respuesta se obtiene cuando el documento pasa todas las validaciones estructurales y de negocio correctamente:
 
 ```json
 {
@@ -84,8 +145,6 @@ Esta respuesta se obtiene cuando el documento pasa todas las validaciones estruc
 <details>
 <summary>🔴 Respuesta de Error Forzado — ERROR_REJECTED</summary>
 
-Devuelve un fallo semántico detallado con los códigos de regla y razones oficiales de la DIAN:
-
 ```json
 {
   "success": false,
@@ -100,8 +159,6 @@ Devuelve un fallo semántico detallado con los códigos de regla y razones ofici
 
 <details>
 <summary>🟡 Respuesta de Advertencia de Certificado — CERT_NEAR_EXPIRY</summary>
-
-El documento es aceptado pero se inyecta una colección de advertencias preventivas:
 
 ```json
 {
@@ -125,5 +182,6 @@ El documento es aceptado pero se inyecta una colección de advertencias preventi
 
 :::warning Reglas de Uso en Producción
 *   El header `X-Sandbox-Force-Status` **solo es vinculante en el dominio del sandbox** (`https://sandbox-api.matias-api.com`).
-*   Si envías esta cabecera al entorno de **Producción**, el gateway de enlace la **eliminará de forma silenciosa** para evitar alteraciones accidentales en facturaciones reales.
+*   En producción, esta cabecera es **ignorada por completo**.
+*   El mismo magic value produce la **misma estructura de respuesta**, garantizando consistencia semántica en todo tu flujo de integración.
 :::

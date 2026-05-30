@@ -45,6 +45,27 @@ El XML firmado con el Test Cert tiene una firma **estructuralmente válida**:
 - Cualquier validador XSD UBL 2.1 lo aceptará
 - DIAN lo rechazaría (la CA no encadena a ONAC) — exactamente el comportamiento deseado
 
+### Tipos de documento soportados
+
+El Test Cert se usa para firmar **todos** los tipos de documento electrónico en el sandbox:
+
+| Tipo | Endpoint |
+|---|---|
+| Factura electrónica | `POST /invoice` |
+| Nota crédito | `POST /notes/credit` |
+| Nota débito | `POST /notes/debit` |
+| Documento soporte | `POST /ds/document` |
+| Nota de ajuste DS | `POST /ds/adjustment-note` |
+| Nómina electrónica | `POST /ep/payroll` |
+| Reemplazo de nómina | `POST /ep/payroll/replace` |
+| Eliminación de nómina | `POST /ep/payroll/delete` |
+| Factura auto-increment | `POST /auto-increment/invoices` |
+| NC auto-increment | `POST /auto-increment/credit-notes` |
+| ND auto-increment | `POST /auto-increment/debit-notes` |
+| DS auto-increment | `POST /auto-increment/support-documents` |
+| Ajuste auto-increment | `POST /auto-increment/adjustment-notes` |
+| POS auto-increment | `POST /auto-increment/pos-documents` |
+
 ## Red de seguridad
 
 El `CertificateFingerprintGuard` previene que un Test Cert se use en producción:

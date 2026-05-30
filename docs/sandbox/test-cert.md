@@ -46,6 +46,26 @@ Todos los endpoints de gestión de certificados se comportan de forma **exactame
 | `PUT /certificate/{id}` | Permite actualizar la firma digital asociada. |
 | `DELETE /certificate/{id}` | Desvincula el certificado asignado. |
 
+### 3. Tipos de Documento Firmados
+El certificado digital de prueba se utiliza de forma automática para firmar criptográficamente **todas** las tipologías de documentos electrónicos enviadas al sandbox:
+
+| Tipo de Documento Electrónico | Endpoint del API de Pruebas |
+|:---|:---|
+| Factura electrónica estándar | `POST /invoice` |
+| Nota crédito electrónica | `POST /notes/credit` |
+| Nota débito electrónica | `POST /notes/debit` |
+| Documento soporte electrónico | `POST /ds/document` |
+| Nota de ajuste a Documento Soporte | `POST /ds/adjustment-note` |
+| Nómina electrónica individual | `POST /ep/payroll` |
+| Reemplazo de nómina electrónica | `POST /ep/payroll/replace` |
+| Eliminación/Anulación de nómina | `POST /ep/payroll/delete` |
+| Factura auto-incrementable | `POST /auto-increment/invoices` |
+| NC auto-incrementable | `POST /auto-increment/credit-notes` |
+| ND auto-incrementable | `POST /auto-increment/debit-notes` |
+| DS auto-incrementable | `POST /auto-increment/support-documents` |
+| Nota de ajuste auto-incrementable | `POST /auto-increment/adjustment-notes` |
+| POS equivalente auto-incrementable | `POST /auto-increment/pos-documents` |
+
 ---
 
 ## Firma Estructural (XMLDSig)

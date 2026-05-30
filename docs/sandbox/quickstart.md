@@ -10,6 +10,13 @@ Guía rápida para integrar con el sandbox de MATIAS API en 5 minutos. El sandbo
 
 ---
 
+:::info URL del Sandbox
+Para todas las peticiones a este entorno de pruebas, debes reemplazar el parámetro `{{SANDBOX_URL}}` por la URL oficial del sandbox:
+**`https://sandbox-api.matias-api.com`**
+:::
+
+---
+
 ## 1. Crear cuenta
 
 Registra tu cuenta en **producción**. Las credenciales registradas se replicarán automáticamente al ambiente sandbox en tiempo real.

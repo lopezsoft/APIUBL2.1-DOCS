@@ -10,6 +10,13 @@ El entorno sandbox de MATIAS API soporta **8 valores mágicos (Magic Values)** a
 
 ---
 
+:::info URL del Sandbox
+Para todas las peticiones a este entorno de pruebas, debes reemplazar el parámetro `{{SANDBOX_URL}}` por la URL oficial del sandbox:
+**`https://sandbox-api.matias-api.com`**
+:::
+
+---
+
 ## Cómo Utilizar los Magic Values
 
 Para forzar un estado, incluye la cabecera HTTP **`X-Sandbox-Force-Status`** en cualquiera de tus solicitudes de emisión o envío de documentos electrónicos:

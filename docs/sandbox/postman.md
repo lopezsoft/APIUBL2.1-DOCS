@@ -39,7 +39,7 @@ La colección se encuentra estructurada en **4 carpetas lógicas** para guiarte 
 
 ### 📁 2. Sandbox Auth (2 requests)
 *   `POST /auth/login`: Realiza el inicio de sesión y devuelve tu token `access_token` JWT.
-*   `POST /api/ubl2.1/auth/token`: Genera tu **Personal Access Token (PAT)** (`sk_test_*`) para autenticar el envío de documentos.
+*   `POST /api/ubl2.1/auth/token`: Genera tu **Personal Access Token (PAT)** JWT estándar para autenticar el envío de documentos.
 
 ### 📁 3. Sandbox Facturación (8 requests)
 Peticiones completas para transmitir facturas electrónicas combinando escenarios de validación:
@@ -68,7 +68,7 @@ Para ejecutar las peticiones de forma dinámica sin reescribir cabeceras, te sug
 | `url` | default | `{{URL}}` (ej. `api-v2.matias-api.com`) | Dominio base de producción (solo para el registro). |
 | `sandbox_url` | default | `https://sandbox-api.matias-api.com` | Dominio exclusivo del ambiente sandbox. |
 | `access_token` | secret | `eyJ...` | El token JWT obtenido en el Login. |
-| `pat_token` | secret | `sk_test_...` | Tu Personal Access Token de pruebas (`sk_test_*`). |
+| `pat_token` | secret | `eyJ...` | Tu Personal Access Token (PAT) JWT estándar de pruebas. |
 
 :::tip Scripts de Postman
 La colección incluye scripts automáticos en la pestaña **Tests** de la petición de Login y Generación de PAT. Estos scripts extraen los tokens del JSON de respuesta y los guardan automáticamente en tus variables de entorno para que no tengas que copiarlos y pegarlos manualmente en cada llamada.

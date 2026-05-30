@@ -152,7 +152,7 @@ Contenido sugerido:
 | DIAN | Envío real SOAP | Respuestas simuladas |
 | Certificado | Emitido por CA real (ONAC) | Test Cert auto-generado |
 | Datos | Persistentes | Persistentes (modelo Stripe) |
-| PAT prefijo | `sk_live_*` | `sk_test_*` |
+| PAT | JWT estandar (Passport) | JWT estandar (Passport) |
 | Endpoints | Todos | **Idénticos a producción** |
 | Header respuesta | — | `X-MATIAS-Environment: sandbox` |
 

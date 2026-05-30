@@ -70,8 +70,8 @@ curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auth/token \
   -d '{"name": "Mi Token de Prueba"}'
 ```
 
-:::tip Prefijo de Token
-Los tokens del ambiente sandbox se generan automáticamente con el prefijo **`sk_test_*`**, lo que te permite identificarlos fácilmente de tus tokens de producción con prefijo **`sk_live_*`**.
+:::tip Estándar de Autenticación
+Tanto en producción como en el ambiente sandbox, el token generado es un **JWT estándar (Laravel Passport)**, garantizando un esquema de autenticación idéntico y seguro para todos tus entornos.
 :::
 
 ---
@@ -84,7 +84,7 @@ El sandbox soporta **todos los tipos de documento** de la API de producción. A 
 
 ```bash
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/invoice \
-  -H "Authorization: Bearer sk_test_..." \
+  -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @tu-factura.json
 ```
@@ -94,13 +94,13 @@ curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/invoice \
 ```bash
 # Enviar Nota Crédito
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/notes/credit \
-  -H "Authorization: Bearer sk_test_..." \
+  -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nota-credito.json
 
 # Enviar Nota Débito
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/notes/debit \
-  -H "Authorization: Bearer sk_test_..." \
+  -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nota-debito.json
 ```
@@ -110,13 +110,13 @@ curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/notes/debit \
 ```bash
 # Enviar Documento Soporte
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ds/document \
-  -H "Authorization: Bearer sk_test_..." \
+  -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @documento-soporte.json
 
 # Enviar Nota de Ajuste al Documento Soporte
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ds/adjustment-note \
-  -H "Authorization: Bearer sk_test_..." \
+  -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nota-ajuste-ds.json
 ```
@@ -126,19 +126,19 @@ curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ds/adjustment-note \
 ```bash
 # Enviar Nómina Individual
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll \
-  -H "Authorization: Bearer sk_test_..." \
+  -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nomina.json
 
 # Enviar Reemplazo de Nómina
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll/replace \
-  -H "Authorization: Bearer sk_test_..." \
+  -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nomina-replace.json
 
 # Enviar Eliminación de Nómina
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll/delete \
-  -H "Authorization: Bearer sk_test_..." \
+  -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nomina-delete.json
 ```
@@ -150,33 +150,33 @@ Todos los endpoints de auto-incremento de numeración también operan y responde
 ```bash
 # Factura con consecutivo automático
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/invoices \
-  -H "Authorization: Bearer sk_test_..." \
+  -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @factura-auto.json
 
 # Nota Crédito con consecutivo automático
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/credit-notes \
-  -H "Authorization: Bearer sk_test_..." \
+  -H "Authorization: Bearer {tu_token}" \
   -d @nc-auto.json
 
 # Nota Débito con consecutivo automático
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/debit-notes \
-  -H "Authorization: Bearer sk_test_..." \
+  -H "Authorization: Bearer {tu_token}" \
   -d @nd-auto.json
 
 # Documento Soporte con consecutivo automático
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/support-documents \
-  -H "Authorization: Bearer sk_test_..." \
+  -H "Authorization: Bearer {tu_token}" \
   -d @ds-auto.json
 
 # Nota de Ajuste con consecutivo automático
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/adjustment-notes \
-  -H "Authorization: Bearer sk_test_..." \
+  -H "Authorization: Bearer {tu_token}" \
   -d @ajuste-auto.json
 
 # Documento POS con consecutivo automático
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/pos-documents \
-  -H "Authorization: Bearer sk_test_..." \
+  -H "Authorization: Bearer {tu_token}" \
   -d @pos-auto.json
 ```
 
@@ -195,13 +195,13 @@ El sandbox te permite forzar escenarios de error en **cualquier** endpoint de do
 ```bash
 # Simular documento rechazado por validaciones de negocio (en /invoice, /notes/credit, etc.)
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/invoice \
-  -H "Authorization: Bearer sk_test_..." \
+  -H "Authorization: Bearer {tu_token}" \
   -H "X-Sandbox-Force-Status: ERROR_REJECTED" \
   -d @tu-factura.json
 
 # Simular timeout de conexión con la DIAN en el módulo de Nómina
 curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll \
-  -H "Authorization: Bearer sk_test_..." \
+  -H "Authorization: Bearer {tu_token}" \
   -H "X-Sandbox-Force-Status: ERROR_TIMEOUT" \
   -d @nomina.json
 ```
@@ -269,7 +269,7 @@ El sandbox ofrece paridad funcional total con producción. A continuación se li
 | **Envío a la DIAN** | Transmisión real SOAP a servidores DIAN | Respuestas simuladas/mockeadas |
 | **Firma de Documentos** | Certificado digital emitido por CA real (ONAC) | Certificado digital de prueba (Test Cert) auto-asignado |
 | **Persistencia de Datos** | Persistentes en base de datos real | Aislados de producción (persistencia simulada) |
-| **Prefijo de Token (PAT)** | `sk_live_*` | `sk_test_*` |
+| **Token de Acceso (PAT)** | JWT estándar (Laravel Passport) | JWT estándar (Laravel Passport) |
 | **Endpoints del API** | Todos | **Idénticos a producción** |
 | **TRM (Tasa de Cambio)** | Consulta real vía API externa financiera | Valores de fallback fijos/mockeados |
 

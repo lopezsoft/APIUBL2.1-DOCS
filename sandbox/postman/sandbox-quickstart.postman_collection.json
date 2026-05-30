@@ -87,7 +87,7 @@
           ]
         },
         {
-          "name": "2.2 Generate PAT (sk_test_*)",
+          "name": "2.2 Generate PAT",
           "request": {
             "method": "POST",
             "header": [

@@ -15,7 +15,7 @@ Guía rápida para integrar con el sandbox de MATIAS API en 5 minutos. El sandbo
 Registra tu cuenta en **producción**. Las credenciales registradas se replicarán automáticamente al ambiente sandbox en tiempo real.
 
 ```bash
-curl -X POST https://api-v2.matias-api.com/register \
+curl -X POST {{URL}}/register \
   -H "Content-Type: application/json" \
   -d '{
     "first_name": "Tu Nombre",
@@ -29,7 +29,9 @@ curl -X POST https://api-v2.matias-api.com/register \
 ```
 
 :::info Registro Centralizado
-El registro se realiza únicamente a través del endpoint de producción (`https://api-v2.matias-api.com`). No necesitas crear una cuenta diferente para el sandbox; tus credenciales son globales.
+El registro se realiza únicamente a través del endpoint de producción (`{{URL}}`). No necesitas crear una cuenta diferente para el sandbox; tus credenciales son globales.
+
+*Nota: En toda la documentación se utiliza `{{URL}}` como marcador de posición para la URL base real de producción, la cual puede variar dependiendo de tu proveedor tecnológico o tu propia instancia dedicada de servidor (por ejemplo, `https://api-v2.matias-api.com`).*
 :::
 
 ---
@@ -129,7 +131,7 @@ X-MATIAS-Environment: sandbox
 
 | Aspecto | Producción | Sandbox |
 |:---|:---|:---|
-| **Dominio API** | `https://api-v2.matias-api.com` | `https://sandbox-api.matias-api.com` |
+| **Dominio API** | `{{URL}}` (ej. `api-v2.matias-api.com`) | `https://sandbox-api.matias-api.com` |
 | **Envío a la DIAN** | Transmisión real SOAP a servidores DIAN | Respuestas simuladas/mockeadas |
 | **Firma de Documentos** | Certificado digital emitido por CA real (ONAC) | Certificado digital de prueba (Test Cert) auto-asignado |
 | **Persistencia de Datos** | Persistentes en base de datos real | Aislados de producción (persistencia mockeada) |

@@ -96,5 +96,5 @@ Para garantizar que un certificado de pruebas del sandbox nunca sea transmitido 
 Si tu software o validador local de firmas requiere incorporar nuestra CA simulada al truststore para validar la firma de los documentos que recibes en el sandbox, puedes descargar el archivo de certificado raíz libremente:
 
 ```http
-https://sandbox-api.matias-api.com/pki/test-ca.crt
+{{SANDBOX_URL}}/pki/test-ca.crt
 ```

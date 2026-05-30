@@ -41,7 +41,7 @@ El registro se realiza únicamente a través del endpoint de producción (`{{URL
 Realiza el inicio de sesión en el sandbox utilizando las **mismas credenciales** que registraste en producción:
 
 ```bash
-curl -X POST https://sandbox-api.matias-api.com/auth/login \
+curl -X POST {{SANDBOX_URL}}/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "tu@email.com",
@@ -64,7 +64,7 @@ curl -X POST https://sandbox-api.matias-api.com/auth/login \
 Genera tu token de acceso de larga duración para realizar pruebas de integración de forma segura:
 
 ```bash
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auth/token \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auth/token \
   -H "Authorization: Bearer {access_token}" \
   -H "Content-Type: application/json" \
   -d '{"name": "Mi Token de Prueba"}'
@@ -83,7 +83,7 @@ El sandbox soporta **todos los tipos de documento** de la API de producción. A 
 ### 4.1 Factura electrónica
 
 ```bash
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/invoice \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/invoice \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @tu-factura.json
@@ -93,13 +93,13 @@ curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/invoice \
 
 ```bash
 # Enviar Nota Crédito
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/notes/credit \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/notes/credit \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nota-credito.json
 
 # Enviar Nota Débito
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/notes/debit \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/notes/debit \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nota-debito.json
@@ -109,13 +109,13 @@ curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/notes/debit \
 
 ```bash
 # Enviar Documento Soporte
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ds/document \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ds/document \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @documento-soporte.json
 
 # Enviar Nota de Ajuste al Documento Soporte
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ds/adjustment-note \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ds/adjustment-note \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nota-ajuste-ds.json
@@ -125,19 +125,19 @@ curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ds/adjustment-note \
 
 ```bash
 # Enviar Nómina Individual
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ep/payroll \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nomina.json
 
 # Enviar Reemplazo de Nómina
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll/replace \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ep/payroll/replace \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nomina-replace.json
 
 # Enviar Eliminación de Nómina
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll/delete \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ep/payroll/delete \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nomina-delete.json
@@ -149,33 +149,33 @@ Todos los endpoints de auto-incremento de numeración también operan y responde
 
 ```bash
 # Factura con consecutivo automático
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/invoices \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/invoices \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @factura-auto.json
 
 # Nota Crédito con consecutivo automático
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/credit-notes \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/credit-notes \
   -H "Authorization: Bearer {tu_token}" \
   -d @nc-auto.json
 
 # Nota Débito con consecutivo automático
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/debit-notes \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/debit-notes \
   -H "Authorization: Bearer {tu_token}" \
   -d @nd-auto.json
 
 # Documento Soporte con consecutivo automático
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/support-documents \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/support-documents \
   -H "Authorization: Bearer {tu_token}" \
   -d @ds-auto.json
 
 # Nota de Ajuste con consecutivo automático
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/adjustment-notes \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/adjustment-notes \
   -H "Authorization: Bearer {tu_token}" \
   -d @ajuste-auto.json
 
 # Documento POS con consecutivo automático
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/pos-documents \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/pos-documents \
   -H "Authorization: Bearer {tu_token}" \
   -d @pos-auto.json
 ```
@@ -194,20 +194,20 @@ El sandbox te permite forzar escenarios de error en **cualquier** endpoint de do
 
 ```bash
 # Simular documento rechazado por validaciones de negocio (en /invoice, /notes/credit, etc.)
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/invoice \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/invoice \
   -H "Authorization: Bearer {tu_token}" \
   -H "X-Sandbox-Force-Status: ERROR_REJECTED" \
   -d @tu-factura.json
 
 # Simular timeout de conexión con la DIAN en el módulo de Nómina
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ep/payroll \
   -H "Authorization: Bearer {tu_token}" \
   -H "X-Sandbox-Force-Status: ERROR_TIMEOUT" \
   -d @nomina.json
 ```
 
 :::warning Aislamiento de Simulación
-La cabecera `X-Sandbox-Force-Status` **solo es procesada en el sandbox** (`https://sandbox-api.matias-api.com`). En producción, esta cabecera es ignorada por completo por motivos de seguridad.
+La cabecera `X-Sandbox-Force-Status` **solo es procesada en el sandbox** (`{{SANDBOX_URL}}`). En producción, esta cabecera es ignorada por completo por motivos de seguridad.
 :::
 
 Puedes consultar la lista completa de estados simulables en la guía de [Magic Values](./magic-values.md).
@@ -265,7 +265,7 @@ El sandbox ofrece paridad funcional total con producción. A continuación se li
 
 | Aspecto | Producción | Sandbox |
 |:---|:---|:---|
-| **Dominio API** | `{{URL}}` (ej. `api-v2.matias-api.com`) | `https://sandbox-api.matias-api.com` |
+| **Dominio API** | `{{URL}}` (ej. `api-v2.matias-api.com`) | `{{SANDBOX_URL}}` (ej. `https://sandbox-api.matias-api.com`) |
 | **Envío a la DIAN** | Transmisión real SOAP a servidores DIAN | Respuestas simuladas/mockeadas |
 | **Firma de Documentos** | Certificado digital emitido por CA real (ONAC) | Certificado digital de prueba (Test Cert) auto-asignado |
 | **Persistencia de Datos** | Persistentes en base de datos real | Aislados de producción (persistencia simulada) |

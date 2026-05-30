@@ -78,7 +78,7 @@ El `CertificateFingerprintGuard` previene que un Test Cert se use en producción
 La CA de prueba está disponible para descarga:
 
 ```
-https://sandbox-api.matias-api.com/pki/test-ca.crt
+{{SANDBOX_URL}}/pki/test-ca.crt
 ```
 
 Puedes añadirla a tu truststore local para validar firmas del sandbox.

@@ -23,28 +23,28 @@ Envía el header `X-Sandbox-Force-Status` en **cualquier** request de generació
 
 ```bash
 # Ejemplo: forzar rechazo en una factura
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/invoice \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/invoice \
   -H "Authorization: Bearer {token}" \
   -H "X-Sandbox-Force-Status: ERROR_REJECTED" \
   -H "Content-Type: application/json" \
   -d @invoice.json
 
 # Ejemplo: forzar timeout en nómina electrónica
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ep/payroll \
   -H "Authorization: Bearer {token}" \
   -H "X-Sandbox-Force-Status: ERROR_TIMEOUT" \
   -H "Content-Type: application/json" \
   -d @payroll.json
 
 # Ejemplo: forzar duplicado en nota crédito
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/notes/credit \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/notes/credit \
   -H "Authorization: Bearer {token}" \
   -H "X-Sandbox-Force-Status: ERROR_DUPLICATE" \
   -H "Content-Type: application/json" \
   -d @credit-note.json
 
 # Ejemplo: forzar error de esquema en documento soporte auto-increment
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/support-documents \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/support-documents \
   -H "Authorization: Bearer {token}" \
   -H "X-Sandbox-Force-Status: ERROR_SCHEMA" \
   -H "Content-Type: application/json" \

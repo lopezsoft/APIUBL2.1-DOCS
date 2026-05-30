@@ -18,7 +18,7 @@ Estamos extremadamente orgullosos de anunciar la **versión 3.0.7** de la plataf
 
 Nuestra filosofía de desarrollo prioriza una **Experiencia del Desarrollador (DX) prémium**. Por ello, diseñamos el sandbox bajo el mismo concepto que plataformas líderes de la industria como Stripe:
 
-1.  **Credenciales Globales Replicadas:** No necesitas crear cuentas especiales para pruebas. Te registras en producción y tus credenciales se replican automáticamente en tiempo real al servidor sandbox (`https://sandbox-api.matias-api.com`).
+1.  **Credenciales Globales Replicadas:** No necesitas crear cuentas especiales para pruebas. Te registras en producción y tus credenciales se replican automáticamente en tiempo real al servidor sandbox (`{{SANDBOX_URL}}`).
 2.  **Endpoints 100% Homólogos:** El sandbox expone exactamente la misma firma y comportamiento de endpoints que producción. Cambiar de entorno es tan simple como modificar el dominio base de tus peticiones.
 3.  **Encabezado de Diagnóstico de Entorno:** Todas las respuestas HTTP devueltas por el sandbox inyectan la cabecera `X-MATIAS-Environment: sandbox` para un rastreo y diagnóstico inmediatos en tus consolas de red.
 

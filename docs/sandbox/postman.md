@@ -66,7 +66,7 @@ Para ejecutar las peticiones de forma dinámica sin reescribir cabeceras, te sug
 | Variable | Tipo | Valor Sugerido | Descripción |
 |:---|:---|:---|:---|
 | `url` | default | `{{URL}}` (ej. `api-v2.matias-api.com`) | Dominio base de producción (solo para el registro). |
-| `sandbox_url` | default | `https://sandbox-api.matias-api.com` | Dominio exclusivo del ambiente sandbox. |
+| `sandbox_url` | default | `{{SANDBOX_URL}}` | Dominio exclusivo del ambiente sandbox (ej. `https://sandbox-api.matias-api.com`). |
 | `access_token` | secret | `eyJ...` | El token JWT obtenido en el Login. |
 | `pat_token` | secret | `eyJ...` | Tu Personal Access Token (PAT) JWT estándar de pruebas. |
 

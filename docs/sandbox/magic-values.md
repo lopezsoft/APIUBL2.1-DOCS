@@ -39,28 +39,28 @@ A continuación se exponen ejemplos de peticiones forzadas para diferentes tipos
 
 ```bash
 # Ejemplo 1: Forzar un rechazo por validaciones de negocio en Factura Electrónica
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/invoice \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/invoice \
   -H "Authorization: Bearer {token}" \
   -H "X-Sandbox-Force-Status: ERROR_REJECTED" \
   -H "Content-Type: application/json" \
   -d @invoice.json
 
 # Ejemplo 2: Forzar un timeout de la DIAN en Nómina Electrónica
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ep/payroll \
   -H "Authorization: Bearer {token}" \
   -H "X-Sandbox-Force-Status: ERROR_TIMEOUT" \
   -H "Content-Type: application/json" \
   -d @payroll.json
 
 # Ejemplo 3: Forzar una validación de documento duplicado en Nota Crédito
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/notes/credit \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/notes/credit \
   -H "Authorization: Bearer {token}" \
   -H "X-Sandbox-Force-Status: ERROR_DUPLICATE" \
   -H "Content-Type: application/json" \
   -d @credit-note.json
 
 # Ejemplo 4: Forzar error estructural XSD en Documento Soporte Auto-incrementable
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/support-documents \
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/support-documents \
   -H "Authorization: Bearer {token}" \
   -H "X-Sandbox-Force-Status: ERROR_SCHEMA" \
   -H "Content-Type: application/json" \
@@ -181,7 +181,7 @@ Aplica con idéntica consistencia estructural para cualquier tipo de documento e
 ---
 
 :::warning Reglas de Uso en Producción
-*   El header `X-Sandbox-Force-Status` **solo es vinculante en el dominio del sandbox** (`https://sandbox-api.matias-api.com`).
+*   El header `X-Sandbox-Force-Status` **solo es vinculante en el dominio del sandbox** (`{{SANDBOX_URL}}`).
 *   En producción, esta cabecera es **ignorada por completo**.
 *   El mismo magic value produce la **misma estructura de respuesta**, garantizando consistencia semántica en todo tu flujo de integración.
 :::

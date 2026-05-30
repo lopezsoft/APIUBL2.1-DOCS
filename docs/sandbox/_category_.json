@@ -1,0 +1,8 @@
+{
+  "label": "Sandbox",
+  "position": 6,
+  "link": {
+    "type": "generated-index",
+    "description": "Ambiente de pruebas para integradores — mismos endpoints, respuestas simuladas de la DIAN."
+  }
+}

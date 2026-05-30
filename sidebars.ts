@@ -81,6 +81,24 @@ const sidebars: SidebarsConfig = {
         'use-cases/common-errors',
       ],
     },
+    {
+      type: 'category',
+      label: 'Sandbox',
+      collapsible: true,
+      collapsed: true,
+      link: {
+        type: 'generated-index',
+        slug: '/sandbox',
+        title: 'Sandbox de Pruebas',
+        description: 'Ambiente de pruebas para integradores — mismos endpoints, respuestas simuladas de la DIAN.',
+      },
+      items: [
+        'sandbox/quickstart',
+        'sandbox/magic-values',
+        'sandbox/test-cert',
+        'sandbox/postman',
+      ],
+    },
     'glossary',
     'interactive-tools',
     {

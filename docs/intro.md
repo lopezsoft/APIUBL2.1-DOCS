@@ -20,8 +20,10 @@ La URL base de la API (`{{URL}}`) y el acceso al entorno sandbox **son proporcio
 
 **No ofrecemos:**
 - ❌ Cuentas gratuitas
-- ❌ Sandbox público o de prueba gratuito
 - ❌ Acceso de demostración sin contrato
+
+**Ofrecemos:**
+- ✅ Sandbox de pruebas incluido para clientes — ver [documentación del sandbox](/docs/sandbox/quickstart)
 
 La URL base y las credenciales de acceso se entregarán una vez formalizada la contratación del servicio.
 :::
@@ -682,4 +684,4 @@ Para dudas técnicas rápidas o verificación de estado de servicios:
 
 ---
 
-**Versión de Documentación:** 3.0.6 | **Última actualización:** Mayo 2026 | **API:** v3.0.6
+**Versión de Documentación:** 3.0.7 | **Última actualización:** Mayo 2026 | **API:** v3.0.7

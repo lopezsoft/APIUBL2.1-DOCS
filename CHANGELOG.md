@@ -4,6 +4,18 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.7] - 2026-05-30
+
+### Añadido
+* **Categoría Sandbox de Integración:** Lanzamiento oficial y documentación detallada del ambiente de pruebas (sandbox).
+  * **Quickstart (`docs/sandbox/quickstart.md`):** Guía de inicio rápido para conectar y testear la integración en 5 minutos usando credenciales unificadas.
+  * **Magic Values (`docs/sandbox/magic-values.md`):** Documentación técnica de las 8 cabeceras de simulación HTTP (`X-Sandbox-Force-Status`) para probar feliz camino (happy path), 6 errores DIAN y 2 estados preventivos de certificados.
+  * **Test Certificate (`docs/sandbox/test-cert.md`):** Especificaciones detalladas del certificado de firma digital PKCS#12 (`.p12`) autogenerado para pruebas y del guardián preventivo de producción (`CertificateFingerprintGuard`).
+  * **Colección Postman (`docs/sandbox/postman.md`):** Publicada la suite de 14 requests de Postman listas para descargar e importar.
+* **Actualización de Onboarding (`docs/intro.md`):** Eliminados disclaimers obsoletos de sandbox inexistente y agregados enlaces formales de redirección a las guías de sandbox.
+
+---
+
 ## [3.0.6] - 2026-05-26
 
 ### Añadido

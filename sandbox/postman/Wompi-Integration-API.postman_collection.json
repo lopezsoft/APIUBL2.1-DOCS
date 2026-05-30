@@ -1,0 +1,459 @@
+{
+  "info": {
+    "_postman_id": "wompi-integration-2026",
+    "name": "Wompi Integration API",
+    "description": "API endpoints para la integración de pagos con Wompi.\n\n**Autenticación:** Bearer Token requerido para todos los endpoints de pagos.\n\n**Base URL:** {{base_url}}/api/ubl2.1\n\n**Ambiente:** Configurar variables de entorno antes de usar.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{api_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Get Available Plans",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has current_plan\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('current_plan');",
+                  "});",
+                  "",
+                  "pm.test(\"Response has available_upgrades\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('available_upgrades');",
+                  "    pm.expect(jsonData.available_upgrades).to.be.an('array');",
+                  "});",
+                  "",
+                  "// Save first upgrade plan_id for next request",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.available_upgrades && jsonData.available_upgrades.length > 0) {",
+                  "    pm.environment.set(\"plan_id\", jsonData.available_upgrades[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/ubl2.1/payments/plans/available",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "ubl2.1",
+                "payments",
+                "plans",
+                "available"
+              ]
+            },
+            "description": "Obtiene el plan actual de la empresa y los planes disponibles para upgrade."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Upgrade Payment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 or 201\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has payment_id\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('payment_id');",
+                  "    pm.environment.set(\"payment_id\", jsonData.payment_id);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has payment_link_url\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('payment_link_url');",
+                  "    pm.expect(jsonData.payment_link_url).to.include('checkout.wompi.co');",
+                  "});",
+                  "",
+                  "pm.test(\"Status is PENDING\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('PENDING');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"plan_id\": {{plan_id}},\n    \"customer_email\": \"test@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ubl2.1/payments/upgrade",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "ubl2.1",
+                "payments",
+                "upgrade"
+              ]
+            },
+            "description": "Crea un nuevo pago para upgrade de plan. Genera un link de pago de Wompi."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Payment Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Payment has valid status\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    var validStatuses = ['PENDING', 'APPROVED', 'DECLINED', 'VOIDED', 'ERROR'];",
+                  "    pm.expect(validStatuses).to.include(jsonData.status);",
+                  "});",
+                  "",
+                  "pm.test(\"Payment has can_retry flag\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('can_retry');",
+                  "    pm.expect(jsonData.can_retry).to.be.a('boolean');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/ubl2.1/payments/{{payment_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "ubl2.1",
+                "payments",
+                "{{payment_id}}"
+              ]
+            },
+            "description": "Consulta el estado actual de un pago específico. Auto-actualiza desde Wompi si está pendiente."
+          },
+          "response": []
+        },
+        {
+          "name": "List Payments",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has data array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"Response has pagination meta\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('meta');",
+                  "    pm.expect(jsonData.meta).to.have.property('current_page');",
+                  "    pm.expect(jsonData.meta).to.have.property('total');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/ubl2.1/payments?status=PENDING",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "ubl2.1",
+                "payments"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "PENDING",
+                  "description": "Filtrar por estado: PENDING, APPROVED, DECLINED"
+                }
+              ]
+            },
+            "description": "Lista todos los pagos de la empresa con paginación. Puede filtrarse por estado."
+          },
+          "response": []
+        },
+        {
+          "name": "Retry Payment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"New payment_link_url generated\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('payment_link_url');",
+                  "});",
+                  "",
+                  "pm.test(\"Retry number incremented\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('retry_number');",
+                  "    pm.expect(jsonData.retry_number).to.be.at.least(1);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/ubl2.1/payments/{{payment_id}}/retry",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "ubl2.1",
+                "payments",
+                "{{payment_id}}",
+                "retry"
+              ]
+            },
+            "description": "Reintenta un pago fallido. Genera un nuevo link de pago. Máximo 3 intentos."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints para gestión de pagos y upgrades de planes."
+    },
+    {
+      "name": "Webhooks",
+      "item": [
+        {
+          "name": "Ping Webhook",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has status ok\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('ok');",
+                  "});",
+                  "",
+                  "pm.test(\"Response has environment\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('environment');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/ubl2.1/webhooks/wompi/ping",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "ubl2.1",
+                "webhooks",
+                "wompi",
+                "ping"
+              ]
+            },
+            "description": "Health check del endpoint de webhooks. Público, sin autenticación."
+          },
+          "response": []
+        },
+        {
+          "name": "Simulate Wompi Webhook (Transaction Updated)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Generar firma HMAC SHA256 simulada",
+                  "var payload = {",
+                  "    \"event\": \"transaction.updated\",",
+                  "    \"data\": {",
+                  "        \"transaction\": {",
+                  "            \"id\": \"12345-67890-ABCDE\",",
+                  "            \"reference\": \"UPGRADE_1_1737034567_abc123\",",
+                  "            \"status\": \"APPROVED\",",
+                  "            \"amount_in_cents\": 10000000,",
+                  "            \"currency\": \"COP\",",
+                  "            \"payment_method_type\": \"CARD\"",
+                  "        }",
+                  "    },",
+                  "    \"sent_at\": new Date().toISOString()",
+                  "};",
+                  "",
+                  "pm.variables.set(\"webhook_payload\", JSON.stringify(payload));",
+                  "",
+                  "// Nota: En producción, Wompi genera la firma con WOMPI_EVENTS_SECRET",
+                  "// Este es solo un ejemplo de estructura"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// En desarrollo sin EVENTS_SECRET configurado, debería aceptar",
+                  "pm.test(\"Status code is 200 or 401\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 401]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Event-Checksum",
+                "value": "simulated_checksum_replace_with_real_hmac",
+                "description": "HMAC SHA256 de todo el body"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{{webhook_payload}}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ubl2.1/webhooks/wompi",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "ubl2.1",
+                "webhooks",
+                "wompi"
+              ]
+            },
+            "description": "Simula un webhook de Wompi con evento transaction.updated.\n\n**NOTA:** En desarrollo sin WOMPI_EVENTS_SECRET, puede fallar validación.\n\nPara testing real, usar ngrok + sandbox de Wompi."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints públicos para recibir notificaciones de Wompi."
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "api_token",
+      "value": "your_bearer_token_here",
+      "type": "string"
+    },
+    {
+      "key": "plan_id",
+      "value": "2",
+      "type": "string"
+    },
+    {
+      "key": "payment_id",
+      "value": "1",
+      "type": "string"
+    }
+  ]
+}

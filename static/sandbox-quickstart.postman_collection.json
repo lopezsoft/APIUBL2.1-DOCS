@@ -1,736 +1,2060 @@
 {
-  "info": {
-    "name": "MATIAS API — Sandbox Quickstart",
-    "description": "Collection curada para onboarding de integradores en el sandbox.\n\n## Flujo completo (23 requests)\n\n1. **Register** en producción\n2. **Login** en sandbox (el usuario se sincroniza automáticamente)\n3. **Generate PAT** — token personal de acceso\n4. **Factura happy path** → ACCEPTED\n5. **Factura forzando error** → ERROR_REJECTED, ERROR_DUPLICATE, ERROR_500, ERROR_TIMEOUT, ERROR_AUTH, ERROR_SCHEMA, CERT_EXPIRED\n6. **PDF & Status** — descarga de PDF, consulta de estado, info de certificado\n7. **Notas Crédito/Débito** — emisión de notas crédito y débito\n8. **Documento Soporte** — documento soporte y nota de ajuste DS\n9. **Nómina Electrónica** — nómina individual, reemplazo y eliminación\n10. **Auto-Increment** — factura y nota crédito con auto-incremento\n\n## Variables\n- `prod_url` — URL del entorno de producción\n- `sandbox_url` — URL del sandbox (`sandbox-api.matias-api.com`)\n- `email` / `password` — credenciales de prueba\n- `token` — se auto-setea después del login\n- `pat_token` — se auto-setea después de generar PAT\n- `trackId` — ID de seguimiento para consultas de PDF y estado",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "matias-api-sandbox"
-  },
-  "variable": [
-    { "key": "prod_url",    "value": "https://api.matias-api.com/api/ubl2.1" },
-    { "key": "sandbox_url", "value": "https://sandbox-api.matias-api.com/api/ubl2.1" },
-    { "key": "email",       "value": "integrador@ejemplo.com" },
-    { "key": "password",    "value": "Mi-Password-Seguro-2026" },
-    { "key": "first_name",  "value": "Integrador" },
-    { "key": "last_name",   "value": "Demo" },
-    { "key": "company_name","value": "Mi Empresa SAS" },
-    { "key": "dni",         "value": "900123456" },
-    { "key": "token",       "value": "" },
-    { "key": "pat_token",   "value": "" },
-    { "key": "trackId",     "value": "sandbox-mock-trackid" }
-  ],
-  "item": [
-    {
-      "name": "1. Producción",
-      "item": [
-        {
-          "name": "1.1 Register (producción)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"first_name\": \"{{first_name}}\",\n  \"last_name\": \"{{last_name}}\",\n  \"company_name\": \"{{company_name}}\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"password_confirmation\": \"{{password}}\",\n  \"dni\": \"{{dni}}\"\n}"
-            },
-            "url": { "raw": "{{prod_url}}/register", "host": ["{{prod_url}}"], "path": ["register"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Registro exitoso', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        }
-      ]
+    "info": {
+        "name": "MATIAS API — Sandbox Quickstart",
+        "description": "Collection curada para onboarding de integradores en el sandbox.\n\n## Flujo completo (23 requests)\n\n1. **Register** en producción\n2. **Login** en sandbox (el usuario se sincroniza automáticamente)\n3. **Generate PAT** — token personal de acceso\n4. **Factura happy path** → ACCEPTED\n5. **Factura forzando error** → ERROR_REJECTED, ERROR_DUPLICATE, ERROR_500, ERROR_TIMEOUT, ERROR_AUTH, ERROR_SCHEMA, CERT_EXPIRED\n6. **PDF & Status** — descarga de PDF, consulta de estado, info de certificado\n7. **Notas Crédito/Débito** — emisión de notas crédito y débito\n8. **Documento Soporte** — documento soporte y nota de ajuste DS\n9. **Nómina Electrónica** — nómina individual, reemplazo y eliminación\n10. **Auto-Increment** — factura y nota crédito con auto-incremento\n\n## Variables\n- `prod_url` — URL del entorno de producción\n- `sandbox_url` — URL del sandbox (`sandbox-api.matias-api.com`)\n- `email` / `password` — credenciales de prueba\n- `token` — se auto-setea después del login\n- `pat_token` — se auto-setea después de generar PAT\n- `trackId` — ID de seguimiento para consultas de PDF y estado",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "matias-api-sandbox"
     },
-    {
-      "name": "2. Sandbox — Auth",
-      "item": [
+    "variable": [
         {
-          "name": "2.1 Login (sandbox)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/auth/login", "host": ["{{sandbox_url}}"], "path": ["auth", "login"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Login exitoso en sandbox', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "    var json = pm.response.json();",
-                  "    pm.environment.set('token', json.access_token || json.token);",
-                  "    pm.collectionVariables.set('token', json.access_token || json.token);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
+            "key": "prod_url",
+            "value": "https://api.matias-api.com/api/ubl2.1"
         },
         {
-          "name": "2.2 Generate PAT",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Sandbox Test Token\"\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/tokens/", "host": ["{{sandbox_url}}"], "path": ["tokens", ""] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('PAT generado exitosamente', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "    var json = pm.response.json();",
-                  "    pm.collectionVariables.set('pat_token', json.token || json.accessToken);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
+            "key": "sandbox_url",
+            "value": "https://sandbox-api.matias-api.com/api/ubl2.1"
+        },
+        {
+            "key": "email",
+            "value": "integrador@ejemplo.com"
+        },
+        {
+            "key": "password",
+            "value": "Mi-Password-Seguro-2026"
+        },
+        {
+            "key": "first_name",
+            "value": "Integrador"
+        },
+        {
+            "key": "last_name",
+            "value": "Demo"
+        },
+        {
+            "key": "company_name",
+            "value": "Mi Empresa SAS"
+        },
+        {
+            "key": "dni",
+            "value": "900123456"
+        },
+        {
+            "key": "token",
+            "value": ""
+        },
+        {
+            "key": "pat_token",
+            "value": ""
+        },
+        {
+            "key": "trackId",
+            "value": "sandbox-mock-trackid"
         }
-      ]
-    },
-    {
-      "name": "3. Sandbox — Facturación",
-      "item": [
+    ],
+    "item": [
         {
-          "name": "3.1 Invoice Happy Path (ACCEPTED)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type_document_id\": 7,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"10:30:00\",\n  \"expiration_date\": \"2026-07-15\",\n  \"notes\": \"Factura de prueba sandbox\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"phone\": \"3001112222\",\n    \"address\": \"Calle 50 #20-30\",\n    \"email\": \"cliente@demo.com\",\n    \"merchant_registration\": \"0000000-00\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"100000.00\",\n    \"tax_exclusive_amount\": \"100000.00\",\n    \"tax_inclusive_amount\": \"119000.00\",\n    \"payable_amount\": \"119000.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"100000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Servicio de prueba sandbox\",\n      \"code\": \"SRV-001\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"100000.00\",\n      \"base_quantity\": \"1.000000\",\n      \"tax_totals\": [\n        {\n          \"tax_id\": 1,\n          \"tax_amount\": \"19000.00\",\n          \"taxable_amount\": \"100000.00\",\n          \"percent\": \"19.00\"\n        }\n      ]\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/invoice", "host": ["{{sandbox_url}}"], "path": ["invoice"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Factura aceptada en sandbox', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('Response no tiene header X-MATIAS-Environment', function () {",
-                  "    // El middleware añade este header solo si sandbox.enabled=true",
-                  "    pm.response.to.have.header('X-MATIAS-Environment', 'sandbox');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
+            "name": "1. Producción",
+            "item": [
+                {
+                    "name": "1.1 Register (producción)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"first_name\": \"{{first_name}}\",\n  \"last_name\": \"{{last_name}}\",\n  \"company_name\": \"{{company_name}}\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"password_confirmation\": \"{{password}}\",\n  \"dni\": \"{{dni}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{prod_url}}/register",
+                            "host": [
+                                "{{prod_url}}"
+                            ],
+                            "path": [
+                                "register"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Registro exitoso', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "name": "3.2 Invoice Force ERROR_REJECTED",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "X-Sandbox-Force-Status", "value": "ERROR_REJECTED" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type_document_id\": 7,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"10:31:00\",\n  \"notes\": \"Factura forzada a rechazo\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"50000.00\",\n    \"tax_exclusive_amount\": \"50000.00\",\n    \"tax_inclusive_amount\": \"59500.00\",\n    \"payable_amount\": \"59500.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"50000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Item rechazado\",\n      \"code\": \"SRV-002\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"50000.00\",\n      \"base_quantity\": \"1.000000\",\n      \"tax_totals\": [\n        {\n          \"tax_id\": 1,\n          \"tax_amount\": \"9500.00\",\n          \"taxable_amount\": \"50000.00\",\n          \"percent\": \"19.00\"\n        }\n      ]\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/invoice", "host": ["{{sandbox_url}}"], "path": ["invoice"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Factura rechazada por magic value', function () {",
-                  "    // El FakeDianTransmitter devuelve IsValid=false con status ERROR_REJECTED",
-                  "    var json = pm.response.json();",
-                  "    pm.expect(json).to.have.property('response');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
+            "name": "2. Sandbox — Auth",
+            "item": [
+                {
+                    "name": "2.1 Login (sandbox)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/auth/login",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Login exitoso en sandbox', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "    var json = pm.response.json();",
+                                    "    pm.environment.set('token', json.access_token || json.token);",
+                                    "    pm.collectionVariables.set('token', json.access_token || json.token);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "2.2 Generate PAT",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Sandbox Test Token\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/tokens/",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "tokens",
+                                ""
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('PAT generado exitosamente', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "    var json = pm.response.json();",
+                                    "    pm.collectionVariables.set('pat_token', json.token || json.accessToken);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "name": "3.3 Invoice Force ERROR_DUPLICATE",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "X-Sandbox-Force-Status", "value": "ERROR_DUPLICATE" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type_document_id\": 7,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"10:32:00\",\n  \"notes\": \"Factura forzada a duplicado\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"50000.00\",\n    \"tax_exclusive_amount\": \"50000.00\",\n    \"tax_inclusive_amount\": \"59500.00\",\n    \"payable_amount\": \"59500.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"50000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Item duplicado\",\n      \"code\": \"SRV-003\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"50000.00\",\n      \"base_quantity\": \"1.000000\"\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/invoice", "host": ["{{sandbox_url}}"], "path": ["invoice"] }
-          }
+            "name": "3. Sandbox — Facturación",
+            "item": [
+                {
+                    "name": "3.1 Invoice Happy Path (ACCEPTED)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type_document_id\": 7,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"10:30:00\",\n  \"expiration_date\": \"2026-07-15\",\n  \"notes\": \"Factura de prueba sandbox\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"phone\": \"3001112222\",\n    \"address\": \"Calle 50 #20-30\",\n    \"email\": \"cliente@demo.com\",\n    \"merchant_registration\": \"0000000-00\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"100000.00\",\n    \"tax_exclusive_amount\": \"100000.00\",\n    \"tax_inclusive_amount\": \"119000.00\",\n    \"payable_amount\": \"119000.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"100000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Servicio de prueba sandbox\",\n      \"code\": \"SRV-001\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"100000.00\",\n      \"base_quantity\": \"1.000000\",\n      \"tax_totals\": [\n        {\n          \"tax_id\": 1,\n          \"tax_amount\": \"19000.00\",\n          \"taxable_amount\": \"100000.00\",\n          \"percent\": \"19.00\"\n        }\n      ]\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/invoice",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "invoice"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Factura aceptada en sandbox', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response no tiene header X-MATIAS-Environment', function () {",
+                                    "    // El middleware añade este header solo si sandbox.enabled=true",
+                                    "    pm.response.to.have.header('X-MATIAS-Environment', 'sandbox');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "3.2 Invoice Force ERROR_REJECTED",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "X-Sandbox-Force-Status",
+                                "value": "ERROR_REJECTED"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type_document_id\": 7,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"10:31:00\",\n  \"notes\": \"Factura forzada a rechazo\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"50000.00\",\n    \"tax_exclusive_amount\": \"50000.00\",\n    \"tax_inclusive_amount\": \"59500.00\",\n    \"payable_amount\": \"59500.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"50000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Item rechazado\",\n      \"code\": \"SRV-002\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"50000.00\",\n      \"base_quantity\": \"1.000000\",\n      \"tax_totals\": [\n        {\n          \"tax_id\": 1,\n          \"tax_amount\": \"9500.00\",\n          \"taxable_amount\": \"50000.00\",\n          \"percent\": \"19.00\"\n        }\n      ]\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/invoice",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "invoice"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Factura rechazada por magic value', function () {",
+                                    "    // El FakeDianTransmitter devuelve IsValid=false con status ERROR_REJECTED",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.have.property('response');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "3.3 Invoice Force ERROR_DUPLICATE",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "X-Sandbox-Force-Status",
+                                "value": "ERROR_DUPLICATE"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type_document_id\": 7,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"10:32:00\",\n  \"notes\": \"Factura forzada a duplicado\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"50000.00\",\n    \"tax_exclusive_amount\": \"50000.00\",\n    \"tax_inclusive_amount\": \"59500.00\",\n    \"payable_amount\": \"59500.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"50000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Item duplicado\",\n      \"code\": \"SRV-003\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"50000.00\",\n      \"base_quantity\": \"1.000000\"\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/invoice",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "invoice"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "3.4 Invoice Force ERROR_500 (server error)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "X-Sandbox-Force-Status",
+                                "value": "ERROR_500"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type_document_id\": 7,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"10:33:00\",\n  \"notes\": \"Forzando error 500 del DIAN\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"100000.00\",\n    \"tax_exclusive_amount\": \"100000.00\",\n    \"tax_inclusive_amount\": \"119000.00\",\n    \"payable_amount\": \"119000.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"100000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Servicio error 500\",\n      \"code\": \"SRV-500\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"100000.00\",\n      \"base_quantity\": \"1.000000\"\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/invoice",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "invoice"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Error 500 simulado', function () {",
+                                    "    pm.response.to.have.status(500);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "3.5 Invoice Force ERROR_TIMEOUT",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "X-Sandbox-Force-Status",
+                                "value": "ERROR_TIMEOUT"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type_document_id\": 7,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"10:34:00\",\n  \"notes\": \"Forzando error timeout del DIAN\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"100000.00\",\n    \"tax_exclusive_amount\": \"100000.00\",\n    \"tax_inclusive_amount\": \"119000.00\",\n    \"payable_amount\": \"119000.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"100000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Servicio error timeout\",\n      \"code\": \"SRV-TIMEOUT\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"100000.00\",\n      \"base_quantity\": \"1.000000\"\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/invoice",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "invoice"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Error timeout simulado', function () {",
+                                    "    pm.response.to.have.status(500);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "3.6 Invoice Force ERROR_AUTH",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "X-Sandbox-Force-Status",
+                                "value": "ERROR_AUTH"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type_document_id\": 7,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"10:35:00\",\n  \"notes\": \"Forzando error de autenticación DIAN\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"100000.00\",\n    \"tax_exclusive_amount\": \"100000.00\",\n    \"tax_inclusive_amount\": \"119000.00\",\n    \"payable_amount\": \"119000.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"100000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Servicio error auth\",\n      \"code\": \"SRV-AUTH\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"100000.00\",\n      \"base_quantity\": \"1.000000\"\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/invoice",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "invoice"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Error auth simulado — tiene respuesta JSON', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.be.an('object');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "3.7 Invoice Force ERROR_SCHEMA",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "X-Sandbox-Force-Status",
+                                "value": "ERROR_SCHEMA"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type_document_id\": 7,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"10:36:00\",\n  \"notes\": \"Forzando error de esquema DIAN\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"100000.00\",\n    \"tax_exclusive_amount\": \"100000.00\",\n    \"tax_inclusive_amount\": \"119000.00\",\n    \"payable_amount\": \"119000.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"100000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Servicio error schema\",\n      \"code\": \"SRV-SCHEMA\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"100000.00\",\n      \"base_quantity\": \"1.000000\"\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/invoice",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "invoice"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Error schema simulado — tiene respuesta JSON', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.be.an('object');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "3.8 Invoice Force CERT_EXPIRED",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "X-Sandbox-Force-Status",
+                                "value": "CERT_EXPIRED"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type_document_id\": 7,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"10:37:00\",\n  \"notes\": \"Forzando error certificado expirado\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"100000.00\",\n    \"tax_exclusive_amount\": \"100000.00\",\n    \"tax_inclusive_amount\": \"119000.00\",\n    \"payable_amount\": \"119000.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"100000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Servicio cert expired\",\n      \"code\": \"SRV-CERT\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"100000.00\",\n      \"base_quantity\": \"1.000000\"\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/invoice",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "invoice"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Cert expired simulado — tiene respuesta JSON', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.be.an('object');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "3.9 Casos de Borde (DIAN)",
+                    "item": [
+                        {
+                            "name": "3.9.1 Force ERROR_MATH_ROUNDING",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    },
+                                    {
+                                        "key": "X-Sandbox-Force-Status",
+                                        "value": "ERROR_MATH_ROUNDING"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"type_document_id\": 7,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"10:30:00\",\n  \"notes\": \"Error matemático\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"100000.00\",\n    \"tax_exclusive_amount\": \"100000.00\",\n    \"tax_inclusive_amount\": \"119000.00\",\n    \"payable_amount\": \"119000.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"100000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Servicio prueba\",\n      \"code\": \"SRV-001\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"100000.00\",\n      \"base_quantity\": \"1.000000\",\n      \"tax_totals\": [\n        {\n          \"tax_id\": 1,\n          \"tax_amount\": \"19000.00\",\n          \"taxable_amount\": \"100000.00\",\n          \"percent\": \"19.00\"\n        }\n      ]\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
+                                },
+                                "url": {
+                                    "raw": "{{sandbox_url}}/invoice",
+                                    "host": [
+                                        "{{sandbox_url}}"
+                                    ],
+                                    "path": [
+                                        "invoice"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "3.9.2 Force ERROR_SOFTWARE_SECURITY",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    },
+                                    {
+                                        "key": "X-Sandbox-Force-Status",
+                                        "value": "ERROR_SOFTWARE_SECURITY"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"type_document_id\": 7,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"10:30:00\",\n  \"notes\": \"Error de seguridad de software\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"100000.00\",\n    \"tax_exclusive_amount\": \"100000.00\",\n    \"tax_inclusive_amount\": \"119000.00\",\n    \"payable_amount\": \"119000.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"100000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Servicio prueba\",\n      \"code\": \"SRV-001\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"100000.00\",\n      \"base_quantity\": \"1.000000\"\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
+                                },
+                                "url": {
+                                    "raw": "{{sandbox_url}}/invoice",
+                                    "host": [
+                                        "{{sandbox_url}}"
+                                    ],
+                                    "path": [
+                                        "invoice"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "3.9.3 Force ERROR_PAYROLL_DEPT (Nómina)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    },
+                                    {
+                                        "key": "X-Sandbox-Force-Status",
+                                        "value": "ERROR_PAYROLL_DEPT"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"type_document_id\": 9,\n  \"employer\": {\n    \"identification_number\": \"900123456\",\n    \"dv\": \"7\",\n    \"name\": \"Empleador Sandbox Demo\",\n    \"municipality_id\": 149,\n    \"address\": \"Calle 100 #15-20\"\n  },\n  \"worker\": {\n    \"type_worker_id\": 1,\n    \"sub_type_worker_id\": 1,\n    \"identification_number\": \"1234567890\",\n    \"type_document_identification_id\": 3,\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Pérez\",\n    \"type_contract_id\": 1,\n    \"high_risk_pension\": false,\n    \"integral_salary\": false,\n    \"municipality_id\": 149\n  },\n  \"period\": {\n    \"admittance_date\": \"2026-01-15\",\n    \"settlement_start_date\": \"2026-06-01\",\n    \"settlement_end_date\": \"2026-06-30\",\n    \"date_issue\": \"2026-06-30\",\n    \"time_issue\": \"12:00:00\"\n  },\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_date\": \"2026-06-30\"\n  },\n  \"earn\": {\n    \"basic\": {\n      \"worked_days\": 30,\n      \"worker_salary\": \"3000000.00\"\n    }\n  },\n  \"deduction\": {\n    \"health\": {\n      \"percentage\": \"4.00\",\n      \"payment\": \"120000.00\"\n    },\n    \"pension\": {\n      \"percentage\": \"4.00\",\n      \"payment\": \"120000.00\"\n    }\n  },\n  \"accrued_total\": \"3000000.00\",\n  \"deductions_total\": \"240000.00\",\n  \"total\": \"2760000.00\",\n  \"notes\": \"Nómina de prueba sandbox\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{sandbox_url}}/ep/payroll",
+                                    "host": [
+                                        "{{sandbox_url}}"
+                                    ],
+                                    "path": [
+                                        "ep",
+                                        "payroll"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "3.10 Errores NC/ND",
+                    "item": [
+                        {
+                            "name": "NC Force ERROR_NC_DATE_MISMATCH",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    },
+                                    {
+                                        "key": "X-Sandbox-Force-Status",
+                                        "value": "ERROR_NC_DATE_MISMATCH"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"type_document_id\":4,\"resolution_number\":\"18760000001\",\"prefix\":\"SETP\",\"date\":\"2026-06-15\",\"time\":\"11:00:00\",\"notes\":\"NC prueba sandbox\",\"currency_id\":272,\"operation_type_id\":1,\"discrepancy_response\":{\"correction_concept_id\":2,\"description\":\"Devolución parcial\"},\"billing_reference\":{\"number\":\"SETP990000001\",\"uuid\":\"a1b2c3d4-mock-uuid\",\"issue_date\":\"2026-06-10\"},\"customer\":{\"identification_number\":\"800111222\",\"dv\":\"3\",\"name\":\"Cliente Sandbox Demo\",\"type_document_identification_id\":6,\"type_organization_id\":1,\"type_regime_id\":1,\"municipality_id\":149,\"type_liability_id\":1},\"legal_monetary_totals\":{\"line_extension_amount\":\"50000.00\",\"tax_exclusive_amount\":\"50000.00\",\"tax_inclusive_amount\":\"59500.00\",\"payable_amount\":\"59500.00\"},\"credit_note_lines\":[{\"unit_measure_id\":70,\"invoiced_quantity\":\"1.000000\",\"line_extension_amount\":\"50000.00\",\"free_of_charge_indicator\":false,\"description\":\"Devolución\",\"code\":\"DEV-001\",\"type_item_identification_id\":4,\"price_amount\":\"50000.00\",\"base_quantity\":\"1.000000\",\"tax_totals\":[{\"tax_id\":1,\"tax_amount\":\"9500.00\",\"taxable_amount\":\"50000.00\",\"percent\":\"19.00\"}]}],\"payment\":{\"payment_form_id\":1,\"payment_method_id\":30,\"payment_due_date\":\"2026-07-15\"}}"
+                                },
+                                "url": {
+                                    "raw": "{{sandbox_url}}/notes/credit",
+                                    "host": [
+                                        "{{sandbox_url}}"
+                                    ],
+                                    "path": [
+                                        "notes",
+                                        "credit"
+                                    ]
+                                }
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Respuesta ERROR_NC_DATE_MISMATCH', function () {",
+                                            "    var json = pm.response.json();",
+                                            "    pm.expect(json).to.be.an('object');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "NC Force ERROR_NC_PAYMENT_METHOD",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    },
+                                    {
+                                        "key": "X-Sandbox-Force-Status",
+                                        "value": "ERROR_NC_PAYMENT_METHOD"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"type_document_id\":4,\"resolution_number\":\"18760000001\",\"prefix\":\"SETP\",\"date\":\"2026-06-15\",\"time\":\"11:00:00\",\"notes\":\"NC prueba sandbox\",\"currency_id\":272,\"operation_type_id\":1,\"discrepancy_response\":{\"correction_concept_id\":2,\"description\":\"Devolución parcial\"},\"billing_reference\":{\"number\":\"SETP990000001\",\"uuid\":\"a1b2c3d4-mock-uuid\",\"issue_date\":\"2026-06-10\"},\"customer\":{\"identification_number\":\"800111222\",\"dv\":\"3\",\"name\":\"Cliente Sandbox Demo\",\"type_document_identification_id\":6,\"type_organization_id\":1,\"type_regime_id\":1,\"municipality_id\":149,\"type_liability_id\":1},\"legal_monetary_totals\":{\"line_extension_amount\":\"50000.00\",\"tax_exclusive_amount\":\"50000.00\",\"tax_inclusive_amount\":\"59500.00\",\"payable_amount\":\"59500.00\"},\"credit_note_lines\":[{\"unit_measure_id\":70,\"invoiced_quantity\":\"1.000000\",\"line_extension_amount\":\"50000.00\",\"free_of_charge_indicator\":false,\"description\":\"Devolución\",\"code\":\"DEV-001\",\"type_item_identification_id\":4,\"price_amount\":\"50000.00\",\"base_quantity\":\"1.000000\",\"tax_totals\":[{\"tax_id\":1,\"tax_amount\":\"9500.00\",\"taxable_amount\":\"50000.00\",\"percent\":\"19.00\"}]}],\"payment\":{\"payment_form_id\":1,\"payment_method_id\":30,\"payment_due_date\":\"2026-07-15\"}}"
+                                },
+                                "url": {
+                                    "raw": "{{sandbox_url}}/notes/credit",
+                                    "host": [
+                                        "{{sandbox_url}}"
+                                    ],
+                                    "path": [
+                                        "notes",
+                                        "credit"
+                                    ]
+                                }
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Respuesta ERROR_NC_PAYMENT_METHOD', function () {",
+                                            "    var json = pm.response.json();",
+                                            "    pm.expect(json).to.be.an('object');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "NC Force ERROR_REFERENCE_ORPHAN",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    },
+                                    {
+                                        "key": "X-Sandbox-Force-Status",
+                                        "value": "ERROR_REFERENCE_ORPHAN"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"type_document_id\":4,\"resolution_number\":\"18760000001\",\"prefix\":\"SETP\",\"date\":\"2026-06-15\",\"time\":\"11:00:00\",\"notes\":\"NC prueba sandbox\",\"currency_id\":272,\"operation_type_id\":1,\"discrepancy_response\":{\"correction_concept_id\":2,\"description\":\"Devolución parcial\"},\"billing_reference\":{\"number\":\"SETP990000001\",\"uuid\":\"a1b2c3d4-mock-uuid\",\"issue_date\":\"2026-06-10\"},\"customer\":{\"identification_number\":\"800111222\",\"dv\":\"3\",\"name\":\"Cliente Sandbox Demo\",\"type_document_identification_id\":6,\"type_organization_id\":1,\"type_regime_id\":1,\"municipality_id\":149,\"type_liability_id\":1},\"legal_monetary_totals\":{\"line_extension_amount\":\"50000.00\",\"tax_exclusive_amount\":\"50000.00\",\"tax_inclusive_amount\":\"59500.00\",\"payable_amount\":\"59500.00\"},\"credit_note_lines\":[{\"unit_measure_id\":70,\"invoiced_quantity\":\"1.000000\",\"line_extension_amount\":\"50000.00\",\"free_of_charge_indicator\":false,\"description\":\"Devolución\",\"code\":\"DEV-001\",\"type_item_identification_id\":4,\"price_amount\":\"50000.00\",\"base_quantity\":\"1.000000\",\"tax_totals\":[{\"tax_id\":1,\"tax_amount\":\"9500.00\",\"taxable_amount\":\"50000.00\",\"percent\":\"19.00\"}]}],\"payment\":{\"payment_form_id\":1,\"payment_method_id\":30,\"payment_due_date\":\"2026-07-15\"}}"
+                                },
+                                "url": {
+                                    "raw": "{{sandbox_url}}/notes/credit",
+                                    "host": [
+                                        "{{sandbox_url}}"
+                                    ],
+                                    "path": [
+                                        "notes",
+                                        "credit"
+                                    ]
+                                }
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Respuesta ERROR_REFERENCE_ORPHAN', function () {",
+                                            "    var json = pm.response.json();",
+                                            "    pm.expect(json).to.be.an('object');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "3.11 Errores Doc. Soporte",
+                    "item": [
+                        {
+                            "name": "DS Force ERROR_DS_VENDOR_ID",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    },
+                                    {
+                                        "key": "X-Sandbox-Force-Status",
+                                        "value": "ERROR_DS_VENDOR_ID"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"type_document_id\":12,\"resolution_number\":\"18760000001\",\"prefix\":\"SETP\",\"date\":\"2026-06-15\",\"time\":\"11:10:00\",\"notes\":\"DS prueba sandbox\",\"currency_id\":272,\"operation_type_id\":1,\"customer\":{\"identification_number\":\"800111222\",\"dv\":\"3\",\"name\":\"Proveedor Sandbox Demo\",\"type_document_identification_id\":6,\"type_organization_id\":1,\"type_regime_id\":1,\"municipality_id\":149,\"type_liability_id\":1},\"legal_monetary_totals\":{\"line_extension_amount\":\"200000.00\",\"tax_exclusive_amount\":\"200000.00\",\"tax_inclusive_amount\":\"238000.00\",\"payable_amount\":\"238000.00\"},\"invoice_lines\":[{\"unit_measure_id\":70,\"invoiced_quantity\":\"1.000000\",\"line_extension_amount\":\"200000.00\",\"free_of_charge_indicator\":false,\"description\":\"Servicio adquirido\",\"code\":\"DS-001\",\"type_item_identification_id\":4,\"price_amount\":\"200000.00\",\"base_quantity\":\"1.000000\",\"tax_totals\":[{\"tax_id\":1,\"tax_amount\":\"38000.00\",\"taxable_amount\":\"200000.00\",\"percent\":\"19.00\"}]}],\"payment\":{\"payment_form_id\":1,\"payment_method_id\":30,\"payment_due_date\":\"2026-07-15\"}}"
+                                },
+                                "url": {
+                                    "raw": "{{sandbox_url}}/ds/document",
+                                    "host": [
+                                        "{{sandbox_url}}"
+                                    ],
+                                    "path": [
+                                        "ds",
+                                        "document"
+                                    ]
+                                }
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Respuesta ERROR_DS_VENDOR_ID', function () {",
+                                            "    var json = pm.response.json();",
+                                            "    pm.expect(json).to.be.an('object');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "DS Force ERROR_DS_TAX_INVALID",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    },
+                                    {
+                                        "key": "X-Sandbox-Force-Status",
+                                        "value": "ERROR_DS_TAX_INVALID"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"type_document_id\":12,\"resolution_number\":\"18760000001\",\"prefix\":\"SETP\",\"date\":\"2026-06-15\",\"time\":\"11:10:00\",\"notes\":\"DS prueba sandbox\",\"currency_id\":272,\"operation_type_id\":1,\"customer\":{\"identification_number\":\"800111222\",\"dv\":\"3\",\"name\":\"Proveedor Sandbox Demo\",\"type_document_identification_id\":6,\"type_organization_id\":1,\"type_regime_id\":1,\"municipality_id\":149,\"type_liability_id\":1},\"legal_monetary_totals\":{\"line_extension_amount\":\"200000.00\",\"tax_exclusive_amount\":\"200000.00\",\"tax_inclusive_amount\":\"238000.00\",\"payable_amount\":\"238000.00\"},\"invoice_lines\":[{\"unit_measure_id\":70,\"invoiced_quantity\":\"1.000000\",\"line_extension_amount\":\"200000.00\",\"free_of_charge_indicator\":false,\"description\":\"Servicio adquirido\",\"code\":\"DS-001\",\"type_item_identification_id\":4,\"price_amount\":\"200000.00\",\"base_quantity\":\"1.000000\",\"tax_totals\":[{\"tax_id\":1,\"tax_amount\":\"38000.00\",\"taxable_amount\":\"200000.00\",\"percent\":\"19.00\"}]}],\"payment\":{\"payment_form_id\":1,\"payment_method_id\":30,\"payment_due_date\":\"2026-07-15\"}}"
+                                },
+                                "url": {
+                                    "raw": "{{sandbox_url}}/ds/document",
+                                    "host": [
+                                        "{{sandbox_url}}"
+                                    ],
+                                    "path": [
+                                        "ds",
+                                        "document"
+                                    ]
+                                }
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Respuesta ERROR_DS_TAX_INVALID', function () {",
+                                            "    var json = pm.response.json();",
+                                            "    pm.expect(json).to.be.an('object');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "DS Force ERROR_DS_LOCATION",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    },
+                                    {
+                                        "key": "X-Sandbox-Force-Status",
+                                        "value": "ERROR_DS_LOCATION"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"type_document_id\":12,\"resolution_number\":\"18760000001\",\"prefix\":\"SETP\",\"date\":\"2026-06-15\",\"time\":\"11:10:00\",\"notes\":\"DS prueba sandbox\",\"currency_id\":272,\"operation_type_id\":1,\"customer\":{\"identification_number\":\"800111222\",\"dv\":\"3\",\"name\":\"Proveedor Sandbox Demo\",\"type_document_identification_id\":6,\"type_organization_id\":1,\"type_regime_id\":1,\"municipality_id\":149,\"type_liability_id\":1},\"legal_monetary_totals\":{\"line_extension_amount\":\"200000.00\",\"tax_exclusive_amount\":\"200000.00\",\"tax_inclusive_amount\":\"238000.00\",\"payable_amount\":\"238000.00\"},\"invoice_lines\":[{\"unit_measure_id\":70,\"invoiced_quantity\":\"1.000000\",\"line_extension_amount\":\"200000.00\",\"free_of_charge_indicator\":false,\"description\":\"Servicio adquirido\",\"code\":\"DS-001\",\"type_item_identification_id\":4,\"price_amount\":\"200000.00\",\"base_quantity\":\"1.000000\",\"tax_totals\":[{\"tax_id\":1,\"tax_amount\":\"38000.00\",\"taxable_amount\":\"200000.00\",\"percent\":\"19.00\"}]}],\"payment\":{\"payment_form_id\":1,\"payment_method_id\":30,\"payment_due_date\":\"2026-07-15\"}}"
+                                },
+                                "url": {
+                                    "raw": "{{sandbox_url}}/ds/document",
+                                    "host": [
+                                        "{{sandbox_url}}"
+                                    ],
+                                    "path": [
+                                        "ds",
+                                        "document"
+                                    ]
+                                }
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Respuesta ERROR_DS_LOCATION', function () {",
+                                            "    var json = pm.response.json();",
+                                            "    pm.expect(json).to.be.an('object');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "DS Nota Force ERROR_DS_NOTE_REF",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    },
+                                    {
+                                        "key": "X-Sandbox-Force-Status",
+                                        "value": "ERROR_DS_NOTE_REF"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"type_document_id\":12,\"resolution_number\":\"18760000001\",\"prefix\":\"SETP\",\"date\":\"2026-06-15\",\"time\":\"11:10:00\",\"notes\":\"DS prueba sandbox\",\"currency_id\":272,\"operation_type_id\":1,\"customer\":{\"identification_number\":\"800111222\",\"dv\":\"3\",\"name\":\"Proveedor Sandbox Demo\",\"type_document_identification_id\":6,\"type_organization_id\":1,\"type_regime_id\":1,\"municipality_id\":149,\"type_liability_id\":1},\"legal_monetary_totals\":{\"line_extension_amount\":\"200000.00\",\"tax_exclusive_amount\":\"200000.00\",\"tax_inclusive_amount\":\"238000.00\",\"payable_amount\":\"238000.00\"},\"invoice_lines\":[{\"unit_measure_id\":70,\"invoiced_quantity\":\"1.000000\",\"line_extension_amount\":\"200000.00\",\"free_of_charge_indicator\":false,\"description\":\"Servicio adquirido\",\"code\":\"DS-001\",\"type_item_identification_id\":4,\"price_amount\":\"200000.00\",\"base_quantity\":\"1.000000\",\"tax_totals\":[{\"tax_id\":1,\"tax_amount\":\"38000.00\",\"taxable_amount\":\"200000.00\",\"percent\":\"19.00\"}]}],\"payment\":{\"payment_form_id\":1,\"payment_method_id\":30,\"payment_due_date\":\"2026-07-15\"}}"
+                                },
+                                "url": {
+                                    "raw": "{{sandbox_url}}/ds/adjustment-note",
+                                    "host": [
+                                        "{{sandbox_url}}"
+                                    ],
+                                    "path": [
+                                        "ds",
+                                        "adjustment-note"
+                                    ]
+                                }
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Respuesta ERROR_DS_NOTE_REF', function () {",
+                                            "    var json = pm.response.json();",
+                                            "    pm.expect(json).to.be.an('object');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "3.12 Errores POS Electrónico",
+                    "item": [
+                        {
+                            "name": "POS Force ERROR_POS_VENDOR_RUT",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    },
+                                    {
+                                        "key": "X-Sandbox-Force-Status",
+                                        "value": "ERROR_POS_VENDOR_RUT"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"type_document_id\":7,\"resolution_number\":\"18760000001\",\"prefix\":\"SETP\",\"date\":\"2026-06-15\",\"time\":\"10:30:00\",\"notes\":\"Prueba sandbox\",\"currency_id\":272,\"operation_type_id\":1,\"customer\":{\"identification_number\":\"800111222\",\"dv\":\"3\",\"name\":\"Cliente Sandbox Demo\",\"type_document_identification_id\":6,\"type_organization_id\":1,\"type_regime_id\":1,\"municipality_id\":149,\"type_liability_id\":1},\"legal_monetary_totals\":{\"line_extension_amount\":\"100000.00\",\"tax_exclusive_amount\":\"100000.00\",\"tax_inclusive_amount\":\"119000.00\",\"payable_amount\":\"119000.00\"},\"invoice_lines\":[{\"unit_measure_id\":70,\"invoiced_quantity\":\"1.000000\",\"line_extension_amount\":\"100000.00\",\"free_of_charge_indicator\":false,\"description\":\"Servicio prueba\",\"code\":\"SRV-001\",\"type_item_identification_id\":4,\"price_amount\":\"100000.00\",\"base_quantity\":\"1.000000\",\"tax_totals\":[{\"tax_id\":1,\"tax_amount\":\"19000.00\",\"taxable_amount\":\"100000.00\",\"percent\":\"19.00\"}]}],\"payment\":{\"payment_form_id\":1,\"payment_method_id\":30,\"payment_due_date\":\"2026-07-15\"}}"
+                                },
+                                "url": {
+                                    "raw": "{{sandbox_url}}/auto-increment/pos-documents",
+                                    "host": [
+                                        "{{sandbox_url}}"
+                                    ],
+                                    "path": [
+                                        "auto-increment",
+                                        "pos-documents"
+                                    ]
+                                }
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Respuesta ERROR_POS_VENDOR_RUT', function () {",
+                                            "    var json = pm.response.json();",
+                                            "    pm.expect(json).to.be.an('object');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "POS Force ERROR_POS_CUDE_INVALID",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    },
+                                    {
+                                        "key": "X-Sandbox-Force-Status",
+                                        "value": "ERROR_POS_CUDE_INVALID"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"type_document_id\":7,\"resolution_number\":\"18760000001\",\"prefix\":\"SETP\",\"date\":\"2026-06-15\",\"time\":\"10:30:00\",\"notes\":\"Prueba sandbox\",\"currency_id\":272,\"operation_type_id\":1,\"customer\":{\"identification_number\":\"800111222\",\"dv\":\"3\",\"name\":\"Cliente Sandbox Demo\",\"type_document_identification_id\":6,\"type_organization_id\":1,\"type_regime_id\":1,\"municipality_id\":149,\"type_liability_id\":1},\"legal_monetary_totals\":{\"line_extension_amount\":\"100000.00\",\"tax_exclusive_amount\":\"100000.00\",\"tax_inclusive_amount\":\"119000.00\",\"payable_amount\":\"119000.00\"},\"invoice_lines\":[{\"unit_measure_id\":70,\"invoiced_quantity\":\"1.000000\",\"line_extension_amount\":\"100000.00\",\"free_of_charge_indicator\":false,\"description\":\"Servicio prueba\",\"code\":\"SRV-001\",\"type_item_identification_id\":4,\"price_amount\":\"100000.00\",\"base_quantity\":\"1.000000\",\"tax_totals\":[{\"tax_id\":1,\"tax_amount\":\"19000.00\",\"taxable_amount\":\"100000.00\",\"percent\":\"19.00\"}]}],\"payment\":{\"payment_form_id\":1,\"payment_method_id\":30,\"payment_due_date\":\"2026-07-15\"}}"
+                                },
+                                "url": {
+                                    "raw": "{{sandbox_url}}/auto-increment/pos-documents",
+                                    "host": [
+                                        "{{sandbox_url}}"
+                                    ],
+                                    "path": [
+                                        "auto-increment",
+                                        "pos-documents"
+                                    ]
+                                }
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Respuesta ERROR_POS_CUDE_INVALID', function () {",
+                                            "    var json = pm.response.json();",
+                                            "    pm.expect(json).to.be.an('object');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "POS Force ERROR_POS_RESOLUTION",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    },
+                                    {
+                                        "key": "X-Sandbox-Force-Status",
+                                        "value": "ERROR_POS_RESOLUTION"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"type_document_id\":7,\"resolution_number\":\"18760000001\",\"prefix\":\"SETP\",\"date\":\"2026-06-15\",\"time\":\"10:30:00\",\"notes\":\"Prueba sandbox\",\"currency_id\":272,\"operation_type_id\":1,\"customer\":{\"identification_number\":\"800111222\",\"dv\":\"3\",\"name\":\"Cliente Sandbox Demo\",\"type_document_identification_id\":6,\"type_organization_id\":1,\"type_regime_id\":1,\"municipality_id\":149,\"type_liability_id\":1},\"legal_monetary_totals\":{\"line_extension_amount\":\"100000.00\",\"tax_exclusive_amount\":\"100000.00\",\"tax_inclusive_amount\":\"119000.00\",\"payable_amount\":\"119000.00\"},\"invoice_lines\":[{\"unit_measure_id\":70,\"invoiced_quantity\":\"1.000000\",\"line_extension_amount\":\"100000.00\",\"free_of_charge_indicator\":false,\"description\":\"Servicio prueba\",\"code\":\"SRV-001\",\"type_item_identification_id\":4,\"price_amount\":\"100000.00\",\"base_quantity\":\"1.000000\",\"tax_totals\":[{\"tax_id\":1,\"tax_amount\":\"19000.00\",\"taxable_amount\":\"100000.00\",\"percent\":\"19.00\"}]}],\"payment\":{\"payment_form_id\":1,\"payment_method_id\":30,\"payment_due_date\":\"2026-07-15\"}}"
+                                },
+                                "url": {
+                                    "raw": "{{sandbox_url}}/auto-increment/pos-documents",
+                                    "host": [
+                                        "{{sandbox_url}}"
+                                    ],
+                                    "path": [
+                                        "auto-increment",
+                                        "pos-documents"
+                                    ]
+                                }
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Respuesta ERROR_POS_RESOLUTION', function () {",
+                                            "    var json = pm.response.json();",
+                                            "    pm.expect(json).to.be.an('object');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "3.13 Errores Nómina Electrónica",
+                    "item": [
+                        {
+                            "name": "Nómina Force ERROR_PAYROLL_CUNE_INVALID",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    },
+                                    {
+                                        "key": "X-Sandbox-Force-Status",
+                                        "value": "ERROR_PAYROLL_CUNE_INVALID"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"type_document_id\":9,\"employer\":{\"identification_number\":\"900123456\",\"dv\":\"7\",\"name\":\"Empleador Sandbox Demo\",\"municipality_id\":149,\"address\":\"Calle 100 #15-20\"},\"worker\":{\"type_worker_id\":1,\"sub_type_worker_id\":1,\"identification_number\":\"1234567890\",\"type_document_identification_id\":3,\"first_name\":\"Juan\",\"last_name\":\"Pérez\",\"type_contract_id\":1,\"high_risk_pension\":false,\"integral_salary\":false,\"municipality_id\":149},\"period\":{\"admittance_date\":\"2026-01-15\",\"settlement_start_date\":\"2026-06-01\",\"settlement_end_date\":\"2026-06-30\",\"date_issue\":\"2026-06-30\",\"time_issue\":\"12:00:00\"},\"payment\":{\"payment_form_id\":1,\"payment_method_id\":30,\"payment_date\":\"2026-06-30\"},\"earn\":{\"basic\":{\"worked_days\":30,\"worker_salary\":\"3000000.00\"}},\"deduction\":{\"health\":{\"percentage\":\"4.00\",\"payment\":\"120000.00\"},\"pension\":{\"percentage\":\"4.00\",\"payment\":\"120000.00\"}},\"accrued_total\":\"3000000.00\",\"deductions_total\":\"240000.00\",\"total\":\"2760000.00\",\"notes\":\"Nómina prueba sandbox\"}"
+                                },
+                                "url": {
+                                    "raw": "{{sandbox_url}}/ep/payroll",
+                                    "host": [
+                                        "{{sandbox_url}}"
+                                    ],
+                                    "path": [
+                                        "ep",
+                                        "payroll"
+                                    ]
+                                }
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Respuesta ERROR_PAYROLL_CUNE_INVALID', function () {",
+                                            "    var json = pm.response.json();",
+                                            "    pm.expect(json).to.be.an('object');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Nómina Force ERROR_PAYROLL_PERIOD",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    },
+                                    {
+                                        "key": "X-Sandbox-Force-Status",
+                                        "value": "ERROR_PAYROLL_PERIOD"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"type_document_id\":9,\"employer\":{\"identification_number\":\"900123456\",\"dv\":\"7\",\"name\":\"Empleador Sandbox Demo\",\"municipality_id\":149,\"address\":\"Calle 100 #15-20\"},\"worker\":{\"type_worker_id\":1,\"sub_type_worker_id\":1,\"identification_number\":\"1234567890\",\"type_document_identification_id\":3,\"first_name\":\"Juan\",\"last_name\":\"Pérez\",\"type_contract_id\":1,\"high_risk_pension\":false,\"integral_salary\":false,\"municipality_id\":149},\"period\":{\"admittance_date\":\"2026-01-15\",\"settlement_start_date\":\"2026-06-01\",\"settlement_end_date\":\"2026-06-30\",\"date_issue\":\"2026-06-30\",\"time_issue\":\"12:00:00\"},\"payment\":{\"payment_form_id\":1,\"payment_method_id\":30,\"payment_date\":\"2026-06-30\"},\"earn\":{\"basic\":{\"worked_days\":30,\"worker_salary\":\"3000000.00\"}},\"deduction\":{\"health\":{\"percentage\":\"4.00\",\"payment\":\"120000.00\"},\"pension\":{\"percentage\":\"4.00\",\"payment\":\"120000.00\"}},\"accrued_total\":\"3000000.00\",\"deductions_total\":\"240000.00\",\"total\":\"2760000.00\",\"notes\":\"Nómina prueba sandbox\"}"
+                                },
+                                "url": {
+                                    "raw": "{{sandbox_url}}/ep/payroll",
+                                    "host": [
+                                        "{{sandbox_url}}"
+                                    ],
+                                    "path": [
+                                        "ep",
+                                        "payroll"
+                                    ]
+                                }
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Respuesta ERROR_PAYROLL_PERIOD', function () {",
+                                            "    var json = pm.response.json();",
+                                            "    pm.expect(json).to.be.an('object');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "3.14 Errores Notas Ajuste POS",
+                    "item": [
+                        {
+                            "name": "POS Nota Force ERROR_POS_NOTE_CUDE_REF",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    },
+                                    {
+                                        "key": "X-Sandbox-Force-Status",
+                                        "value": "ERROR_POS_NOTE_CUDE_REF"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"type_document_id\":7,\"resolution_number\":\"18760000001\",\"prefix\":\"SETP\",\"date\":\"2026-06-15\",\"time\":\"10:30:00\",\"notes\":\"Prueba nota ajuste POS\",\"currency_id\":272,\"operation_type_id\":1,\"customer\":{\"identification_number\":\"800111222\",\"dv\":\"3\",\"name\":\"Cliente Sandbox Demo\",\"type_document_identification_id\":6,\"type_organization_id\":1,\"type_regime_id\":1,\"municipality_id\":149,\"type_liability_id\":1},\"legal_monetary_totals\":{\"line_extension_amount\":\"100000.00\",\"tax_exclusive_amount\":\"100000.00\",\"tax_inclusive_amount\":\"119000.00\",\"payable_amount\":\"119000.00\"},\"invoice_lines\":[{\"unit_measure_id\":70,\"invoiced_quantity\":\"1.000000\",\"line_extension_amount\":\"100000.00\",\"free_of_charge_indicator\":false,\"description\":\"Servicio prueba\",\"code\":\"SRV-001\",\"type_item_identification_id\":4,\"price_amount\":\"100000.00\",\"base_quantity\":\"1.000000\",\"tax_totals\":[{\"tax_id\":1,\"tax_amount\":\"19000.00\",\"taxable_amount\":\"100000.00\",\"percent\":\"19.00\"}]}],\"payment\":{\"payment_form_id\":1,\"payment_method_id\":30,\"payment_due_date\":\"2026-07-15\"}}"
+                                },
+                                "url": {
+                                    "raw": "{{sandbox_url}}/auto-increment/pos-documents",
+                                    "host": [
+                                        "{{sandbox_url}}"
+                                    ],
+                                    "path": [
+                                        "auto-increment",
+                                        "pos-documents"
+                                    ]
+                                }
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Respuesta ERROR_POS_NOTE_CUDE_REF', function () {",
+                                            "    var json = pm.response.json();",
+                                            "    pm.expect(json).to.be.an('object');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "POS Nota Force ERROR_POS_NOTE_NABA06",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    },
+                                    {
+                                        "key": "X-Sandbox-Force-Status",
+                                        "value": "ERROR_POS_NOTE_NABA06"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"type_document_id\":7,\"resolution_number\":\"18760000001\",\"prefix\":\"SETP\",\"date\":\"2026-06-15\",\"time\":\"10:30:00\",\"notes\":\"Prueba nota ajuste POS\",\"currency_id\":272,\"operation_type_id\":1,\"customer\":{\"identification_number\":\"800111222\",\"dv\":\"3\",\"name\":\"Cliente Sandbox Demo\",\"type_document_identification_id\":6,\"type_organization_id\":1,\"type_regime_id\":1,\"municipality_id\":149,\"type_liability_id\":1},\"legal_monetary_totals\":{\"line_extension_amount\":\"100000.00\",\"tax_exclusive_amount\":\"100000.00\",\"tax_inclusive_amount\":\"119000.00\",\"payable_amount\":\"119000.00\"},\"invoice_lines\":[{\"unit_measure_id\":70,\"invoiced_quantity\":\"1.000000\",\"line_extension_amount\":\"100000.00\",\"free_of_charge_indicator\":false,\"description\":\"Servicio prueba\",\"code\":\"SRV-001\",\"type_item_identification_id\":4,\"price_amount\":\"100000.00\",\"base_quantity\":\"1.000000\",\"tax_totals\":[{\"tax_id\":1,\"tax_amount\":\"19000.00\",\"taxable_amount\":\"100000.00\",\"percent\":\"19.00\"}]}],\"payment\":{\"payment_form_id\":1,\"payment_method_id\":30,\"payment_due_date\":\"2026-07-15\"}}"
+                                },
+                                "url": {
+                                    "raw": "{{sandbox_url}}/auto-increment/pos-documents",
+                                    "host": [
+                                        "{{sandbox_url}}"
+                                    ],
+                                    "path": [
+                                        "auto-increment",
+                                        "pos-documents"
+                                    ]
+                                }
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Respuesta ERROR_POS_NOTE_NABA06', function () {",
+                                            "    var json = pm.response.json();",
+                                            "    pm.expect(json).to.be.an('object');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "name": "3.4 Invoice Force ERROR_500 (server error)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "X-Sandbox-Force-Status", "value": "ERROR_500" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type_document_id\": 7,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"10:33:00\",\n  \"notes\": \"Forzando error 500 del DIAN\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"100000.00\",\n    \"tax_exclusive_amount\": \"100000.00\",\n    \"tax_inclusive_amount\": \"119000.00\",\n    \"payable_amount\": \"119000.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"100000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Servicio error 500\",\n      \"code\": \"SRV-500\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"100000.00\",\n      \"base_quantity\": \"1.000000\"\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/invoice", "host": ["{{sandbox_url}}"], "path": ["invoice"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Error 500 simulado', function () {",
-                  "    pm.response.to.have.status(500);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
+            "name": "4. Sandbox — PDF & Status",
+            "item": [
+                {
+                    "name": "4.1 Get PDF",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": ""
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/documents/pdf/{{trackId}}",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "documents",
+                                "pdf",
+                                "{{trackId}}"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('PDF obtenido exitosamente', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "4.2 Document Status",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": ""
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/status/document/{{trackId}}",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "status",
+                                "document",
+                                "{{trackId}}"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Estado del documento obtenido', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "4.3 Get Certificate Info",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{sandbox_url}}/certificate/",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "certificate",
+                                ""
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Certificado obtenido exitosamente', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "name": "3.5 Invoice Force ERROR_TIMEOUT",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "X-Sandbox-Force-Status", "value": "ERROR_TIMEOUT" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type_document_id\": 7,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"10:34:00\",\n  \"notes\": \"Forzando error timeout del DIAN\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"100000.00\",\n    \"tax_exclusive_amount\": \"100000.00\",\n    \"tax_inclusive_amount\": \"119000.00\",\n    \"payable_amount\": \"119000.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"100000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Servicio error timeout\",\n      \"code\": \"SRV-TIMEOUT\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"100000.00\",\n      \"base_quantity\": \"1.000000\"\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/invoice", "host": ["{{sandbox_url}}"], "path": ["invoice"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Error timeout simulado', function () {",
-                  "    pm.response.to.have.status(500);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
+            "name": "5. Sandbox — Notas Crédito/Débito",
+            "item": [
+                {
+                    "name": "5.1 Nota Crédito Happy Path",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type_document_id\": 4,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"11:00:00\",\n  \"notes\": \"Nota crédito de prueba sandbox\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"discrepancy_response\": {\n    \"correction_concept_id\": 2,\n    \"description\": \"Devolución parcial de los bienes\"\n  },\n  \"billing_reference\": {\n    \"number\": \"SETP990000001\",\n    \"uuid\": \"a1b2c3d4-mock-uuid\",\n    \"issue_date\": \"2026-06-10\"\n  },\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"50000.00\",\n    \"tax_exclusive_amount\": \"50000.00\",\n    \"tax_inclusive_amount\": \"59500.00\",\n    \"payable_amount\": \"59500.00\"\n  },\n  \"credit_note_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"50000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Devolución parcial\",\n      \"code\": \"DEV-001\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"50000.00\",\n      \"base_quantity\": \"1.000000\",\n      \"tax_totals\": [\n        {\n          \"tax_id\": 1,\n          \"tax_amount\": \"9500.00\",\n          \"taxable_amount\": \"50000.00\",\n          \"percent\": \"19.00\"\n        }\n      ]\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/notes/credit",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "notes",
+                                "credit"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Nota crédito aceptada en sandbox', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Header X-MATIAS-Environment es sandbox', function () {",
+                                    "    pm.response.to.have.header('X-MATIAS-Environment', 'sandbox');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "5.2 Nota Débito Happy Path",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type_document_id\": 5,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"11:01:00\",\n  \"notes\": \"Nota débito de prueba sandbox\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"discrepancy_response\": {\n    \"correction_concept_id\": 2,\n    \"description\": \"Devolución parcial de los bienes\"\n  },\n  \"billing_reference\": {\n    \"number\": \"SETP990000001\",\n    \"uuid\": \"a1b2c3d4-mock-uuid\",\n    \"issue_date\": \"2026-06-10\"\n  },\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"50000.00\",\n    \"tax_exclusive_amount\": \"50000.00\",\n    \"tax_inclusive_amount\": \"59500.00\",\n    \"payable_amount\": \"59500.00\"\n  },\n  \"debit_note_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"50000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Devolución parcial\",\n      \"code\": \"DEV-001\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"50000.00\",\n      \"base_quantity\": \"1.000000\",\n      \"tax_totals\": [\n        {\n          \"tax_id\": 1,\n          \"tax_amount\": \"9500.00\",\n          \"taxable_amount\": \"50000.00\",\n          \"percent\": \"19.00\"\n        }\n      ]\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/notes/debit",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "notes",
+                                "debit"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Nota débito aceptada en sandbox', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "name": "3.6 Invoice Force ERROR_AUTH",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "X-Sandbox-Force-Status", "value": "ERROR_AUTH" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type_document_id\": 7,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"10:35:00\",\n  \"notes\": \"Forzando error de autenticación DIAN\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"100000.00\",\n    \"tax_exclusive_amount\": \"100000.00\",\n    \"tax_inclusive_amount\": \"119000.00\",\n    \"payable_amount\": \"119000.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"100000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Servicio error auth\",\n      \"code\": \"SRV-AUTH\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"100000.00\",\n      \"base_quantity\": \"1.000000\"\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/invoice", "host": ["{{sandbox_url}}"], "path": ["invoice"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Error auth simulado — tiene respuesta JSON', function () {",
-                  "    var json = pm.response.json();",
-                  "    pm.expect(json).to.be.an('object');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
+            "name": "6. Sandbox — Documento Soporte",
+            "item": [
+                {
+                    "name": "6.1 Documento Soporte Happy Path",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type_document_id\": 12,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"11:10:00\",\n  \"notes\": \"Documento soporte de prueba sandbox\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Proveedor Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"200000.00\",\n    \"tax_exclusive_amount\": \"200000.00\",\n    \"tax_inclusive_amount\": \"238000.00\",\n    \"payable_amount\": \"238000.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"200000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Servicio adquirido\",\n      \"code\": \"DS-001\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"200000.00\",\n      \"base_quantity\": \"1.000000\",\n      \"tax_totals\": [\n        {\n          \"tax_id\": 1,\n          \"tax_amount\": \"38000.00\",\n          \"taxable_amount\": \"200000.00\",\n          \"percent\": \"19.00\"\n        }\n      ]\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/ds/document",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "ds",
+                                "document"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Documento soporte aceptado en sandbox', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "6.2 Nota Ajuste DS Happy Path",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type_document_id\": 13,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"11:11:00\",\n  \"notes\": \"Nota ajuste documento soporte sandbox\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"discrepancy_response\": {\n    \"correction_concept_id\": 2,\n    \"description\": \"Ajuste al documento soporte\"\n  },\n  \"billing_reference\": {\n    \"number\": \"SETP990000001\",\n    \"uuid\": \"a1b2c3d4-mock-uuid\",\n    \"issue_date\": \"2026-06-10\"\n  },\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Proveedor Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"200000.00\",\n    \"tax_exclusive_amount\": \"200000.00\",\n    \"tax_inclusive_amount\": \"238000.00\",\n    \"payable_amount\": \"238000.00\"\n  },\n  \"credit_note_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"200000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Ajuste servicio adquirido\",\n      \"code\": \"DS-ADJ-001\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"200000.00\",\n      \"base_quantity\": \"1.000000\",\n      \"tax_totals\": [\n        {\n          \"tax_id\": 1,\n          \"tax_amount\": \"38000.00\",\n          \"taxable_amount\": \"200000.00\",\n          \"percent\": \"19.00\"\n        }\n      ]\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/ds/adjustment-note",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "ds",
+                                "adjustment-note"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Nota ajuste DS aceptada en sandbox', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "name": "3.7 Invoice Force ERROR_SCHEMA",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "X-Sandbox-Force-Status", "value": "ERROR_SCHEMA" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type_document_id\": 7,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"10:36:00\",\n  \"notes\": \"Forzando error de esquema DIAN\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"100000.00\",\n    \"tax_exclusive_amount\": \"100000.00\",\n    \"tax_inclusive_amount\": \"119000.00\",\n    \"payable_amount\": \"119000.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"100000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Servicio error schema\",\n      \"code\": \"SRV-SCHEMA\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"100000.00\",\n      \"base_quantity\": \"1.000000\"\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/invoice", "host": ["{{sandbox_url}}"], "path": ["invoice"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Error schema simulado — tiene respuesta JSON', function () {",
-                  "    var json = pm.response.json();",
-                  "    pm.expect(json).to.be.an('object');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
+            "name": "7. Sandbox — Nómina Electrónica",
+            "item": [
+                {
+                    "name": "7.1 Nómina Individual Happy Path",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type_document_id\": 9,\n  \"employer\": {\n    \"identification_number\": \"900123456\",\n    \"dv\": \"7\",\n    \"name\": \"Empleador Sandbox Demo\",\n    \"municipality_id\": 149,\n    \"address\": \"Calle 100 #15-20\"\n  },\n  \"worker\": {\n    \"type_worker_id\": 1,\n    \"sub_type_worker_id\": 1,\n    \"identification_number\": \"1234567890\",\n    \"type_document_identification_id\": 3,\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Pérez\",\n    \"type_contract_id\": 1,\n    \"high_risk_pension\": false,\n    \"integral_salary\": false,\n    \"municipality_id\": 149\n  },\n  \"period\": {\n    \"admittance_date\": \"2026-01-15\",\n    \"settlement_start_date\": \"2026-06-01\",\n    \"settlement_end_date\": \"2026-06-30\",\n    \"date_issue\": \"2026-06-30\",\n    \"time_issue\": \"12:00:00\"\n  },\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_date\": \"2026-06-30\"\n  },\n  \"earn\": {\n    \"basic\": {\n      \"worked_days\": 30,\n      \"worker_salary\": \"3000000.00\"\n    }\n  },\n  \"deduction\": {\n    \"health\": {\n      \"percentage\": \"4.00\",\n      \"payment\": \"120000.00\"\n    },\n    \"pension\": {\n      \"percentage\": \"4.00\",\n      \"payment\": \"120000.00\"\n    }\n  },\n  \"accrued_total\": \"3000000.00\",\n  \"deductions_total\": \"240000.00\",\n  \"total\": \"2760000.00\",\n  \"notes\": \"Nómina de prueba sandbox\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/ep/payroll",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "ep",
+                                "payroll"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Nómina individual aceptada en sandbox', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "7.2 Nómina Replace",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type_document_id\": 9,\n  \"predecessor\": {\n    \"predecessor_number\": \"NE-001\",\n    \"predecessor_cune\": \"mock-cune-uuid\",\n    \"predecessor_issue_date\": \"2026-06-15\"\n  },\n  \"employer\": {\n    \"identification_number\": \"900123456\",\n    \"dv\": \"7\",\n    \"name\": \"Empleador Sandbox Demo\",\n    \"municipality_id\": 149,\n    \"address\": \"Calle 100 #15-20\"\n  },\n  \"worker\": {\n    \"type_worker_id\": 1,\n    \"sub_type_worker_id\": 1,\n    \"identification_number\": \"1234567890\",\n    \"type_document_identification_id\": 3,\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Pérez\",\n    \"type_contract_id\": 1,\n    \"high_risk_pension\": false,\n    \"integral_salary\": false,\n    \"municipality_id\": 149\n  },\n  \"period\": {\n    \"admittance_date\": \"2026-01-15\",\n    \"settlement_start_date\": \"2026-06-01\",\n    \"settlement_end_date\": \"2026-06-30\",\n    \"date_issue\": \"2026-06-30\",\n    \"time_issue\": \"12:01:00\"\n  },\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_date\": \"2026-06-30\"\n  },\n  \"earn\": {\n    \"basic\": {\n      \"worked_days\": 30,\n      \"worker_salary\": \"3000000.00\"\n    }\n  },\n  \"deduction\": {\n    \"health\": {\n      \"percentage\": \"4.00\",\n      \"payment\": \"120000.00\"\n    },\n    \"pension\": {\n      \"percentage\": \"4.00\",\n      \"payment\": \"120000.00\"\n    }\n  },\n  \"accrued_total\": \"3000000.00\",\n  \"deductions_total\": \"240000.00\",\n  \"total\": \"2760000.00\",\n  \"notes\": \"Reemplazo nómina sandbox\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/ep/payroll/replace",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "ep",
+                                "payroll",
+                                "replace"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Nómina reemplazo aceptada en sandbox', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "7.3 Nómina Delete",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type_document_id\": 9,\n  \"predecessor\": {\n    \"predecessor_number\": \"NE-001\",\n    \"predecessor_cune\": \"mock-cune-uuid\",\n    \"predecessor_issue_date\": \"2026-06-15\"\n  },\n  \"employer\": {\n    \"identification_number\": \"900123456\",\n    \"dv\": \"7\",\n    \"name\": \"Empleador Sandbox Demo\",\n    \"municipality_id\": 149,\n    \"address\": \"Calle 100 #15-20\"\n  },\n  \"worker\": {\n    \"type_worker_id\": 1,\n    \"sub_type_worker_id\": 1,\n    \"identification_number\": \"1234567890\",\n    \"type_document_identification_id\": 3,\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Pérez\",\n    \"type_contract_id\": 1,\n    \"high_risk_pension\": false,\n    \"integral_salary\": false,\n    \"municipality_id\": 149\n  },\n  \"notes\": \"Eliminación nómina sandbox\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/ep/payroll/delete",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "ep",
+                                "payroll",
+                                "delete"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Nómina eliminación aceptada en sandbox', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "name": "3.8 Invoice Force CERT_EXPIRED",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "X-Sandbox-Force-Status", "value": "CERT_EXPIRED" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type_document_id\": 7,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"10:37:00\",\n  \"notes\": \"Forzando error certificado expirado\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"100000.00\",\n    \"tax_exclusive_amount\": \"100000.00\",\n    \"tax_inclusive_amount\": \"119000.00\",\n    \"payable_amount\": \"119000.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"100000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Servicio cert expired\",\n      \"code\": \"SRV-CERT\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"100000.00\",\n      \"base_quantity\": \"1.000000\"\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/invoice", "host": ["{{sandbox_url}}"], "path": ["invoice"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Cert expired simulado — tiene respuesta JSON', function () {",
-                  "    var json = pm.response.json();",
-                  "    pm.expect(json).to.be.an('object');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
+            "name": "8. Sandbox — Auto-Increment",
+            "item": [
+                {
+                    "name": "8.1 Factura Auto-Increment",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type_document_id\": 7,\n  \"date\": \"2026-06-15\",\n  \"time\": \"13:00:00\",\n  \"notes\": \"Factura auto-increment sandbox\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"100000.00\",\n    \"tax_exclusive_amount\": \"100000.00\",\n    \"tax_inclusive_amount\": \"119000.00\",\n    \"payable_amount\": \"119000.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"100000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Servicio auto-increment\",\n      \"code\": \"AI-001\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"100000.00\",\n      \"base_quantity\": \"1.000000\",\n      \"tax_totals\": [\n        {\n          \"tax_id\": 1,\n          \"tax_amount\": \"19000.00\",\n          \"taxable_amount\": \"100000.00\",\n          \"percent\": \"19.00\"\n        }\n      ]\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/auto-increment/invoices",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "auto-increment",
+                                "invoices"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Factura auto-increment aceptada en sandbox', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "8.2 NC Auto-Increment",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type_document_id\": 4,\n  \"date\": \"2026-06-15\",\n  \"time\": \"13:01:00\",\n  \"notes\": \"Nota crédito auto-increment sandbox\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"discrepancy_response\": {\n    \"correction_concept_id\": 2,\n    \"description\": \"Devolución parcial de los bienes\"\n  },\n  \"billing_reference\": {\n    \"number\": \"SETP990000001\",\n    \"uuid\": \"a1b2c3d4-mock-uuid\",\n    \"issue_date\": \"2026-06-10\"\n  },\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"50000.00\",\n    \"tax_exclusive_amount\": \"50000.00\",\n    \"tax_inclusive_amount\": \"59500.00\",\n    \"payable_amount\": \"59500.00\"\n  },\n  \"credit_note_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"50000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Devolución auto-increment\",\n      \"code\": \"AI-NC-001\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"50000.00\",\n      \"base_quantity\": \"1.000000\",\n      \"tax_totals\": [\n        {\n          \"tax_id\": 1,\n          \"tax_amount\": \"9500.00\",\n          \"taxable_amount\": \"50000.00\",\n          \"percent\": \"19.00\"\n        }\n      ]\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/auto-increment/credit-notes",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "auto-increment",
+                                "credit-notes"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('NC auto-increment aceptada en sandbox', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                }
+            ]
         }
-      ]
-    },
-    {
-      "name": "4. Sandbox — PDF & Status",
-      "item": [
-        {
-          "name": "4.1 Get PDF",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": ""
-            },
-            "url": { "raw": "{{sandbox_url}}/documents/pdf/{{trackId}}", "host": ["{{sandbox_url}}"], "path": ["documents", "pdf", "{{trackId}}"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('PDF obtenido exitosamente', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        },
-        {
-          "name": "4.2 Document Status",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": ""
-            },
-            "url": { "raw": "{{sandbox_url}}/status/document/{{trackId}}", "host": ["{{sandbox_url}}"], "path": ["status", "document", "{{trackId}}"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Estado del documento obtenido', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        },
-        {
-          "name": "4.3 Get Certificate Info",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "url": { "raw": "{{sandbox_url}}/certificate/", "host": ["{{sandbox_url}}"], "path": ["certificate", ""] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Certificado obtenido exitosamente', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "5. Sandbox — Notas Crédito/Débito",
-      "item": [
-        {
-          "name": "5.1 Nota Crédito Happy Path",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type_document_id\": 4,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"11:00:00\",\n  \"notes\": \"Nota crédito de prueba sandbox\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"discrepancy_response\": {\n    \"correction_concept_id\": 2,\n    \"description\": \"Devolución parcial de los bienes\"\n  },\n  \"billing_reference\": {\n    \"number\": \"SETP990000001\",\n    \"uuid\": \"a1b2c3d4-mock-uuid\",\n    \"issue_date\": \"2026-06-10\"\n  },\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"50000.00\",\n    \"tax_exclusive_amount\": \"50000.00\",\n    \"tax_inclusive_amount\": \"59500.00\",\n    \"payable_amount\": \"59500.00\"\n  },\n  \"credit_note_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"50000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Devolución parcial\",\n      \"code\": \"DEV-001\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"50000.00\",\n      \"base_quantity\": \"1.000000\",\n      \"tax_totals\": [\n        {\n          \"tax_id\": 1,\n          \"tax_amount\": \"9500.00\",\n          \"taxable_amount\": \"50000.00\",\n          \"percent\": \"19.00\"\n        }\n      ]\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/notes/credit", "host": ["{{sandbox_url}}"], "path": ["notes", "credit"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Nota crédito aceptada en sandbox', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('Header X-MATIAS-Environment es sandbox', function () {",
-                  "    pm.response.to.have.header('X-MATIAS-Environment', 'sandbox');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        },
-        {
-          "name": "5.2 Nota Débito Happy Path",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type_document_id\": 5,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"11:01:00\",\n  \"notes\": \"Nota débito de prueba sandbox\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"discrepancy_response\": {\n    \"correction_concept_id\": 2,\n    \"description\": \"Devolución parcial de los bienes\"\n  },\n  \"billing_reference\": {\n    \"number\": \"SETP990000001\",\n    \"uuid\": \"a1b2c3d4-mock-uuid\",\n    \"issue_date\": \"2026-06-10\"\n  },\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"50000.00\",\n    \"tax_exclusive_amount\": \"50000.00\",\n    \"tax_inclusive_amount\": \"59500.00\",\n    \"payable_amount\": \"59500.00\"\n  },\n  \"debit_note_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"50000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Devolución parcial\",\n      \"code\": \"DEV-001\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"50000.00\",\n      \"base_quantity\": \"1.000000\",\n      \"tax_totals\": [\n        {\n          \"tax_id\": 1,\n          \"tax_amount\": \"9500.00\",\n          \"taxable_amount\": \"50000.00\",\n          \"percent\": \"19.00\"\n        }\n      ]\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/notes/debit", "host": ["{{sandbox_url}}"], "path": ["notes", "debit"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Nota débito aceptada en sandbox', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "6. Sandbox — Documento Soporte",
-      "item": [
-        {
-          "name": "6.1 Documento Soporte Happy Path",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type_document_id\": 12,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"11:10:00\",\n  \"notes\": \"Documento soporte de prueba sandbox\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Proveedor Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"200000.00\",\n    \"tax_exclusive_amount\": \"200000.00\",\n    \"tax_inclusive_amount\": \"238000.00\",\n    \"payable_amount\": \"238000.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"200000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Servicio adquirido\",\n      \"code\": \"DS-001\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"200000.00\",\n      \"base_quantity\": \"1.000000\",\n      \"tax_totals\": [\n        {\n          \"tax_id\": 1,\n          \"tax_amount\": \"38000.00\",\n          \"taxable_amount\": \"200000.00\",\n          \"percent\": \"19.00\"\n        }\n      ]\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/ds/document", "host": ["{{sandbox_url}}"], "path": ["ds", "document"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Documento soporte aceptado en sandbox', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        },
-        {
-          "name": "6.2 Nota Ajuste DS Happy Path",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type_document_id\": 13,\n  \"resolution_number\": \"18760000001\",\n  \"prefix\": \"SETP\",\n  \"date\": \"2026-06-15\",\n  \"time\": \"11:11:00\",\n  \"notes\": \"Nota ajuste documento soporte sandbox\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"discrepancy_response\": {\n    \"correction_concept_id\": 2,\n    \"description\": \"Ajuste al documento soporte\"\n  },\n  \"billing_reference\": {\n    \"number\": \"SETP990000001\",\n    \"uuid\": \"a1b2c3d4-mock-uuid\",\n    \"issue_date\": \"2026-06-10\"\n  },\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Proveedor Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"200000.00\",\n    \"tax_exclusive_amount\": \"200000.00\",\n    \"tax_inclusive_amount\": \"238000.00\",\n    \"payable_amount\": \"238000.00\"\n  },\n  \"credit_note_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"200000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Ajuste servicio adquirido\",\n      \"code\": \"DS-ADJ-001\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"200000.00\",\n      \"base_quantity\": \"1.000000\",\n      \"tax_totals\": [\n        {\n          \"tax_id\": 1,\n          \"tax_amount\": \"38000.00\",\n          \"taxable_amount\": \"200000.00\",\n          \"percent\": \"19.00\"\n        }\n      ]\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/ds/adjustment-note", "host": ["{{sandbox_url}}"], "path": ["ds", "adjustment-note"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Nota ajuste DS aceptada en sandbox', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "7. Sandbox — Nómina Electrónica",
-      "item": [
-        {
-          "name": "7.1 Nómina Individual Happy Path",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type_document_id\": 9,\n  \"employer\": {\n    \"identification_number\": \"900123456\",\n    \"dv\": \"7\",\n    \"name\": \"Empleador Sandbox Demo\",\n    \"municipality_id\": 149,\n    \"address\": \"Calle 100 #15-20\"\n  },\n  \"worker\": {\n    \"type_worker_id\": 1,\n    \"sub_type_worker_id\": 1,\n    \"identification_number\": \"1234567890\",\n    \"type_document_identification_id\": 3,\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Pérez\",\n    \"type_contract_id\": 1,\n    \"high_risk_pension\": false,\n    \"integral_salary\": false,\n    \"municipality_id\": 149\n  },\n  \"period\": {\n    \"admittance_date\": \"2026-01-15\",\n    \"settlement_start_date\": \"2026-06-01\",\n    \"settlement_end_date\": \"2026-06-30\",\n    \"date_issue\": \"2026-06-30\",\n    \"time_issue\": \"12:00:00\"\n  },\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_date\": \"2026-06-30\"\n  },\n  \"earn\": {\n    \"basic\": {\n      \"worked_days\": 30,\n      \"worker_salary\": \"3000000.00\"\n    }\n  },\n  \"deduction\": {\n    \"health\": {\n      \"percentage\": \"4.00\",\n      \"payment\": \"120000.00\"\n    },\n    \"pension\": {\n      \"percentage\": \"4.00\",\n      \"payment\": \"120000.00\"\n    }\n  },\n  \"accrued_total\": \"3000000.00\",\n  \"deductions_total\": \"240000.00\",\n  \"total\": \"2760000.00\",\n  \"notes\": \"Nómina de prueba sandbox\"\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/ep/payroll", "host": ["{{sandbox_url}}"], "path": ["ep", "payroll"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Nómina individual aceptada en sandbox', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        },
-        {
-          "name": "7.2 Nómina Replace",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type_document_id\": 9,\n  \"predecessor\": {\n    \"predecessor_number\": \"NE-001\",\n    \"predecessor_cune\": \"mock-cune-uuid\",\n    \"predecessor_issue_date\": \"2026-06-15\"\n  },\n  \"employer\": {\n    \"identification_number\": \"900123456\",\n    \"dv\": \"7\",\n    \"name\": \"Empleador Sandbox Demo\",\n    \"municipality_id\": 149,\n    \"address\": \"Calle 100 #15-20\"\n  },\n  \"worker\": {\n    \"type_worker_id\": 1,\n    \"sub_type_worker_id\": 1,\n    \"identification_number\": \"1234567890\",\n    \"type_document_identification_id\": 3,\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Pérez\",\n    \"type_contract_id\": 1,\n    \"high_risk_pension\": false,\n    \"integral_salary\": false,\n    \"municipality_id\": 149\n  },\n  \"period\": {\n    \"admittance_date\": \"2026-01-15\",\n    \"settlement_start_date\": \"2026-06-01\",\n    \"settlement_end_date\": \"2026-06-30\",\n    \"date_issue\": \"2026-06-30\",\n    \"time_issue\": \"12:01:00\"\n  },\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_date\": \"2026-06-30\"\n  },\n  \"earn\": {\n    \"basic\": {\n      \"worked_days\": 30,\n      \"worker_salary\": \"3000000.00\"\n    }\n  },\n  \"deduction\": {\n    \"health\": {\n      \"percentage\": \"4.00\",\n      \"payment\": \"120000.00\"\n    },\n    \"pension\": {\n      \"percentage\": \"4.00\",\n      \"payment\": \"120000.00\"\n    }\n  },\n  \"accrued_total\": \"3000000.00\",\n  \"deductions_total\": \"240000.00\",\n  \"total\": \"2760000.00\",\n  \"notes\": \"Reemplazo nómina sandbox\"\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/ep/payroll/replace", "host": ["{{sandbox_url}}"], "path": ["ep", "payroll", "replace"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Nómina reemplazo aceptada en sandbox', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        },
-        {
-          "name": "7.3 Nómina Delete",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type_document_id\": 9,\n  \"predecessor\": {\n    \"predecessor_number\": \"NE-001\",\n    \"predecessor_cune\": \"mock-cune-uuid\",\n    \"predecessor_issue_date\": \"2026-06-15\"\n  },\n  \"employer\": {\n    \"identification_number\": \"900123456\",\n    \"dv\": \"7\",\n    \"name\": \"Empleador Sandbox Demo\",\n    \"municipality_id\": 149,\n    \"address\": \"Calle 100 #15-20\"\n  },\n  \"worker\": {\n    \"type_worker_id\": 1,\n    \"sub_type_worker_id\": 1,\n    \"identification_number\": \"1234567890\",\n    \"type_document_identification_id\": 3,\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Pérez\",\n    \"type_contract_id\": 1,\n    \"high_risk_pension\": false,\n    \"integral_salary\": false,\n    \"municipality_id\": 149\n  },\n  \"notes\": \"Eliminación nómina sandbox\"\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/ep/payroll/delete", "host": ["{{sandbox_url}}"], "path": ["ep", "payroll", "delete"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Nómina eliminación aceptada en sandbox', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "8. Sandbox — Auto-Increment",
-      "item": [
-        {
-          "name": "8.1 Factura Auto-Increment",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type_document_id\": 7,\n  \"date\": \"2026-06-15\",\n  \"time\": \"13:00:00\",\n  \"notes\": \"Factura auto-increment sandbox\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"100000.00\",\n    \"tax_exclusive_amount\": \"100000.00\",\n    \"tax_inclusive_amount\": \"119000.00\",\n    \"payable_amount\": \"119000.00\"\n  },\n  \"invoice_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"100000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Servicio auto-increment\",\n      \"code\": \"AI-001\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"100000.00\",\n      \"base_quantity\": \"1.000000\",\n      \"tax_totals\": [\n        {\n          \"tax_id\": 1,\n          \"tax_amount\": \"19000.00\",\n          \"taxable_amount\": \"100000.00\",\n          \"percent\": \"19.00\"\n        }\n      ]\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/auto-increment/invoices", "host": ["{{sandbox_url}}"], "path": ["auto-increment", "invoices"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Factura auto-increment aceptada en sandbox', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        },
-        {
-          "name": "8.2 NC Auto-Increment",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type_document_id\": 4,\n  \"date\": \"2026-06-15\",\n  \"time\": \"13:01:00\",\n  \"notes\": \"Nota crédito auto-increment sandbox\",\n  \"currency_id\": 272,\n  \"operation_type_id\": 1,\n  \"discrepancy_response\": {\n    \"correction_concept_id\": 2,\n    \"description\": \"Devolución parcial de los bienes\"\n  },\n  \"billing_reference\": {\n    \"number\": \"SETP990000001\",\n    \"uuid\": \"a1b2c3d4-mock-uuid\",\n    \"issue_date\": \"2026-06-10\"\n  },\n  \"customer\": {\n    \"identification_number\": \"800111222\",\n    \"dv\": \"3\",\n    \"name\": \"Cliente Sandbox Demo\",\n    \"type_document_identification_id\": 6,\n    \"type_organization_id\": 1,\n    \"type_regime_id\": 1,\n    \"municipality_id\": 149,\n    \"type_liability_id\": 1\n  },\n  \"legal_monetary_totals\": {\n    \"line_extension_amount\": \"50000.00\",\n    \"tax_exclusive_amount\": \"50000.00\",\n    \"tax_inclusive_amount\": \"59500.00\",\n    \"payable_amount\": \"59500.00\"\n  },\n  \"credit_note_lines\": [\n    {\n      \"unit_measure_id\": 70,\n      \"invoiced_quantity\": \"1.000000\",\n      \"line_extension_amount\": \"50000.00\",\n      \"free_of_charge_indicator\": false,\n      \"description\": \"Devolución auto-increment\",\n      \"code\": \"AI-NC-001\",\n      \"type_item_identification_id\": 4,\n      \"price_amount\": \"50000.00\",\n      \"base_quantity\": \"1.000000\",\n      \"tax_totals\": [\n        {\n          \"tax_id\": 1,\n          \"tax_amount\": \"9500.00\",\n          \"taxable_amount\": \"50000.00\",\n          \"percent\": \"19.00\"\n        }\n      ]\n    }\n  ],\n  \"payment\": {\n    \"payment_form_id\": 1,\n    \"payment_method_id\": 30,\n    \"payment_due_date\": \"2026-07-15\"\n  }\n}"
-            },
-            "url": { "raw": "{{sandbox_url}}/auto-increment/credit-notes", "host": ["{{sandbox_url}}"], "path": ["auto-increment", "credit-notes"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('NC auto-increment aceptada en sandbox', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        }
-      ]
-    }
-  ]
+    ]
 }

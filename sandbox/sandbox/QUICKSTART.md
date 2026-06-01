@@ -25,7 +25,7 @@ curl -X POST https://api-v2.matias-api.com/register \
 Usa las **mismas credenciales** que en produccion:
 
 ```bash
-curl -X POST {{SANDBOX_URL}}/auth/login \
+curl -X POST https://sandbox-api.matias-api.com/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "tu@email.com",
@@ -44,7 +44,7 @@ Respuesta:
 ## 3. Generar un PAT (Personal Access Token)
 
 ```bash
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auth/token \
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auth/token \
   -H "Authorization: Bearer {access_token}" \
   -H "Content-Type: application/json" \
   -d '{"name": "Mi Token de Prueba"}'
@@ -59,7 +59,7 @@ El sandbox soporta **todos los tipos de documento** de la API. A continuacion lo
 ### 4.1 Factura electronica
 
 ```bash
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/invoice \
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/invoice \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @tu-factura.json
@@ -69,13 +69,13 @@ curl -X POST {{SANDBOX_URL}}/api/ubl2.1/invoice \
 
 ```bash
 # Nota Credito
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/notes/credit \
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/notes/credit \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nota-credito.json
 
 # Nota Debito
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/notes/debit \
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/notes/debit \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nota-debito.json
@@ -85,13 +85,13 @@ curl -X POST {{SANDBOX_URL}}/api/ubl2.1/notes/debit \
 
 ```bash
 # Documento Soporte
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ds/document \
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ds/document \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @documento-soporte.json
 
 # Nota de Ajuste al Documento Soporte
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ds/adjustment-note \
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ds/adjustment-note \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nota-ajuste-ds.json
@@ -101,19 +101,19 @@ curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ds/adjustment-note \
 
 ```bash
 # Nomina individual
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ep/payroll \
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nomina.json
 
 # Reemplazo de nomina
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ep/payroll/replace \
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll/replace \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nomina-replace.json
 
 # Eliminacion de nomina
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ep/payroll/delete \
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll/delete \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nomina-delete.json
@@ -125,35 +125,45 @@ Todos los endpoints de auto-incremento tambien funcionan en el sandbox:
 
 ```bash
 # Factura con consecutivo automatico
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/invoices \
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/invoices \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @factura-auto.json
 
 # Nota Credito con consecutivo automatico
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/credit-notes \
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/credit-notes \
   -H "Authorization: Bearer {tu_token}" \
   -d @nc-auto.json
 
 # Nota Debito con consecutivo automatico
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/debit-notes \
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/debit-notes \
   -H "Authorization: Bearer {tu_token}" \
   -d @nd-auto.json
 
 # Documento Soporte con consecutivo automatico
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/support-documents \
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/support-documents \
   -H "Authorization: Bearer {tu_token}" \
   -d @ds-auto.json
 
 # Nota de Ajuste con consecutivo automatico
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/adjustment-notes \
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/adjustment-notes \
   -H "Authorization: Bearer {tu_token}" \
   -d @ajuste-auto.json
 
 # Documento POS con consecutivo automatico
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/pos-documents \
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/pos-documents \
   -H "Authorization: Bearer {tu_token}" \
   -d @pos-auto.json
+
+# Nota Credito POS con consecutivo automatico
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/pos-credit-notes \
+  -H "Authorization: Bearer {tu_token}" \
+  -d @pos-nc-auto.json
+
+# Nota Debito POS con consecutivo automatico
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/pos-debit-notes \
+  -H "Authorization: Bearer {tu_token}" \
+  -d @pos-nd-auto.json
 ```
 
 > Todos los endpoints de auto-incremento tambien soportan `PATCH /{uuid}` para reenvio.
@@ -166,13 +176,13 @@ Simula diferentes respuestas de la DIAN con el header `X-Sandbox-Force-Status`. 
 
 ```bash
 # Documento rechazado (funciona en /invoice, /notes/credit, /ep/payroll, etc.)
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/invoice \
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/invoice \
   -H "Authorization: Bearer {tu_token}" \
   -H "X-Sandbox-Force-Status: ERROR_REJECTED" \
   -d @tu-factura.json
 
 # Timeout de DIAN (funciona en cualquier endpoint de documentos)
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ep/payroll \
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll \
   -H "Authorization: Bearer {tu_token}" \
   -H "X-Sandbox-Force-Status: ERROR_TIMEOUT" \
   -d @nomina.json
@@ -208,6 +218,8 @@ X-MATIAS-Environment: sandbox
 | `/auto-increment/support-documents` | POST | DS auto-incremento |
 | `/auto-increment/adjustment-notes` | POST | Nota ajuste auto-incremento |
 | `/auto-increment/pos-documents` | POST | POS auto-incremento |
+| `/auto-increment/pos-credit-notes` | POST | Nota Credito POS auto-incremento |
+| `/auto-increment/pos-debit-notes` | POST | Nota Debito POS auto-incremento |
 
 ### CRUD y configuracion (misma logica que produccion)
 

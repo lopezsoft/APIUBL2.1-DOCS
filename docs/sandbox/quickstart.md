@@ -185,6 +185,16 @@ curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/adjustment-notes \
 curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/pos-documents \
   -H "Authorization: Bearer {tu_token}" \
   -d @pos-auto.json
+
+# Nota Crédito POS con consecutivo automático
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/pos-credit-notes \
+  -H "Authorization: Bearer {tu_token}" \
+  -d @pos-nc-auto.json
+
+# Nota Débito POS con consecutivo automático
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/pos-debit-notes \
+  -H "Authorization: Bearer {tu_token}" \
+  -d @pos-nd-auto.json
 ```
 
 :::tip Reenvíos de Auto-incremento
@@ -253,6 +263,8 @@ El sandbox ofrece paridad funcional total con producción. A continuación se li
 | `/auto-increment/support-documents` | `POST` | Documento Soporte auto-incrementable |
 | `/auto-increment/adjustment-notes` | `POST` | Nota de Ajuste auto-incrementable |
 | `/auto-increment/pos-documents` | `POST` | Documento equivalente POS auto-incrementable |
+| `/auto-increment/pos-credit-notes` | `POST` | Nota Crédito POS auto-incrementable |
+| `/auto-increment/pos-debit-notes` | `POST` | Nota Débito POS auto-incrementable |
 
 ### 🛠️ 2. CRUD y Configuración (Misma Lógica de Negocio que Producción)
 
@@ -286,4 +298,4 @@ El sandbox ofrece paridad funcional total con producción. A continuación se li
 
 *   [Magic Values](./magic-values.md) — Lista completa de cabeceras de simulación de errores de la DIAN.
 *   [Test Certificate](./test-cert.md) — Especificaciones del certificado digital de prueba autogenerado.
-*   [Colección Postman](./postman.md) — Importa la colección de 14 peticiones de prueba listas para usar.
+*   [Colección Postman](./postman.md) — Importa la colección de 36 peticiones de prueba listas para usar.

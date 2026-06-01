@@ -1,12 +1,12 @@
 ---
 sidebar_position: 4
 title: Colección Postman
-description: Colección de 14 requests listas para usar y probar la integración en el sandbox.
+description: Colección de 29 requests listas para usar y probar la integración en el sandbox.
 ---
 
 # Colección Postman — MATIAS API Sandbox
 
-Para acelerar la integración técnica y las pruebas de comportamiento en el sandbox, hemos diseñado una **Colección Postman oficial con 14 solicitudes** ya pre-configuradas y organizadas para cubrir tanto el happy path como todos los escenarios de error simulables (Magic Values).
+Para acelerar la integración técnica y las pruebas de comportamiento en el sandbox, hemos diseñado una **Colección Postman oficial con 29 solicitudes** ya pre-configuradas y organizadas para cubrir tanto el happy path como todos los escenarios de error simulables (Magic Values).
 
 ---
 
@@ -30,32 +30,34 @@ Haz clic en el siguiente botón oficial para importar directamente un fork de la
 
 ---
 
-## Estructura de la Colección (14 Requests)
+## Estructura de la Colección (29 Requests)
 
-La colección se encuentra estructurada en **4 carpetas lógicas** para guiarte en el flujo secuencial de desarrollo:
+La colección se encuentra estructurada en **8 carpetas lógicas** para guiarte en el flujo secuencial de desarrollo y pruebas de todos los módulos:
 
 ### 📁 1. Producción (1 request)
 *   `POST /register`: Endpoint oficial de producción para registrar tu cuenta por primera vez. Recuerda que esta cuenta se replica de forma inmediata al sandbox en tiempo real.
 
-### 📁 2. Sandbox Auth (2 requests)
-*   `POST /auth/login`: Realiza el inicio de sesión y devuelve tu token `access_token` JWT.
-*   `POST /api/ubl2.1/auth/token`: Genera tu **Personal Access Token (PAT)** JWT estándar para autenticar el envío de documentos.
+### 📁 2. Sandbox — Auth (2 requests)
+*   Login y generación de tokens de acceso (PAT) para interactuar con el entorno sandbox.
 
-### 📁 3. Sandbox Facturación (8 requests)
-Peticiones completas para transmitir facturas electrónicas combinando escenarios de validación:
-*   `POST /invoice (Happy Path)`: Transmisión estándar del documento sin cabecera de simulación. Devuelve `ACCEPTED`.
-*   `POST /invoice (Error Rejected)`: Simula el error `B7B01` (documento rechazado por negocio).
-*   `POST /invoice (Error Duplicate)`: Simula el error `89` (número de documento ya registrado).
-*   `POST /invoice (Error Auth)`: Simula el error `IFE043` (fallo de autenticación o firma digital).
-*   `POST /invoice (Error Schema)`: Simula el error `FAD06` (fallo estructural XSD).
-*   `POST /invoice (Error 500)`: Simula una caída del servidor SOAP de la DIAN.
-*   `POST /invoice (Error Timeout)`: Simula la pérdida de conexión o timeout con la DIAN.
-*   `POST /invoice (Cert Expirado)`: Simula un intento de firma con un certificado ya vencido.
+### 📁 3. Sandbox — Facturación (14 requests)
+*   Emisión de Factura Electrónica en flujo estándar (Happy Path).
+*   **13 simulaciones de error (Magic Values)** exclusivas para facturas: rechazos de validación, errores matemáticos (`ERROR_MATH_ROUNDING`), totales brutos (`ERROR_GROSS_TOTAL`), firmas alteradas (`ERROR_SIGNATURE`), timeout de DIAN, entre otros.
 
-### 📁 4. Sandbox PDF & Status (3 requests)
-*   `GET /documents/pdf/{trackId}`: Solicita y descarga la representación gráfica (PDF) autogenerada.
-*   `GET /documents/status/{trackId}`: Consulta el estado de procesamiento del documento en la plataforma.
-*   `GET /certificate`: Obtiene la metadata técnica y la passphrase del certificado digital de prueba asignado.
+### 📁 4. Sandbox — PDF & Status (3 requests)
+*   Consulta asíncrona de estado, descarga de representación gráfica (PDF) autogenerada y revisión de metadata del certificado.
+
+### 📁 5. Sandbox — Notas Crédito/Débito (2 requests)
+*   Pruebas de errores específicos para Notas, como fechas desfasadas (`ERROR_NC_DATE_MISMATCH`).
+
+### 📁 6. Sandbox — Documento Soporte (2 requests)
+*   Validaciones específicas de Documento Soporte, como tributos no permitidos (`ERROR_DS_TAX_INVALID`).
+
+### 📁 7. Sandbox — Nómina Electrónica (3 requests)
+*   Simulación de rechazos en la nómina, tales como CUNE alterado (`ERROR_PAYROLL_CUNE_INVALID`) o errores de departamentos (`ERROR_PAYROLL_DEPT`).
+
+### 📁 8. Sandbox — Auto-Increment (2 requests)
+*   Pruebas de emisión utilizando los módulos de auto-incremento de series para Factura y Nota Crédito.
 
 ---
 

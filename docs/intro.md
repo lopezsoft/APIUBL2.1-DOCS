@@ -23,9 +23,9 @@ La URL base de la API (`{{URL}}`) y el acceso al entorno sandbox **son proporcio
 - ❌ Acceso de demostración sin contrato
 
 **Ofrecemos:**
-- ✅ Sandbox de pruebas incluido para clientes — ver [documentación del sandbox](/docs/sandbox/quickstart)
+- ✅ Sandbox de pruebas (API y Frontend Web) incluido para clientes — ver [documentación del sandbox](/docs/sandbox/quickstart)
 
-La URL base y las credenciales de acceso se entregarán una vez formalizada la contratación del servicio.
+La URL base y las credenciales de acceso a producción se entregarán una vez formalizada la contratación del servicio.
 :::
 
 En toda la documentación, utilizaremos el parámetro `{{URL}}` como marcador de posición, el cual debe ser sustituido por la URL base real que le será proporcionada al contratar el servicio.

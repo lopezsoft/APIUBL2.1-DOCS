@@ -28,13 +28,20 @@ La URL base de la API (`{{URL}}`) y el acceso al entorno sandbox **son proporcio
 La URL base y las credenciales de acceso a producción se entregarán una vez formalizada la contratación del servicio.
 :::
 
-En toda la documentación, utilizaremos el parámetro `{{URL}}` como marcador de posición, el cual debe ser sustituido por la URL base real que le será proporcionada al contratar el servicio.
+En toda la documentación, utilizaremos el parámetro `{{URL}}` como marcador de posición para la URL base de producción, la cual le será proporcionada al contratar el servicio. De manera similar, usaremos `{{SANDBOX_URL}}` para referirnos al entorno de pruebas.
 
-:::info Ejemplo de URL base
+:::info Enlaces de Referencia
+
+**Producción (`{{URL}}`)**:
+```text
+https://api.ejemplo.com (Ejemplo ilustrativo)
 ```
-https://api.ejemplo.com
-```
-*Esta es solo una URL de ejemplo para fines ilustrativos en la documentación.*
+
+**Sandbox (`{{SANDBOX_URL}}`)**:
+- **API:** `https://sandbox-api.matias-api.com`
+- **Frontend Web:** `https://sandbox-auth.matias-api.com/`
+
+*Recuerde utilizar las mismas credenciales de producción para acceder al portal del Sandbox.*
 :::
 
 ### ⚠️ Requisitos Previos Obligatorios {#nota-importante}

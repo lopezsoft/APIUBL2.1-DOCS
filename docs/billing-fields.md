@@ -365,7 +365,8 @@ Este campo aplica para documentos de **Nómina Electrónica** (`type_document_id
 
 Archivos adjuntos opcionales cargados y vinculados al documento (máximo 4 archivos, almacenados de forma segura en Amazon S3). _Este campo es opcional (nullable)_ y debe ser un arreglo de objetos con los siguientes campos:
 
-- #### Ejemplo
+<details>
+<summary>💻 JSON de ejemplo</summary>
 
 ```json
 "attachments": [
@@ -376,25 +377,18 @@ Archivos adjuntos opcionales cargados y vinculados al documento (máximo 4 archi
   }
 ]
 ```
+</details>
 
-- #### Detalle de los campos de cada archivo adjunto:
+<details open>
+<summary>📎 Campos del adjunto</summary>
 
-  - #### `filename`
-    Nombre del archivo adjunto con su extensión. **Obligatorio si se envía el arreglo `attachments`**.
-    * **Tipo:** `string`
-    * **Longitud Máxima:** 255 caracteres
-    * **Regla de Validación:** `required_with:attachments|string|max:255`
+| Campo | Tipo | Requerido | Descripción / Reglas |
+|-------|------|-----------|----------------------|
+| `filename` | `string` | ⚠️ Condicional | Nombre del archivo adjunto con extensión. **Obligatorio si se envía `attachments`**. Max: 255 chars. |
+| `content` | `string` | ⚠️ Condicional | Contenido del archivo en base64. **Obligatorio si se envía `attachments`**. |
+| `content_type` | `string` | Opcional | Tipo MIME del archivo (ej. `application/pdf`, `image/png`). Max: 100 chars. |
 
-  - #### `content`
-    Contenido del archivo codificado en base64. **Obligatorio si se envía el arreglo `attachments`**.
-    * **Tipo:** `string` (Base64)
-    * **Regla de Validación:** `required_with:attachments|string`
-
-  - #### `content_type`
-    Tipo de contenido MIME del archivo (ej. `application/pdf`, `image/png`). _Este campo es opcional (nullable)_.
-    * **Tipo:** `string`
-    * **Longitud Máxima:** 100 caracteres
-    * **Regla de Validación:** `nullable|string|max:100`
+</details>
 
 ### `invoice_period` 🟢
 

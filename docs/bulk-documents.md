@@ -17,12 +17,12 @@ Disponible desde **v2.10.0** · Base path: `/api/ubl2.1/bulk/documents`
 :::
 
 :::warning 🚧 Endpoint en Fase BETA
-El envío masivo de documentos (Bulk) se encuentra actualmente en **Fase BETA**. Aunque es completamente funcional, esto conlleva que los límites de rate limit, las estructuras de respuesta asíncrona o las ventanas temporales de procesamiento podrían recibir ajustes técnicos orientados a estabilizar la infraestructura. 
+El envío masivo de documentos (Bulk) se encuentra actualmente en **Fase BETA**. Aunque es completamente funcional, esto conlleva que los límites de rate limit, las estructuras de respuesta asíncrona, políticas de retención o las ventanas temporales de procesamiento podrían recibir ajustes técnicos orientados a estabilizar la infraestructura. 
 
 Te sugerimos implementar primero tu flujo de integración apoyándote en el ambiente [Sandbox](./sandbox/quickstart) antes de liberar a usuarios finales en producción.
 :::
 
-El endpoint de envío masivo permite procesar **múltiples documentos electrónicos** en un solo request HTTP. Los documentos se encolan para procesamiento asíncrono y puedes consultar el estado de cada uno individualmente.
+El endpoint de envío masivo permite procesar **múltiple documentos electrónicos** en un solo request HTTP. Los documentos se encolan para procesamiento asíncrono y puedes consultar el estado de cada uno individualmente.
 
 ---
 
@@ -727,6 +727,71 @@ curl -X GET "https://tu-api.com/api/ubl2.1/bulk/documents?per_page=10" \
 
 ---
 
+## Retención y Mantenimiento de Datos {#retencion}
+
+Las tablas de envío masivo (`document_batches` y `document_batch_items`) almacenan campos pesados como `payload` (JSON del request original) y `response` (respuesta completa de DIAN incluyendo XMLs en base64). Sin una política de retención, el almacenamiento crecerá indefinidamente.
+
+### Política de Retención (2 fases)
+
+```mermaid
+graph LR
+    A["📄 Lote creado"] -->|30 días| B["🧹 Strip: payload y response → null"]
+    B -->|90 días| C["🗑️ Purge: batch + items eliminados"]
+    style A fill:#4ade80,color:#000
+    style B fill:#facc15,color:#000
+    style C fill:#f87171,color:#000
+```
+
+| Fase | Acción | Umbral default | Qué se conserva |
+|:----:|--------|:--------------:|-----------------|
+| **Strip** | Limpia `payload` y `response` de items terminados | 30 días | Metadata: uuid, status, error_code, error_message, timestamps |
+| **Purge** | Elimina batches e items completos | 90 días | Nada — registros eliminados permanentemente |
+
+:::warning Solo batches terminales
+Solo se purgan batches en estado terminal (`COMPLETED`, `PARTIAL`, `FAILED`, `CANCELLED`). Los batches `PENDING` o `PROCESSING` nunca se tocan.
+:::
+
+### Comando Artisan
+
+```bash
+# Simular sin modificar datos (dry-run)
+php artisan bulk:prune --dry-run
+
+# Ejecutar con valores por defecto (strip: 30 días, purge: 90 días)
+php artisan bulk:prune
+
+# Personalizar umbrales
+php artisan bulk:prune --strip-days=15 --purge-days=60
+```
+
+**Salida ejemplo:**
+
+```
+🚀 Ejecutando purgado...
+
+📦 Fase 1 (Strip): 142 items con payload/response anterior a 2026-05-02
+🗑️  Fase 2 (Purge): 38 batches terminados anteriores a 2026-03-03
+
++------------------------+-----------+----------------------+
+| Operación              | Registros | Umbral               |
++------------------------+-----------+----------------------+
+| Strip payload/response | 142       | 30 días (2026-05-02) |
+| Purge items            | 87        | 90 días (2026-03-03) |
+| Purge batches          | 38        | 90 días (2026-03-03) |
++------------------------+-----------+----------------------+
+✅ Purgado completado.
+```
+
+### Ejecución Automática
+
+El comando se ejecuta automáticamente cada día a las **4:45 AM** (hora Colombia) junto con los demás jobs de limpieza del sistema. No requiere intervención manual.
+
+:::tip Ajuste de umbrales
+Si necesitas conservar los datos por más o menos tiempo, modifica los parámetros `--strip-days` y `--purge-days` en el scheduler (`app/Console/Kernel.php`).
+:::
+
+---
+
 ## Notas Técnicas
 
 :::info Para desarrolladores
@@ -734,6 +799,7 @@ curl -X GET "https://tu-api.com/api/ubl2.1/bulk/documents?per_page=10" \
 - El procesamiento se estima en **~6 segundos por documento** (varía según latencia con DIAN).
 - Los consecutivos se generan con `lockForUpdate()` para garantizar secuencialidad en concurrencia.
 - El webhook `bulk.batch.completed` solo se dispara cuando **todos** los items alcanzaron un estado terminal.
+- Los campos `payload` y `response` se limpian automáticamente a los **30 días** para liberar almacenamiento.
 :::
 
 :::danger Límite de tamaño

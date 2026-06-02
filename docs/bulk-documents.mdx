@@ -25,7 +25,7 @@ Te sugerimos implementar primero tu flujo de integración apoyándote en el ambi
 :::danger ⚠️ IMPORTANTE: Retención de datos de solo 2 días
 Las tablas de envío masivo son **estrictamente temporales**. Los datos del lote bulk y sus items asociados se **eliminan automáticamente a los 2 días** sin posibilidad de recuperación.
 
-Cada item exitoso procesado por la DIAN retorna un **`document_uuid`**. **Debe extraer y almacenar este UUID en su sistema** una vez finalice el lote. Si el lote es purgado y usted no guardó el UUID, **no podrá ubicar ni consultar el documento** generado posteriormente.
+Cada item exitoso procesado por la DIAN retorna un **`document_uuid`**. **Debe extraer y almacenar este UUID en su sistema** una vez finalice el lote. Si el lote es purgado y usted no guardó el UUID, **aún podrá consultar el documento generado utilizando el [endpoint de consultas](./endpoints/queries-status#buscar-documentos----get) con el número y el prefijo**.
 :::
 
 El endpoint de envío masivo permite procesar **múltiples documentos electrónicos** en un solo request HTTP. Los documentos se encolan para procesamiento asíncrono y puedes consultar el estado de cada uno individualmente.

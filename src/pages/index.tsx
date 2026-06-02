@@ -18,13 +18,13 @@ function HomepageHeader() {
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.badges}>
           <span className={styles.badge}>✅ 100% Conforme DIAN</span>
-          <span className={styles.badge}>🚀 v3.0.0</span>
+          <span className={styles.badge}>🚀 v3.2.0</span>
           <span className={styles.badge}>📄 Factura v1.9</span>
         </div>
         <div className={styles.badges} style={{ marginTop: '0.5rem' }}>
-          <span className={styles.badge}>🔑 Personal Access Tokens</span>
+          <span className={styles.badge}>🧪 Sandbox (API & Web)</span>
+          <span className={styles.badge}>📦 Envíos Masivos (Bulk)</span>
           <span className={styles.badge}>🔔 Webhooks (26 eventos)</span>
-          <span className={styles.badge}>💳 Membresías & Límites</span>
         </div>
         <div className={styles.buttons}>
           <Link
@@ -34,9 +34,9 @@ function HomepageHeader() {
           </Link>
           <Link
             className="button button--outline button--secondary button--lg"
-            to="/docs/jsons-billing/invoice"
+            to="/docs/sandbox/quickstart"
             style={{ marginLeft: '1rem' }}>
-            📝 Ver ejemplos
+            🧪 Entorno Sandbox
           </Link>
           <Link
             className="button button--outline button--secondary button--lg"

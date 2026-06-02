@@ -10,20 +10,20 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Fácil de usar',
+    title: 'Fácil Integración',
     Svg: require('@site/static/img/easy-api.svg').default,
     description: (
       <>
-        Fácil de usar, con una documentación clara y sencilla. No te complicamos la vida.
+        Documentación clara y estructurada. Prueba todo sin riesgos en nuestro <strong>Entorno Sandbox</strong> antes de ir a producción.
       </>
     ),
   },
   {
-    title: 'Autogestión Completa',
+    title: 'Autogestión y Masivos',
     Svg: require('@site/static/img/web-inteface.svg').default,
     description: (
       <>
-        <strong>v3.0.0:</strong> Crea tus propios tokens de acceso, configura webhooks y gestiona límites sin contactar soporte.
+        <strong>v3.2.0:</strong> Procesa grandes volúmenes con nuestra API Bulk. Gestiona tokens, límites y membresías tú mismo.
       </>
     ),
   },

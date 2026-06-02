@@ -4,6 +4,17 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2026-06-01
+
+### Añadido
+* **Expansión Masiva del Sandbox:** Cobertura total de tipos de documentos y simulaciones avanzadas.
+  * **32 Magic Values:** Ampliación del motor de simulación para cubrir 32 escenarios específicos (antes 8), abarcando errores matemáticos, criptográficos (CUFE/CUDE/CUNE), validaciones de esquema, control de certificados y caídas de servicio.
+  * **Compatibilidad POS y No Residentes:** Integración de pruebas y endpoints auto-incrementables para Documentos Equivalentes POS Electrónicos y Documentos Soporte para No Residentes.
+  * **Payloads de Ejemplo (`docs/sandbox/jsons/`):** Nueva sección documental con payloads listos para testear todos los escenarios (facturación, nómina, documentos soporte y POS).
+  * **Colección Postman Extendida (`docs/sandbox/postman.md`):** La suite oficial de pruebas se incrementó a **36 peticiones** organizadas en 10 carpetas secuenciales, cubriendo todos los nuevos módulos.
+
+---
+
 ## [3.0.7] - 2026-05-30
 
 ### Añadido

@@ -4,6 +4,22 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.0] - 2026-06-02
+
+### Añadido
+* **Endpoint de Envío Masivo (Bulk):** Integración oficial de la documentación para el procesamiento asíncrono de grandes volúmenes de documentos (`POST /api/ubl2.1/bulk/documents`).
+  * **Soporte Universal:** Compatible con facturas, notas crédito/débito, documentos soporte, notas de ajuste y documentos POS utilizando los mismos payloads unitarios.
+  * **Modos de Envío:** Inclusión de modos `auto-increment` y `manual`.
+  * **Gestión de Lotes:** Endpoints para consultar estados generales y listado paginado de items (`GET /bulk/documents/{batch_id}` y `/items`).
+  * **Idempotencia:** Capacidad de prevenir procesamientos duplicados con el header `Idempotency-Key`.
+* **Portal Frontend del Sandbox:** Oficialización de la URL del panel de administración visual del ambiente de pruebas (`https://sandbox-auth.matias-api.com/`).
+* **UX Documentation:** Reestructuración de la guía de referencias y campos del Payload (`docs/billing-fields.md`) empleando jerarquías colapsables (accordions) para una navegación más rápida.
+
+### Modificado
+* **Políticas de Retención:** Clarificación agresiva de la purga de datos temporales para el endpoint Bulk, limitando la disponibilidad de los estados a 2 días.
+
+---
+
 ## [3.1.0] - 2026-06-01
 
 ### Añadido

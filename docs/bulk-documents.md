@@ -16,6 +16,12 @@ import TabItem from '@theme/TabItem';
 Disponible desde **v2.10.0** · Base path: `/api/ubl2.1/bulk/documents`
 :::
 
+:::warning 🚧 Endpoint en Fase BETA
+El envío masivo de documentos (Bulk) se encuentra actualmente en **Fase BETA**. Aunque es completamente funcional, esto conlleva que los límites de rate limit, las estructuras de respuesta asíncrona o las ventanas temporales de procesamiento podrían recibir ajustes técnicos orientados a estabilizar la infraestructura. 
+
+Te sugerimos implementar primero tu flujo de integración apoyándote en el ambiente [Sandbox](./sandbox/quickstart) antes de liberar a usuarios finales en producción.
+:::
+
 El endpoint de envío masivo permite procesar **múltiples documentos electrónicos** en un solo request HTTP. Los documentos se encolan para procesamiento asíncrono y puedes consultar el estado de cada uno individualmente.
 
 ---
@@ -32,7 +38,7 @@ sequenceDiagram
     C->>A: POST /bulk/documents (N docs)
     A->>A: Validar request + cuota
     A->>A: Persistir batch + items
-    A-->>C: 202 Accepted (batch_id)
+    A-->>C: 201 Created (batch_id)
     A->>Q: Dispatch N jobs
 
     loop Por cada documento
@@ -54,7 +60,7 @@ sequenceDiagram
 
 Todos los endpoints requieren autenticación vía **Bearer Token** (Personal Access Token):
 
-```http
+```
 Authorization: Bearer {tu-token}
 ```
 
@@ -95,11 +101,11 @@ El `payload` de cada documento es **idéntico** al body que usarías en el endpo
 
 ### 1. Crear Lote {#post-bulk-documents}
 
-```http
+```
 POST /api/ubl2.1/bulk/documents
 ```
 
-Acepta un lote de documentos para procesamiento asíncrono. Retorna inmediatamente con **`202 Accepted`**.
+Acepta un lote de documentos para procesamiento asíncrono. Retorna inmediatamente con **`201 Created`**.
 
 #### Headers
 
@@ -256,17 +262,19 @@ Acepta un lote de documentos para procesamiento asíncrono. Retorna inmediatamen
 </TabItem>
 </Tabs>
 
-#### Response `202 Accepted`
+#### Response `201 Created`
 
 ```json
 {
   "success": true,
+  "message": "Lote aceptado para procesamiento asíncrono.",
   "batch_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "status": "PENDING",
+  "status_url": "/api/ubl2.1/bulk/documents/f47ac10b-58cc-4372-a567-0e02b2c3d479",
   "received": 2,
   "accepted": 2,
   "rejected": 0,
-  "status": "PENDING",
-  "status_url": "/api/ubl2.1/bulk/documents/f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "estimated_completion_seconds": 12,
   "items": [
     {
       "index": 0,
@@ -280,8 +288,7 @@ Acepta un lote de documentos para procesamiento asíncrono. Retorna inmediatamen
       "item_id": "d4e5f6a7-b8c9-d0e1-f2a3-b4c5d6e7f8a9",
       "status": "QUEUED"
     }
-  ],
-  "estimated_completion_seconds": 12
+  ]
 }
 ```
 
@@ -289,11 +296,11 @@ Acepta un lote de documentos para procesamiento asíncrono. Retorna inmediatamen
 
 ### 2. Consultar Lote {#get-batch-status}
 
-```http
+```
 GET /api/ubl2.1/bulk/documents/{batch_id}
 ```
 
-Retorna el estado completo del lote con el resumen de cada item.
+Retorna el estado completo del lote con los items cargados.
 
 #### Parámetros de ruta
 
@@ -305,33 +312,56 @@ Retorna el estado completo del lote con el resumen de cada item.
 
 ```json
 {
-  "batch_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-  "status": "COMPLETED",
-  "status_description": "Completado",
+  "success": true,
+  "uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "company_id": 1,
+  "user_id": 5,
   "mode": "auto-increment",
-  "received": 2,
+  "stop_on_error": false,
+  "total_items": 2,
   "succeeded": 2,
   "failed": 0,
-  "created_at": "2026-06-01T19:30:00+00:00",
-  "finished_at": "2026-06-01T19:31:00+00:00",
-  "summary": {
-    "0": {
-      "item_id": "c1d2e3f4-a1b2-c3d4-e5f6-a7b8c9d0e1f2",
+  "status": "COMPLETED",
+  "idempotency_key": null,
+  "finished_at": "2026-06-01T19:31:00.000000Z",
+  "created_at": "2026-06-01T19:30:00.000000Z",
+  "updated_at": "2026-06-01T19:31:00.000000Z",
+  "items": [
+    {
+      "uuid": "c1d2e3f4-a1b2-c3d4-e5f6-a7b8c9d0e1f2",
+      "batch_id": 1,
       "index": 0,
       "kind": "invoice",
-      "kind_description": "Factura electrónica",
       "client_reference": "FACT-001",
-      "status": "SUCCESS",
-      "status_description": "Exitoso",
-      "attempts": 1,
-      "processed_at": "2026-06-01T19:30:05+00:00",
-      "document_number": "SETT990000001",
       "document_uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-      "cufe": "abc123def456...",
-      "track_id": "xyz789...",
-      "dian_response": {}
+      "shipping_history_id": 4200027,
+      "status": "SUCCESS",
+      "attempts": 1,
+      "response": "{...}",
+      "error_code": null,
+      "error_message": null,
+      "processed_at": "2026-06-01T19:30:05.000000Z",
+      "created_at": "2026-06-01T19:30:00.000000Z",
+      "updated_at": "2026-06-01T19:30:05.000000Z"
+    },
+    {
+      "uuid": "d4e5f6a7-b8c9-d0e1-f2a3-b4c5d6e7f8a9",
+      "batch_id": 1,
+      "index": 1,
+      "kind": "invoice",
+      "client_reference": "FACT-002",
+      "document_uuid": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+      "shipping_history_id": 4200028,
+      "status": "SUCCESS",
+      "attempts": 1,
+      "response": "{...}",
+      "error_code": null,
+      "error_message": null,
+      "processed_at": "2026-06-01T19:30:10.000000Z",
+      "created_at": "2026-06-01T19:30:00.000000Z",
+      "updated_at": "2026-06-01T19:30:10.000000Z"
     }
-  }
+  ]
 }
 ```
 
@@ -339,11 +369,11 @@ Retorna el estado completo del lote con el resumen de cada item.
 
 ### 3. Listar Items del Lote {#get-batch-items}
 
-```http
+```
 GET /api/ubl2.1/bulk/documents/{batch_id}/items
 ```
 
-Lista los items de un lote con filtros opcionales y paginación.
+Lista los items de un lote con filtros opcionales y **paginación nativa de Laravel**.
 
 #### Query Parameters
 
@@ -358,31 +388,58 @@ Lista los items de un lote con filtros opcionales y paginación.
 
 ```json
 {
-  "batch_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-  "status": "PARTIAL",
-  "items": [
+  "current_page": 1,
+  "data": [
     {
-      "item_id": "d4e5f6a7-b8c9-d0e1-f2a3-b4c5d6e7f8a9",
+      "uuid": "c1d2e3f4-a1b2-c3d4-e5f6-a7b8c9d0e1f2",
+      "batch_id": 1,
+      "index": 0,
+      "kind": "invoice",
+      "client_reference": "FACT-001",
+      "document_uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "shipping_history_id": 4200027,
+      "status": "SUCCESS",
+      "attempts": 1,
+      "response": "{...}",
+      "error_code": null,
+      "error_message": null,
+      "processed_at": "2026-06-01T19:30:05.000000Z",
+      "created_at": "2026-06-01T19:30:00.000000Z",
+      "updated_at": "2026-06-01T19:30:05.000000Z"
+    },
+    {
+      "uuid": "d4e5f6a7-b8c9-d0e1-f2a3-b4c5d6e7f8a9",
+      "batch_id": 1,
       "index": 1,
       "kind": "invoice",
-      "kind_description": "Factura electrónica",
       "client_reference": "FACT-002",
+      "document_uuid": null,
+      "shipping_history_id": null,
       "status": "FAILED",
-      "status_description": "Fallido",
       "attempts": 3,
-      "processed_at": "2026-06-01T19:30:18+00:00",
-      "error": {
-        "code": "VALIDATION_ERROR",
-        "message": "El NIT del cliente no es válido."
-      }
+      "response": null,
+      "error_code": "VALIDATION_ERROR",
+      "error_message": "El NIT del cliente no es válido.",
+      "processed_at": "2026-06-01T19:30:18.000000Z",
+      "created_at": "2026-06-01T19:30:00.000000Z",
+      "updated_at": "2026-06-01T19:30:18.000000Z"
     }
   ],
-  "meta": {
-    "current_page": 1,
-    "per_page": 10,
-    "total": 1,
-    "last_page": 1
-  }
+  "first_page_url": "http://apidian.test/api/ubl2.1/bulk/documents/f47ac10b-.../items?page=1",
+  "from": 1,
+  "last_page": 1,
+  "last_page_url": "http://apidian.test/api/ubl2.1/bulk/documents/f47ac10b-.../items?page=1",
+  "links": [
+    { "url": null, "label": "&laquo; Previous", "active": false },
+    { "url": "...?page=1", "label": "1", "active": true },
+    { "url": null, "label": "Next &raquo;", "active": false }
+  ],
+  "next_page_url": null,
+  "path": "http://apidian.test/api/ubl2.1/bulk/documents/f47ac10b-.../items",
+  "per_page": 50,
+  "prev_page_url": null,
+  "to": 2,
+  "total": 2
 }
 ```
 
@@ -390,11 +447,11 @@ Lista los items de un lote con filtros opcionales y paginación.
 
 ### 4. Listar Lotes {#get-batches}
 
-```http
+```
 GET /api/ubl2.1/bulk/documents
 ```
 
-Lista todos los lotes de la compañía, ordenados del más reciente al más antiguo.
+Lista todos los lotes de la compañía, ordenados del más reciente al más antiguo. Retorna **paginación nativa de Laravel**.
 
 #### Query Parameters
 
@@ -408,25 +465,54 @@ Lista todos los lotes de la compañía, ordenados del más reciente al más anti
 
 ```json
 {
+  "current_page": 1,
   "data": [
     {
-      "batch_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-      "status": "COMPLETED",
-      "status_description": "Completado",
+      "uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "company_id": 1,
+      "user_id": 5,
       "mode": "auto-increment",
-      "received": 10,
+      "stop_on_error": false,
+      "total_items": 10,
       "succeeded": 10,
       "failed": 0,
-      "created_at": "2026-06-01T19:30:00+00:00",
-      "finished_at": "2026-06-01T19:31:00+00:00"
+      "status": "COMPLETED",
+      "idempotency_key": null,
+      "finished_at": "2026-06-01T19:31:00.000000Z",
+      "created_at": "2026-06-01T19:30:00.000000Z",
+      "updated_at": "2026-06-01T19:31:00.000000Z"
+    },
+    {
+      "uuid": "44115613-e378-45e1-a6ea-b93f0319de2a",
+      "company_id": 1,
+      "user_id": 5,
+      "mode": "manual",
+      "stop_on_error": false,
+      "total_items": 2,
+      "succeeded": 0,
+      "failed": 2,
+      "status": "FAILED",
+      "idempotency_key": null,
+      "finished_at": "2026-06-01T21:04:45.000000Z",
+      "created_at": "2026-06-01T21:03:38.000000Z",
+      "updated_at": "2026-06-01T21:04:45.000000Z"
     }
   ],
-  "meta": {
-    "current_page": 1,
-    "per_page": 15,
-    "total": 1,
-    "last_page": 1
-  }
+  "first_page_url": "http://apidian.test/api/ubl2.1/bulk/documents?page=1",
+  "from": 1,
+  "last_page": 1,
+  "last_page_url": "http://apidian.test/api/ubl2.1/bulk/documents?page=1",
+  "links": [
+    { "url": null, "label": "&laquo; Previous", "active": false },
+    { "url": "...?page=1", "label": "1", "active": true },
+    { "url": null, "label": "Next &raquo;", "active": false }
+  ],
+  "next_page_url": null,
+  "path": "http://apidian.test/api/ubl2.1/bulk/documents",
+  "per_page": 15,
+  "prev_page_url": null,
+  "to": 2,
+  "total": 2
 }
 ```
 
@@ -464,8 +550,8 @@ El endpoint `POST` soporta idempotencia mediante el header **`Idempotency-Key`**
 
 | Escenario | Resultado |
 |-----------|-----------|
-| Primera vez con `Idempotency-Key` | Se crea el lote normalmente (202) |
-| Mismo key + mismo payload | Se retorna el lote original sin reprocesar (202) |
+| Primera vez con `Idempotency-Key` | Se crea el lote normalmente (201) |
+| Mismo key + mismo payload | Se retorna el lote original sin reprocesar (201) |
 | Mismo key + payload distinto | Error `409 Conflict` |
 | Sin header | Cada request crea un lote nuevo |
 
@@ -500,11 +586,11 @@ Cada documento debe traer su propio `document_number` en el `payload`. El sistem
 
 ---
 
-## Códigos de Error
+## Códigos de Error HTTP
 
 | HTTP | Causa | Descripción |
 |:----:|-------|-------------|
-| `202` | ✅ Éxito | Lote aceptado para procesamiento |
+| `201` | ✅ Éxito | Lote aceptado para procesamiento |
 | `402` | Cuota insuficiente | La suscripción no tiene cuota suficiente para todo el lote |
 | `409` | Conflicto idempotencia | `Idempotency-Key` reutilizado con payload distinto |
 | `413` | Lote muy grande | El número de documentos excede el máximo del plan |
@@ -519,8 +605,7 @@ Cada documento debe traer su propio `document_number` en el `payload`. El sistem
   "success": false,
   "message": "El lote excede el máximo permitido para tu suscripción.",
   "max_items": 50,
-  "received": 75,
-  "upgrade_url": "https://tu-dominio.com/upgrade"
+  "received": 75
 }
 ```
 
@@ -540,7 +625,8 @@ Cada documento debe traer su propio `document_number` en el `payload`. El sistem
 
 ```json
 {
-  "message": "El campo mode es obligatorio (auto-increment o manual).",
+  "success": false,
+  "message": "Error de validación de datos.",
   "errors": {
     "mode": ["El campo mode es obligatorio (auto-increment o manual)."],
     "documents.0.kind": [
@@ -612,7 +698,7 @@ curl -X POST https://tu-api.com/api/ubl2.1/bulk/documents \
   }'
 ```
 
-> **Respuesta:** `202 Accepted` con `batch_id`
+> **Respuesta:** `201 Created` con `batch_id`
 
 ### Paso 2: Polling del estado
 

@@ -22,7 +22,13 @@ El envío masivo de documentos (Bulk) se encuentra actualmente en **Fase BETA**.
 Te sugerimos implementar primero tu flujo de integración apoyándote en el ambiente [Sandbox](./sandbox/quickstart) antes de liberar a usuarios finales en producción.
 :::
 
-El endpoint de envío masivo permite procesar **múltiple documentos electrónicos** en un solo request HTTP. Los documentos se encolan para procesamiento asíncrono y puedes consultar el estado de cada uno individualmente.
+:::danger ⚠️ IMPORTANTE: Retención de datos de solo 2 días
+Las tablas de envío masivo son **estrictamente temporales**. Los datos del lote bulk y sus items asociados se **eliminan automáticamente a los 2 días** sin posibilidad de recuperación.
+
+Cada item exitoso procesado por la DIAN retorna un **`document_uuid`**. **Debe extraer y almacenar este UUID en su sistema** una vez finalice el lote. Si el lote es purgado y usted no guardó el UUID, **no podrá ubicar ni consultar el documento** generado posteriormente.
+:::
+
+El endpoint de envío masivo permite procesar **múltiples documentos electrónicos** en un solo request HTTP. Los documentos se encolan para procesamiento asíncrono y puedes consultar el estado de cada uno individualmente.
 
 ---
 
@@ -711,17 +717,28 @@ curl -X GET https://tu-api.com/api/ubl2.1/bulk/documents/{batch_id} \
 
 > Repite hasta que `status` sea `COMPLETED`, `PARTIAL` o `FAILED`.
 
-### Paso 3: Consultar errores (si los hay)
+### Paso 3: Guardar los `document_uuid`
+
+Una vez el lote esté completo, extraiga y persista el `document_uuid` de cada item exitoso. Este UUID es la referencia permanente del documento en el sistema.
+
+```javascript
+// Ejemplo: extraer UUIDs del response
+const completedBatch = await response.json();
+const documentUuids = completedBatch.items
+  .filter(item => item.status === 'SUCCESS')
+  .map(item => ({
+    document_uuid: item.document_uuid,      // ← GUARDAR en su BD
+    client_reference: item.client_reference  // ← Su referencia interna
+  }));
+
+// Persistir en su sistema para consultas futuras
+await saveToDatabase(documentUuids);
+```
+
+### Paso 4: Consultar errores (si los hay)
 
 ```bash
 curl -X GET "https://tu-api.com/api/ubl2.1/bulk/documents/{batch_id}/items?status=FAILED" \
-  -H "Authorization: Bearer {token}"
-```
-
-### Paso 4: Historial de lotes
-
-```bash
-curl -X GET "https://tu-api.com/api/ubl2.1/bulk/documents?per_page=10" \
   -H "Authorization: Bearer {token}"
 ```
 
@@ -729,66 +746,42 @@ curl -X GET "https://tu-api.com/api/ubl2.1/bulk/documents?per_page=10" \
 
 ## Retención y Mantenimiento de Datos {#retencion}
 
-Las tablas de envío masivo (`document_batches` y `document_batch_items`) almacenan campos pesados como `payload` (JSON del request original) y `response` (respuesta completa de DIAN incluyendo XMLs en base64). Sin una política de retención, el almacenamiento crecerá indefinidamente.
+Las tablas de envío masivo (`document_batches` y `document_batch_items`) son **tablas de orquestación temporal**. Los documentos electrónicos reales se persisten en `shipping_history` a través del pipeline unitario. Por lo tanto, los datos bulk se purgan agresivamente.
 
-### Política de Retención (2 fases)
+### Política de Retención
 
 ```mermaid
 graph LR
-    A["📄 Lote creado"] -->|30 días| B["🧹 Strip: payload y response → null"]
-    B -->|90 días| C["🗑️ Purge: batch + items eliminados"]
+    A["📄 Procesado OK"] -->|1 día| B["🧹 payload/response → null"]
+    C["❌ Error"] -->|2 días| B
+    B --> D["🗑️ batch + items eliminados"]
     style A fill:#4ade80,color:#000
-    style B fill:#facc15,color:#000
     style C fill:#f87171,color:#000
+    style B fill:#facc15,color:#000
+    style D fill:#94a3b8,color:#000
 ```
 
-| Fase | Acción | Umbral default | Qué se conserva |
-|:----:|--------|:--------------:|-----------------|
-| **Strip** | Limpia `payload` y `response` de items terminados | 30 días | Metadata: uuid, status, error_code, error_message, timestamps |
-| **Purge** | Elimina batches e items completos | 90 días | Nada — registros eliminados permanentemente |
+| Resultado | Acción | Umbral |
+|:---------:|--------|:------:|
+| ✅ **Exitoso** | Limpia `payload` y `response` | **1 día** |
+| ❌ **Fallido** | Limpia `payload` y `response` | **2 días** |
+| 🗑️ **Todos** | Elimina batch + items | **2 días** |
 
-:::warning Solo batches terminales
-Solo se purgan batches en estado terminal (`COMPLETED`, `PARTIAL`, `FAILED`, `CANCELLED`). Los batches `PENDING` o `PROCESSING` nunca se tocan.
+:::info ¿Por qué tan agresivo?
+El bulk es solo un mecanismo de carga masiva. Cada documento se valida y almacena individualmente en `shipping_history` a través del pipeline unitario. Las tablas bulk no contienen datos que no existan ya en las tablas principales del sistema.
 :::
 
 ### Comando Artisan
 
 ```bash
-# Simular sin modificar datos (dry-run)
+# Simular sin modificar datos
 php artisan bulk:prune --dry-run
 
-# Ejecutar con valores por defecto (strip: 30 días, purge: 90 días)
+# Ejecutar con defaults (éxito: 1 día, error: 2 días, purge: 2 días)
 php artisan bulk:prune
-
-# Personalizar umbrales
-php artisan bulk:prune --strip-days=15 --purge-days=60
 ```
 
-**Salida ejemplo:**
-
-```
-🚀 Ejecutando purgado...
-
-📦 Fase 1 (Strip): 142 items con payload/response anterior a 2026-05-02
-🗑️  Fase 2 (Purge): 38 batches terminados anteriores a 2026-03-03
-
-+------------------------+-----------+----------------------+
-| Operación              | Registros | Umbral               |
-+------------------------+-----------+----------------------+
-| Strip payload/response | 142       | 30 días (2026-05-02) |
-| Purge items            | 87        | 90 días (2026-03-03) |
-| Purge batches          | 38        | 90 días (2026-03-03) |
-+------------------------+-----------+----------------------+
-✅ Purgado completado.
-```
-
-### Ejecución Automática
-
-El comando se ejecuta automáticamente cada día a las **4:45 AM** (hora Colombia) junto con los demás jobs de limpieza del sistema. No requiere intervención manual.
-
-:::tip Ajuste de umbrales
-Si necesitas conservar los datos por más o menos tiempo, modifica los parámetros `--strip-days` y `--purge-days` en el scheduler (`app/Console/Kernel.php`).
-:::
+Se ejecuta automáticamente cada día a las **4:45 AM** (hora Colombia).
 
 ---
 
@@ -799,7 +792,7 @@ Si necesitas conservar los datos por más o menos tiempo, modifica los parámetr
 - El procesamiento se estima en **~6 segundos por documento** (varía según latencia con DIAN).
 - Los consecutivos se generan con `lockForUpdate()` para garantizar secuencialidad en concurrencia.
 - El webhook `bulk.batch.completed` solo se dispara cuando **todos** los items alcanzaron un estado terminal.
-- Los campos `payload` y `response` se limpian automáticamente a los **30 días** para liberar almacenamiento.
+- Los campos `payload` y `response` se limpian automáticamente a los **2 días** para liberar almacenamiento.
 :::
 
 :::danger Límite de tamaño

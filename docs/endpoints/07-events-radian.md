@@ -3,28 +3,34 @@ sidebar_position: 7
 sidebar_label: Eventos RADIAN
 ---
 
-# API de Eventos de Documentos
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-**Base URL:** `/api/ubl2.1/events`
-**Autenticación:** Bearer Token en todos los endpoints.
+# 🔄 API de Eventos de Documentos (RADIAN)
+
+:::info Base URL & Autenticación
+- **Base URL:** `/api/ubl2.1/events`
+- **Autenticación:** Requiere header `Authorization: Bearer {token}` en todos los endpoints.
+:::
 
 ---
 
-## 1. Importar desde Excel
+## 📥 1. Importación y Encolamiento
 
-`POST /import-excel`
+<details open>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/import-excel</b> — Importar desde Excel</summary>
 
 **Content-Type:** `application/json`
 
-**Body:**
-
 | Campo | Tipo | Requerido | Descripción |
 |-------|------|-----------|-------------|
-| `document_base64` | string | Sí | Archivo Excel (.xlsx/.xls) codificado en base64 |
+| `document_base64` | `string` | **Sí** | Archivo Excel (`.xlsx`/`.xls`) codificado en base64 |
 
-> ⚠️ El envío de archivos binarios (`multipart/form-data`) ya no es soportado. El archivo debe enviarse como string base64.
+> [!WARNING]
+> El envío de archivos binarios (`multipart/form-data`) ya no es soportado. El archivo debe enviarse estrictamente como string en base64.
 
-**Respuesta exitosa (200):**
+<details>
+<summary>💻 Ver Respuesta Exitosa (200)</summary>
 
 ```json
 {
@@ -37,26 +43,32 @@ sidebar_label: Eventos RADIAN
 }
 ```
 
+**Explicación de la respuesta:**
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
-| `total_rows` | int | Total de filas leídas del Excel |
-| `queued` | int | Documentos encolados para procesamiento |
-| `skipped` | int | Documentos omitidos (duplicados, filtros) |
-| `errors` | array | Detalle de errores por fila |
+| `total_rows` | `int` | Total de filas leídas del Excel |
+| `queued` | `int` | Documentos encolados para procesamiento |
+| `skipped` | `int` | Documentos omitidos (duplicados, filtros) |
+| `errors` | `array` | Detalle de errores por fila |
+</details>
 
----
+</details>
 
-## 2. Importar por Track ID
-
-`POST /import-track-id`
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/import-track-id</b> — Importar por Track ID</summary>
 
 **Body:**
 
 | Campo | Tipo | Requerido | Descripción |
 |-------|------|-----------|-------------|
-| `trackId` | string | Sí | CUFE o CUDE del documento |
+| `trackId` | `string` | **Sí** | CUFE o CUDE del documento a importar |
 
-**Respuesta exitosa (200):**
+:::tip Ruta alternativa
+También puedes enviar el `trackId` directamente en la URL: `POST /{trackId}/import` (misma funcionalidad).
+:::
+
+<details>
+<summary>💻 Ver Respuesta Exitosa (200)</summary>
 
 ```json
 {
@@ -65,26 +77,29 @@ sidebar_label: Eventos RADIAN
     "success": true
 }
 ```
+</details>
 
-**Ruta alternativa:** `POST /{trackId}/import` — Misma funcionalidad, el trackId va en la URL.
+</details>
 
 ---
 
-## 3. Listar Recepciones
+## 🔍 2. Consultas y Detalles
 
-`GET /document-receptions`
+<details>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/document-receptions</b> — Listar Recepciones</summary>
 
 **Query Params:**
 
-| Param | Tipo | Default | Descripción |
+| Parámetro | Tipo | Default | Descripción |
 |-------|------|---------|-------------|
-| `query` | string | — | Buscar por nombre o NIT del emisor |
-| `startDate` | string | — | Fecha inicio |
-| `endDate` | string | — | Fecha fin |
-| `trackId` | string | — | Buscar por CUFE/CUDE exacto |
-| `limit` | int | 20 | Registros por página (máx. 50) |
+| `query` | `string` | — | Buscar por nombre o NIT del emisor |
+| `startDate` | `string` | — | Fecha inicio |
+| `endDate` | `string` | — | Fecha fin |
+| `trackId` | `string` | — | Buscar por CUFE/CUDE exacto |
+| `limit` | `int` | 20 | Registros por página (máx. 50) |
 
-**Respuesta exitosa (200):**
+<details>
+<summary>💻 Ver Respuesta Exitosa (200)</summary>
 
 ```json
 {
@@ -96,20 +111,21 @@ sidebar_label: Eventos RADIAN
     "success": true
 }
 ```
+</details>
 
----
+</details>
 
-## 4. Detalle de Recepción con Eventos
-
-`GET /document-receptions/{documentId}`
+<details>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/document-receptions/&#123;documentId&#125;</b> — Detalle de Recepción con Eventos</summary>
 
 **Path Params:**
 
-| Param | Tipo | Descripción |
+| Parámetro | Tipo | Descripción |
 |-------|------|-------------|
-| `documentId` | int | ID de la recepción |
+| `documentId` | `int` | ID interno de la recepción |
 
-**Respuesta exitosa (200):**
+<details>
+<summary>💻 Ver Respuesta Exitosa (200)</summary>
 
 ```json
 {
@@ -119,20 +135,21 @@ sidebar_label: Eventos RADIAN
     "success": true
 }
 ```
+</details>
 
----
+</details>
 
-## 5. Consultar Estado de Evento
-
-`GET /status/{trackId}`
+<details>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/status/&#123;trackId&#125;</b> — Consultar Estado de Evento</summary>
 
 **Path Params:**
 
-| Param | Tipo | Descripción |
+| Parámetro | Tipo | Descripción |
 |-------|------|-------------|
-| `trackId` | string | Track ID del evento |
+| `trackId` | `string` | Track ID (CUFE/CUDE) del evento |
 
-**Respuesta exitosa (200):**
+<details>
+<summary>💻 Ver Respuesta Exitosa (200)</summary>
 
 ```json
 {
@@ -141,60 +158,74 @@ sidebar_label: Eventos RADIAN
     "success": true
 }
 ```
+</details>
+
+</details>
 
 ---
 
-## 6. Enviar Evento a la DIAN
+## 📤 3. Acciones de Eventos (DIAN)
 
-`POST /send/{trackId}`
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/send/&#123;trackId&#125;</b> — Enviar Evento a la DIAN</summary>
 
 **Path Params:**
 
-| Param | Tipo | Descripción |
+| Parámetro | Tipo | Descripción |
 |-------|------|-------------|
-| `trackId` | string | Track ID del documento |
+| `trackId` | `string` | Track ID del documento |
 
-**Respuesta exitosa (200):**
+<details>
+<summary>💻 Ver Respuesta Exitosa (200)</summary>
 
 ```json
 {
     "success": true
 }
 ```
+</details>
 
----
+</details>
 
-## 7. Reenviar Correo de Evento
-
-`POST /send/mail/{trackId}`
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/send/mail/&#123;trackId&#125;</b> — Reenviar Correo de Evento</summary>
 
 **Path Params:**
 
-| Param | Tipo | Descripción |
+| Parámetro | Tipo | Descripción |
 |-------|------|-------------|
-| `trackId` | string | Track ID del evento |
+| `trackId` | `string` | Track ID del evento |
 
-**Respuesta exitosa (200):**
+<details>
+<summary>💻 Ver Respuesta Exitosa (200)</summary>
 
 ```json
 {
     "success": true
 }
 ```
+</details>
+
+</details>
 
 ---
 
-## 8. Eliminar Recepción
+## 🗑️ 4. Eliminación
 
-`DELETE /document-receptions/{id}`
+<details>
+<summary><span className="badge badge--danger margin-right--sm">DELETE</span> <b>/document-receptions/&#123;id&#125;</b> — Eliminar Recepción</summary>
 
 **Path Params:**
 
-| Param | Tipo | Descripción |
+| Parámetro | Tipo | Descripción |
 |-------|------|-------------|
-| `id` | int | ID de la recepción |
+| `id` | `int` | ID interno de la recepción |
 
-**Respuesta exitosa (200):**
+> [!CAUTION]
+> No se puede eliminar una recepción si ya tiene eventos con estado `ACCEPTED` o `PROCESSING`.
+
+<details>
+<summary>💻 Ver Respuesta Exitosa (200)</summary>
 
 ```json
 {
@@ -202,5 +233,6 @@ sidebar_label: Eventos RADIAN
     "success": true
 }
 ```
+</details>
 
-> No se puede eliminar si tiene eventos con estado `ACCEPTED` o `PROCESSING`.
+</details>

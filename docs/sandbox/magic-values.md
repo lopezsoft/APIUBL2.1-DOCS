@@ -390,3 +390,15 @@ docs/sandbox/jsons/
 - Los magic values **no contaminan el payload** de la solicitud — son un mecanismo de control lateral vía headers HTTP.
 - El mismo magic value produce la **misma estructura de respuesta** independientemente del tipo de documento.
 - Los errores específicos por tipo (ej. `ERROR_DS_*`, `ERROR_POS_*`, `ERROR_PAYROLL_*`, `ERROR_NC_*`) usan los códigos de regla exactos de sus respectivos Anexos Técnicos.
+
+## Eventos RADIAN (sin magic values)
+
+Los endpoints de eventos RADIAN (`/events/*`) **no usan magic values**. Las llamadas SOAP se simulan automáticamente con `SandboxResponseFactory`:
+
+| Llamada SOAP | Servicio | Respuesta Sandbox |
+|---|---|---|
+| `SendEvent` | `EventDeliveryService::send()` | Evento `ACCEPTED` automáticamente |
+| `GetStatusEvents` | `DocumentReceptionService::getEventStatus()` | Status `ACCEPTED` |
+| `GetXmlByDocumentKey` | `XmlExtractDataService::getXml()` | Invoice UBL 2.1 simulado |
+
+Estos guards se activan automáticamente en el sandbox sin necesidad de enviar headers adicionales.

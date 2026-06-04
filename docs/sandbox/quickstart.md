@@ -204,6 +204,40 @@ Todos los endpoints con consecutivo automático soportan la llamada **`PATCH /{u
 
 Si realizas la solicitud sin especificar cabeceras de simulación de estado, el sandbox validará y devolverá un estado de aceptación `ACCEPTED` automáticamente para cualquier tipo de documento.
 
+### 4.6 Eventos RADIAN (recepción de documentos)
+
+```bash
+# Importar un documento por CUFE/trackId
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/events/import-track-id \
+  -H "Authorization: Bearer {tu_token}" \
+  -H "Content-Type: application/json" \
+  -d '{"trackId": "cufe-del-documento"}'
+
+# Listar recepciones de documentos
+curl -X GET {{SANDBOX_URL}}/api/ubl2.1/events/document-receptions \
+  -H "Authorization: Bearer {tu_token}"
+
+# Enviar evento de acuse de recibo (030)
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/events/send/{trackId} \
+  -H "Authorization: Bearer {tu_token}" \
+  -H "Content-Type: application/json" \
+  -d '{"code": "030", "notes": "Acuse de recibo"}'
+
+# Consultar estado del evento
+curl -X GET {{SANDBOX_URL}}/api/ubl2.1/events/status/{trackId} \
+  -H "Authorization: Bearer {tu_token}"
+
+# Reenviar correo de evento
+curl -X POST {{SANDBOX_URL}}/api/ubl2.1/events/send/mail/{trackId} \
+  -H "Authorization: Bearer {tu_token}"
+
+# Eliminar recepción de documento
+curl -X DELETE {{SANDBOX_URL}}/api/ubl2.1/events/document-receptions/{id} \
+  -H "Authorization: Bearer {tu_token}"
+```
+
+> En sandbox, las llamadas SOAP a la DIAN (`SendEvent`, `GetStatusEvents`, `GetXmlByDocumentKey`) son simuladas mediante `SandboxResponseFactory`. Los eventos se procesan localmente y se marcan como `ACCEPTED` automáticamente.
+
 ---
 
 ## 5. Probar errores
@@ -267,7 +301,21 @@ El sandbox ofrece paridad funcional total con producción. A continuación se li
 | `/auto-increment/pos-credit-notes` | `POST` | Nota Crédito POS auto-incrementable |
 | `/auto-increment/pos-debit-notes` | `POST` | Nota Débito POS auto-incrementable |
 
-### 🛠️ 2. CRUD y Configuración (Misma Lógica de Negocio que Producción)
+### 📥 2. Eventos RADIAN (Recepción y Respuesta DIAN Simulada)
+
+| Endpoint API | Método | Descripción |
+|:---|:---:|:---|
+| `/events/import-track-id` | `POST` | Importar documento por CUFE |
+| `/events/import-excel` | `POST` | Importar desde archivo Excel |
+| `/events/{trackId}/import` | `POST` | Importar por trackId (alternativo) |
+| `/events/document-receptions` | `GET` | Listar recepciones de documentos |
+| `/events/document-receptions/{id}` | `GET` | Eventos por documento |
+| `/events/send/{trackId}` | `POST` | Enviar evento a DIAN (simulado) |
+| `/events/status/{trackId}` | `GET` | Consultar estado del evento |
+| `/events/send/mail/{trackId}` | `POST` | Reenviar correo de evento |
+| `/events/document-receptions/{id}` | `DELETE` | Eliminar recepción |
+
+### 🛠️ 3. CRUD y Configuración (Misma Lógica de Negocio que Producción)
 
 | Familia de Endpoints | Descripción del Comportamiento |
 |:---|:---|
@@ -299,4 +347,4 @@ El sandbox ofrece paridad funcional total con producción. A continuación se li
 
 *   [Magic Values](./magic-values.md) — Lista completa de cabeceras de simulación de errores de la DIAN.
 *   [Test Certificate](./test-cert.md) — Especificaciones del certificado digital de prueba autogenerado.
-*   [Colección Postman](./postman.md) — Importa la colección de 36 peticiones de prueba listas para usar.
+*   [Colección Postman](./postman.md) — Importa la colección de 43 peticiones de prueba listas para usar.

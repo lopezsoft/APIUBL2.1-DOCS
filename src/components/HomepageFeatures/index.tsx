@@ -23,7 +23,7 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/web-inteface.svg').default,
     description: (
       <>
-        <strong>v3.2.0:</strong> Procesa grandes volúmenes con nuestra API Bulk. Gestiona tokens, límites y membresías tú mismo.
+        <strong>v3.3.0:</strong> Procesa grandes volúmenes con la API Bulk, gestiona eventos RADIAN en el Sandbox y administra tokens y membresías tú mismo.
       </>
     ),
   },

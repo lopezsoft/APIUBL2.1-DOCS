@@ -18,12 +18,13 @@ function HomepageHeader() {
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.badges}>
           <span className={styles.badge}>✅ 100% Conforme DIAN</span>
-          <span className={styles.badge}>🚀 v3.2.0</span>
+          <span className={styles.badge}>🚀 v3.3.0</span>
           <span className={styles.badge}>📄 Factura v1.9</span>
         </div>
         <div className={styles.badges} style={{ marginTop: '0.5rem' }}>
           <span className={styles.badge}>🧪 Sandbox (API & Web)</span>
           <span className={styles.badge}>📦 Envíos Masivos (Bulk)</span>
+          <span className={styles.badge}>🔄 Eventos RADIAN</span>
           <span className={styles.badge}>🔔 Webhooks (26 eventos)</span>
         </div>
         <div className={styles.buttons}>

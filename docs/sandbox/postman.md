@@ -1,12 +1,12 @@
 ---
 sidebar_position: 4
 title: Colección Postman
-description: Colección de 36 requests listas para usar y probar la integración en el sandbox.
+description: Colección de 43 requests listas para usar y probar la integración en el sandbox.
 ---
 
 # Colección Postman — MATIAS API Sandbox
 
-Para acelerar la integración técnica y las pruebas de comportamiento en el sandbox, hemos diseñado una **Colección Postman oficial con 36 solicitudes** ya pre-configuradas y organizadas para cubrir tanto el happy path como todos los escenarios de error simulables (Magic Values).
+Para acelerar la integración técnica y las pruebas de comportamiento en el sandbox, hemos diseñado una **Colección Postman oficial con 43 solicitudes** ya pre-configuradas y organizadas para cubrir tanto el happy path como todos los escenarios de error simulables (Magic Values).
 
 ---
 
@@ -30,9 +30,9 @@ Haz clic en el siguiente botón oficial para importar directamente un fork de la
 
 ---
 
-## Estructura de la Colección (36 Requests)
+## Estructura de la Colección (43 Requests)
 
-La colección se encuentra estructurada en **10 carpetas lógicas** para guiarte en el flujo secuencial de desarrollo y pruebas de todos los módulos:
+La colección se encuentra estructurada en **11 carpetas lógicas** para guiarte en el flujo secuencial de desarrollo y pruebas de todos los módulos:
 
 ### 📁 1. Producción (1 request)
 *   `POST /register`: Endpoint oficial de producción para registrar tu cuenta por primera vez. Recuerda que esta cuenta se replica de forma inmediata al sandbox en tiempo real.
@@ -64,6 +64,9 @@ La colección se encuentra estructurada en **10 carpetas lógicas** para guiarte
 
 ### 📁 10. Sandbox — DS No Residente (2 requests)
 *   Emisión de Documentos Soporte y notas de ajuste a proveedores del exterior (No residentes).
+
+### 📁 11. Sandbox — Eventos RADIAN (7 requests)
+*   Pruebas de envío y consulta de acuses (Recibo de factura, Reclamo, Aceptación) simulando respuestas oficiales de la DIAN.
 
 ---
 

@@ -4,6 +4,15 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.0] - 2026-06-04
+
+### Añadido
+* **Simulación RADIAN en Sandbox:** Implementación del patrón `SandboxResponseFactory` para simular las respuestas SOAP de la DIAN en eventos RADIAN (`SendEvent`, `GetStatusEvents`, `GetXmlByDocumentKey`). Ahora el sandbox retorna `ACCEPTED` de forma automática, permitiendo probar la recepción de documentos y envío de acuses sin exponer credenciales de producción.
+* **Colección Postman Actualizada:** Se agregó una nueva carpeta con 7 endpoints exclusivos de RADIAN a la colección oficial del sandbox, incrementando el total de peticiones pre-configuradas a 43.
+* **Rediseño UX Eventos:** Reestructuración completa de la documentación de [Eventos RADIAN](/docs/endpoints/events-radian) incorporando insignias de métodos HTTP (`badges`), acordeones interactivos (`details`) y separación lógica de recursos.
+
+---
+
 ## [3.2.0] - 2026-06-02
 
 ### Añadido

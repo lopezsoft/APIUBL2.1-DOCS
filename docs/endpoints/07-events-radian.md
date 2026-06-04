@@ -3,68 +3,204 @@ sidebar_position: 7
 sidebar_label: Eventos RADIAN
 ---
 
-# 🔄 Eventos DIAN y RADIAN
+# API de Eventos de Documentos
 
-> ✅ **Autenticación REQUERIDA**
-> Incluir en todos: `Authorization: Bearer {token}`
-
-Estos endpoints permiten gestionar el ciclo completo de acuses y eventos sobre las facturas electrónicas a crédito (RADIAN).
-
-## 1. Importación y Sincronización
-
-Estos endpoints son utilizados para importar los documentos desde la DIAN hacia la API y poder generar los eventos de acuse.
-
-### Importar por Excel - 🟘 POST
-```http
-POST {{url}}/events/import-excel
-```
-Importa el listado descargado desde el portal de facturación de la DIAN (formato Excel, máximo 100 registros). 
-**Campos requeridos:** Tipo de documento, trackId, Folio, Prefijo, Fecha Emisión, Fecha Recepción, NIT Emisor, Nombre Emisor, NIT Receptor, Nombre Receptor, IVA, ICA, IPC, Total, Estado, Grupo.
-
-### Importar por trackId (CUDE) - 🟘 POST
-```http
-POST {{url}}/events/import-track-id
-```
-
-### Importar Directo desde evento (trackId en URL) - 🟘 POST
-```http
-POST {{url}}/events/{trackId}/import
-```
+**Base URL:** `/api/ubl2.1/events`
+**Autenticación:** Bearer Token en todos los endpoints.
 
 ---
 
-## 2. Generación de Acuses (Eventos)
+## 1. Importar desde Excel
 
-### Enviar Evento (Acuse) - 🟘 POST
-```http
-POST {{url}}/events/send/{trackId}
-```
-**Body (JSON):**
+`POST /import-excel`
+
+**Content-Type:** `application/json`
+
+**Body:**
+
+| Campo | Tipo | Requerido | Descripción |
+|-------|------|-----------|-------------|
+| `document_base64` | string | Sí | Archivo Excel (.xlsx/.xls) codificado en base64 |
+
+> ⚠️ El envío de archivos binarios (`multipart/form-data`) ya no es soportado. El archivo debe enviarse como string base64.
+
+**Respuesta exitosa (200):**
+
 ```json
 {
-  "code": "Código del evento",
-  "notes": "Notas justificativas"
+    "message": "Importación procesada.",
+    "total_rows": 18,
+    "queued": 6,
+    "skipped": 12,
+    "errors": [],
+    "success": true
 }
 ```
 
-**Códigos de Eventos Comunes:**
-- `030`: Acuso recibido de factura.
-- `031`: Reclamo de factura.
-- `032`: Recibo del bien y/o prestación del servicio.
-- `033`: Aceptación expresa.
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `total_rows` | int | Total de filas leídas del Excel |
+| `queued` | int | Documentos encolados para procesamiento |
+| `skipped` | int | Documentos omitidos (duplicados, filtros) |
+| `errors` | array | Detalle de errores por fila |
 
 ---
 
-## 3. Consultas
+## 2. Importar por Track ID
 
-### Mostrar Recepciones de Documentos (Eventos Generados) - 🟢 GET
-```http
-GET {{url}}/events/document-receptions?startDate=&endDate=&trackId=&query&limit=20
-```
-Muestra el histórico y listado de los eventos enviados. Filtros por fechas y trackId.
+`POST /import-track-id`
 
-### Estado del Evento en DIAN - 🟢 GET
-```http
-GET {{url}}/events/status/{trackId}
+**Body:**
+
+| Campo | Tipo | Requerido | Descripción |
+|-------|------|-----------|-------------|
+| `trackId` | string | Sí | CUFE o CUDE del documento |
+
+**Respuesta exitosa (200):**
+
+```json
+{
+    "message": "Documento encolado para procesamiento.",
+    "id": 42,
+    "success": true
+}
 ```
-Obtiene el documento en la DIAN y el detalle de sus eventos generados, verificando la validez del acuse.
+
+**Ruta alternativa:** `POST /{trackId}/import` — Misma funcionalidad, el trackId va en la URL.
+
+---
+
+## 3. Listar Recepciones
+
+`GET /document-receptions`
+
+**Query Params:**
+
+| Param | Tipo | Default | Descripción |
+|-------|------|---------|-------------|
+| `query` | string | — | Buscar por nombre o NIT del emisor |
+| `startDate` | string | — | Fecha inicio |
+| `endDate` | string | — | Fecha fin |
+| `trackId` | string | — | Buscar por CUFE/CUDE exacto |
+| `limit` | int | 20 | Registros por página (máx. 50) |
+
+**Respuesta exitosa (200):**
+
+```json
+{
+    "dataRecords": {
+        "current_page": 1,
+        "data": [ ... ],
+        "total": 18
+    },
+    "success": true
+}
+```
+
+---
+
+## 4. Detalle de Recepción con Eventos
+
+`GET /document-receptions/{documentId}`
+
+**Path Params:**
+
+| Param | Tipo | Descripción |
+|-------|------|-------------|
+| `documentId` | int | ID de la recepción |
+
+**Respuesta exitosa (200):**
+
+```json
+{
+    "dataRecords": {
+        "data": [ ... ]
+    },
+    "success": true
+}
+```
+
+---
+
+## 5. Consultar Estado de Evento
+
+`GET /status/{trackId}`
+
+**Path Params:**
+
+| Param | Tipo | Descripción |
+|-------|------|-------------|
+| `trackId` | string | Track ID del evento |
+
+**Respuesta exitosa (200):**
+
+```json
+{
+    "message": "Consulta generada con éxito",
+    "ResponseDian": { ... },
+    "success": true
+}
+```
+
+---
+
+## 6. Enviar Evento a la DIAN
+
+`POST /send/{trackId}`
+
+**Path Params:**
+
+| Param | Tipo | Descripción |
+|-------|------|-------------|
+| `trackId` | string | Track ID del documento |
+
+**Respuesta exitosa (200):**
+
+```json
+{
+    "success": true
+}
+```
+
+---
+
+## 7. Reenviar Correo de Evento
+
+`POST /send/mail/{trackId}`
+
+**Path Params:**
+
+| Param | Tipo | Descripción |
+|-------|------|-------------|
+| `trackId` | string | Track ID del evento |
+
+**Respuesta exitosa (200):**
+
+```json
+{
+    "success": true
+}
+```
+
+---
+
+## 8. Eliminar Recepción
+
+`DELETE /document-receptions/{id}`
+
+**Path Params:**
+
+| Param | Tipo | Descripción |
+|-------|------|-------------|
+| `id` | int | ID de la recepción |
+
+**Respuesta exitosa (200):**
+
+```json
+{
+    "message": "Recepción de documento eliminada exitosamente.",
+    "success": true
+}
+```
+
+> No se puede eliminar si tiene eventos con estado `ACCEPTED` o `PROCESSING`.

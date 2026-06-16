@@ -78,17 +78,6 @@ GET {{url}}/dv/{nit}
 ```
 Obtiene el dígito de verificación para un número de identificación (NIT/RUT).
 
-### Intercambio de Correos - 🟢 GET
-```http
-GET {{url}}/exchange-emails
-```
-Obtiene la lista de correos registrados para recepción en la plataforma.
-
-### Rango de Numeración - 🟢 GET
-```http
-GET {{url}}/numbering-range
-```
-Obtiene las resoluciones y rangos de numeración activos de facturación.
 
 ### Números a Letras - 🟢 GET
 ```http

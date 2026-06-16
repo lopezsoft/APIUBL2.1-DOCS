@@ -100,3 +100,19 @@ Permite enviar por primera vez (con base64 adjuntos) o reenviar un documento ya 
 GET {{url}}/acquirer?identificationType=13&identificationNumber=1063279303
 ```
 Retorna información asociada (como correos) de un Adquirente registrado previamente en las facturas.
+
+### Intercambio de Correos - 🟢 GET
+```http
+GET {{url}}/exchange-emails
+```
+Obtiene la lista de correos registrados para recepción en la plataforma.
+
+---
+
+## Configuraciones
+
+### Rango de Numeración - 🟢 GET
+```http
+GET {{url}}/numbering-range
+```
+Obtiene las resoluciones y rangos de numeración activos de facturación.

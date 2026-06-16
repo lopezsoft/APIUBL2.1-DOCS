@@ -12,7 +12,7 @@ Guía rápida para integrar con el sandbox de MATIAS API en 5 minutos. El sandbo
 
 :::info Enlaces Oficiales del Sandbox
 El entorno de pruebas cuenta con los siguientes puntos de acceso oficiales:
-- **API:** **`https://sandbox-api.matias-api.com`** (reemplaza `{{SANDBOX_URL}}` en tus peticiones).
+- **API imperativo:** **`https://sandbox-api.matias-api.com/api/ubl2.1`** (reemplaza `{{SANDBOX_URL}}` en tus peticiones).
 - **Frontend Web:** **`https://sandbox-auth.matias-api.com/`** (portal de administración visual del sandbox).
 :::
 
@@ -72,7 +72,7 @@ curl -X POST {{SANDBOX_URL}}/auth/login \
 Genera tu token de acceso de larga duración para realizar pruebas de integración de forma segura:
 
 ```bash
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auth/token \
+curl -X POST {{SANDBOX_URL}}/auth/token \
   -H "Authorization: Bearer {access_token}" \
   -H "Content-Type: application/json" \
   -d '{"name": "Mi Token de Prueba"}'
@@ -91,7 +91,7 @@ El sandbox soporta **todos los tipos de documento** de la API de producción. A 
 ### 4.1 Factura electrónica
 
 ```bash
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/invoice \
+curl -X POST {{SANDBOX_URL}}/invoice \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @tu-factura.json
@@ -101,13 +101,13 @@ curl -X POST {{SANDBOX_URL}}/api/ubl2.1/invoice \
 
 ```bash
 # Enviar Nota Crédito
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/notes/credit \
+curl -X POST {{SANDBOX_URL}}/notes/credit \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nota-credito.json
 
 # Enviar Nota Débito
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/notes/debit \
+curl -X POST {{SANDBOX_URL}}/notes/debit \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nota-debito.json
@@ -117,13 +117,13 @@ curl -X POST {{SANDBOX_URL}}/api/ubl2.1/notes/debit \
 
 ```bash
 # Enviar Documento Soporte
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ds/document \
+curl -X POST {{SANDBOX_URL}}/ds/document \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @documento-soporte.json
 
 # Enviar Nota de Ajuste al Documento Soporte
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ds/adjustment-note \
+curl -X POST {{SANDBOX_URL}}/ds/adjustment-note \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nota-ajuste-ds.json
@@ -133,19 +133,19 @@ curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ds/adjustment-note \
 
 ```bash
 # Enviar Nómina Individual
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ep/payroll \
+curl -X POST {{SANDBOX_URL}}/ep/payroll \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nomina.json
 
 # Enviar Reemplazo de Nómina
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ep/payroll/replace \
+curl -X POST {{SANDBOX_URL}}/ep/payroll/replace \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nomina-replace.json
 
 # Enviar Eliminación de Nómina
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ep/payroll/delete \
+curl -X POST {{SANDBOX_URL}}/ep/payroll/delete \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @nomina-delete.json
@@ -157,43 +157,43 @@ Todos los endpoints de auto-incremento de numeración también operan y responde
 
 ```bash
 # Factura con consecutivo automático
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/invoices \
+curl -X POST {{SANDBOX_URL}}/auto-increment/invoices \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d @factura-auto.json
 
 # Nota Crédito con consecutivo automático
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/credit-notes \
+curl -X POST {{SANDBOX_URL}}/auto-increment/credit-notes \
   -H "Authorization: Bearer {tu_token}" \
   -d @nc-auto.json
 
 # Nota Débito con consecutivo automático
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/debit-notes \
+curl -X POST {{SANDBOX_URL}}/auto-increment/debit-notes \
   -H "Authorization: Bearer {tu_token}" \
   -d @nd-auto.json
 
 # Documento Soporte con consecutivo automático
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/support-documents \
+curl -X POST {{SANDBOX_URL}}/auto-increment/support-documents \
   -H "Authorization: Bearer {tu_token}" \
   -d @ds-auto.json
 
 # Nota de Ajuste con consecutivo automático
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/adjustment-notes \
+curl -X POST {{SANDBOX_URL}}/auto-increment/adjustment-notes \
   -H "Authorization: Bearer {tu_token}" \
   -d @ajuste-auto.json
 
 # Documento POS con consecutivo automático
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/pos-documents \
+curl -X POST {{SANDBOX_URL}}/auto-increment/pos-documents \
   -H "Authorization: Bearer {tu_token}" \
   -d @pos-auto.json
 
 # Nota Crédito POS con consecutivo automático
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/pos-credit-notes \
+curl -X POST {{SANDBOX_URL}}/auto-increment/pos-credit-notes \
   -H "Authorization: Bearer {tu_token}" \
   -d @pos-nc-auto.json
 
 # Nota Débito POS con consecutivo automático
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/auto-increment/pos-debit-notes \
+curl -X POST {{SANDBOX_URL}}/auto-increment/pos-debit-notes \
   -H "Authorization: Bearer {tu_token}" \
   -d @pos-nd-auto.json
 ```
@@ -208,31 +208,31 @@ Si realizas la solicitud sin especificar cabeceras de simulación de estado, el 
 
 ```bash
 # Importar un documento por CUFE/trackId
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/events/import-track-id \
+curl -X POST {{SANDBOX_URL}}/events/import-track-id \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d '{"trackId": "cufe-del-documento"}'
 
 # Listar recepciones de documentos
-curl -X GET {{SANDBOX_URL}}/api/ubl2.1/events/document-receptions \
+curl -X GET {{SANDBOX_URL}}/events/document-receptions \
   -H "Authorization: Bearer {tu_token}"
 
 # Enviar evento de acuse de recibo (030)
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/events/send/{trackId} \
+curl -X POST {{SANDBOX_URL}}/events/send/{trackId} \
   -H "Authorization: Bearer {tu_token}" \
   -H "Content-Type: application/json" \
   -d '{"code": "030", "notes": "Acuse de recibo"}'
 
 # Consultar estado del evento
-curl -X GET {{SANDBOX_URL}}/api/ubl2.1/events/status/{trackId} \
+curl -X GET {{SANDBOX_URL}}/events/status/{trackId} \
   -H "Authorization: Bearer {tu_token}"
 
 # Reenviar correo de evento
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/events/send/mail/{trackId} \
+curl -X POST {{SANDBOX_URL}}/events/send/mail/{trackId} \
   -H "Authorization: Bearer {tu_token}"
 
 # Eliminar recepción de documento
-curl -X DELETE {{SANDBOX_URL}}/api/ubl2.1/events/document-receptions/{id} \
+curl -X DELETE {{SANDBOX_URL}}/events/document-receptions/{id} \
   -H "Authorization: Bearer {tu_token}"
 ```
 
@@ -246,13 +246,13 @@ El sandbox te permite forzar escenarios de error en **cualquier** endpoint de do
 
 ```bash
 # Simular documento rechazado por validaciones de negocio (en /invoice, /notes/credit, etc.)
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/invoice \
+curl -X POST {{SANDBOX_URL}}/invoice \
   -H "Authorization: Bearer {tu_token}" \
   -H "X-Sandbox-Force-Status: ERROR_REJECTED" \
   -d @tu-factura.json
 
 # Simular timeout de conexión con la DIAN en el módulo de Nómina
-curl -X POST {{SANDBOX_URL}}/api/ubl2.1/ep/payroll \
+curl -X POST {{SANDBOX_URL}}/ep/payroll \
   -H "Authorization: Bearer {tu_token}" \
   -H "X-Sandbox-Force-Status: ERROR_TIMEOUT" \
   -d @nomina.json

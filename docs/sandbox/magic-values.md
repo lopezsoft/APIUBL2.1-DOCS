@@ -10,7 +10,7 @@ description: 32 valores de simulación para probar diferentes respuestas de la D
 
 :::info Enlaces Oficiales del Sandbox
 El entorno de pruebas cuenta con los siguientes puntos de acceso oficiales:
-- **API:** **`https://sandbox-api.matias-api.com`** (reemplaza `{{SANDBOX_URL}}` en tus peticiones).
+- **API imperativo:** **`https://sandbox-api.matias-api.com/api/ubl2.1`** (reemplaza `{{SANDBOX_URL}}` en tus peticiones).
 - **Frontend Web:** **`https://sandbox-auth.matias-api.com/`** (portal de administración visual del sandbox).
 :::
 
@@ -39,28 +39,28 @@ Envía el header `X-Sandbox-Force-Status` en **cualquier** request de generació
 
 ```bash
 # Ejemplo: forzar rechazo en una factura
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/invoice \
+curl -X POST {{SANDBOX_URL}}/invoice \
   -H "Authorization: Bearer {token}" \
   -H "X-Sandbox-Force-Status: ERROR_REJECTED" \
   -H "Content-Type: application/json" \
   -d @invoice.json
 
 # Ejemplo: forzar error CUDE en POS electrónico
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/pos-documents \
+curl -X POST {{SANDBOX_URL}}/auto-increment/pos-documents \
   -H "Authorization: Bearer {token}" \
   -H "X-Sandbox-Force-Status: ERROR_POS_CUDE_INVALID" \
   -H "Content-Type: application/json" \
   -d @pos.json
 
 # Ejemplo: forzar impuesto no permitido en Documento Soporte
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ds/document \
+curl -X POST {{SANDBOX_URL}}/ds/document \
   -H "Authorization: Bearer {token}" \
   -H "X-Sandbox-Force-Status: ERROR_DS_TAX_INVALID" \
   -H "Content-Type: application/json" \
   -d @ds.json
 
 # Ejemplo: forzar CUNE inválido en Nómina Electrónica
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll \
+curl -X POST {{SANDBOX_URL}}/ep/payroll \
   -H "Authorization: Bearer {token}" \
   -H "X-Sandbox-Force-Status: ERROR_PAYROLL_CUNE_INVALID" \
   -H "Content-Type: application/json" \
@@ -187,28 +187,28 @@ Envía el header `X-Sandbox-Force-Status` en **cualquier** request de generació
 
 ```bash
 # Ejemplo: forzar rechazo en una factura
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/invoice \
+curl -X POST {{SANDBOX_URL}}/invoice \
   -H "Authorization: Bearer {token}" \
   -H "X-Sandbox-Force-Status: ERROR_REJECTED" \
   -H "Content-Type: application/json" \
   -d @invoice.json
 
 # Ejemplo: forzar error CUDE en POS electrónico
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/pos-documents \
+curl -X POST {{SANDBOX_URL}}/auto-increment/pos-documents \
   -H "Authorization: Bearer {token}" \
   -H "X-Sandbox-Force-Status: ERROR_POS_CUDE_INVALID" \
   -H "Content-Type: application/json" \
   -d @pos.json
 
 # Ejemplo: forzar impuesto no permitido en Documento Soporte
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ds/document \
+curl -X POST {{SANDBOX_URL}}/ds/document \
   -H "Authorization: Bearer {token}" \
   -H "X-Sandbox-Force-Status: ERROR_DS_TAX_INVALID" \
   -H "Content-Type: application/json" \
   -d @ds.json
 
 # Ejemplo: forzar CUNE inválido en Nómina Electrónica
-curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/ep/payroll \
+curl -X POST {{SANDBOX_URL}}/ep/payroll \
   -H "Authorization: Bearer {token}" \
   -H "X-Sandbox-Force-Status: ERROR_PAYROLL_CUNE_INVALID" \
   -H "Content-Type: application/json" \

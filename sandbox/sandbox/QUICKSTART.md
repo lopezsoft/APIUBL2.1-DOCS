@@ -170,6 +170,40 @@ curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/auto-increment/pos-de
 
 Sin header `X-Sandbox-Force-Status`, todos devuelven `ACCEPTED` automaticamente.
 
+### 4.6 Eventos RADIAN (recepcion de documentos)
+
+```bash
+# Importar un documento por CUFE/trackId
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/events/import-track-id \
+  -H "Authorization: Bearer {tu_token}" \
+  -H "Content-Type: application/json" \
+  -d '{"trackId": "cufe-del-documento"}'
+
+# Listar recepciones de documentos
+curl -X GET https://sandbox-api.matias-api.com/api/ubl2.1/events/document-receptions \
+  -H "Authorization: Bearer {tu_token}"
+
+# Enviar evento de acuse de recibo (030)
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/events/send/{trackId} \
+  -H "Authorization: Bearer {tu_token}" \
+  -H "Content-Type: application/json" \
+  -d '{"code": "030", "notes": "Acuse de recibo"}'
+
+# Consultar estado del evento
+curl -X GET https://sandbox-api.matias-api.com/api/ubl2.1/events/status/{trackId} \
+  -H "Authorization: Bearer {tu_token}"
+
+# Reenviar correo de evento
+curl -X POST https://sandbox-api.matias-api.com/api/ubl2.1/events/send/mail/{trackId} \
+  -H "Authorization: Bearer {tu_token}"
+
+# Eliminar recepcion de documento
+curl -X DELETE https://sandbox-api.matias-api.com/api/ubl2.1/events/document-receptions/{id} \
+  -H "Authorization: Bearer {tu_token}"
+```
+
+> En sandbox, las llamadas SOAP a la DIAN (`SendEvent`, `GetStatusEvents`, `GetXmlByDocumentKey`) son simuladas. Los eventos se procesan localmente y se marcan como ACCEPTED.
+
 ## 5. Probar errores
 
 Simula diferentes respuestas de la DIAN con el header `X-Sandbox-Force-Status`. Funciona en **cualquier** endpoint de documentos (factura, notas, DS, nomina, auto-increment):
@@ -220,6 +254,20 @@ X-MATIAS-Environment: sandbox
 | `/auto-increment/pos-documents` | POST | POS auto-incremento |
 | `/auto-increment/pos-credit-notes` | POST | Nota Credito POS auto-incremento |
 | `/auto-increment/pos-debit-notes` | POST | Nota Debito POS auto-incremento |
+
+### Eventos RADIAN (recepcion de documentos, respuesta DIAN simulada)
+
+| Endpoint | Metodo | Descripcion |
+|---|---|---|
+| `/events/import-track-id` | POST | Importar documento por CUFE |
+| `/events/import-excel` | POST | Importar desde archivo Excel |
+| `/events/{trackId}/import` | POST | Importar por trackId (alternativo) |
+| `/events/document-receptions` | GET | Listar recepciones de documentos |
+| `/events/document-receptions/{id}` | GET | Eventos por documento |
+| `/events/send/{trackId}` | POST | Enviar evento a DIAN (simulado) |
+| `/events/status/{trackId}` | GET | Consultar estado del evento |
+| `/events/send/mail/{trackId}` | POST | Reenviar correo de evento |
+| `/events/document-receptions/{id}` | DELETE | Eliminar recepcion |
 
 ### CRUD y configuracion (misma logica que produccion)
 

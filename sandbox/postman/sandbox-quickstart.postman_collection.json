@@ -2422,6 +2422,318 @@
                     ]
                 }
             ]
+        },
+        {
+            "name": "11. Eventos RADIAN",
+            "item": [
+                {
+                    "name": "11.1 Importar documento por TrackId",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{pat_token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"trackId\": \"{{trackId}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/events/import-track-id",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "events",
+                                "import-track-id"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.expect(pm.response.code).to.equal(200);",
+                                    "});",
+                                    "var json = pm.response.json();",
+                                    "if (json.id) {",
+                                    "    pm.collectionVariables.set('event_document_id', json.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "11.2 Listar recepciones de documentos",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{pat_token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{sandbox_url}}/events/document-receptions",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "events",
+                                "document-receptions"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.expect(pm.response.code).to.equal(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "11.3 Obtener eventos por documento",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{pat_token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{sandbox_url}}/events/document-receptions/{{event_document_id}}",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "events",
+                                "document-receptions",
+                                "{{event_document_id}}"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.expect(pm.response.code).to.equal(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "11.4 Enviar evento RADIAN (030 — Acuse de Recibo)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{pat_token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"code\": \"030\",\n    \"notes\": \"Acuse de recibo del documento en sandbox\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{sandbox_url}}/events/send/{{trackId}}",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "events",
+                                "send",
+                                "{{trackId}}"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.expect(pm.response.code).to.equal(200);",
+                                    "});",
+                                    "pm.test('Response has data', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.have.property('data');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "11.5 Consultar estado del evento",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{pat_token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{sandbox_url}}/events/status/{{trackId}}",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "events",
+                                "status",
+                                "{{trackId}}"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.expect(pm.response.code).to.equal(200);",
+                                    "});",
+                                    "pm.test('Response has DIAN result', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.have.property('ResponseDian');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "11.6 Reenviar correo de evento",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{pat_token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{sandbox_url}}/events/send/mail/{{trackId}}",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "events",
+                                "send",
+                                "mail",
+                                "{{trackId}}"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.expect(pm.response.code).to.equal(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "11.7 Eliminar recepción de documento",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{pat_token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{sandbox_url}}/events/document-receptions/{{event_document_id}}",
+                            "host": [
+                                "{{sandbox_url}}"
+                            ],
+                            "path": [
+                                "events",
+                                "document-receptions",
+                                "{{event_document_id}}"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.expect(pm.response.code).to.equal(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

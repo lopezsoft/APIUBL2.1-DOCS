@@ -65,6 +65,8 @@ El Test Cert se usa para firmar **todos** los tipos de documento electrónico en
 | DS auto-increment | `POST /auto-increment/support-documents` |
 | Ajuste auto-increment | `POST /auto-increment/adjustment-notes` |
 | POS auto-increment | `POST /auto-increment/pos-documents` |
+| Evento RADIAN (envío) | `POST /events/send/{trackId}` |
+| Evento RADIAN (import) | `POST /events/import-track-id` |
 
 ## Red de seguridad
 
@@ -78,7 +80,7 @@ El `CertificateFingerprintGuard` previene que un Test Cert se use en producción
 La CA de prueba está disponible para descarga:
 
 ```
-{{SANDBOX_URL}}/pki/test-ca.crt
+https://sandbox-api.matias-api.com/pki/test-ca.crt
 ```
 
 Puedes añadirla a tu truststore local para validar firmas del sandbox.

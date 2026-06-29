@@ -4,6 +4,19 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.0] - 2026-06-29
+
+### Añadido
+* **Swagger API Integrado:** Se integró la visualización de la especificación oficial OpenAPI (`api-docs.json`) mediante `redocusaurus` directamente en la ruta `/api-docs/` de la documentación.
+* **Nuevos Endpoints Modulares:** Se documentaron exhaustivamente 10 nuevas categorías modulares de endpoints extraídos de la especificación oficial:
+  * Empresa, Perfil de Usuario, Resoluciones DIAN, Software DIAN, Plantillas, Configuración de Reportes, Funciones Auxiliares, Pagos Wompi, Registros de Email y Envío Masivo (Bulk).
+
+### Modificado
+* **Limpieza de Endpoints Privados:** Se eliminaron 20 endpoints administrativos internos (`/admin`, analíticas de membresías, cupones) del `api-docs.json` público para evitar confusiones a integradores externos.
+* **Redirecciones Base URL:** Se estandarizó el uso de las variables `{{url}}` y `{{SANDBOX_URL}}` en todas las nuevas rutas.
+
+---
+
 ## [3.3.0] - 2026-06-04
 
 ### Añadido

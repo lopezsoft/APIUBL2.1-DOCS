@@ -60,6 +60,20 @@ const config: Config = {
         },
       } satisfies Preset.Options,
     ],
+    [
+      'redocusaurus',
+      {
+        specs: [
+          {
+            spec: 'DOCUMENTACION/api-docs.json',
+            route: '/api-docs/',
+          },
+        ],
+        theme: {
+          primaryColor: '#0066cc',
+        },
+      },
+    ],
   ],
 
   themeConfig: {
@@ -78,6 +92,7 @@ const config: Config = {
           position: 'left',
           label: 'Integración',
         },
+        { to: '/api-docs', label: 'Swagger API', position: 'left' },
         { to: '/blog', label: 'Blog', position: 'left' },
         {
           href: 'https://github.com/lopezsoft',

@@ -15,17 +15,25 @@ Con Matias, los desarrolladores pueden integrar la funcionalidad de facturación
 
 ## 🌐 URL Base de la API {#url-base-de-la-api}
 
-:::warning Acceso Exclusivo para Clientes
-La URL base de la API (`{{URL}}`) y el acceso al entorno sandbox **son proporcionados únicamente a clientes que adquieran nuestro servicio**. 
+:::info 🚀 Acceso a la Plataforma
 
-**No ofrecemos:**
-- ❌ Cuentas gratuitas
-- ❌ Acceso de demostración sin contrato
+**Sandbox (Gratuito - Sin Contrato):**
+- ✅ Acceso completamente **GRATUITO**
+- ✅ Sin necesidad de contrato
+- ✅ Perfecto para pruebas y desarrollo
+- ✅ Mismos endpoints que producción
+- ✅ Datos de prueba disponibles
+- ✅ Crear cuenta en: `https://sandbox-auth.matias-api.com/`
 
-**Ofrecemos:**
-- ✅ Sandbox de pruebas (API y Frontend Web) incluido para clientes — ver [documentación del sandbox](/docs/sandbox/quickstart)
+**Producción (Requiere Contrato):**
+- ✅ Acceso exclusivo para clientes con servicio activo
+- ✅ URL base de producción proporcionada al contratar
+- ✅ Credenciales obtenidas al registrarse en el ambiente de producción
+- ✅ Emisión de documentos reales ante DIAN
+- ✅ Soporte técnico especializado incluido
+- ✅ Certificado digital y resoluciones DIAN requeridas
 
-La URL base y las credenciales de acceso a producción se entregarán una vez formalizada la contratación del servicio.
+[📖 Ver documentación completa del Sandbox](/docs/sandbox/quickstart)
 :::
 
 En toda la documentación, utilizaremos el parámetro `{{URL}}` como marcador de posición para la URL base de producción, la cual le será proporcionada al contratar el servicio. De manera similar, usaremos `{{SANDBOX_URL}}` para referirnos al entorno de pruebas.
@@ -38,10 +46,55 @@ https://api.ejemplo.com (Ejemplo ilustrativo)
 ```
 
 **Sandbox (`{{SANDBOX_URL}}`)**:
-- **API:** `https://sandbox-api.matias-api.com`
+- **API:** `https://sandbox-api.matias-api.com/api/ubl2.1`
 - **Frontend Web:** `https://sandbox-auth.matias-api.com/`
+:::
 
-*Recuerde utilizar las mismas credenciales de producción para acceder al portal del Sandbox.*
+### ⚠️ Cuentas Separadas: Producción vs Sandbox {#cuentas-separadas-prod-sandbox}
+
+:::warning IMPORTANTE: Credenciales Diferentes para Cada Entorno
+
+**Las credenciales de Producción NO funcionan automáticamente en Sandbox.**
+
+Debes crear **DOS CUENTAS DIFERENTES** — una para cada entorno:
+
+#### 1️⃣ Cuenta de Producción
+- **URL Base:** `{{URL}}`
+- **Portal Web:** `{{URL}}/#/auth/login`
+- **Propósito:** Emitir documentos reales ante la DIAN
+- **Requisitos:** Certificado digital, información del software DIAN, resolución de facturación
+
+#### 2️⃣ Cuenta de Sandbox (Pruebas)
+- **URL API:** `https://sandbox-api.matias-api.com`
+- **Portal Web:** `https://sandbox-auth.matias-api.com/`
+- **Propósito:** Probar tu integración sin enviar documentos a la DIAN
+- **Requisitos:** Crear una cuenta separada en el portal de sandbox
+- **Datos de Prueba:** Disponibles para testing sin restricciones
+
+#### 📋 Flujo Recomendado
+
+1. **Crea tu cuenta en Producción** → Obtienes credenciales de prod
+2. **Crea una cuenta separada en Sandbox** → Obtienes credenciales de sandbox
+3. **Prueba tu integración en Sandbox** → Usa credenciales de sandbox
+4. **Valida todo funciona correctamente** → Luego usa credenciales de prod en tu app final
+
+#### 🔄 Cambiar entre Entornos
+
+Para cambiar de Sandbox a Producción (o viceversa), simplemente:
+- Cambia la URL base en tu código
+- Usa las credenciales correspondientes al entorno
+
+**Ejemplo:**
+```javascript
+// Sandbox
+const SANDBOX_URL = 'https://sandbox-api.matias-api.com';
+const SANDBOX_TOKEN = 'token_de_sandbox_aqui';
+
+// Producción
+const PROD_URL = '{{URL}}';
+const PROD_TOKEN = 'token_de_produccion_aqui';
+```
+
 :::
 
 ### ⚠️ Requisitos Previos Obligatorios {#nota-importante}

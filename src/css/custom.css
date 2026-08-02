@@ -29,3 +29,347 @@
   --ifm-color-primary-lightest: #7a96d2; /* El más claro, basado en primary */
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3); /* Ajustado para el tema oscuro */
 }
+
+/* ============================================
+   REDOCUSAURUS - MEJORAS DE UI/UX
+   ============================================ */
+
+/* Estilos para el contenedor principal de Redoc */
+.redocusaurus-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Mejora del sidebar de Redoc */
+.redoc-sidebar {
+  background-color: #ffffff;
+  border-right: 1px solid #e0e6ed;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Estilos para los grupos de tags (x-tagGroups) */
+.redoc-sidebar-section {
+  margin-bottom: 24px;
+  padding: 0 16px;
+}
+
+.redoc-sidebar-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #3c6ab2;
+  margin-bottom: 12px;
+  padding-top: 16px;
+  border-top: 2px solid #e8f0ff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Items dentro de cada grupo */
+.redoc-sidebar-item {
+  padding: 8px 12px;
+  margin-bottom: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  color: #333333;
+}
+
+.redoc-sidebar-item:hover {
+  background-color: #f0f4f8;
+  color: #3c6ab2;
+  padding-left: 16px;
+}
+
+.redoc-sidebar-item.active {
+  background-color: #e8f0ff;
+  color: #3c6ab2;
+  font-weight: 600;
+  border-left: 3px solid #3c6ab2;
+  padding-left: 9px;
+}
+
+/* Mejora de la tipografía en el panel derecho */
+.redoc-right-panel {
+  background-color: #ffffff;
+}
+
+.redoc-right-panel h1,
+.redoc-right-panel h2,
+.redoc-right-panel h3 {
+  color: #1a3d82;
+  font-weight: 600;
+  margin-top: 24px;
+  margin-bottom: 12px;
+}
+
+.redoc-right-panel h1 {
+  font-size: 28px;
+  border-bottom: 2px solid #e8f0ff;
+  padding-bottom: 12px;
+}
+
+.redoc-right-panel h2 {
+  font-size: 20px;
+}
+
+.redoc-right-panel h3 {
+  font-size: 16px;
+}
+
+/* Mejora de los bloques de código */
+.redoc-code-block {
+  background-color: #f5f7fa;
+  border: 1px solid #e0e6ed;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-x: auto;
+}
+
+.redoc-code-block code {
+  color: #333333;
+  font-family: 'Courier New', monospace;
+}
+
+/* Mejora de las tablas de parámetros */
+.redoc-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 16px 0;
+}
+
+.redoc-table th {
+  background-color: #e8f0ff;
+  color: #1a3d82;
+  font-weight: 600;
+  padding: 12px;
+  text-align: left;
+  border-bottom: 2px solid #3c6ab2;
+}
+
+.redoc-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e0e6ed;
+}
+
+.redoc-table tr:hover {
+  background-color: #f5f7fa;
+}
+
+/* Mejora de los badges de método HTTP */
+.redoc-method-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.redoc-method-badge.get {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.redoc-method-badge.post {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.redoc-method-badge.put {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.redoc-method-badge.delete {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.redoc-method-badge.patch {
+  background-color: #e0f2f1;
+  color: #00695c;
+}
+
+/* Mejora de los enlaces */
+.redoc-link {
+  color: #3c6ab2;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.redoc-link:hover {
+  color: #2556a3;
+  text-decoration: underline;
+}
+
+/* Mejora de la búsqueda */
+.redoc-search-input {
+  border: 1px solid #e0e6ed;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.redoc-search-input:focus {
+  border-color: #3c6ab2;
+  box-shadow: 0 0 0 3px rgba(60, 106, 178, 0.1);
+  outline: none;
+}
+
+/* Mejora de los botones */
+.redoc-button {
+  background-color: #3c6ab2;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.redoc-button:hover {
+  background-color: #2556a3;
+  box-shadow: 0 4px 12px rgba(60, 106, 178, 0.3);
+}
+
+.redoc-button:active {
+  background-color: #1a3d82;
+}
+
+/* Mejora de las respuestas de éxito */
+.redoc-response-success {
+  border-left: 4px solid #4caf50;
+  background-color: #f1f8f4;
+  padding: 12px;
+  border-radius: 4px;
+  margin: 12px 0;
+}
+
+/* Mejora de las respuestas de error */
+.redoc-response-error {
+  border-left: 4px solid #f44336;
+  background-color: #fef5f5;
+  padding: 12px;
+  border-radius: 4px;
+  margin: 12px 0;
+}
+
+/* Mejora de las respuestas de advertencia */
+.redoc-response-warning {
+  border-left: 4px solid #ff9800;
+  background-color: #fff8f0;
+  padding: 12px;
+  border-radius: 4px;
+  margin: 12px 0;
+}
+
+/* Responsive - Mejoras para móvil */
+@media (max-width: 768px) {
+  .redoc-sidebar {
+    width: 100% !important;
+    max-width: 100%;
+  }
+
+  .redoc-sidebar-section-title {
+    font-size: 11px;
+    padding-top: 12px;
+  }
+
+  .redoc-sidebar-item {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .redoc-right-panel h1 {
+    font-size: 24px;
+  }
+
+  .redoc-right-panel h2 {
+    font-size: 18px;
+  }
+
+  .redoc-right-panel h3 {
+    font-size: 14px;
+  }
+}
+
+/* Animaciones suaves */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.redoc-sidebar-item {
+  animation: slideIn 0.3s ease;
+}
+
+/* Mejora de accesibilidad */
+.redoc-sidebar-item:focus {
+  outline: 2px solid #3c6ab2;
+  outline-offset: 2px;
+}
+
+.redoc-button:focus {
+  outline: 2px solid #3c6ab2;
+  outline-offset: 2px;
+}
+
+/* ============================================
+   OCULTAR LOGO Y BRANDING DE REDOCLY
+   ============================================ */
+
+/* Ocultar el logo de Redocly en el footer */
+.redoc-footer-logo,
+.redoc-footer-branding,
+[class*="redocly"],
+[class*="Redocly"],
+.redoc-powered-by,
+.powered-by-redocly {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Ocultar el texto "API docs by Redocly" */
+.redoc-footer-text,
+.redoc-footer-content,
+footer [class*="redoc"],
+footer [class*="Redoc"],
+footer a[href*="redocly"],
+footer a[href*="redoc"] {
+  display: none !important;
+}
+
+/* Ocultar cualquier elemento que contenga "Redocly" o "API docs" */
+*:has-text("Redocly"),
+*:has-text("API docs by") {
+  display: none !important;
+}
+
+/* Alternativa: Ocultar el footer completo si es necesario */
+.redoc-footer {
+  display: none !important;
+}
+
+/* Si el footer tiene un contenedor específico */
+[class*="footer"] {
+  visibility: hidden;
+}
+
+/* Ocultar cualquier enlace a redocly.com */
+a[href*="redocly.com"],
+a[href*="redoc.ly"] {
+  display: none !important;
+}

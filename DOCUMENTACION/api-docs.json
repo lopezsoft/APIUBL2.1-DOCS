@@ -12148,5 +12148,73 @@
   "externalDocs": {
     "description": "Documentación completa de MATIAS",
     "url": "https://docs.matias-api.com/"
-  }
+  },
+  "x-tagGroups": [
+    {
+      "name": "🔐 Autenticación & Seguridad",
+      "tags": [
+        "Autenticación",
+        "Registro",
+        "Recuperación de Contraseña",
+        "Personal Access Tokens",
+        "Certificados Digitales"
+      ]
+    },
+    {
+      "name": "📄 Documentos Electrónicos",
+      "tags": [
+        "Documentos Electrónicos",
+        "Documentos Enviados",
+        "Documentos con Consecutivo Automático",
+        "Gestión de Documentos",
+        "Estado de Documentos",
+        "Eventos de Documentos",
+        "Consultas"
+      ]
+    },
+    {
+      "name": "💼 Nómina Electrónica",
+      "tags": [
+        "Nómina Electrónica",
+        "Nómina Electrónica - Tablas"
+      ]
+    },
+    {
+      "name": "⚙️ Configuración & Empresa",
+      "tags": [
+        "Empresa",
+        "Perfil",
+        "Resoluciones DIAN",
+        "Software DIAN",
+        "Company Templates",
+        "Configuración de Reportes"
+      ]
+    },
+    {
+      "name": "📊 Datos Maestros & Referencias",
+      "tags": [
+        "Tablas Maestras",
+        "Monedas",
+        "Ubicación",
+        "Impuestos"
+      ]
+    },
+    {
+      "name": "🔧 Integraciones & Webhooks",
+      "tags": [
+        "Webhooks",
+        "Payments - Wompi",
+        "Registros de Email"
+      ]
+    },
+    {
+      "name": "🛠️ Utilidades & Funciones",
+      "tags": [
+        "Funciones Auxiliares",
+        "CRUD Dinámico",
+        "Envío Masivo (Bulk)",
+        "Membresías"
+      ]
+    }
+  ]
 }

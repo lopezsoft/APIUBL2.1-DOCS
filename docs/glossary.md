@@ -1,16 +1,16 @@
 ---
 sidebar_position: 5
-description: "Glosario de términos técnicos, normativas y acrónimos de facturación electrónica"
+description: "Glosario de términos técnicos, normativas y acrónimos de facturación electrónica, DIAN y Sector Salud (Resolución 000948 de 2026)"
 sidebar_label: Glosario
 ---
 
 # 📚 Glosario Técnico
 
 <div style={{backgroundColor: '#e7f3ff', padding: '1.5rem', borderRadius: '8px', border: '2px solid #0066cc', margin: '1.5rem 0'}}>
-  Este glosario contiene los <strong>términos técnicos, normativas, acrónimos y conceptos principales</strong> relacionados con la facturación electrónica en Colombia.
+  Este glosario contiene los <strong>términos técnicos, normativas, acrónimos y conceptos principales</strong> relacionados con la facturación electrónica, documentos equivalentes, nómina electrónica, RADIAN y el <strong>Sector Salud (Resolución 000948 de 2026 / RIPS)</strong> en Colombia.
 </div>
 
-## 🗯️ Navegación Alfabetica
+## 🗯️ Navegación Alfabética
 
 <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(40px, 1fr))', gap: '0.5rem', margin: '1.5rem 0'}}>
   <a href="#a" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>A</a>
@@ -33,32 +33,32 @@ sidebar_label: Glosario
   <a href="#s" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>S</a>
   <a href="#t" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>T</a>
   <a href="#u" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>U</a>
+  <a href="#v" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>V</a>
   <a href="#w" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>W</a>
   <a href="#x" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>X</a>
   <a href="#z" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>Z</a>
 </div>
 
 <div style={{backgroundColor: '#fff3cd', padding: '1.5rem', borderRadius: '8px', border: '2px solid #ffc107', margin: '1.5rem 0'}}>
-  <h3 style={{marginTop: 0}}>⚠️ Nota Crítica sobre IDs de API vs Codes DIAN</h3>
-  <p><strong>Esta es la distinción MÁS IMPORTANTE para usar el API correctamente:</strong></p>
+  <h3 style={{marginTop: 0}}>⚠️ Nota Crítica sobre IDs de API vs Códigos DIAN</h3>
+  <p><strong>Esta es la distinción más importante para utilizar la API correctamente:</strong></p>
   <ul>
-    <li><strong>ID (de la DB del API):</strong> Número único usado en las solicitudes al API (ej: <code>type_document_id: 9</code>)</li>
-    <li><strong>Code (DIAN):</strong> Código normativo de la DIAN, usado solo para referencia legal (ej: Code 03 = Factura de Contingencia)</li>
+    <li><strong>ID (de la base de datos de la API):</strong> Número entero único usado en las peticiones (ej: <code>type_document_id: 7</code>).</li>
+    <li><strong>Code (DIAN):</strong> Código normativo de la DIAN, usado exclusivamente para referencia legal (ej: Code 01 = Factura de Venta).</li>
   </ul>
   <div style={{backgroundColor: '#856404', color: 'white', padding: '1rem', borderRadius: '6px', marginTop: '1rem'}}>
-    <strong>🔑 REGLA FUNDAMENTAL:</strong> En el API SIEMPRE usas el <strong>ID de la base de datos</strong>, NUNCA el <strong>code DIAN</strong>
+    <strong>🔑 REGLA FUNDAMENTAL:</strong> En el cuerpo de las peticiones SIEMPRE utilizas el <strong>ID numérico de la API</strong>, NUNCA el <strong>código alfanumérico DIAN</strong>.
   </div>
   <div style={{marginTop: '1rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem'}}>
     <div style={{backgroundColor: '#f8d7da', padding: '0.75rem', borderRadius: '6px', border: '1px solid #dc3545'}}>
       ❌ <strong>INCORRECTO:</strong><br/>
-      <code>"type_document_id": "03"</code>
+      <code>"type_document_id": "01"</code>
     </div>
     <div style={{backgroundColor: '#d4edda', padding: '0.75rem', borderRadius: '6px', border: '1px solid #28a745'}}>
       ✅ <strong>CORRECTO:</strong><br/>
-      <code>"type_document_id": 9</code>
+      <code>"type_document_id": 7</code>
     </div>
   </div>
-  <p style={{marginBottom: 0, marginTop: '1rem'}}><small>Los códigos DIAN (01, 02, 03, 04, etc.) se incluyen en este glosario solo para que puedas correlacionar con la documentación normativa de la DIAN. Ver <a href="#tablas-de-referencia-rápida">Tablas de Referencia Rápida</a> para la correspondencia completa.</small></p>
 </div>
 
 ---
@@ -67,816 +67,367 @@ sidebar_label: Glosario
 
 ### Additional Document Reference (Documento Adicional de Referencia)
 **Definición**: Grupo de datos que contiene referencias a documentos comerciales o de soporte adicionales.
+* **Uso Obligatorio**: Facturas tipo 03 (Factura de Contingencia) para referenciar el documento de papel o talonario original.
+* **Estructura**: `number`, `uuid` (CUFE/CUDE), `scheme_name`, `date`, `code`.
 
-**Uso Obligatorio**: Solo en facturas tipo 03 (Factura de Contingencia).
+---
 
-**Estructura**:
-- `number`: Identificador del documento referenciado
-- `uuid`: CUFE o CUDE del documento
-- `scheme_name`: Algoritmo de generación (CUFE-SHA384)
-- `date`: Fecha del documento referenciado
-- `code`: Código de tipo de referencia (asignado por facturador)
-
-**Características**:
-- ✅ Es un ARRAY (puede contener múltiples referencias)
-- ✅ Los códigos son de asignación libre del facturador
-- ✅ DIAN valida con reglas FAI01-FAI06
-
-**Ejemplo**:
-```json
-{
-  "additional_document_reference": [
-    {
-      "number": "LCON2",
-      "uuid": "0bd41b047f40dbca...",
-      "scheme_name": "CUFE-SHA384",
-      "date": "2025-08-18",
-      "code": "01"
-    }
-  ]
-}
-```
+### ADRES
+**Definición**: Administradora de los Recursos del Sistema General de Seguridad Social en Salud.
+* **Rol**: Entidad pública adscrita al MinSalud que administra los recursos financieros del SGSSS y efectúa pagos/giros directos a prestadores y proveedores.
 
 ---
 
 ### Ambiente de Destino
-**Definición**: El entorno al cual se envía la factura electrónica.
-
-**Valores**:
-- **Producción (1)**: Ambiente real donde se emiten facturas válidas
-- **Pruebas (2)**: Ambiente de prueba para validar integraciones
-
-**Código DIAN**: `cbc:ProfileExecutionID`
-
-**Ejemplo**:
-```json
-{
-  "environment_id": 1  // Producción
-}
-```
+**Definición**: El entorno al cual se envía el documento electrónico.
+* **Producción (`1`)**: Ambiente real con validez fiscal y transmisión directa a la DIAN.
+* **Pruebas / Habilitación (`2`)**: Ambiente del set de pruebas para validar habilitación de software.
 
 ---
 
-### APCRUDO
-**Definición**: Arancel de Protección de la Producción Agrícola Colombiana.
-
-**Aplicación**: Sobretasa arancelaria para productos agrícolas.
+### Anticipo (`advance`)
+**Definición**: Valor monetario entregado con anterioridad a la prestación del servicio que se legaliza y descuenta en la factura electrónica en ejecución del contrato pactado.
 
 ---
 
-### Asignación por Inflación
-**Definición**: Incremento al valor del auxilio de transporte por incrementos en el IPC.
+### ARL
+**Definición**: Administradora de Riesgos Laborales. Entidad responsable de financiar y prestar servicios de salud derivados de accidentes de trabajo y enfermedades laborales.
 
 ---
 
 ## B
 
 ### Base Imponible
-**Definición**: El valor sobre el cual se calculan los impuestos.
-
-**Fórmula**: `Base Imponible = Subtotal - Descuentos`
-
-**Ejemplo**:
-```
-Subtotal: 100,000
-Descuento: 10,000
-Base Imponible: 90,000
-IVA (19%): 17,100
-```
+**Definición**: El valor monetario sobre el cual se liquidan y calculan los impuestos y retenciones.
+* **Fórmula**: `Base Imponible = Subtotal - Descuentos`
 
 ---
 
 ## C
 
-### CUFE
-**Definición**: Código Único de Factura Electrónica.
-
-**Significado**: Identificador único generado para cada factura electrónica.
-
-**Formato**: Secuencia alfanumérica de 44 caracteres.
-
-**Cálculo**: SHA256 de: NIT_EMISOR + PREFIJO + NUMERO + FECHA + MONTO_TOTAL + NIT_CLIENTE + IVA + ICA + FIRMA
-
-**Vs. CUDE**: CUFE es para facturas, CUDE es para documentos equivalentes (notas).
-
-**Uso en Contingencia**: Se referencia en `additional_document_reference.uuid` para facturas tipo 03.
-
-**Ejemplo**:
-```
-CUFE: f8e5c3a9b2d1e6f4g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3
-```
+### Certificado Digital
+**Definición**: Documento criptográfico en formato `.p12` emitido por una entidad de certificación acreditada (ONAC) que garantiza la identidad del emisor y la integridad del documento mediante firma digital XAdES-EPES.
 
 ---
 
-### Certificado Digital
-**Definición**: Documento criptográfico que identifica digitalmente a una persona o entidad.
-
-**Requisitos**:
-- Emitido por Entidad de Certificación acreditada
-- Debe estar vigente
-- Contiene clave privada para firmar
-
-**Tipos**:
-- Certificado A1 (en software)
-- Certificado A3 (en token/tarjeta)
+### Cobertura o Plan de Beneficios (`coverage`)
+**Definición**: Catálogo oficial del Ministerio de Salud (SISPRO) que identifica la fuente de financiación del servicio de salud (ej. `01` = UPC Contributiva, `02` = Presupuesto Máximo, `04` = SOAT, `05` = ARL, `06` = ADRES, `16` = UPC Subsidiada).
 
 ---
 
 ### Contingencia
-**Definición**: Situación de carácter extraordinario o excepcional que impide la operación normal de facturación.
+**Definición**: Procedimiento extraordinario cuando el facturador o la DIAN presentan indisponibilidad técnica:
+* **Tipo 03 (`type_document_id: 9`)**: Factura de Contingencia con numeración autorizada DIAN.
+* **Tipo 04 (`type_document_id: 10`)**: Factura de Contingencia por fallas atribuibles al emisor.
 
-**Tipos según DIAN**:
-- **Tipo 03**: Factura de Contingencia (cuando falla conexión con DIAN)
-- **Tipo 04**: Factura de Contingencia Alternativa (protocolo especial)
+---
 
-**Características**:
-- ✅ Documentos válidos ante DIAN
-- ✅ Requieren referencia a documento original o soporte
-- ✅ Obligatorio campo `additional_document_reference` para tipo 03
-- ✅ Deben enviarse a DIAN cuando se restaure conexión
+### Copago (`copayment`)
+**Definición**: Aporte en dinero que corresponde a una parte del valor del servicio demandado por el usuario, con el fin de contribuir a financiar el sistema (afiliados beneficiarios en el régimen contributivo y subsidiado). Su valor debe coincidir con el reporte en RIPS.
 
-**Referencia**: Ver [Factura de Contingencia](#factura-de-contingencia)
+---
+
+### CUCON
+**Definición**: Código Único de Contratación en Salud. Código expedido por la plataforma oficial del Registro de Contratación de Servicios de Salud (Ley 1966 de 2019) que se reporta en `health.contract_number`.
 
 ---
 
 ### CUDE
-**Definición**: Código Único de Documento Equivalente.
-
-**Similitud con CUFE**: Identificador único para documentos equivalentes (notas crédito/débito).
-
-**Formato**: Secuencia alfanumérica de 44 caracteres (como CUFE).
-
-**Cálculo**: SHA256 con variables del documento equivalente.
-
-**Vs. CUFE**: CUFE es para facturas, CUDE es para notas crédito/débito.
+**Definición**: Código Único de Documento Electrónico. Cadena criptográfica (SHA-384) que identifica de forma unívoca las Notas Crédito, Notas Débito, Documentos Soporte y Documentos Equivalentes POS Electrónicos.
 
 ---
 
-### Código de Descuento
-**Definición**: Código asignado por DIAN para justificar descuentos.
+### CUFE
+**Definición**: Código Único de Factura Electrónica. Cadena alfanumérica criptográfica generada mediante SHA-384 que autentica y garantiza la unicidad e inalterabilidad de una Factura Electrónica de Venta.
 
-**Ejemplos**:
-- `001`: Descuento por volumen
-- `002`: Rebaja
-- `003`: Bonificación
-- `004`: Devolución de IVA
+---
+
+### CUNE
+**Definición**: Código Único de Nómina Electrónica. Identificador criptográfico SHA-384 que valida la autenticidad e integridad del documento soporte de pago de nómina electrónica ante la DIAN.
+
+---
+
+### Cuota Moderadora (`moderator_fee`)
+**Definición**: Pago monetario recaudado directamente al usuario (afiliados cotizantes y beneficiarios) cuyo objetivo es regular la utilización de los servicios de salud y estimular su buen uso.
 
 ---
 
 ## D
 
-### Descuento
-**Definición**: Reducción del precio de la factura antes de aplicar impuestos.
-
-**Tipos**:
-- **Descuento Comercial**: Por volumen o cliente especial
-- **Descuento por Pronto Pago**: Si se paga antes de fecha limite
-- **Descuento por Rebaja**: Ajuste por defecto
-
-**Cálculo**: Se aplica ANTES de calcular impuestos
-
----
-
-### Dígito Verificador
-**Definición**: Dígito calculado mediante algoritmo para validar integridad de un número.
-
-**Usado en**:
-- NIT de personas
-- Cédulas
-- Códigos de productos
-
-**Algoritmo para NIT**: Ver [Validaciones de NIT](/docs/regulatory-framework/factura-electronica/anexo-tecnico/validaciones#41-identificación-del-emisor)
-
----
-
-### Documento Electrónico
-**Definición**: Documento que existe únicamente en formato digital y tiene validez legal.
-
-**Características**:
-- ✅ Firma digital
-- ✅ Validez probatoria
-- ✅ Integridad garantizada
-- ✅ Trazabilidad
-
----
-
-### Documento de Soporte
-**Definición**: Documento comercial que respalda una transacción (orden de compra, remisión, póliza, etc.).
-
-**Usos**:
-- ✅ Referencia en `additional_document_reference` de facturas tipo 03
-- ✅ Trazabilidad y auditoría
-- ✅ Justificación de transacciones
-
-**Tipos Comunes**:
-- Orden de Compra
-- Remisión
-- Póliza de Transporte
-- Contrato
-- Acta de Entrega
-
-**Nota**: Los documentos XML adoptados por DIAN NO se incluyen en `additional_document_reference`.
-
----
-
 ### DIAN
-**Definición**: Dirección de Impuestos y Aduanas Nacionales de Colombia.
+**Definición**: Dirección de Impuestos y Aduanas Nacionales de Colombia. Entidad gubernamental que reglamenta, administra y fiscaliza el sistema de facturación electrónica.
 
-**Función**: Entidad estatal que regula la facturación electrónica.
+---
 
-**Sitio Web**: https://www.dian.gov.co
+### Dígito Verificador (DV)
+**Definición**: Dígito numérico (del 0 al 9) calculado mediante el algoritmo Módulo 11 que complementa y valida la integridad del NIT.
+
+---
+
+### Documento Equivalente POS Electrónico
+**Definición**: Comprobante fiscal generado mediante sistemas de caja P.O.S que se transmite de forma electrónica con validación previa de la DIAN y generación de CUDE (Resolución 000165 de 2024). En la API se emite vía `POST /pos` o `POST /auto-increment/pos-documents`.
+
+---
+
+### Documento Soporte Electrónico (DS)
+**Definición**: Documento que acredita la adquisición de bienes o servicios a proveedores no obligados a expedir factura de venta (Resolución 000167). En la API se emite vía `POST /ds/document`.
 
 ---
 
 ## E
 
-### Encabezado
-**Definición**: Sección inicial del documento que contiene información general.
-
-**Incluye**:
-- Número y prefijo
-- Fechas
-- Emisor y receptor
-- Tipo de documento
+### EPS
+**Definición**: Entidad Promotora de Salud. Organización responsable de la afiliación y el aseguramiento en salud de los ciudadanos en el régimen contributivo y subsidiado en Colombia.
 
 ---
 
-### Estándar UBL
-**Definición**: Universal Business Language - Estándar XML internacional para documentos comerciales.
-
-**Versión**: UBL 2.1
-
-**Namespace**: `urn:oasis:names:specification:ubl:schema:xsd:Invoice-2`
-
----
-
-### Expedición
-**Definición**: Lugar donde se genera la factura.
-
-**Diferente de**: Lugar de entrega o destino del producto.
+### Eventos RADIAN
+**Definición**: Mensajes electrónicos reglamentados por la DIAN (Resolución 000198 de 2024) para la circulación y factoring de la factura electrónica como título valor:
+* **030**: Acuse de recibo de la Factura Electrónica.
+* **031**: Reclamo contra la Factura Electrónica.
+* **032**: Recibo del bien o prestación del servicio.
+* **033**: Aceptación expresa.
+* **034**: Aceptación tácita.
 
 ---
 
 ## F
 
-### Factura Electrónica (FE)
-**Definición**: Documento electrónico que comprueba una transacción de venta.
-
-**Características**:
-- ✅ Validez legal ante cualquier autoridad
-- ✅ Consecutividad obligatoria
-- ✅ Firma digital requerida
-- ✅ Aceptación DIAN necesaria
-
-**Normativa**: Resolución 000165 de 2024
-
-**Tipos Especiales**: Ver [Contingencia](#contingencia) y [Factura de Contingencia](#factura-de-contingencia)
+### Factura Electrónica de Venta (FEV)
+**Definición**: Título valor y soporte fiscal emitido en formato XML UBL 2.1 con firma digital que cuenta con validación previa de la DIAN y generación de CUFE.
 
 ---
 
-### Factura de Contingencia
-**Definición**: Factura emitida en situaciones extraordinarias cuando falla la conexión normal con DIAN.
-
-**Tipos DIAN**:
-
-| Tipo | Código | Uso | Referencia Obligatoria |
-|------|--------|-----|------------------------|
-| Contingencia Estándar | 03 | Falla de conexión a DIAN | ✅ Sí (additional_document_reference) |
-| Contingencia Alternativa | 04 | Protocolo especial DIAN | ❌ Opcional |
-
-**Características Tipo 03**:
-- ✅ Requiere `additional_document_reference` OBLIGATORIO
-- ✅ Debe referenciar documento original o soporte
-- ✅ API auto-completa si no se proporciona referencia
-- ✅ Válida legalmente ante autoridades
-
-**Características Tipo 04**:
-- ✅ Protocolo alternativo especial
-- ✅ `additional_document_reference` opcional
-- ✅ `document_signature` generalmente más importante
-- ✅ Requiere documento original o soporte
-
-**Envío a DIAN**: Deben reportarse a DIAN cuando se restaure conexión normal.
-
-**Referencia**: Ver [Additional Document Reference](#additional-document-reference-documento-adicional-de-referencia) y [Contingencia](#contingencia)
-
----
-
-### Firma Digital
-**Definición**: Mecanismo criptográfico que garantiza autenticidad e integridad de un documento.
-
-**Componentes**:
-- Certificado digital (identifica)
-- Hash encriptado (garantiza integridad)
-
----
-
-### Folio
-**Definición**: Número secuencial único de un documento.
-
-**En Colombia se llama**: Número de factura o consecutivo
-
----
-
-## G
-
-### Gasto No Deducible
-**Definición**: Gasto que la empresa no puede descontar de sus impuestos.
-
-**Ejemplo**: Multas, sanciones
+### Factura del Sector Salud
+**Definición**: Factura electrónica de venta emitida por IPS, profesionales independientes y proveedores de tecnologías en salud reglamentada por la **Resolución 000948 de 2026** (que deroga las Resoluciones 2275 de 2023, 558 y 1884 de 2024) y el **Documento Técnico 2 Versión 001** del MinSalud / DIAN. Requiere la inclusión del objeto `health`.
 
 ---
 
 ## H
 
-### Hash
-**Definición**: Valor criptográfico que resume el contenido de un documento.
-
-**Propiedad**: Cualquier cambio en el documento genera un hash diferente.
-
-**Algoritmo usado**: SHA256
+### Health (Objeto `health`)
+**Definición**: Estructura JSON del payload donde se reportan los campos adicionales del sector salud: código REPS (`provider_code`), modalidad de pago (`payment_modality`), cobertura (`coverage`), contrato (`contract_number`), póliza (`policy_number`), copagos (`copayment`), cuotas moderadoras (`moderator_fee`), pagos compartidos (`shared_payments`), anticipos (`advance`), causales sin contrato (`justification_without_contract`), periodo de facturación (`invoice_period`), adjuntos y web services de entrega.
 
 ---
 
 ## I
 
 ### ICA
-**Definición**: Impuesto de Industria y Comercio.
-
-**Características**:
-- Impuesto municipal (varía por ciudad)
-- Tarifa: 0% a 8.64% según sector
-- Base: Ingresos brutos
-
----
-
-### ICE
-**Definición**: Impuesto Nacional al Consumo.
-
-**Aplicación**: Bienes específicos (cigarrillos, bebidas, gasolina, etc.)
-
-**Tarifa**: Según bien (0% a 60%)
+**Definición**: Impuesto de Industria y Comercio. Tributo de orden municipal que grava la realización de actividades industriales, comerciales o de servicios.
 
 ---
 
 ### INCOTERM
-**Definición**: Términos de Comercio Internacional que definen obligaciones en transporte internacional.
+**Definición**: International Commercial Terms. Términos internacionales estandarizados (FOB, CIF, DDP, EXW) que definen las responsabilidades de transporte, costo y riesgo en facturas de exportación (`type_document_id: 8`).
 
-**Comunes**:
-- **FOB** (Free on Board): Libre a bordo, vendedor paga hasta puerto
-- **CIF** (Cost, Insurance & Freight): Incluye seguro y flete
-- **DDP** (Delivered Duty Paid): Comprador no paga derechos
-- **EXW** (Ex Works): En fábrica, comprador paga todo
+---
+
+### IPS
+**Definición**: Institución Prestadora de Servicios de Salud. Entidad habilitada en el REPS para brindar atención médica asistencial.
 
 ---
 
 ### IVA
-**Definición**: Impuesto al Valor Agregado.
-
-**Características**:
-- Impuesto nacional
-- Tarifa general: 19%
-- Tarifa reducida: 5% (alimentos básicos)
-- Tarifa especial: 0% (exentos, exportaciones)
-
----
-
-### Item
-**Definición**: Producto o servicio individual en una línea de factura.
-
-**Sinónimos**: Línea, producto, SKU
+**Definición**: Impuesto sobre las Ventas. Tributo nacional indirecto de tipo valor agregado (tarifas habituales: general 19%, reducida 5%, exenta 0%).
 
 ---
 
 ## J
 
 ### JSON
-**Definición**: JavaScript Object Notation - Formato de datos basado en texto.
-
-**Uso en API**: Formato estándar de intercambio de datos.
-
-**Ejemplo**:
-```json
-{
-  "invoice_number": 2001,
-  "total": 119000.00
-}
-```
-
----
-
-## L
-
-### Línea de Factura
-**Definición**: Cada producto o servicio individual en el detalle de la factura.
-
-**Componentes**:
-- Descripción
-- Cantidad
-- Precio unitario
-- Descuentos
-- Impuestos
-
----
-
-### Liquidación del IVA
-**Definición**: Cálculo del IVA a pagar basado en facturación.
-
-**Fórmula**: IVA Cobrado - IVA Pagado = IVA a Pagar
+**Definición**: JavaScript Object Notation. Formato estándar ligero y estructurado utilizado por MATIAS API para recibir las solicitudes de los clientes y responder los resultados procesados de la DIAN.
 
 ---
 
 ## M
 
-### Medio de Pago
-**Definición**: Instrumento específico de pago.
-
-**Ejemplos**:
-- Efectivo (10)
-- Tarjeta de crédito (41)
-- Tarjeta de débito (40)
-- Cheque (02)
-- Transferencia bancaria (42)
+### Magic Values
+**Definición**: Valores de prueba que se envían en la cabecera `X-Sandbox-Force-Status` en el entorno Sandbox para forzar escenarios específicos de error (rechazos, descuadres aritméticos, timeouts, fallos de esquema o CUDE inválido) sin alterar los datos del documento.
 
 ---
 
-### Método de Pago
-**Definición**: Categoría general de pago.
-
-**Ejemplos**:
-- Contado (01)
-- Crédito (02)
-- Mixto (03)
-
----
-
-### Moneda
-**Definición**: Divisa en la que se expresa el valor de la factura.
-
-**Código ISO 4217**:
-- COP (170): Peso Colombiano
-- USD (840): Dólar estadounidense
-- EUR (978): Euro
+### Modalidad de Pago (Salud)
+**Definición**: Catálogo `modalidadPago` de SISPRO para contratación en salud (Decreto 780 de 2016):
+* `01`: Pago individual por caso / Paquete / Canasta.
+* `02`: Pago global prospectivo.
+* `03`: Pago por capitación.
+* `04`: Pago por evento.
 
 ---
 
 ## N
 
 ### NIT
-**Definición**: Número de Identificación Tributaria.
+**Definición**: Número de Identificación Tributaria asignado por la DIAN a personas naturales y jurídicas para efectos fiscales.
 
-**Características**:
-- Identificador único en Colombia
-- 8-10 dígitos + dígito verificador
-- Obligatorio para personas y empresas
+---
 
-**Validación**: Ver algoritmo de [Dígito Verificador](#dígito-verificador)
+### Nómina Electrónica
+**Definición**: Documento soporte de pago de nómina electrónica que respalda los costos y deducciones derivados de una relación laboral (Resolución 000013).
 
 ---
 
 ### Nota Crédito
-**Definición**: Documento que reduce el valor de una factura anterior.
-
-**Usos**:
-- Devoluciones
-- Descuentos posteriores
-- Ajustes comerciales
-
-**Normativa**: Resolución 000165 de 2024
+**Definición**: Documento electrónico utilizado para anular, corregir o conceder descuentos a una factura electrónica previa, generando su propio código CUDE (`type_document_id: 5`).
 
 ---
 
 ### Nota Débito
-**Definición**: Documento que aumenta el valor de una factura anterior.
-
-**Usos**:
-- Servicios adicionales
-- Recargos
-- Ajustes por error
-
----
-
-## O
-
-### Operación
-**Definición**: Clasificación del tipo de transacción.
-
-**Tipos**:
-- Nacional (1)
-- Exportación (2)
-- Importación (3)
-- Devolución (4)
-
----
-
-### OAuth2
-**Definición**: Protocolo abierto de autorización.
-
-**Usado para**: Autenticación segura en APIs.
-
-**Ventajas**:
-- ✅ No requiere compartir contraseña
-- ✅ Token con expiración
-- ✅ Permisos granulares
+**Definición**: Documento electrónico que incrementa el valor de una factura previa por conceptos como intereses de mora, gastos adicionales o ajustes contables (`type_document_id: 4`).
 
 ---
 
 ## P
 
-### Pago
-**Definición**: Transferencia de dinero para saldar una obligación.
-
-**Componentes**:
-- Método de pago
-- Medio de pago
-- Monto
-- Fecha
+### Pago Compartido (`shared_payments`)
+**Definición**: Montos recaudados por el prestador en planes voluntarios de salud (medicina prepagada, planes complementarios, pólizas) a cargo del usuario o titular.
 
 ---
 
-### PDF
-**Definición**: Portable Document Format - Formato de archivo universal.
-
-**Uso**: Representación visual imprimible de la factura.
+### Personal Access Token (PAT)
+**Definición**: Token de autenticación de larga duración (JWT estándar basado en Laravel Passport) que permite autenticar peticiones API desde sistemas ERP o servidores backend sin requerir logins repetitivos.
 
 ---
 
-### Período de Facturación
-**Definición**: Rango de fechas que cubre la factura.
-
-**Ejemplo**: Mes, trimestre, período específico
-
----
-
-### Prefijo
-**Definición**: Secuencia de caracteres que precede al número de factura.
-
-**Ejemplo**: "FEV", "NCV", "POS"
-
-**Autorizado por**: Resolución de facturación DIAN
-
----
-
-## Q
-
-### Que (¿Qué es...?)
-Esta letra no tiene términos específicos en facturación electrónica.
+### P.O.S (Point of Sale)
+**Definición**: Punto de venta o caja registradora donde se originan transacciones comerciales directas con el consumidor final.
 
 ---
 
 ## R
 
-### Radian
-**Definición**: Red de Administración de Documentos Activos de Identificación Normalizada.
-
-**Función**: Intercambio seguro de documentos electrónicos.
-
-**Normativa**: Resolución 000198 de 2024
+### RADIAN
+**Definición**: Plataforma oficial administrada por la DIAN que registra y custodia los eventos y operaciones de factoring electrónico sobre facturas electrónicas de venta como título valor.
 
 ---
 
-### Régimen Fiscal
-**Definición**: Clasificación tributaria de una empresa.
-
-**Tipos**:
-- Régimen común (1)
-- Régimen simplificado (2)
-- Régimen de transición (3)
+### REPS
+**Definición**: Registro Especial de Prestadores de Servicios de Salud del Ministerio de Salud y Protección Social. Contiene el código de habilitación (`provider_code`) de las IPS y profesionales del país.
 
 ---
 
-### Régimen Contable
-**Definición**: Forma de llevar libros de contabilidad.
-
-**Tipos**:
-- Tributario (1)
-- NIIF (2)
-
----
-
-### Resolución de Facturación
-**Definición**: Autorización de DIAN para emitir facturas.
-
-**Información**:
-- Número único
-- Rango de números autorizado
-- Prefijos autorizados
-- Fecha de vigencia
-
----
-
-### Retención
-**Definición**: Porcentaje del pago retenido por el comprador.
-
-**Usos**:
-- Retención en la fuente (IVA)
-- Retención por servicios
-- Garantía de cumplimiento
+### RIPS
+**Definición**: Registro Individual de Prestación de Servicios de Salud. Conjunto de datos estructurados de atenciones en salud que constituye el soporte obligatorio de la Factura Electrónica en salud conforme a la **Resolución 000948 de 2026**.
 
 ---
 
 ### RUT
-**Definición**: Registro Único Tributario (Colombia).
-
-**Diferencia con NIT**: RUT puede incluir NIT + otras informaciones.
+**Definición**: Registro Único Tributario. Mecanismo de identificación administrado por la DIAN que clasifica la responsabilidad fiscal de los contribuyentes.
 
 ---
 
 ## S
 
-### SKU
-**Definición**: Stock Keeping Unit - Código de identificación de producto.
-
-**Ejemplo**: "PROD-001", "PRD-A1234"
+### Sector Salud (FEV Salud)
+**Definición**: Régimen especial de emisión de facturación electrónica obligatorio para prestadores de servicios y proveedores de tecnologías en salud reglamentado por el MinSalud y la DIAN.
 
 ---
 
-### Subtotal
-**Definición**: Suma de todos los precios de líneas antes de descuentos e impuestos.
-
-**Fórmula**: `Subtotal = SUM(cantidad × precio_unitario de cada línea)`
+### SOAT
+**Definición**: Seguro Obligatorio de Accidentes de Tránsito. Cobertura obligatoria para víctimas de accidentes de tránsito que se referencia con código `04` en `health.coverage` y requiere `health.policy_number`.
 
 ---
 
 ## T
 
-### TM
-**Definición**: Timbre Marcario o Timbrado.
-
-**Función**: Marca oficial de la DIAN en documentos.
-
----
-
-### Total
-**Definición**: Monto final a pagar por el cliente.
-
-**Fórmula**: `Total = Subtotal - Descuentos + Impuestos`
-
----
-
 ### TRM
-**Definición**: Tasa Representativa del Mercado.
-
-**Función**: Valor oficial del dólar en Colombia.
-
-**Uso**: Convertir valores en moneda extranjera a COP.
-
-**Fuente**: Banco de la República
-
----
-
-### Tributario
-**Definición**: Relacionado con impuestos y contribuciones.
+**Definición**: Tasa Representativa del Mercado. Tipo de cambio oficial peso colombiano / dólar estadounidense certificado por la Superintendencia Financiera de Colombia.
 
 ---
 
 ## U
 
-### UBL
-**Definición**: Universal Business Language - Ver [Estándar UBL](#estándar-ubl)
+### UBL 2.1
+**Definición**: Universal Business Language (versión 2.1). Estándar XML internacional adoptado por la DIAN para la estructura formal de los documentos tributarios electrónicos en Colombia.
 
 ---
 
-### Unidad de Medida
-**Definición**: Forma de contar los productos (cantidad).
-
-**Ejemplos**:
-- Unidad (1093)
-- Kilogramo (kg)
-- Litro (L)
-- Metro (m)
-- Docena (dz)
-
-**Código UNECE**: Códigos internacionales
-
----
-
-## V
-
-### Validación
-**Definición**: Verificación de que un documento cumple con requisitos.
-
-**Niveles**:
-- Estructura (XML válido)
-- Datos (valores correctos)
-- Negocio (reglas DIAN)
-- Firma (certificado válido)
-
----
-
-### Valor Agregado
-**Definición**: Incremento de valor desde producción hasta venta final.
-
-**Relacionado con**: IVA (Impuesto al Valor Agregado)
+### UPC (Unidad de Pago por Capitación)
+**Definición**: Valor anual que reconoce el Estado a las EPS por cada afiliado para garantizar la prestación de los servicios del Plan de Beneficios en Salud (modalidades: UPC Contributiva y UPC Subsidiada).
 
 ---
 
 ## W
 
 ### Webhook
-**Definición**: Notificación automática de eventos en tiempo real.
-
-**Uso**: Avisar cuando DIAN acepta/rechaza una factura.
+**Definición**: Mecanismo de notificación HTTP asíncrono en tiempo real mediante el cual la API avisa a tu servidor cuando un documento o evento cambia de estado o completa su validación ante la DIAN.
 
 ---
 
 ## X
 
 ### XML
-**Definición**: eXtensible Markup Language - Formato de datos estructurado.
-
-**Usado para**: Estructura técnica de facturas electrónicas.
-
-**Ejemplo**:
-```xml
-<Invoice>
-  <ID>2001</ID>
-  <Total>119000.00</Total>
-</Invoice>
-```
-
----
-
-## Y
-
-### YO (No hay términos)
-Esta letra no tiene términos específicos en facturación electrónica.
-
----
-
-## Z
-
-### Zona Franca
-**Definición**: Área territorial con beneficios tributarios especiales.
-
-**Beneficio**: Exención o reducción de impuestos.
+**Definición**: Extensible Markup Language. Formato de texto estructurado en el que se codifican, firman y transmiten los documentos electrónicos ante la DIAN.
 
 ---
 
 ## 📊 Tablas de Referencia Rápida
 
-### 📄 Códigos de Documentos
+### 📄 Identificadores de Tipos de Documento en la API (`type_document_id`)
 
 <div style={{backgroundColor: '#fff3cd', padding: '1rem', borderRadius: '8px', border: '1px solid #ffc107', marginBottom: '1rem'}}>
-  <strong>⚠️ IMPORTANTE:</strong> La columna <strong>ID (API)</strong> es lo que usas en <code>type_document_id</code> en tus solicitudes. La columna <strong>Code (DIAN)</strong> es solo para referencia con la normativa. <strong style={{color: '#856404'}}>REGLA: En el API SIEMPRE usas el ID de la DB, NUNCA el code DIAN.</strong>
+  <strong>⚠️ REGLA DE ORO:</strong> En tus peticiones a la API utiliza el <strong>ID (API)</strong> numérico. La columna <strong>Código DIAN</strong> es únicamente de referencia regulatoria.
 </div>
 
-| ID (API) | Code (DIAN) | Tipo | Normativa | Notas |
-|----------|-------------|------|-----------|-------|
-| **7** | 01 | Factura de Venta | Res. 165 | `type_document_id: 7` |
-| **8** | 02 | Factura de Exportación | Res. 165 | `type_document_id: 8` |
-| **9** | 03 | Factura de Contingencia Tipo 03 | Res. 165 | **`type_document_id: 9`** - Requiere additional_document_reference |
-| **10** | 04 | Factura de Contingencia Tipo 04 | Res. 165 | **`type_document_id: 10`** - Opcional additional_document_reference |
-| **11** | 05 | Documento Soporte | Res. 165 | `type_document_id: 11` |
-| **20** | 20 | Documento Equivalente POS | Res. 165 | **`type_document_id: 20`** - Requiere datos POS |
-| **5** | 91 | Nota Crédito | Res. 165 | `type_document_id: 5` - Genera CUDE |
-| **4** | 92 | Nota Débito | Res. 165 | `type_document_id: 4` - Genera CUDE |
+| ID (API) | Código DIAN | Tipo de Documento | Endpoint Principal | Identificador Criptográfico |
+|:---:|:---:|---|---|:---:|
+| **7** | `01` | Factura Electrónica de Venta (Estándar / Salud) | `POST /invoice` | CUFE |
+| **8** | `02` | Factura de Exportación | `POST /invoice` | CUFE |
+| **9** | `03` | Factura de Contingencia (Tipo 03) | `POST /invoice` | CUFE |
+| **10** | `04` | Factura de Contingencia (Tipo 04) | `POST /invoice` | CUFE |
+| **11** | `05` | Documento Soporte Electrónico | `POST /ds/document` | CUDS / CUDE |
+| **20** | `20` | Documento Equivalente POS Electrónico | `POST /pos` | CUDE |
+| **5** | `91` | Nota Crédito Electrónica | `POST /notes/credit` | CUDE |
+| **4** | `92` | Nota Débito Electrónica | `POST /notes/debit` | CUDE |
 
-### 🆔 Tipos de Identificación
-| Código | Tipo |
-|--------|------|
-| 1 | Cédula de Ciudadanía |
-| 2 | NIT |
-| 3 | Pasaporte |
-| 4 | Documento de Extranjería |
-| 5 | Tarjeta de Identidad |
+---
 
-### 🌎 Códigos de Países
-| Código | País | ISO |
-|--------|------|-----|
-| 45 | Colombia | CO |
-| 169 | Colombia | CO |
-| 226 | Estados Unidos | US |
-| 137 | México | MX |
-| 37 | Brasil | BR |
+### 🆔 Tipos de Identificación (`identity_document_id`)
+| ID (API) | Documento |
+|:---:|---|
+| **1** | Cédula de Ciudadanía |
+| **2** | NIT |
+| **3** | Cédula de Extranjería |
+| **4** | Tarjeta de Identidad |
+| **5** | Pasaporte |
+| **6** | Documento de Identificación Extranjero |
+| **10** | Sin identificación del exterior / Consumidor Final |
+
+---
+
+### 🏛️ Tipos de Organización (`type_organization_id`)
+| ID (API) | Organización |
+|:---:|---|
+| **1** | Persona Jurídica |
+| **2** | Persona Natural |
 
 ---
 
 ## 🔗 Enlaces Relacionados
 
 <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', margin: '1.5rem 0'}}>
-  <a href="/docs/regulatory-framework/factura-electronica/anexo-tecnico/validaciones" style={{textDecoration: 'none', color: 'inherit'}}>
+  <a href="/docs/billing-fields" style={{textDecoration: 'none', color: 'inherit'}}>
     <div style={{padding: '1rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '1px solid #0066cc'}}>
-      📋 <strong>Validaciones Técnicas</strong><br/>
-      <small>Reglas DIAN</small>
-    </div>
-  </a>
-  <a href="/docs/regulatory-framework/factura-electronica/anexo-tecnico/excepciones" style={{textDecoration: 'none', color: 'inherit'}}>
-    <div style={{padding: '1rem', backgroundColor: '#fff3cd', borderRadius: '8px', border: '1px solid #ffc107'}}>
-      ⚠️ <strong>Excepciones</strong><br/>
-      <small>Casos especiales</small>
-    </div>
-  </a>
-  <a href="/docs/use-cases/simple-invoice" style={{textDecoration: 'none', color: 'inherit'}}>
-    <div style={{padding: '1rem', backgroundColor: '#d4edda', borderRadius: '8px', border: '1px solid #28a745'}}>
-      🎯 <strong>Guías de Uso</strong><br/>
-      <small>Casos prácticos</small>
+      📋 <strong>Campos del Payload</strong><br/>
+      <small>Diccionario de campos y salud</small>
     </div>
   </a>
   <a href="/docs/regulatory-framework/overview" style={{textDecoration: 'none', color: 'inherit'}}>
     <div style={{padding: '1rem', backgroundColor: '#d1ecf1', borderRadius: '8px', border: '1px solid #17a2b8'}}>
       📖 <strong>Marco Regulatorio</strong><br/>
-      <small>Normativa DIAN</small>
+      <small>Resoluciones DIAN y MinSalud</small>
+    </div>
+  </a>
+  <a href="/docs/sandbox/quickstart" style={{textDecoration: 'none', color: 'inherit'}}>
+    <div style={{padding: '1rem', backgroundColor: '#d4edda', borderRadius: '8px', border: '1px solid #28a745'}}>
+      ⚡ <strong>Sandbox Quickstart</strong><br/>
+      <small>Pruebas en 5 minutos</small>
+    </div>
+  </a>
+  <a href="/docs/endpoints/01-intro-auth" style={{textDecoration: 'none', color: 'inherit'}}>
+    <div style={{padding: '1rem', backgroundColor: '#fff3cd', borderRadius: '8px', border: '1px solid #ffc107'}}>
+      🔌 <strong>Endpoints API</strong><br/>
+      <small>Referencia técnica</small>
     </div>
   </a>
 </div>
@@ -885,8 +436,8 @@ Esta letra no tiene términos específicos en facturación electrónica.
 
 <div style={{backgroundColor: '#f8f9fa', padding: '1rem', borderRadius: '8px', textAlign: 'center', marginTop: '2rem'}}>
   <small>
-    📅 <strong>Última actualización:</strong> Febrero 2026 • 
-    📚 <strong>Términos:</strong> 120+ definiciones • 
-    🎯 <strong>Nivel:</strong> ⭐⭐ Referencia
+    📅 <strong>Última actualización:</strong> Agosto 2026 (v3.6.0) • 
+    📚 <strong>Términos:</strong> 140+ definiciones • 
+    🎯 <strong>Nivel:</strong> ⭐⭐⭐ Referencia Técnica y Normativa
   </small>
 </div>

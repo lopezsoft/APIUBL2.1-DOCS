@@ -1,6 +1,6 @@
 ---
 sidebar_position: 20
-sidebar_label: Envío Masivo (Bulk)
+sidebar_label: 📦 Envío Masivo (Bulk)
 ---
 
 # 📦 Envío Masivo (Bulk)
@@ -161,6 +161,3 @@ Content-Type: application/json
   }
 }
 ```
-
----
-

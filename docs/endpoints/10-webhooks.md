@@ -1,6 +1,6 @@
 ---
 sidebar_position: 10
-sidebar_label: Webhooks
+sidebar_label: 🪝 Webhooks
 ---
 
 # 🔔 Webhooks {#webhooks}
@@ -9,6 +9,21 @@ sidebar_label: Webhooks
   <strong>🆕 Nuevo en v3.0.0 • ✅ Autenticación requerida</strong><br/>
   Recibe notificaciones HTTP en tiempo real cuando ocurren eventos importantes (documentos creados/emitidos, emails enviados, pagos procesados). 26 eventos disponibles.
 </div>
+
+:::info ¿Dónde obtener el `client_uuid`? — Parámetro Multi-Tenant para Casas de Software
+Si operas como **Casa de Software** o **Cuenta Principal**, puedes listar, registrar y administrar los webhooks de cada una de tus empresas cliente agregando el parámetro `?client_uuid={{client_uuid}}` en la query string de la URL:
+- **URL con Query Param:** `{{url}}/ubl2.1/webhooks?client_uuid={{client_uuid}}`
+- **Header:** `Authorization: Bearer {token_cuenta_principal}`
+- **Comportamiento:** La configuración del webhook (y sus disparadores de eventos) quedará vinculada específicamente a la empresa cliente indicada por su UUID.
+
+**¿Dónde encontrar el `client_uuid` de tus clientes?**  
+Puedes consultar el listado completo de tus empresas cliente y sus respectivos `client_uuid` mediante el endpoint:
+```http
+GET {{url}}/company/customers
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+:::
 
 **Características principales:**
 
@@ -29,32 +44,33 @@ sidebar_label: Webhooks
 
 ```json
 {
-  "success": true,
-  "data": {
-    "documents": [
-      { "value": "document.created", "label": "Documento Creado" },
-      { "value": "document.emitted", "label": "Documento Emitido" },
-      { "value": "document.accepted", "label": "Documento Aceptado" },
-      { "value": "document.rejected", "label": "Documento Rechazado" },
-      { "value": "document.voided", "label": "Documento Anulado" }
-    ],
-    "emails": [
-      { "value": "email.sent", "label": "Email Enviado" },
-      { "value": "email.delivered", "label": "Email Entregado" },
-      { "value": "email.bounced", "label": "Email Rebotado" },
-      { "value": "email.opened", "label": "Email Abierto" },
-      { "value": "email.clicked", "label": "Link Clickeado" }
-    ],
-    "payments": [
-      { "value": "payment.approved", "label": "Pago Aprobado" },
-      { "value": "payment.declined", "label": "Pago Rechazado" },
-      { "value": "payment.error", "label": "Error en Pago" }
-    ],
-    "memberships": [
-      { "value": "membership.activated", "label": "Membresía Activada" },
-      { "value": "membership.expiring_soon", "label": "Próxima a Vencer" },
-      { "value": "membership.expired", "label": "Membresía Vencida" }
-    ]
+  "dataRecords": {
+    "data": {
+      "documents": [
+        { "value": "document.created", "label": "Documento Creado" },
+        { "value": "document.emitted", "label": "Documento Emitido" },
+        { "value": "document.accepted", "label": "Documento Aceptado" },
+        { "value": "document.rejected", "label": "Documento Rechazado" },
+        { "value": "document.voided", "label": "Documento Anulado" }
+      ],
+      "emails": [
+        { "value": "email.sent", "label": "Email Enviado" },
+        { "value": "email.delivered", "label": "Email Entregado" },
+        { "value": "email.bounced", "label": "Email Rebotado" },
+        { "value": "email.opened", "label": "Email Abierto" },
+        { "value": "email.clicked", "label": "Link Clickeado" }
+      ],
+      "payments": [
+        { "value": "payment.approved", "label": "Pago Aprobado" },
+        { "value": "payment.declined", "label": "Pago Rechazado" },
+        { "value": "payment.error", "label": "Error en Pago" }
+      ],
+      "memberships": [
+        { "value": "membership.activated", "label": "Membresía Activada" },
+        { "value": "membership.expiring_soon", "label": "Próxima a Vencer" },
+        { "value": "membership.expired", "label": "Membresía Vencida" }
+      ]
+    }
   }
 }
 ```
@@ -62,38 +78,52 @@ sidebar_label: Webhooks
 ### Listar Webhooks - 🟢 GET
 
 ```http
-{{url}}/ubl2.1/webhooks
+{{url}}/ubl2.1/webhooks?client_uuid={{client_uuid}}
+Authorization: Bearer {token}
 ```
+
+**Parámetros:**
+| Nombre | Ubicación | Requerido | Descripción |
+|---|---|---|---|
+| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
 
 **Respuesta exitosa (200):**
 
 ```json
 {
-  "success": true,
-  "data": [
-    {
-      "id": 1,
-      "url": "https://tu-servidor.com/webhook/matias",
-      "events": ["document.created", "document.emitted"],
-      "is_active": true,
-      "created_at": "2026-02-01T10:00:00Z",
-      "stats": {
-        "total_deliveries": 150,
-        "successful": 145,
-        "failed": 5
+  "dataRecords": {
+    "data": [
+      {
+        "id": 1,
+        "url": "https://tu-servidor.com/webhook/matias",
+        "events": ["document.created", "document.emitted"],
+        "is_active": true,
+        "created_at": "2026-02-01T10:00:00Z",
+        "stats": {
+          "total_deliveries": 150,
+          "successful": 145,
+          "failed": 5
+        }
       }
-    }
-  ]
+    ]
+  }
 }
 ```
 
 ### Crear Webhook - 🔵 POST
 
 ```http
-{{url}}/ubl2.1/webhooks
+{{url}}/ubl2.1/webhooks?client_uuid={{client_uuid}}
+Authorization: Bearer {token}
+Content-Type: application/json
 ```
 
-**Body:**
+**Parámetros:**
+| Nombre | Ubicación | Requerido | Descripción |
+|---|---|---|---|
+| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+
+**Body (JSON):**
 
 ```json
 {
@@ -106,8 +136,6 @@ sidebar_label: Webhooks
   "is_active": true
 }
 ```
-
-**Parámetros:**
 
 | Campo       | Tipo    | Requerido | Descripción                                         |
 | ----------- | ------- | --------- | --------------------------------------------------- |
@@ -139,8 +167,16 @@ El `secret` se muestra **solo una vez**. Guárdalo para verificar la firma HMAC 
 ### Actualizar Webhook - 🟡 PUT
 
 ```http
-{{url}}/ubl2.1/webhooks/{webhook_id}
+{{url}}/ubl2.1/webhooks/{webhook_id}?client_uuid={{client_uuid}}
+Authorization: Bearer {token}
+Content-Type: application/json
 ```
+
+**Parámetros:**
+| Nombre | Ubicación | Requerido | Descripción |
+|---|---|---|---|
+| `webhook_id` | path | ✅ Sí | ID del webhook a actualizar. |
+| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
 
 **Body:**
 
@@ -155,14 +191,28 @@ El `secret` se muestra **solo una vez**. Guárdalo para verificar la firma HMAC 
 ### Eliminar Webhook - 🔴 DELETE
 
 ```http
-{{url}}/ubl2.1/webhooks/{webhook_id}
+{{url}}/ubl2.1/webhooks/{webhook_id}?client_uuid={{client_uuid}}
+Authorization: Bearer {token}
 ```
+
+**Parámetros:**
+| Nombre | Ubicación | Requerido | Descripción |
+|---|---|---|---|
+| `webhook_id` | path | ✅ Sí | ID del webhook a eliminar. |
+| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
 
 ### Probar Webhook - 🔵 POST
 
 ```http
-{{url}}/ubl2.1/webhooks/{webhook_id}/test
+{{url}}/ubl2.1/webhooks/{webhook_id}/test?client_uuid={{client_uuid}}
+Authorization: Bearer {token}
 ```
+
+**Parámetros:**
+| Nombre | Ubicación | Requerido | Descripción |
+|---|---|---|---|
+| `webhook_id` | path | ✅ Sí | ID del webhook a probar. |
+| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
 
 Envía un webhook de prueba para verificar tu configuración.
 
@@ -276,4 +326,73 @@ Después de 6 intentos fallidos, el webhook se marca como fallido y debes reinte
 ✅ **Monitorea:** Revisa el historial de entregas regularmente
 
 ---
+
+### Historial de Entregas - 🔵 GET
+
+```http
+GET {{url}}/ubl2.1/webhooks/{webhook_id}/deliveries?client_uuid={{client_uuid}}
+Authorization: Bearer {token}
+```
+
+Retorna el historial paginado de entregas del webhook: intentos exitosos, fallidos y tiempos de respuesta.
+
+**Parámetros:**
+| Nombre | Ubicación | Requerido | Descripción |
+|---|---|---|---|
+| `webhook_id` | path | ✅ Sí | ID del webhook. |
+| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+
+**Respuesta exitosa (200):**
+```json
+{
+  "dataRecords": {
+    "current_page": 1,
+    "data": [
+      {
+        "id": 2746,
+        "webhook_id": 21,
+        "event_type": "document.created",
+        "payload": {},
+        "status_code": 200,
+        "response_time_ms": 245,
+        "attempts": 1,
+        "delivered_at": "2026-02-06T16:45:00Z"
+      }
+    ],
+    "total": 1
+  }
+}
+```
+
+---
+
+### Regenerar Secret HMAC - 🟘 POST
+
+```http
+POST {{url}}/ubl2.1/webhooks/{webhook_id}/regenerate-secret?client_uuid={{client_uuid}}
+Authorization: Bearer {token}
+```
+
+Genera un nuevo secret para verificar la firma HMAC. El secret anterior queda **inmediatamente inválido**.
+
+**Parámetros:**
+| Nombre | Ubicación | Requerido | Descripción |
+|---|---|---|---|
+| `webhook_id` | path | ✅ Sí | ID del webhook. |
+| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+
+:::warning Importante
+Actualiza tu sistema inmediatamente con el nuevo secret. Las entregas en tránsito con el secret anterior fallarán la validación HMAC.
+:::
+
+**Respuesta exitosa (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "secret": "whsec_nuevo_secret_aqui"
+  }
+}
+```
+
 

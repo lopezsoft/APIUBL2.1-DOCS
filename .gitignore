@@ -24,6 +24,7 @@ yarn-error.log*
 
 /docs-dian
 /docs-2026
+/scratch
 
 *.log
 .htaccess

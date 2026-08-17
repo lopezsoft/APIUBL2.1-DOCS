@@ -1,6 +1,6 @@
 ---
 sidebar_position: 7
-sidebar_label: Eventos RADIAN
+sidebar_label: ⚡ Eventos RADIAN
 ---
 
 import Tabs from '@theme/Tabs';
@@ -8,9 +8,18 @@ import TabItem from '@theme/TabItem';
 
 # 🔄 API de Eventos de Documentos (RADIAN)
 
-:::info Base URL & Autenticación
+:::info Base URL, Autenticación & Multi-Tenant (`client_uuid`)
 - **Base URL:** `/api/ubl2.1/events`
 - **Autenticación:** Requiere header `Authorization: Bearer {token}` en todos los endpoints.
+- **Casas de Software (Multi-Tenant):** Puedes gestionar, consultar y transmitir eventos RADIAN en nombre de tus empresas cliente agregando el parámetro `?client_uuid={{client_uuid}}` a cualquiera de las URLs de esta sección.
+
+**¿Dónde encontrar el `client_uuid` de tus clientes?**  
+Puedes consultar el listado completo de tus empresas cliente y sus respectivos `client_uuid` mediante el endpoint:
+```http
+GET {{url}}/company/customers
+Authorization: Bearer {token}
+Content-Type: application/json
+```
 :::
 
 ---
@@ -97,6 +106,7 @@ También puedes enviar el `trackId` directamente en la URL: `POST /{trackId}/imp
 | `endDate` | `string` | — | Fecha fin |
 | `trackId` | `string` | — | Buscar por CUFE/CUDE exacto |
 | `limit` | `int` | 20 | Registros por página (máx. 50) |
+| `client_uuid` | `string` | — | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
 
 <details>
 <summary>💻 Ver Respuesta Exitosa (200)</summary>

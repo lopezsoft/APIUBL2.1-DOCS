@@ -4,15 +4,31 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.5.0] - 2026-08-16
+
+### Añadido
+* **Estandarización de Nomenclatura en Inglés:** Renombrados todos los archivos de endpoints en `docs/endpoints/` siguiendo la convención en inglés (`kebab-case`) con numeración correlativa del `01` al `20`.
+* **Iconos Semánticos en el Sidebar:** Integración de emojis / iconos representativos en la etiqueta `sidebar_label` de cada uno de los 20 módulos de endpoints y en la categoría principal `🔌 Endpoints` para una navegación visual más rápida e intuitiva.
+* **Integración de Funciones Auxiliares Públicas:** Consolidación de utilidades (`/numbers-to-letters`, `/numbersToLetters/{numero}`, `/digit-verification`, `/dv/{nit}`) dentro de `docs/endpoints/02-public-dian.md` como servicios públicos libres de autenticación y sin requisito de `client_uuid`.
+* **Ejemplos Reales de Respuesta DIAN:** Incorporación de respuestas JSON reales tomadas de la colección Postman oficial para Facturación Electrónica, POS, Documento Soporte, Nómina Electrónica, Autoincremento, Autenticación y Perfil.
+
+### Modificado
+* **Estandarización de Variables de Entorno en Ejemplos:** Reemplazadas todas las URLs fijas o quemadas en snippets de código por la variable dinámica `{{url}}` (`${url}` en JS, `{$url}` en PHP, `f"{url}"` en Python) adaptable a cualquier entorno.
+* **Mejora de UX en Referencia de Campos:** Reestructuración de `docs/billing-fields.md` organizando los campos en acordeones colapsables (`<details>`) con tablas descriptivas y ejemplos JSON interactivos.
+
+### Eliminado
+* **Módulo Payments - Wompi:** Removida la sección `docs/endpoints/payments-wompi` y todas sus referencias asociadas.
+* **Archivos Redundantes:** Eliminados los archivos desfasados en español y colisiones de prefijos numéricos.
+
+---
+
 ## [3.4.0] - 2026-06-29
 
 ### Añadido
-* **Swagger API Integrado:** Se integró la visualización de la especificación oficial OpenAPI (`api-docs.json`) mediante `redocusaurus` directamente en la ruta `/api-docs/` de la documentación.
-* **Nuevos Endpoints Modulares:** Se documentaron exhaustivamente 10 nuevas categorías modulares de endpoints extraídos de la especificación oficial:
+* **Nuevos Endpoints Modulares:** Se documentaron exhaustivamente 10 nuevas categorías modulares de endpoints en formato Markdown:
   * Empresa, Perfil de Usuario, Resoluciones DIAN, Software DIAN, Plantillas, Configuración de Reportes, Funciones Auxiliares, Pagos Wompi, Registros de Email y Envío Masivo (Bulk).
 
 ### Modificado
-* **Limpieza de Endpoints Privados:** Se eliminaron 20 endpoints administrativos internos (`/admin`, analíticas de membresías, cupones) del `api-docs.json` público para evitar confusiones a integradores externos.
 * **Redirecciones Base URL:** Se estandarizó el uso de las variables `{{url}}` y `{{SANDBOX_URL}}` en todas las nuevas rutas.
 
 ---

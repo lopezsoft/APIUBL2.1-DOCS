@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-sidebar_label: Autenticación
+sidebar_label: 🔐 Autenticación
 ---
 
 # 🔌 Introducción y Autenticación
@@ -76,19 +76,44 @@ Content-Type: application/json
 **Body requerido:**
 ```json
 {
-  "email": "usuario@empresa.com",
-  "password": "tu_contraseña",
+  "email": "demo@lopezsoft.net.co",
+  "password": "DEMO123456",
   "remember_me": 0
 }
 ```
-**Respuesta:** Incluye `access_token`, `user`, `expires_at` (90 días máximo).
+
+**Respuesta Exitosa (HTTP 200):**
+```json
+{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImYyZTFlYjgyZDUyMjEz...",
+  "token_type": "Bearer",
+  "expires_at": "2026-05-15 20:00:00",
+  "user": {
+    "id": 1,
+    "first_name": "Lewis",
+    "last_name": "Lopez Gomez",
+    "email": "demo@lopezsoft.net.co",
+    "roles": ["admin"]
+  }
+}
+```
 
 ### Obtener Usuario Actual - 🟢 GET
 ```http
 GET {{url}}/auth/user
 Authorization: Bearer {token}
 ```
-**Respuesta:** Información del usuario logueado.
+
+**Respuesta Exitosa (HTTP 200):**
+```json
+{
+  "id": 1,
+  "first_name": "Lewis",
+  "last_name": "Lopez Gomez",
+  "email": "demo@lopezsoft.net.co",
+  "roles": ["admin"]
+}
+```
 
 ### Cerrar Sesión - 🟢 GET
 ```http
@@ -96,6 +121,13 @@ GET {{url}}/auth/logout
 Authorization: Bearer {token}
 ```
 **Uso:** Revoca el token actual. Recomendado al final de sesión.
+
+**Respuesta Exitosa (HTTP 200):**
+```json
+{
+  "message": "Successfully logged out"
+}
+```
 
 ---
 
@@ -108,10 +140,42 @@ Authorization: Bearer {token}
 ```
 Obtiene la lista de tokens del usuario.
 
+**Respuesta Exitosa (HTTP 200):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "cb6282ed9f5cb116416928518f9dd93b53aafc2c0273722bbe5eb7eb96d7ccfac10178f43b8fe617",
+      "name": "Token ERP",
+      "description": "Token de integración para facturación",
+      "created_at": "2026-02-01T12:00:00.000000Z",
+      "expires_at": "2026-05-02T12:00:00.000000Z",
+      "is_expired": false
+    }
+  ]
+}
+```
+
 ### Listar Token por ID - 🟢 GET
 ```http
 GET {{url}}/tokens/{token_id}
 Authorization: Bearer {token}
+```
+
+**Respuesta Exitosa (HTTP 200):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "cb6282ed9f5cb116416928518f9dd93b53aafc2c0273722bbe5eb7eb96d7ccfac10178f43b8fe617",
+    "name": "Token ERP",
+    "description": "Token de integración para facturación",
+    "created_at": "2026-02-01T12:00:00.000000Z",
+    "expires_at": "2026-05-02T12:00:00.000000Z",
+    "is_expired": false
+  }
+}
 ```
 
 ### Crear Nuevo Token - 🔵 POST
@@ -129,10 +193,32 @@ Content-Type: application/json
 }
 ```
 
+**Respuesta Exitosa (HTTP 201):**
+```json
+{
+  "success": true,
+  "message": "Token de acceso creado exitosamente",
+  "token": "1|eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI...",
+  "data": {
+    "name": "Token Producción",
+    "description": "Token para integración ERP",
+    "expires_at": "2026-05-02 12:00:00"
+  }
+}
+```
+
 ### Eliminar (Revocar) Token - 🔴 DELETE
 ```http
 DELETE {{url}}/tokens/{token_id}
 Authorization: Bearer {token}
+```
+
+**Respuesta Exitosa (HTTP 200):**
+```json
+{
+  "message": "Token revoked successfully",
+  "success": true
+}
 ```
 
 ### Revocar Todos los Tokens - 🔵 POST
@@ -141,3 +227,16 @@ POST {{url}}/tokens/revoke-all
 Authorization: Bearer {token}
 ```
 Revoca todos tus tokens **excepto el que estás usando actualmente**.
+
+**Respuesta Exitosa (HTTP 200):**
+```json
+{
+  "dataRecords": {
+    "data": {
+      "revoked_count": 0
+    }
+  },
+  "message": "Tokens revoked successfully",
+  "success": true
+}
+```

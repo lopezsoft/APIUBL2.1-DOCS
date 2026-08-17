@@ -1628,6 +1628,224 @@
                   "body": "{\n    \"dataRecords\": {\n        \"data\": [\n            {\n                \"code\": \"01\",\n                \"description\": \"Plan de beneficios en salud financiado con UPC\"\n            },\n            {\n                \"code\": \"02\",\n                \"description\": \"Presupuesto máximo\"\n            },\n            {\n                \"code\": \"03\",\n                \"description\": \"Prima EPS / EOC, no asegurados SOAT\"\n            },\n            {\n                \"code\": \"04\",\n                \"description\": \"Cobertura Póliza SOAT\"\n            },\n            {\n                \"code\": \"05\",\n                \"description\": \"Cobertura ARL\"\n            },\n            {\n                \"code\": \"06\",\n                \"description\": \"Cobertura ADRES\"\n            },\n            {\n                \"code\": \"07\",\n                \"description\": \"Cobertura Salud Pública\"\n            },\n            {\n                \"code\": \"08\",\n                \"description\": \"Cobertura entidad territorial, recursos de oferta\"\n            },\n            {\n                \"code\": \"09\",\n                \"description\": \"Urgencias población migrante\"\n            },\n            {\n                \"code\": \"10\",\n                \"description\": \"Plan complementario en salud\"\n            },\n            {\n                \"code\": \"11\",\n                \"description\": \"Plan medicina prepagada\"\n            },\n            {\n                \"code\": \"12\",\n                \"description\": \"Otras pólizas en salud\"\n            },\n            {\n                \"code\": \"13\",\n                \"description\": \"Cobertura Régimen Especial o Excepción\"\n            },\n            {\n                \"code\": \"14\",\n                \"description\": \"Cobertura Fondo Nacional de Salud de las Personas Privadas de la Libertad\"\n            },\n            {\n                \"code\": \"15\",\n                \"description\": \"Particular\"\n            }\n        ]\n    },\n    \"success\": true\n}"
                 }
               ]
+            },
+            {
+              "name": "Factura sin contrato - Justificaciones",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{url}}/health/invoice-without-contract-justifications",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "health",
+                    "invoice-without-contract-justifications"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Factura sin contrato - Justificaciones",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/health/invoice-without-contract-justifications",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "health",
+                        "invoice-without-contract-justifications"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Date",
+                      "value": "Mon, 17 Aug 2026 00:56:44 GMT"
+                    },
+                    {
+                      "key": "Server",
+                      "value": "Apache/2.4.53 (Win64) OpenSSL/1.1.1o PHP/8.1.6 mod_fcgid/2.3.10-dev"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.1.6"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "X-RateLimit-Limit",
+                      "value": "90"
+                    },
+                    {
+                      "key": "X-RateLimit-Remaining",
+                      "value": "89"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5, max=100"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "Keep-Alive"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"dataRecords\": {\n        \"data\": [\n            {\n                \"code\": \"01\",\n                \"description\": \"Atención de urgencias.\"\n            },\n            {\n                \"code\": \"02\",\n                \"description\": \"Atención a cargo de ADRES o de aseguradora SOAT o de pólizas voluntaria de salud y pólizas de medicina prepagada.\"\n            },\n            {\n                \"code\": \"03\",\n                \"description\": \"Atención en salud por fallos de tutela/órdenes judiciales.\"\n            },\n            {\n                \"code\": \"04\",\n                \"description\": \"Atención en salud por Portabilidad o en los casos de asignación masiva de afiliados - artículo 2.5.3.4.7.9 del Decreto 780/2016\"\n            },\n            {\n                \"code\": \"05\",\n                \"description\": \"Atención en salud en casos excepcionales por cotizaciones o autorizaciones de servicios - Atenciones adicionales excepcionales.\"\n            },\n            {\n                \"code\": \"06\",\n                \"description\": \"Gestión recuperación de órganos para trasplante en Cumplimiento Estatutaria 1751 de 2015.\"\n            },\n            {\n                \"code\": \"07\",\n                \"description\": \"Profesionales Independientes en atención a pacientes particulares.\"\n            }\n        ]\n    },\n    \"success\": true\n}"
+                }
+              ]
+            },
+            {
+              "name": "Tipo de operaciones",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{url}}/health/operation-types",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "health",
+                    "operation-types"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Tipo de operaciones",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/health/operation-types",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "health",
+                        "operation-types"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Date",
+                      "value": "Mon, 17 Aug 2026 00:58:09 GMT"
+                    },
+                    {
+                      "key": "Server",
+                      "value": "Apache/2.4.53 (Win64) OpenSSL/1.1.1o PHP/8.1.6 mod_fcgid/2.3.10-dev"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.1.6"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "X-RateLimit-Limit",
+                      "value": "90"
+                    },
+                    {
+                      "key": "X-RateLimit-Remaining",
+                      "value": "89"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5, max=100"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "Keep-Alive"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"dataRecords\": {\n        \"data\": [\n            {\n                \"code\": \"SS-CUFE\",\n                \"description\": \"Acreditación. Este documento incluye referencia(s) de Factura Electrónica de Venta (tipo 01) que comprueba el recaudo de Cuotas Moderadoras, Copagos o Cuotas de Recuperación, como recursos a favor de terceros, los cuales son acreditados a la presente Factura Electrónica de Venta con destino a la aseguradora que aparece como adquiriente. – Activa el Método de cálculo del Sector Salud.\"\n            },\n            {\n                \"code\": \"SS-CUDE\",\n                \"description\": \"Acreditación. Este documento incluye referencia(s) de Factura de Contingencia (tipos 03 o 04) o de Nota Crédito aplicada a Factura Electrónica de Venta que reconoce valores recaudados correspondientes a Cuotas Moderadoras, Copagos o Cuotas de Recuperación, como ingresos a favor de terceros, los cuales son acreditados a la presente Factura Electrónica de Venta con destino a la aseguradora que aparece como adquiriente. – Activa el Método de cálculo del Sector Salud.\"\n            },\n            {\n                \"code\": \"SS-POS\",\n                \"description\": \"Acreditación. Este documento incluye referencia(s) de Documento Equivalente de Venta POS que comprueba el recaudo de Cuotas Moderadoras, Copagos o Cuotas de Recuperación, como recursos a favor de terceros, los cuales son acreditados a la presente Factura Electrónica de Venta con destino a la aseguradora que aparece como adquiriente. – Activa el Método de cálculo del Sector Salud.Observación: Los valores recaudados a favor de terceros por el operador del sistema de salud mediante los comprobantes del Sistema POS serán automatizados por la DIAN, y deberán reportarse cada vez que se cierra una caja de recaudo. La DIAN expedirá la reglamentación técnica e informática pertinente.\"\n            },\n            {\n                \"code\": \"SS-SNum\",\n                \"description\": \"Acreditación. Este documento incluye referencia(s) de Factura Talonario que comprueba el recaudo de Cuotas Moderadores, Copagos o Cuotas de Recuperación, como recursos a favor de terceros, los cuales son acreditados a la presente Factura Electrónica de Venta con destino a la aseguradora que aparece como adquiriente. – Activa el Método de cálculo del Sector Salud.\"\n            },\n            {\n                \"code\": \"SS-Recaudo\",\n                \"description\": \"Recaudación. Comprobante de recaudo de Cuotas Moderadores, Copagos o Cuotas de Recuperación, como recursos a favor de terceros. – No Activa el Método de cálculo del Sector Salud.\"\n            },\n            {\n                \"code\": \"SS-Reporte\",\n                \"description\": \"Reporte. Este documento reporta referencia(s) de diversa índole que comprueban recaudo de Cuotas Moderadoras, Copagos o Cuotas de Recuperación, a las cuales ya se les dio tratamiento contable. – No Activa el Método de cálculo del Sector Salud.\"\n            },\n            {\n                \"code\": \"SS-SinAporte\",\n                \"description\": \"Reporte. Sin aporte ni recaudo en dinero por parte de los afiliados del régimen contributivo por concepto de Cuotas Moderadoras, Copagos o Cuotas de Recuperación. – No Activa el Método de cálculo del Sector Salud.\"\n            }\n        ]\n    },\n    \"success\": true\n}"
+                }
+              ]
             }
           ],
           "auth": {

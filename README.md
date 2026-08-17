@@ -188,19 +188,19 @@ Body:
 
 ---
 
-## 📊 Estado del Proyecto
+## 📊 Estado del Proyecto (v3.5.0)
 
 - ✅ Backend operacional (GPT-4o Mini)
 - ✅ Frontend operacional (Docusaurus + React)
 - ✅ Chat integrado y funcional
-- ✅ Documentación completa (20 archivos)
+- ✅ Referencia de Endpoints completa (20 módulos normalizados en inglés con iconos y variables dinámicas `{{url}}`)
 - ✅ Listo para producción
 
 ---
 
 ## 📝 Licencia
 
-Todos los derechos reservados © 2025 LOPEZSOFT SAS
+Todos los derechos reservados © 2026 LOPEZSOFT SAS
 
 ---
 

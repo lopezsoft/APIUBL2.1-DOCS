@@ -1,6 +1,6 @@
 ---
-sidebar_position: 15
-sidebar_label: Company Templates
+sidebar_position: 16
+sidebar_label: 🎨 Company Templates
 ---
 
 # 🎨 Company Templates
@@ -8,91 +8,122 @@ sidebar_label: Company Templates
 > ✅ **Autenticación REQUERIDA**
 > Incluir en todos los endpoints de esta sección el header: `Authorization: Bearer {token}`
 
-## Lista templates asignados a la empresa
+:::info ¿Dónde obtener el `client_uuid`? — Parámetro Multi-Tenant para Casas de Software
+Si operas como **Casa de Software** o **Cuenta Principal**, puedes listar, asignar y personalizar los templates de factura de tus empresas cliente agregando el parámetro `client_uuid` en la query string de la URL:
+- **URL con Query Param:** `{{url}}/company/templates?client_uuid={{client_uuid}}`
+- **Header:** `Authorization: Bearer {token_cuenta_principal}`
+- **Comportamiento:** La gestión de plantillas se ejecutará en el contexto de la empresa cliente especificada por su UUID.
 
-### Lista templates asignados a la empresa - 🔵 GET
+**¿Dónde encontrar el `client_uuid` de tus clientes?**  
+Puedes consultar el listado completo de tus empresas cliente y sus respectivos `client_uuid` mediante el endpoint:
 ```http
-GET {{url}}/company/templates
+GET {{url}}/company/customers
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+:::
+
+---
+
+## Listar Templates Asignados a la Empresa
+
+### Listar Templates Asignados a la Empresa - 🔵 GET
+```http
+GET {{url}}/company/templates?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Descripción:** GET /api/company/templates
-Lista templates asignados a la empresa
+**Descripción:** Lista las plantillas gráficas asignadas y activas para la empresa.
 
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). |
 
 **Respuesta Exitosa (HTTP 200):**
 ```json
 {
-  "success": true,
-  "dataRecords": {}
+  "dataRecords": {
+    "data": [
+      {
+        "id": 6,
+        "name": "Template Moderno",
+        "template_uuid": "30f00f0a-0e92-4dfa-897f-6b6ce9fbfb98",
+        "is_default": true
+      }
+    ]
+  }
 }
 ```
 
 ---
 
-## Templates disponibles para asignar
+## Listar Templates Disponibles para Asignar
 
-### Templates disponibles para asignar - 🔵 GET
+### Listar Templates Disponibles para Asignar - 🔵 GET
 ```http
-GET {{url}}/company/templates/available
+GET {{url}}/company/templates/available?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Descripción:** GET /api/company/templates/available
-Lista templates del sistema disponibles para asignar
+**Descripción:** Lista el catálogo de templates del sistema disponibles para asignar a la empresa.
 
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). |
 
 **Respuesta Exitosa (HTTP 200):**
 ```json
 {
-  "success": true,
-  "dataRecords": {}
+  "dataRecords": {
+    "data": [
+      {
+        "template_uuid": "30f00f0a-0e92-4dfa-897f-6b6ce9fbfb98",
+        "name": "Factura Estándar 3 Columnas",
+        "preview_url": "https://api.ejemplo.com/previews/standard.png"
+      }
+    ]
+  }
 }
 ```
 
 ---
 
-## Asigna template a empresa
+## Asignar Template a la Empresa
 
-### Asigna template a empresa - 🟘 POST
+### Asignar Template a la Empresa - 🟘 POST
 ```http
-POST {{url}}/company/templates/assign
+POST {{url}}/company/templates/assign?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Descripción:** POST /api/company/templates/assign
-Asigna template del sistema a empresa
+**Descripción:** Asigna una plantilla gráfica del catálogo a la empresa.
 
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). |
 
 **Body (JSON):**
 ```json
 {
-  "template_uuid": "uuid-del-template",
-  "is_default": true,
-  "custom_config": {}
+  "template_uuid": "30f00f0a-0e92-4dfa-897f-6b6ce9fbfb98"
 }
 ```
 
-**Respuesta Exitosa (HTTP 201):**
+| Campo | Tipo | Requerido | Descripción |
+|---|---|---|---|
+| `template_uuid` | string | ✅ Sí | UUID único del template a asignar obtenido de `GET /company/templates/available`. |
+
+**Respuesta Exitosa (HTTP 200 / 201):**
 ```json
 {
   "success": true,
-  "message": "string"
+  "message": "Template asignado exitosamente a la empresa"
 }
 ```
 
@@ -265,12 +296,13 @@ Genera vista previa del template
 **Respuesta Exitosa (HTTP 200):**
 ```json
 {
-  "html": "string",
-  "css_path": "string",
-  "template_name": "string",
-  "is_custom": true
+  "dataRecords": {
+    "data": {
+      "html": "<html>...</html>",
+      "css_path": "css/templates/standard.css",
+      "template_name": "Factura Estándar",
+      "is_custom": true
+    }
+  }
 }
 ```
-
----
-

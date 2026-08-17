@@ -1,6 +1,6 @@
 ---
 sidebar_position: 19
-sidebar_label: Registros de Email
+sidebar_label: 📧 Registros de Email
 ---
 
 # 📧 Registros de Email
@@ -78,6 +78,3 @@ Content-Type: application/json
   ]
 }
 ```
-
----
-

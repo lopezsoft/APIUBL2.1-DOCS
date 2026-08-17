@@ -51,8 +51,9 @@ El certificado digital de prueba se utiliza de forma automática para firmar cri
 
 | Tipo de Documento Electrónico | Endpoint del API de Pruebas |
 |:---|:---|
-| Factura electrónica estándar | `POST /invoice` |
-| Nota crédito electrónica | `POST /notes/credit` |
+| Factura electrónica estándar / Salud (Res. 000948/2026) | `POST /invoice` |
+| Documento Equivalente POS Electrónico | `POST /pos` |
+| Nota crédito electrónica (estándar / salud) | `POST /notes/credit` |
 | Nota débito electrónica | `POST /notes/debit` |
 | Documento soporte electrónico | `POST /ds/document` |
 | Nota de ajuste a Documento Soporte | `POST /ds/adjustment-note` |

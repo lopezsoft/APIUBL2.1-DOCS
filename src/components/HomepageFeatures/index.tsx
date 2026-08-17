@@ -1,17 +1,19 @@
 import clsx from 'clsx';
+import type { IconType } from 'react-icons';
+import { FaPlug, FaHeartPulse, FaBolt } from 'react-icons/fa6';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
+  Icon: IconType;
   description: JSX.Element;
 };
 
 const FeatureList: FeatureItem[] = [
   {
     title: 'Fácil Integración & Sandbox',
-    Svg: require('@site/static/img/easy-api.svg').default,
+    Icon: FaPlug,
     description: (
       <>
         Documentación interactiva con snippets en cURL, Axios y Guzzle. Prueba sin riesgos en nuestro <strong>Sandbox con 20 módulos</strong> y simula respuestas DIAN mediante <strong>Magic Values</strong>.
@@ -20,7 +22,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Sector Salud & DIAN v3.6.0',
-    Svg: require('@site/static/img/web-inteface.svg').default,
+    Icon: FaHeartPulse,
     description: (
       <>
         Soporte oficial de la <strong>Resolución 000948 de 2026</strong> (RIPS como soporte obligatorio de la FEV en salud), Documento Equivalente POS, Nómina Electrónica, Documento Soporte y RADIAN.
@@ -29,7 +31,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Escalabilidad & Webhooks',
-    Svg: require('@site/static/img/languages.svg').default,
+    Icon: FaBolt,
     description: (
       <>
         Emisión asíncrona de alto volumen con la <strong>API Bulk</strong>, autenticación persistente mediante <strong>PAT (JWT)</strong> y notificaciones HTTP en tiempo real con <strong>Webhooks HMAC</strong>.
@@ -38,13 +40,13 @@ const FeatureList: FeatureItem[] = [
   },
 ];
 
-function Feature({ title, Svg, description }: FeatureItem) {
+function Feature({ title, Icon, description }: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
-      <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
-      </div>
-      <div className="text--center padding-horiz--md">
+      <div className={styles.featureCard}>
+        <div className={styles.iconWrapper}>
+          <Icon className={styles.featureIcon} aria-hidden="true" />
+        </div>
         <Heading as="h3">{title}</Heading>
         <p>{description}</p>
       </div>
@@ -56,6 +58,10 @@ export default function HomepageFeatures(): JSX.Element {
   return (
     <section className={styles.features}>
       <div className="container">
+        <header className={styles.sectionHeader}>
+          <Heading as="h2">Por qué elegir MATIAS API</Heading>
+          <p>Diseñada para desarrolladores — desde la integración hasta la escala</p>
+        </header>
         <div className="row">
           {FeatureList.map((props, idx) => (
             <Feature key={idx} {...props} />

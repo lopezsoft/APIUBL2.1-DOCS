@@ -72,7 +72,7 @@ curl -X POST {{SANDBOX_URL}}/auth/login \
 Genera tu token de acceso de larga duración para realizar pruebas de integración de forma segura:
 
 ```bash
-curl -X POST {{SANDBOX_URL}}/auth/token \
+curl -X POST {{SANDBOX_URL}}/token \
   -H "Authorization: Bearer {access_token}" \
   -H "Content-Type: application/json" \
   -d '{"name": "Mi Token de Prueba"}'

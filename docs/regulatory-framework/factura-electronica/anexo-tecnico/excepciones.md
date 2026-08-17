@@ -261,22 +261,32 @@ Este es un tipo de documento diferente. Ver [Documentos Equivalentes](/docs/regu
 
 ### Características
 
-- Cumple normativa sanitaria
-- Contiene información de procedimientos
-- Requiere información adicional
+- Reglamentada por la **Resolución 000948 de 2026 (14 de mayo de 2026)** del Ministerio de Salud y Protección Social (que deroga las Resoluciones 2275 de 2023, 558 y 1884 de 2024).
+- Requiere el envío obligatorio del objeto `health` con datos del prestador (código REPS), modalidad de pago, cobertura, periodos de facturación y valores de copagos/cuotas moderadoras en interoperabilidad con RIPS.
+- Contiene soporte del Documento Técnico 2 Versión 001 - FEV Sector Salud.
 
-### Campos Especiales
+### Campos Especiales del Objeto `health`
 
 ```json
 {
   "health": {
     "operation_type": "SS-CUFE",
+    "provider_code": "2341702036",
+    "payment_modality": "02",
+    "coverage": "01",
+    "contract_number": "c12bab98915513f00c50e7efdde112763c65b421afcc1f3cea76302e1c80e21c",
+    "policy_number": "",
+    "copayment": 0,
+    "moderator_fee": 0,
+    "shared_payments": 0,
+    "advance": 0,
+    "justification_without_contract": "",
     "invoice_period": {
-      "start_date": "2024-10-01",
-      "end_date": "2024-10-31"
-    },
-    "service_type": "CONSULTA",
-    "procedure_code": "900001"
+      "start_date": "2026-07-01",
+      "start_time": "00:00:00",
+      "end_date": "2026-07-30",
+      "end_time": "23:59:59"
+    }
   }
 }
 ```

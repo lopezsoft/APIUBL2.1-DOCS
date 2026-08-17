@@ -188,12 +188,13 @@ Body:
 
 ---
 
-## 📊 Estado del Proyecto (v3.5.0)
+## 📊 Estado del Proyecto (v3.6.0)
 
 - ✅ Backend operacional (GPT-4o Mini)
 - ✅ Frontend operacional (Docusaurus + React)
 - ✅ Chat integrado y funcional
 - ✅ Referencia de Endpoints completa (20 módulos normalizados en inglés con iconos y variables dinámicas `{{url}}`)
+- ✅ Soporte oficial Sector Salud (Resolución 000948 de 2026 / Documento Técnico 2 MinSalud)
 - ✅ Listo para producción
 
 ---

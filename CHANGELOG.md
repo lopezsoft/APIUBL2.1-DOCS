@@ -4,6 +4,16 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.6.0] - 2026-08-16
+
+### Añadido
+* **Soporte Oficial Resolución 000948 de 2026 (MinSalud):** Actualización regulatoria completa para el Sector Salud con base en la Resolución 000948 del 14 de mayo de 2026 (que deroga las Resoluciones 2275 de 2023, 558 y 1884 de 2024) y el **Documento Técnico 2 Versión 001** (Julio 1 de 2026) del MinSalud / DIAN.
+* **Ejemplo JSON Factura Sector Salud (`invoice-health-sector.md`):** Publicada la documentación y el payload integral para Factura Electrónica de Venta en salud con nodo `health`, periodos de facturación, códigos REPS y catálogos SISPRO (`modalidadPago`, `coberturaPlan`, `facturaSinContrato`).
+* **Ejemplo JSON Nota Crédito Sector Salud (`credit-note-health-sector.md`):** Documentado el payload de Nota Crédito en salud con `operation_type: "SS-CUDE"`, concepto de discrepancia y referencia obligatoria CUFE a la factura original.
+* **Especificación Técnica Completa del Objeto `health` (`docs/billing-fields.md`):** Tablas exhaustivas de modalidades de pago (01 a 04), coberturas y planes de beneficios (01 a 16), causales de facturación sin contrato, y reglas de sincronización de copagos, cuotas moderadoras, pagos compartidos y anticipos con el RIPS.
+
+---
+
 ## [3.5.0] - 2026-08-16
 
 ### Añadido

@@ -853,62 +853,171 @@ Referencia de la orden de compra. _Este campo es opcional_ y debe ser usado de a
 
 ### `health` 🟢
 
-Información específica para documentos del **sector salud** (Resolución 866 de 2021). _Este campo es opcional_ y aplica exclusivamente cuando el emisor pertenece al sector salud. Debe ser un objeto.
+Información específica y obligatoria para documentos electrónicos del **Sector Salud** (reglamentada por la **Resolución 000948 de 2026** [14 de mayo de 2026] del Ministerio de Salud y Protección Social —que deroga expresamente las Resoluciones 2275 de 2023, 558 y 1884 de 2024—, Resolución 866 de 2021 y el **Documento Técnico 2 versión 001 - FEV Sector Salud** del MinSalud / DIAN). _Este campo es requerido_ cuando el emisor sea un prestador de servicios de salud (IPS, profesional independiente, transporte asistencial) o proveedor de tecnologías en salud que facture a EPS, entidades territoriales, ADRES, aseguradoras SOAT o planes voluntarios de salud. Debe ser un objeto.
+
+<details>
+<summary>📋 <strong>Ejemplo de Payload JSON — Objeto health</strong></summary>
+
+```json
+"health": {
+  "operation_type": "SS-CUFE",
+  "provider_code": "2341702036",
+  "payment_modality": "02",
+  "coverage": "01",
+  "contract_number": "c12bab98915513f00c50e7efdde112763c65b421afcc1f3cea76302e1c80e21c",
+  "policy_number": "",
+  "copayment": 0,
+  "moderator_fee": 0,
+  "shared_payments": 0,
+  "advance": 0,
+  "justification_without_contract": "",
+  "invoice_period": {
+    "start_date": "2026-07-01",
+    "start_time": "00:00:00",
+    "end_date": "2026-07-30",
+    "end_time": "23:59:59"
+  },
+  "download_attachments": {
+    "url": "www.ips-1.com.co",
+    "arguments": [
+      {
+        "name": "excelFile",
+        "value": "a1b2c3.xlsx"
+      },
+      {
+        "name": "txtFile",
+        "value": "a1b2c3.txt"
+      }
+    ]
+  },
+  "document_delivery": {
+    "ws": "https://ws4erp.ips-987.com.co/WcfRecibiendoDocs4ERP.svc?wsdl",
+    "arguments": [
+      {
+        "name": "Método-1",
+        "value": "ClienteEntregaAcuseDeReciboDeFEV-VP"
+      },
+      {
+        "name": "Método-2",
+        "value": "ClienteEntregaConstanciaDeMercanciaEntregada"
+      }
+    ]
+  }
+}
+```
+
+</details>
 
 <details open>
-<summary>🏥 <strong>Campos principales</strong></summary>
+<summary>🏥 <strong>Campos Principales del Prestador y Contrato (Extensión Salud)</strong></summary>
 
-| Campo | Tipo | Descripción |
-|-------|:----:|-------------|
-| `operation_type` | string | Tipo de operación del sector salud |
+| Campo | Tipo | Requerido | Descripción |
+|-------|:----:|:---------:|-------------|
+| `operation_type` | string | ✅ Sí | Tipo de operación del sector salud. Valores habituales: `"SS-CUFE"` (Factura electrónica con CUFE), `"SS-CUDE"` (Notas débito/crédito), `"SS-POS"`, `"SS-SinAporte"`. |
+| `provider_code` | string | ✅ Sí | Código asignado en el SGSSS al prestador en el Registro Especial de Prestadores de Servicios de Salud (**REPS** - tabla `IPSCodHabilitación`) o código asignado por MinSalud (tabla `IPSnoREPS`) para Proveedores de Tecnologías en Salud. |
+| `payment_modality` | string | ✅ Sí | Código de la modalidad de pago pactada objeto de facturación (Catálogo `modalidadPago` de SISPRO). En facturas multiusuario, todos deben compartir la misma modalidad. |
+| `coverage` | string | ✅ Sí | Código de la entidad/fuente responsable de financiar la cobertura o plan de beneficios (Catálogo `coberturaPlan` de SISPRO). |
+| `contract_number` | string | ⚠️ Condicional | Número del contrato suscrito objeto de facturación. Si la entidad está obligada por la Ley 1966/2019, debe registrar el código **CUCON** expedido por la plataforma de contratación. En caso de no existir contrato, enviar vacío `""`. |
+| `policy_number` | string | ⚠️ Condicional | Número de la póliza de seguro. **Obligatorio** cuando se trate de atenciones cubiertas por póliza **SOAT** (cobertura `04`) o planes voluntarios de salud (pólizas de salud `12`). En los demás casos debe ir vacío `""`. |
+| `justification_without_contract` | string | ⚠️ Condicional | Código de justificación de atención cuando se factura sin contrato previo con el pagador (Catálogo `facturaSinContrato` de SISPRO). Obligatorio según causal específica (ej. urgencias, tutelas, portabilidad). Si hay contrato, enviar vacío `""`. |
+
+---
+
+#### 📌 Catálogo de Modalidades de Pago (`payment_modality`)
+
+| Código | Modalidad | Definición (Decreto 780 de 2016) |
+|:---:|---|---|
+| `01` | **Pago individual por caso / Paquete / Canasta** | Conjunto integral de atenciones por patología, grupo relacionado de diagnóstico o procedimiento quirúrgico. |
+| `02` | **Pago global prospectivo** | Tarifa global pactada anticipadamente para cubrir un volumen o grupo de servicios durante un periodo acordado. |
+| `03` | **Pago por capitación** | Pago anticipado de una suma fija por persona que se pacta para atender un conjunto definido de servicios durante un periodo. |
+| `04` | **Pago por evento** | Mecanismo en el que el pago se realiza por cada actividad, procedimiento, intervención, insumo o medicamento efectivamente prestado. |
+
+---
+
+#### 📌 Catálogo de Cobertura o Plan de Beneficios (`coverage`)
+
+| Código | Cobertura / Plan de Beneficios | Descripción y Base Normativa |
+|:---:|---|---|
+| `01` | **UPC Contributiva** | Plan de beneficios en salud financiado con UPC contributiva (Resolución 2765 de 2025). |
+| `02` | **Presupuesto Máximo** | Servicios y tecnologías no financiados con UPC y no excluidos de la financiación con recursos del SGSSS (Resolución 067 de 2025). |
+| `03` | **Prima EPS, no asegurados SOAT** | Víctimas de accidentes de tránsito ocasionados por vehículos no asegurados por SOAT o no identificados (Art. 106 D.L. 2106/2019). |
+| `04` | **Cobertura póliza SOAT** | Servicios prestados a víctimas de accidentes con póliza SOAT vigente (Decreto 780 de 2016). Requiere `policy_number`. |
+| `05` | **Cobertura ARL** | Prestaciones asistenciales derivadas de accidentes de trabajo y enfermedad laboral a cargo de la ARL (Dec. 1295/1994). |
+| `06` | **Cobertura ADRES** | Coberturas en salud a cargo de la Administradora de los Recursos del SGSSS (Ley 1955/2019). |
+| `07` | **Cobertura Salud Pública** | Acciones colectivas de gestión en salud pública Nación / Entidades Territoriales (Res. 1597 de 2025). |
+| `08` | **Entidad Territorial (Recursos de Oferta)** | Prestación a cargo de la entidad territorial para población no afiliada al SGSSS (Leyes 715/2001 y 1955/2019). |
+| `09` | **Urgencias Población Migrante** | Atención de urgencias a población migrante regular no afiliada o irregular (Art. 232 Ley 1955/2019). |
+| `10` | **Plan Complementario en Salud** | Coberturas contratadas voluntariamente financiadas por afiliado/empleador (Dec. 780/2016). |
+| `11` | **Plan Medicina Prepagada** | Coberturas de medicina prepagada contratadas voluntariamente (Dec. 780/2016). |
+| `12` | **Pólizas en Salud** | Pólizas de hospitalización y cirugía contratadas voluntariamente (Dec. 780/2016). Requiere `policy_number`. |
+| `13` | **Régimen Especial o Excepción** | Servicios a regímenes de excepción: Fuerzas Militares, Policía, Magisterio, Ecopetrol, Universidades (Ley 647/2001). |
+| `14` | **Fondo Nacional PPL / INPEC** | Población privada de la libertad en custodia del INPEC (Ley 1709 de 2014 / Dec. 1069 de 2015). |
+| `15` | **Particular** | Servicios y tecnologías asumidos directamente por el paciente con recursos propios. |
+| `16` | **UPC Subsidiada** | Plan de beneficios en salud financiado con UPC subsidiada (Resolución 2765 de 2025). |
+
+---
+
+#### 📌 Causales de Factura Sin Contrato (`justification_without_contract`)
+
+Se diligencia exclusivamente cuando el prestador no cuenta con acuerdo de voluntades previo con el pagador:
+1. Atención de urgencias vitales.
+2. Atención a cargo de ADRES, aseguradora SOAT o pólizas voluntarias / medicina prepagada.
+3. Atención en salud por fallos de tutela u órdenes judiciales.
+4. Atención en salud por Portabilidad o asignación masiva de afiliados (Art. 2.5.3.4.7.9 Decreto 780/2016).
+5. Atención excepcional por cotizaciones o autorizaciones adicionales de servicios.
+6. Gestión y recuperación de órganos para trasplante (Ley Estatutaria 1751 de 2015).
+7. Profesionales independientes en atención a pacientes particulares.
 
 </details>
 
 <details>
-<summary>📅 <strong>invoice_period</strong> — Periodo de facturación</summary>
+<summary>💰 <strong>Copagos, Cuotas Moderadoras, Pagos Compartidos y Anticipos (PrepaidPayment)</strong></summary>
 
-| Campo | Tipo | Descripción |
-|-------|:----:|-------------|
-| `start_date` | string | Fecha de inicio. Formato `YYYY-MM-DD` |
-| `start_time` | string | Hora de inicio. Formato `HH:mm:ss` |
-| `end_date` | string | Fecha de fin. Formato `YYYY-MM-DD` |
-| `end_time` | string | Hora de fin. Formato `HH:mm:ss` |
+Todos los montos numéricos deben ser mayores o iguales a `0`, expresados sin separadores de miles y con punto decimal. Estos valores se descuentan o informan de acuerdo con las reglas de interoperabilidad con **RIPS**:
 
-</details>
-
-<details>
-<summary>📎 <strong>download_attachments</strong> — Descarga de adjuntos</summary>
-
-| Campo | Tipo | Descripción |
-|-------|:----:|-------------|
-| `url` | string | URL del servicio de descarga |
-| `arguments` | array | Arreglo de objetos `{name, value}` con parámetros |
+| Campo | Tipo | Requerido | Descripción |
+|-------|:----:|:---------:|-------------|
+| `copayment` | number | ✅ Sí | Valor total efectivamente recaudado por el prestador correspondiente a **Copago**. En facturas multiusuario corresponde a la sumatoria de copagos. Debe coincidir exactamente con el valor reportado en el JSON de RIPS. |
+| `moderator_fee` | number | ✅ Sí | Valor efectivamente recaudado por concepto de **Cuota Moderadora**. En facturas multiusuario es la sumatoria de cuotas. Debe coincidir con el valor de RIPS. |
+| `shared_payments` | number | ✅ Sí | Valor recaudado por **Pagos Compartidos** en planes voluntarios de salud (medicina prepagada, pólizas, planes complementarios). Debe coincidir con RIPS. |
+| `advance` | number | ⚠️ Condicional | Valor del **Anticipo** a legalizar que se descuenta del valor de la factura en ejecución del contrato pactado. Enviar `0` si no hubo anticipos. |
 
 </details>
 
 <details>
-<summary>📤 <strong>document_delivery</strong> — Entrega de documentos</summary>
+<summary>📅 <strong>Periodo de Facturación (invoice_period)</strong></summary>
 
-| Campo | Tipo | Descripción |
-|-------|:----:|-------------|
-| `ws` | string | URL del servicio web |
-| `arguments` | array | Arreglo de objetos `{name, value}` con parámetros |
+Define el lapso temporal de la prestación de los servicios de salud (obligatorio para usuario único o facturación multiusuario / capitación):
+
+| Campo | Tipo | Requerido | Formato | Descripción |
+|-------|:----:|:---------:|:-------:|-------------|
+| `start_date` | string | ✅ Sí | `YYYY-MM-DD` | Fecha de inicio de prestación del servicio o inicio del periodo facturado (ej. `"2026-07-01"`). |
+| `start_time` | string | ✅ Sí | `HH:mm:ss` | Hora de inicio de la atención o inicio de periodo (ej. `"00:00:00"`). |
+| `end_date` | string | ✅ Sí | `YYYY-MM-DD` | Fecha final de prestación del servicio o fin del periodo facturado (ej. `"2026-07-30"`). |
+| `end_time` | string | ✅ Sí | `HH:mm:ss` | Hora final de la atención o cierre de periodo (ej. `"23:59:59"`). |
 
 </details>
 
 <details>
-<summary>👥 <strong>user_collections</strong> — Colecciones de usuario</summary>
+<summary>📎 <strong>Descarga de Adjuntos y Entrega Electrónica (download_attachments / document_delivery)</strong></summary>
 
-Arreglo de objetos con un campo `information` que contiene:
+Permite configurar canales automatizados para la descarga de soportes clínicos y la entrega de acuses entre el prestador y el pagador/ERP:
 
-| Campo | Tipo | Descripción |
-|-------|:----:|-------------|
-| `name` | string | Nombre del dato |
-| `value` | string | Valor del dato |
-| `schemeName` | string | Nombre del esquema |
-| `schemeID` | string | ID del esquema |
+#### Objeto `download_attachments` (Descarga de Soportes)
+| Campo | Tipo | Requerido | Descripción |
+|-------|:----:|:---------:|-------------|
+| `url` | string | No | Dominio o URL del servicio web donde el pagador puede descargar los anexos y soportes clínicos (ej. `"www.ips-1.com.co"`). |
+| `arguments` | array | No | Arreglo de objetos `{ "name": "...", "value": "..." }` con los nombres y rutas de los archivos adjuntos (ej. soportes en Excel, PDF de historia clínica o archivos RIPS). |
+
+#### Objeto `document_delivery` (Integración de Web Service)
+| Campo | Tipo | Requerido | Descripción |
+|-------|:----:|:---------:|-------------|
+| `ws` | string | No | Endpoint WSDL/SOAP o REST para la recepción de acuses de recibo y constancias de entrega de la factura electrónica. |
+| `arguments` | array | No | Arreglo de objetos `{ "name": "...", "value": "..." }` con métodos o parámetros de consumo (ej. `"ClienteEntregaAcuseDeReciboDeFEV-VP"`). |
 
 </details>
+
+---
 
 ### `customer` 🔴
 

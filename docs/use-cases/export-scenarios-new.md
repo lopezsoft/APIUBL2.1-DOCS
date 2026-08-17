@@ -316,7 +316,7 @@ curl -X POST https://api.matias-app.com/api/invoices \
 - 📖 [Factura Simple](/docs/use-cases/simple-invoice)
 - 📖 [Factura con Descuentos](/docs/use-cases/invoice-with-discounts)
 - 📖 [Casos de Error Común](/docs/use-cases/common-errors)
-- 📚 [Marco Regulatorio DIAN](/docs/regulatory-framework/overview)
+- 📋 [Campos del Documento](/docs/billing-fields)
 
 ---
 

@@ -625,11 +625,11 @@ Matias cumple rigurosamente con los marcos regulatorios y anexos técnicos ofici
 | **Documento Soporte** | 000160/2024 | v1.1 | ✅ Vigente |
 
 #### 🚀 Accesos Rápidos a Guías Técnicas
-- 📄 **[Factura Electrónica v1.9](/docs/regulatory-framework/factura-electronica/intro)** - Especificaciones técnicas y anexos.
-- 💼 **[Nómina Electrónica v3.0](/docs/regulatory-framework/nomina-electronica/intro)** - Guía completa de campos y cálculos.
-- 🌐 **[RADIAN v2.0](/docs/regulatory-framework/radian/intro)** - Sistema de radicación y registro.
-- 📋 **[Documento Soporte v1.1](/docs/regulatory-framework/documento-soporte/intro)** - Operaciones con no obligados a facturar.
-- 📊 **[Tablas de Referencia](/docs/regulatory-framework/tablas-referencia)** - Todas las tablas DIAN consolidadas.
+- 📄 **[Campos del Documento](/docs/billing-fields)** - Especificaciones completas de campos y Sector Salud.
+- 💼 **[Nómina Electrónica](/docs/payroll/payroll-fields)** - Guía completa de campos y devengos/deducciones.
+- 🌐 **[Eventos RADIAN](/docs/endpoints/events-radian)** - Endpoints para acuses y recepción de facturas.
+- 📋 **[Documento Soporte](/docs/endpoints/support-documents)** - Operaciones con no obligados a facturar.
+- 📚 **[Glosario Técnico](/docs/glossary)** - Términos técnicos, normativas y acrónimos.
 - 📥 **[Anexos Oficiales DIAN](https://www.dian.gov.co/impuestos/factura-electronica)** - Descargas directas del portal DIAN.
 
 ---

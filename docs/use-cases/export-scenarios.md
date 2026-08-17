@@ -554,11 +554,11 @@ Estas validaciones son **obligatorias** para facturas de exportación:
       <small>Troubleshooting</small>
     </div>
   </a>
-  <a href="/docs/regulatory-framework/overview" style={{textDecoration: 'none', color: 'inherit'}}>
+  <a href="/docs/billing-fields" style={{textDecoration: 'none', color: 'inherit'}}>
     <div style={{padding: '1.5rem', backgroundColor: '#d4edda', borderRadius: '8px', border: '2px solid #28a745', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
-      <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📖</div>
-      <strong>Marco Regulatorio</strong><br/>
-      <small>Normativa DIAN</small>
+      <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📋</div>
+      <strong>Campos del Documento</strong><br/>
+      <small>Diccionario técnico</small>
     </div>
   </a>
 </div>

@@ -66,6 +66,44 @@ const config: Config = {
     ],
   ],
 
+  plugins: [
+    [
+      '@docusaurus/plugin-pwa',
+      {
+        debug: false,
+        // El SW instala y precachea el sitio para uso offline; se activa
+        // solo cuando el usuario instala/usa la app como PWA.
+        offlineModeActivationStrategies: [
+          'appInstalled',
+          'standalone',
+          'queryString',
+        ],
+        pwaHead: [
+          { tagName: 'link', rel: 'icon', href: '/img/icons/icon-192.png' },
+          { tagName: 'link', rel: 'manifest', href: '/manifest.json' },
+          { tagName: 'meta', name: 'theme-color', content: '#3c6ab2' },
+          { tagName: 'meta', name: 'apple-mobile-web-app-capable', content: 'yes' },
+          {
+            tagName: 'meta',
+            name: 'apple-mobile-web-app-status-bar-style',
+            content: '#3c6ab2',
+          },
+          {
+            tagName: 'link',
+            rel: 'apple-touch-icon',
+            href: '/img/icons/apple-touch-icon.png',
+          },
+          {
+            tagName: 'meta',
+            name: 'msapplication-TileImage',
+            content: '/img/icons/icon-192.png',
+          },
+          { tagName: 'meta', name: 'msapplication-TileColor', content: '#3c6ab2' },
+        ],
+      },
+    ],
+  ],
+
   themeConfig: {
     // Replace with your project's social card
     image: 'img/matias-api-social-card.png',
@@ -119,8 +157,8 @@ const config: Config = {
               to: '/docs/endpoints',
             },
             {
-              label: 'Marco Regulatorio DIAN',
-              to: '/docs/regulatory-framework/factura-electronica/intro',
+              label: 'Campos del Documento',
+              to: '/docs/billing-fields',
             },
           ],
         },
@@ -180,7 +218,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} LOPEZSOFT SAS - Todos los derechos reservados. | MATIAS API v3.0.7 🚀 PAT + Webhooks + Membresías`,
+      copyright: `Copyright © ${new Date().getFullYear()} LOPEZSOFT SAS - Todos los derechos reservados. | MATIAS API v3.6.0 🚀 Sector Salud (Res. 000948 de 2026) + PAT + Sandbox + Bulk`,
     },
     prism: {
       theme: prismThemes.github,

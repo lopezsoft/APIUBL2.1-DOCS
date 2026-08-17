@@ -412,10 +412,10 @@ sidebar_label: Glosario
       <small>Diccionario de campos y salud</small>
     </div>
   </a>
-  <a href="/docs/regulatory-framework/overview" style={{textDecoration: 'none', color: 'inherit'}}>
+  <a href="/docs/intro" style={{textDecoration: 'none', color: 'inherit'}}>
     <div style={{padding: '1rem', backgroundColor: '#d1ecf1', borderRadius: '8px', border: '1px solid #17a2b8'}}>
-      📖 <strong>Marco Regulatorio</strong><br/>
-      <small>Resoluciones DIAN y MinSalud</small>
+      🚀 <strong>Guía de Inicio</strong><br/>
+      <small>Introducción y conceptos</small>
     </div>
   </a>
   <a href="/docs/sandbox/quickstart" style={{textDecoration: 'none', color: 'inherit'}}>

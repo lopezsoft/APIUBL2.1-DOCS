@@ -10,29 +10,29 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Fácil Integración',
+    title: 'Fácil Integración & Sandbox',
     Svg: require('@site/static/img/easy-api.svg').default,
     description: (
       <>
-        Documentación clara y estructurada. Prueba todo sin riesgos en nuestro <strong>Entorno Sandbox</strong> antes de ir a producción.
+        Documentación interactiva con snippets en cURL, Axios y Guzzle. Prueba sin riesgos en nuestro <strong>Sandbox con 20 módulos</strong> y simula respuestas DIAN mediante <strong>Magic Values</strong>.
       </>
     ),
   },
   {
-    title: 'Autogestión y Masivos',
+    title: 'Sector Salud & DIAN v3.6.0',
     Svg: require('@site/static/img/web-inteface.svg').default,
     description: (
       <>
-        <strong>v3.3.0:</strong> Procesa grandes volúmenes con la API Bulk, gestiona eventos RADIAN en el Sandbox y administra tokens y membresías tú mismo.
+        Soporte oficial de la <strong>Resolución 000948 de 2026</strong> (RIPS como soporte obligatorio de la FEV en salud), Documento Equivalente POS, Nómina Electrónica, Documento Soporte y RADIAN.
       </>
     ),
   },
   {
-    title: 'Notificaciones en Tiempo Real',
+    title: 'Escalabilidad & Webhooks',
     Svg: require('@site/static/img/languages.svg').default,
     description: (
       <>
-        <strong>Webhooks:</strong> Recibe notificaciones HTTP instantáneas de 26 eventos (documentos, emails, pagos, membresías).
+        Emisión asíncrona de alto volumen con la <strong>API Bulk</strong>, autenticación persistente mediante <strong>PAT (JWT)</strong> y notificaciones HTTP en tiempo real con <strong>Webhooks HMAC</strong>.
       </>
     ),
   },

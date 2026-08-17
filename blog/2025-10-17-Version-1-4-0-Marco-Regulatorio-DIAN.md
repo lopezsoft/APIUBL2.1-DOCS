@@ -114,11 +114,11 @@ Marco Regulatorio DIAN
 ```
 
 ### Acceso Rápido a Documentos
-- 📖 [Factura Electrónica](/docs/regulatory-framework/factura-electronica/intro)
-- 💼 [Nómina Electrónica](/docs/regulatory-framework/nomina-electronica/intro)
-- 🌐 [RADIAN](/docs/regulatory-framework/radian/intro)
-- 📄 [Documento Soporte](/docs/regulatory-framework/documento-soporte/intro)
-- 📑 [Tablas de Referencia](/docs/regulatory-framework/tablas-referencia)
+- 📖 [Campos del Documento](/docs/billing-fields)
+- 💼 [Nómina Electrónica](/docs/payroll/payroll-fields)
+- 🌐 [Eventos RADIAN](/docs/endpoints/events-radian)
+- 📄 [Documento Soporte](/docs/endpoints/support-documents)
+- 📑 [Glosario](/docs/glossary)
 
 ## 🔧 Resolución de Problemas
 
@@ -185,7 +185,7 @@ Esta versión fue desarrollada con la colaboración de:
 ¿Tienes preguntas sobre la nueva documentación?
 - 📧 Email: support@matias-api.com
 - 💬 Chat: [Contacto en línea](#)
-- 📚 Documentación: [Ver Marco Regulatorio](/docs/regulatory-framework/overview)
+- 📚 Documentación: [Guía de Inicio](/docs/intro)
 - 🐛 Reportar Errores: [GitHub Issues](#)
 
 ---

@@ -1,47 +1,48 @@
 ---
 sidebar_position: 16
-sidebar_label: 🎨 Company Templates
+sidebar_label: 🎨 Plantillas de Empresa
 ---
 
-# 🎨 Company Templates
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-> ✅ **Autenticación REQUERIDA**
-> Incluir en todos los endpoints de esta sección el header: `Authorization: Bearer {token}`
+# 🎨 Plantillas de Empresa (Company Templates) {#company-templates}
 
-:::info ¿Dónde obtener el `client_uuid`? — Parámetro Multi-Tenant para Casas de Software
-Si operas como **Casa de Software** o **Cuenta Principal**, puedes listar, asignar y personalizar los templates de factura de tus empresas cliente agregando el parámetro `client_uuid` en la query string de la URL:
-- **URL con Query Param:** `{{url}}/company/templates?client_uuid={{client_uuid}}`
-- **Header:** `Authorization: Bearer {token_cuenta_principal}`
-- **Comportamiento:** La gestión de plantillas se ejecutará en el contexto de la empresa cliente especificada por su UUID.
+:::warning Autenticación Requerida
+Incluir en todos los endpoints de esta sección el header: `Authorization: Bearer {token}`
+:::
 
-**¿Dónde encontrar el `client_uuid` de tus clientes?**  
-Puedes consultar el listado completo de tus empresas cliente y sus respectivos `client_uuid` mediante el endpoint:
+:::info Parámetro Multi-Tenant: `client_uuid`
+Si operas como **Casa de Software**, puedes personalizar plantillas gráficas para tus empresas cliente agregando `?client_uuid={{client_uuid}}`.
 ```http
 GET {{url}}/company/customers
 Authorization: Bearer {token}
-Content-Type: application/json
 ```
 :::
 
 ---
 
-## Listar Templates Asignados a la Empresa
+## 📋 Catálogo y Asignación {#catalogo-asignacion}
 
-### Listar Templates Asignados a la Empresa - 🔵 GET
+<details open>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/company/templates</b> — Listar Templates Asignados</summary>
+
 ```http
 GET {{url}}/company/templates?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Descripción:** Lista las plantillas gráficas asignadas y activas para la empresa.
+**Descripción:** Lista las plantillas gráficas asignadas y activas para la empresa emisora.
 
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
-**Respuesta Exitosa (HTTP 200):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "dataRecords": {
@@ -57,25 +58,29 @@ Content-Type: application/json
 }
 ```
 
----
+</details>
 
-## Listar Templates Disponibles para Asignar
+</details>
 
-### Listar Templates Disponibles para Asignar - 🔵 GET
+<details>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/company/templates/available</b> — Listar Templates Disponibles</summary>
+
 ```http
 GET {{url}}/company/templates/available?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Descripción:** Lista el catálogo de templates del sistema disponibles para asignar a la empresa.
+**Descripción:** Lista el catálogo general de templates del sistema disponibles para ser asignados.
 
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
-**Respuesta Exitosa (HTTP 200):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "dataRecords": {
@@ -90,23 +95,23 @@ Content-Type: application/json
 }
 ```
 
----
+</details>
 
-## Asignar Template a la Empresa
+</details>
 
-### Asignar Template a la Empresa - 🟘 POST
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/company/templates/assign</b> — Asignar Template a la Empresa</summary>
+
 ```http
 POST {{url}}/company/templates/assign?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Descripción:** Asigna una plantilla gráfica del catálogo a la empresa.
-
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
 **Body (JSON):**
 ```json
@@ -119,7 +124,9 @@ Content-Type: application/json
 |---|---|---|---|
 | `template_uuid` | string | ✅ Sí | UUID único del template a asignar obtenido de `GET /company/templates/available`. |
 
-**Respuesta Exitosa (HTTP 200 / 201):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 201)</summary>
+
 ```json
 {
   "success": true,
@@ -127,25 +134,24 @@ Content-Type: application/json
 }
 ```
 
----
+</details>
 
-## Actualiza configuración de asignación
+</details>
 
-### Actualiza configuración de asignación - 🟠 PUT
+<details>
+<summary><span className="badge badge--warning margin-right--sm">PUT</span> <b>/company/templates/&#123;id&#125;</b> — Actualizar Asignación</summary>
+
 ```http
-PUT {{url}}/company/templates/{id}
+PUT {{url}}/company/templates/{id}?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Descripción:** PUT /api/company/templates/\{id\}
-Actualiza configuración de asignación
-
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `id` | path | Sí |  |
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+| `id` | path | ✅ Sí | ID de la asignación del template. |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
 **Body (JSON):**
 ```json
@@ -156,144 +162,71 @@ Actualiza configuración de asignación
 }
 ```
 
-**Respuesta Exitosa (HTTP 200):**
-```json
-{}
-```
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
 
----
-
-## Desasigna template de empresa
-
-### Desasigna template de empresa - 🔴 DELETE
-```http
-DELETE {{url}}/company/templates/{id}
-Authorization: Bearer {token}
-Content-Type: application/json
-```
-
-**Descripción:** DELETE /api/company/templates/\{id\}
-Desasigna template de la empresa
-
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `id` | path | Sí |  |
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
-
-**Respuesta Exitosa (HTTP 200):**
-```json
-{}
-```
-
----
-
-## Personaliza template
-
-### Personaliza template - 🟘 POST
-```http
-POST {{url}}/company/templates/{id}/customize
-Authorization: Bearer {token}
-Content-Type: application/json
-```
-
-**Descripción:** POST /api/company/templates/\{id\}/customize
-Guarda contenido custom en disco
-
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `id` | path | Sí |  |
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
-
-**Body (JSON):**
 ```json
 {
-  "blade_content": "string",
-  "css_content": "string"
+  "success": true,
+  "message": "Configuración de plantilla actualizada"
 }
 ```
 
-**Respuesta Exitosa (HTTP 200):**
-```json
-{}
-```
+</details>
 
----
+</details>
 
-## Clona template para edición
+<details>
+<summary><span className="badge badge--danger margin-right--sm">DELETE</span> <b>/company/templates/&#123;id&#125;</b> — Desasignar Template</summary>
 
-### Clona template para edición - 🟘 POST
 ```http
-POST {{url}}/company/templates/{id}/clone-for-edit
+DELETE {{url}}/company/templates/{id}?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Descripción:** POST /api/company/templates/\{id\}/clone-for-edit
-Clona template para edición
-
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `id` | path | Sí |  |
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+| `id` | path | ✅ Sí | ID de la asignación a remover. |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
-**Respuesta Exitosa (HTTP 200):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
-  "blade_content": "string",
-  "css_content": "string",
-  "template_name": "string"
+  "success": true,
+  "message": "Template desasignado correctamente"
 }
 ```
 
+</details>
+
+</details>
+
 ---
 
-## Elimina personalización
+## 🎨 Personalización y Edición {#personalizacion-edicion}
 
-### Elimina personalización - 🔴 DELETE
+<details>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/company/templates/&#123;id&#125;/preview</b> — Vista Previa del Template</summary>
+
 ```http
-DELETE {{url}}/company/templates/{id}/custom
+GET {{url}}/company/templates/{id}/preview?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Descripción:** DELETE /api/company/templates/\{id\}/custom
-Elimina customización (vuelve a base)
-
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `id` | path | Sí |  |
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+| `id` | path | ✅ Sí | ID de la plantilla asignada. |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
-**Respuesta Exitosa (HTTP 200):**
-```json
-{}
-```
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
 
----
-
-## Vista previa del template
-
-### Vista previa del template - 🔵 GET
-```http
-GET {{url}}/company/templates/{id}/preview
-Authorization: Bearer {token}
-Content-Type: application/json
-```
-
-**Descripción:** GET /api/company/templates/\{id\}/preview
-Genera vista previa del template
-
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `id` | path | Sí |  |
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
-
-**Respuesta Exitosa (HTTP 200):**
 ```json
 {
   "dataRecords": {
@@ -306,3 +239,89 @@ Genera vista previa del template
   }
 }
 ```
+
+</details>
+
+</details>
+
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/company/templates/&#123;id&#125;/clone-for-edit</b> — Clonar Template para Edición</summary>
+
+```http
+POST {{url}}/company/templates/{id}/clone-for-edit?client_uuid={{client_uuid}}
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Descripción:** Clona el template base en el almacenamiento de la empresa para habilitar modificaciones de diseño.
+
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
+```json
+{
+  "blade_content": "<div>...</div>",
+  "css_content": ".invoice { color: #333; }",
+  "template_name": "Factura Estándar (Copia)"
+}
+```
+
+</details>
+
+</details>
+
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/company/templates/&#123;id&#125;/customize</b> — Guardar Personalización</summary>
+
+```http
+POST {{url}}/company/templates/{id}/customize?client_uuid={{client_uuid}}
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Body (JSON):**
+```json
+{
+  "blade_content": "<div>...</div>",
+  "css_content": ".invoice { color: #0066cc; }"
+}
+```
+
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
+```json
+{
+  "success": true,
+  "message": "Personalización de plantilla guardada exitosamente"
+}
+```
+
+</details>
+
+</details>
+
+<details>
+<summary><span className="badge badge--danger margin-right--sm">DELETE</span> <b>/company/templates/&#123;id&#125;/custom</b> — Eliminar Personalización</summary>
+
+```http
+DELETE {{url}}/company/templates/{id}/custom?client_uuid={{client_uuid}}
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Descripción:** Elimina el diseño personalizado de la empresa y restaura la versión base del template.
+
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
+```json
+{
+  "success": true,
+  "message": "Personalización eliminada. Se restauró el template base."
+}
+```
+
+</details>
+
+</details>

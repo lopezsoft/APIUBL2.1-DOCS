@@ -13,6 +13,76 @@ Con Matias, los desarrolladores pueden integrar la funcionalidad de facturación
 
 ---
 
+## 🛠️ Herramientas de Desarrollo {#herramientas-de-desarrollo}
+
+Antes de leer la documentación completa, ten a mano las dos herramientas que más vas a usar durante tu integración:
+
+<div style={{display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '24px'}}>
+
+<div style={{flex: '1', minWidth: '260px', border: '2px solid #FF6C37', borderRadius: '10px', padding: '20px', background: 'var(--ifm-card-background-color)'}}>
+
+### 📮 Colección Postman
+
+Importa todos los endpoints con payloads de ejemplo listos para ejecutar. La forma más rápida de probar la API sin escribir código.
+
+<a
+  href="https://documenter.getpostman.com/view/8699065/2s9YyvBLby"
+  target="_blank"
+  rel="noopener noreferrer"
+  style={{
+    display: 'inline-block',
+    backgroundColor: '#FF6C37',
+    color: 'white',
+    padding: '10px 20px',
+    borderRadius: '6px',
+    fontWeight: 'bold',
+    textDecoration: 'none',
+    marginTop: '8px'
+  }}
+>
+  🔗 Abrir Colección Postman
+</a>
+
+<br/><small style={{color: 'var(--ifm-color-emphasis-600)', marginTop: '8px', display: 'block'}}>Incluye ejemplos de Factura, Nota Crédito, Nómina, Salud, Eventos RADIAN y más.</small>
+
+</div>
+
+<div style={{flex: '1', minWidth: '260px', border: '2px solid #4CAF50', borderRadius: '10px', padding: '20px', background: 'var(--ifm-card-background-color)'}}>
+
+### 📘 Swagger UI
+
+Explora y prueba los endpoints interactivamente desde el navegador. Requiere tu token de acceso.
+
+<button
+  onClick={() => window.open(atob('aHR0cHM6Ly9hcGktdjIubWF0aWFzLWFwaS5jb20vYXBpL2RvY3M='), '_blank')}
+  style={{
+    backgroundColor: '#4CAF50',
+    border: 'none',
+    color: 'white',
+    padding: '10px 20px',
+    borderRadius: '6px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    marginTop: '8px',
+    fontSize: '14px'
+  }}
+>
+  🚀 Abrir Swagger UI
+</button>
+
+<br/><small style={{color: 'var(--ifm-color-emphasis-600)', marginTop: '8px', display: 'block'}}>Disponible únicamente para clientes con servicio activo.</small>
+
+</div>
+
+</div>
+
+:::tip ¿Quieres probar sin un contrato?
+Usa el **[Sandbox gratuito](/docs/sandbox/quickstart)** — no requiere contrato ni configuración DIAN. Crea tu cuenta en `https://sandbox-auth.matias-api.com/` y empieza a probar en minutos.
+:::
+
+---
+
+
 ## 🌐 URL Base de la API {#url-base-de-la-api}
 
 :::info 🚀 Acceso a la Plataforma
@@ -634,44 +704,6 @@ Matias cumple rigurosamente con los marcos regulatorios y anexos técnicos ofici
 
 ---
 
-### 🛠️ Herramientas de Desarrollo {#ejemplos-y-endpoints-en-postman}
-
-#### 📮 Colección Oficial de Postman
-Ponemos a su disposición una colección completa de Postman con payloads de ejemplo listos para importar y ejecutar:
-
-```
-https://documenter.getpostman.com/view/8699065/2s9YyvBLby
-```
-
-#### 📘 Documentación Interactiva con Swagger {#documentación-interactiva-con-swagger}
-
-Explore interactivamente y pruebe los endpoints de la API de forma ágil desde el navegador a través de Swagger UI:
-
-:::info Swagger UI
-<button 
-  onClick={() => window.open(atob('aHR0cHM6Ly9hcGktdjIubWF0aWFzLWFwaS5jb20vYXBpL2RvY3M='), '_blank')}
-  style={{
-    backgroundColor: '#4CAF50',
-    border: 'none',
-    color: 'white',
-    padding: '12px 24px',
-    textAlign: 'center',
-    textDecoration: 'none',
-    display: 'inline-block',
-    fontSize: '16px',
-    margin: '4px 2px',
-    cursor: 'pointer',
-    borderRadius: '4px',
-    fontWeight: 'bold'
-  }}
->
-  🚀 Abrir Documentación Swagger
-</button>
-
-*Disponible únicamente para clientes con servicio activo.*
-:::
-
----
 
 ## 💬 Soporte y Ayuda {#soporte-y-ayuda}
 
@@ -744,4 +776,4 @@ Para dudas técnicas rápidas o verificación de estado de servicios:
 
 ---
 
-**Versión de Documentación:** 3.0.7 | **Última actualización:** Mayo 2026 | **API:** v3.0.7
+**Versión de Documentación:** 3.7.0 | **Última actualización:** Agosto 2026 | **API:** v3.7.0

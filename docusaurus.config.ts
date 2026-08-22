@@ -6,6 +6,9 @@ const config: Config = {
   title: 'MATIAS API',
   tagline: 'Integración fácil y rápida',
   favicon: 'img/favicon.ico',
+  customFields: {
+    version: '3.8.0',
+  },
 
   // Set the production url of your site here
   url: 'https://docs.matias-api.com',
@@ -218,7 +221,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} LOPEZSOFT SAS - Todos los derechos reservados. | MATIAS API v3.6.0 🚀 Sector Salud (Res. 000948 de 2026) + PAT + Sandbox + Bulk`,
+      copyright: `Copyright © ${new Date().getFullYear()} LOPEZSOFT SAS - Todos los derechos reservados. | MATIAS API v3.8.0 🚀 Refactorización UI/UX Global + Sector Salud (Res. 000948 de 2026) + PAT + Sandbox + Bulk`,
     },
     prism: {
       theme: prismThemes.github,

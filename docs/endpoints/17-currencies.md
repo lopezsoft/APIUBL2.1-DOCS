@@ -6,33 +6,29 @@ sidebar_label: 💰 Monedas
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# 💰 Gestión de Monedas
+# 💰 Gestión de Monedas {#gestion-monedas}
 
-> ✅ **Autenticación REQUERIDA**  
-> Incluir en todos los endpoints de esta sección el header: `Authorization: Bearer {token}`
+:::warning Autenticación Requerida
+Incluir en todos los endpoints de esta sección el header: `Authorization: Bearer {token}`
+:::
 
 Permite administrar el catálogo y las tasas de cambio de monedas extranjeras (ej. USD, EUR) respecto a la moneda funcional nacional (**COP** - Peso Colombiano) para emitir documentos electrónicos multi-moneda.
 
-:::info ¿Dónde obtener el `client_uuid`? — Parámetro Multi-Tenant para Casas de Software
-Si operas como **Casa de Software** o **Cuenta Principal**, puedes configurar las tasas de cambio de tus empresas cliente agregando el parámetro `client_uuid` en la query string de la URL:
-- **URL con Query Param:** `{{url}}/currency?client_uuid={{client_uuid}}`
-- **Header:** `Authorization: Bearer {token_cuenta_principal}`
-- **Comportamiento:** Las tasas de cambio se configurarán en la empresa cliente especificada por su UUID.
-
-**¿Dónde encontrar el `client_uuid` de tus clientes?**  
-Puedes consultar el listado completo de tus empresas cliente y sus respectivos `client_uuid` mediante el endpoint:
+:::info Parámetro Multi-Tenant: `client_uuid`
+Si operas como **Casa de Software**, puedes configurar las tasas de cambio de tus empresas cliente agregando `?client_uuid={{client_uuid}}`.
 ```http
 GET {{url}}/company/customers
 Authorization: Bearer {token}
-Content-Type: application/json
 ```
 :::
 
 ---
 
-## Listar Monedas Disponibles del Sistema
+## 📋 Catálogo y Monedas de la Empresa {#catalogo-empresa}
 
-### Listar Monedas Disponibles del Sistema - 🔵 GET
+<details open>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/currency/all</b> — Catálogo General de Monedas</summary>
+
 ```http
 GET {{url}}/currency/all
 Authorization: Bearer {token}
@@ -41,57 +37,63 @@ Content-Type: application/json
 
 **Descripción:** Obtiene el catálogo completo de monedas soportadas por el sistema.
 
-**Respuesta Exitosa (HTTP 200):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "dataRecords": {
     "data": [
-     {
-          "id": 164,
-          "CurrencyISO": "VEF",
-          "Language": "ES",
-          "CurrencyName": "Bolivar Fuerte",
-          "Money": "Bolívar",
-          "Symbol": "B",
-          "Format": "es-CO",
-          "image": "venezuela.png",
-          "active": 1
+      {
+        "id": 164,
+        "CurrencyISO": "USD",
+        "Language": "EN",
+        "CurrencyName": "Dólar Estadounidense",
+        "Money": "Dólar",
+        "Symbol": "$",
+        "Format": "en-US",
+        "image": "usa.png",
+        "active": 1
       },
       {
-          "id": 165,
-          "CurrencyISO": "BOB",
-          "Language": "ES",
-          "CurrencyName": "Boliviano",
-          "Money": "Boliviano",
-          "Symbol": "B",
-          "Format": "es-CO",
-          "image": "bolivia.png",
-          "active": 1
+        "id": 272,
+        "CurrencyISO": "COP",
+        "Language": "ES",
+        "CurrencyName": "Peso Colombiano",
+        "Money": "Peso",
+        "Symbol": "$",
+        "Format": "es-CO",
+        "image": "colombia.png",
+        "active": 1
       }
     ]
   }
 }
 ```
 
----
+</details>
 
-## Listar Monedas Configuradas en la Empresa
+</details>
 
-### Listar Monedas de la Empresa - 🔵 GET
+<details>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/currency</b> — Monedas Configuradas en la Empresa</summary>
+
 ```http
 GET {{url}}/currency?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Descripción:** Obtiene la lista de monedas y tasas de cambio actualmente asignadas a la empresa.
+**Descripción:** Obtiene la lista de monedas y tasas de cambio actualmente asignadas a la empresa emisora.
 
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
-**Respuesta Exitosa (HTTP 200):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "dataRecords": {
@@ -104,29 +106,34 @@ Content-Type: application/json
         "national_currency": 1,
         "plural_name": "PESOS",
         "singular_name": "PESO",
-        "denomination": "COP",
-        "currency": {
-            "id": 272,
-            "CurrencyISO": "COP",
-            "Language": "ES",
-            "CurrencyName": "Peso Colombiano",
-            "Money": "Peso",
-            "Symbol": "$",
-            "Format": "es-CO",
-            "image": "colombia.png",
-            "active": 1
-          }
+        "denomination": "COP"
+      },
+      {
+        "id": 8,
+        "currency_id": 164,
+        "company_id": 1,
+        "exchange_rate_value": "4200.50",
+        "national_currency": 0,
+        "plural_name": "DÓLARES",
+        "singular_name": "DÓLAR",
+        "denomination": "USD"
       }
     ]
   }
 }
 ```
 
+</details>
+
+</details>
+
 ---
 
-## Agregar Moneda a la Empresa
+## ⚙️ Configuración de Tasas de Cambio {#configuracion-tasas}
 
-### Agregar Moneda a la Empresa - 🟘 POST
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/currency</b> — Agregar Moneda a la Empresa</summary>
+
 ```http
 POST {{url}}/currency?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
@@ -145,9 +152,8 @@ Los datos de la divisa se serializan en la propiedad `records` del JSON (`Conten
 ```javascript
 import axios from 'axios';
 
-// 1. Datos de la moneda
 const records = {
-  currency_id: 45,             // ID del catálogo de monedas (GET /currency/all)
+  currency_id: 164,           // ID del catálogo (GET /currency/all)
   exchange_rate_value: 4200.50,// Tasa de cambio respecto al COP
   national_currency: 0,        // 1: Moneda funcional local, 0: Moneda extranjera
   plural_name: "DÓLARES",
@@ -155,7 +161,6 @@ const records = {
   denomination: "USD"
 };
 
-// 2. Enviar petición POST serializando records
 const response = await axios.post(`${url}/currency`, {
   records: JSON.stringify(records)
 }, {
@@ -167,12 +172,12 @@ const response = await axios.post(`${url}/currency`, {
 ```
 
 </TabItem>
-<TabItem value="php" label="PHP (Guzzle / cURL)">
+<TabItem value="php" label="PHP (cURL)">
 
 ```php
 <?php
 $records = [
-    'currency_id'         => 45,
+    'currency_id'         => 164,
     'exchange_rate_value' => 4200.50,
     'national_currency'   => 0,
     'plural_name'         => 'DÓLARES',
@@ -205,7 +210,7 @@ import json
 import requests
 
 records = {
-    "currency_id": 45,
+    "currency_id": 164,
     "exchange_rate_value": 4200.50,
     "national_currency": 0,
     "plural_name": "DÓLARES",
@@ -231,7 +236,7 @@ using System.Text.Json;
 using System.Net.Http.Headers;
 
 var records = new {
-    currency_id = 45,
+    currency_id = 164,
     exchange_rate_value = 4200.50,
     national_currency = 0,
     plural_name = "DÓLARES",
@@ -239,21 +244,19 @@ var records = new {
     denomination = "USD"
 };
 
-var payload = new { records = JsonSerializer.Serialize(records) };
-
 var client = new HttpClient();
 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-var response = await client.PostAsJsonAsync($"{url}/currency", payload);
+var response = await client.PostAsJsonAsync($"{url}/currency", new {
+    records = JsonSerializer.Serialize(records)
+});
 ```
 
 </TabItem>
 <TabItem value="postman" label="Postman">
 
 ```javascript
-// Pre-request Script en Postman
 const records = {
-    currency_id: 45,
+    currency_id: 164,
     exchange_rate_value: 4200.50,
     national_currency: 0,
     plural_name: "DÓLARES",
@@ -270,28 +273,19 @@ pm.request.headers.add({key: 'Content-Type', value: 'application/json'});
 </TabItem>
 </Tabs>
 
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
-
-**Body JSON resultante:**
-```json
-{
-  "records": "{\"currency_id\":45,\"exchange_rate_value\":4200.50,\"national_currency\":0,\"plural_name\":\"DÓLARES\",\"singular_name\":\"DÓLAR\",\"denomination\":\"USD\"}"
-}
-```
-
-| Propiedad en `records` | Tipo | Requerido | Descripción |
+**Propiedades de `records`:**
+| Campo | Tipo | Requerido | Descripción |
 |---|---|---|---|
 | `currency_id` | integer | ✅ Sí | ID de la moneda del catálogo (`GET /currency/all`). |
 | `exchange_rate_value` | number | ✅ Sí | Tasa de cambio respecto al peso colombiano. |
-| `national_currency` | integer | ✅ Sí | `1` si es la moneda funcional local, `0` si es moneda extranjera. |
-| `plural_name` | string | ✅ Sí | Nombre en plural (ej. `PESOS`, `DÓLARES`). |
-| `singular_name` | string | ✅ Sí | Nombre en singular (ej. `PESO`, `DÓLAR`). |
-| `denomination` | string | ✅ Sí | Código ISO de la moneda (ej. `COP`, `USD`, `EUR`). |
+| `national_currency` | integer | ✅ Sí | `1` si es la moneda funcional local, `0` si es extranjera. |
+| `plural_name` | string | ✅ Sí | Nombre en plural (ej. `DÓLARES`). |
+| `singular_name` | string | ✅ Sí | Nombre en singular (ej. `DÓLAR`). |
+| `denomination` | string | ✅ Sí | Código ISO de la moneda (ej. `USD`, `EUR`). |
 
-**Respuesta Exitosa (HTTP 201):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 201)</summary>
+
 ```json
 {
   "success": true,
@@ -299,11 +293,13 @@ pm.request.headers.add({key: 'Content-Type', value: 'application/json'});
 }
 ```
 
----
+</details>
 
-## Actualizar Tasa de Moneda
+</details>
 
-### Actualizar Tasa de Moneda - 🟠 PUT
+<details>
+<summary><span className="badge badge--warning margin-right--sm">PUT</span> <b>/currency/&#123;id&#125;</b> — Actualizar Tasa de Moneda</summary>
+
 ```http
 PUT {{url}}/currency/{id}?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
@@ -316,9 +312,9 @@ Content-Type: application/json
 | `id` | path | ✅ Sí | ID de la moneda configurada en la empresa. |
 | `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
-**Body (JSON):** Igual al POST de registro (`records` serializado con `exchange_rate_value` actualizado).
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
 
-**Respuesta Exitosa (HTTP 200):**
 ```json
 {
   "success": true,
@@ -326,11 +322,13 @@ Content-Type: application/json
 }
 ```
 
----
+</details>
 
-## Eliminar Moneda de la Empresa
+</details>
 
-### Eliminar Moneda - 🔴 DELETE
+<details>
+<summary><span className="badge badge--danger margin-right--sm">DELETE</span> <b>/currency/&#123;id&#125;</b> — Eliminar Moneda</summary>
+
 ```http
 DELETE {{url}}/currency/{id}?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
@@ -343,10 +341,16 @@ Content-Type: application/json
 | `id` | path | ✅ Sí | ID de la moneda configurada a eliminar. |
 | `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
-**Respuesta Exitosa (HTTP 200):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "success": true,
   "message": "Moneda eliminada exitosamente"
 }
 ```
+
+</details>
+
+</details>

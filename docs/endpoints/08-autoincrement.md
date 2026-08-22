@@ -3,46 +3,83 @@ sidebar_position: 8
 sidebar_label: 🔢 Numeración Automática
 ---
 
-# 🚀 API de Autoincremento
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-> ✅ **Autenticación REQUERIDA**
-> Incluir en todos: `Authorization: Bearer {token}`
+# 🚀 API de Autoincremento {#autoincremento}
 
-:::info ¿Dónde obtener el `client_uuid`? — Parámetro Multi-Tenant para Casas de Software
-Si operas como **Casa de Software** o **Cuenta Principal**, puedes emitir y reenviar documentos con numeración automática en nombre de tus empresas cliente agregando el parámetro `client_uuid` en la query string de la URL:
-- **URL con Query Param:** `?client_uuid={{client_uuid}}` (ej. `POST {{url}}/auto-increment/invoices?client_uuid={{client_uuid}}`)
-- **Header:** `Authorization: Bearer {token_cuenta_principal}`
-- **Comportamiento:** El consecutivo se resolverá y asignará automáticamente sobre la resolución DIAN de la empresa cliente especificada por su UUID.
+:::warning Autenticación Requerida
+Incluir en todos los endpoints: `Authorization: Bearer {token}`
+:::
 
-**¿Dónde encontrar el `client_uuid` de tus clientes?**  
-Puedes consultar el listado completo de tus empresas cliente y sus respectivos `client_uuid` mediante el endpoint:
+:::info Parámetro Multi-Tenant: `client_uuid`
+Todos los endpoints aceptan `?client_uuid={{client_uuid}}` para operar en nombre de empresas cliente.
 ```http
 GET {{url}}/company/customers
 Authorization: Bearer {token}
-Content-Type: application/json
 ```
 :::
 
-Esta sección expone una nueva API de autoincremento para emitir documentos delegando a la plataforma el manejo consecutivo (conteo autoincremental de la resolución de facturación) y prefijo de los números de documento, evitando posibles colisiones en envíos concurrentes.
+Esta API delega a la plataforma el manejo del consecutivo y prefijo de los documentos, evitando colisiones en envíos concurrentes.
 
-**Formato General:**
-El body de estos endpoints es el mismo que el de la API de emisión estándar (por ejemplo: `POST /invoice`), con la diferencia de que el prefijo y número se resuelven automáticamente en base a la numeración configurada en la DIAN.
+:::note ¿Cómo funciona el autoincremento?
+Cuando envías una petición, la plataforma **reserva atómicamente** el siguiente número consecutivo disponible en la resolución DIAN configurada antes de procesar el documento. Esto garantiza que incluso en escenarios de alta concurrencia, no se produzcan duplicados ni gaps en la numeración.
 
-### Factura Autoincremental - 🟘 POST
+**El body del payload es idéntico** al de los endpoints estándar (ej. `POST /invoice`), con la única diferencia de que **no debes enviar** `prefix` ni `document_number` — se asignan automáticamente.
+:::
+
+---
+
+## 📤 Emisión Autoincremental {#emision}
+
+<details open>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/auto-increment/invoices</b> — Factura Autoincremental</summary>
+
 ```http
 POST {{url}}/auto-increment/invoices?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
-
 Emite una factura tomando automáticamente el siguiente número consecutivo disponible.
 
-**Respuesta Exitosa (DIAN 200 OK):**
+<Tabs>
+<TabItem value="curl" label="cURL">
+
+```bash
+curl -X POST "{{url}}/auto-increment/invoices" \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{ ... }'
+```
+
+</TabItem>
+<TabItem value="js" label="JavaScript (Axios)">
+
+```js
+const response = await axios.post(`${url}/auto-increment/invoices`, payload, {
+  headers: { Authorization: `Bearer ${token}` }
+});
+const uuid = response.data.uuid;
+const cufe = response.data.XmlDocumentKey;
+```
+
+</TabItem>
+<TabItem value="php" label="PHP (Guzzle)">
+
+```php
+$response = $client->post("{$url}/auto-increment/invoices", [
+    'headers' => ['Authorization' => "Bearer {$token}"],
+    'json'    => $payload,
+]);
+```
+
+</TabItem>
+</Tabs>
+
+<details>
+<summary>✅ Respuesta Exitosa — DIAN 200 OK</summary>
+
 ```json
 {
   "uuid": "0b96bb6e-7dd0-11f0-ba9f-f02f74cac485",
@@ -59,60 +96,13 @@ Emite una factura tomando automáticamente el siguiente número consecutivo disp
 }
 ```
 
----
+</details>
 
-### Reenvío de Factura Autoincremental - 🟘 PATCH
-```http
-PATCH {{url}}/auto-increment/invoices/{uuid}?client_uuid={{client_uuid}}
-Authorization: Bearer {token}
-Content-Type: application/json
-```
+</details>
 
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `uuid` | path | ✅ Sí | UUID interno del documento a reenviar. |
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/auto-increment/credit-notes · /debit-notes</b> — Notas Autoincrementales</summary>
 
-Reintenta el proceso de emisión para una factura electrónica autoincremental que haya fallado o requerido ajuste, utilizando su UUID interno.
-
----
-
-### Reenvío de Documento Soporte Autoincremental - 🟘 PATCH
-```http
-PATCH {{url}}/auto-increment/support-documents/{uuid}?client_uuid={{client_uuid}}
-Authorization: Bearer {token}
-Content-Type: application/json
-```
-
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `uuid` | path | ✅ Sí | UUID interno del documento soporte a reenviar. |
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
-
-Reintenta el proceso de emisión para un documento soporte autoincremental, utilizando su UUID interno.
-
----
-
-### Reenvío de Documento POS Autoincremental - 🟘 PATCH
-```http
-PATCH {{url}}/auto-increment/pos-documents/{uuid}?client_uuid={{client_uuid}}
-Authorization: Bearer {token}
-Content-Type: application/json
-```
-
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `uuid` | path | ✅ Sí | UUID interno del documento POS a reenviar. |
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
-
-Reintenta el proceso de emisión para un documento POS autoincremental, utilizando su UUID interno.
-
----
-
-### Notas de Crédito y Débito Autoincrementales - 🟘 POST
 ```http
 POST {{url}}/auto-increment/credit-notes?client_uuid={{client_uuid}}
 POST {{url}}/auto-increment/debit-notes?client_uuid={{client_uuid}}
@@ -120,30 +110,26 @@ Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+Notas de crédito y débito con numeración automática asignada.
 
----
+</details>
 
-### Documento Soporte Autoincremental - 🟘 POST
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/auto-increment/support-documents</b> — Documento Soporte Autoincremental</summary>
+
 ```http
 POST {{url}}/auto-increment/support-documents?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
-
 Cubre tanto residentes como no residentes (se define en el payload).
 
----
+</details>
 
-### Documento POS (y Notas POS) Autoincremental - 🟘 POST
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/auto-increment/pos-documents</b> — Documento POS Autoincremental</summary>
+
 ```http
 POST {{url}}/auto-increment/pos-documents?client_uuid={{client_uuid}}
 POST {{url}}/auto-increment/debit-notes?client_uuid={{client_uuid}}
@@ -152,41 +138,89 @@ Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+Para Notas POS usa la misma ruta general, enviando el `type_document_id` adecuado en el JSON.
 
-(Para Notas POS se usa la misma ruta general, enviando el `type_document_id` adecuado en el JSON).
+</details>
 
----
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/auto-increment/adjustment-notes</b> — Nota de Ajuste Autoincremental</summary>
 
-### Nota de Ajuste a Documento Soporte Autoincremental - 🟘 POST
 ```http
 POST {{url}}/auto-increment/adjustment-notes?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+Nota de ajuste a Documento Soporte con numeración automática.
+
+</details>
 
 ---
 
-### Reenviar Documentos en Lote - 🟘 POST
+## 🔄 Reenvío y Reintentos {#reenvio}
+
+<details open>
+<summary><span className="badge badge--warning margin-right--sm">PATCH</span> <b>/auto-increment/invoices/&#123;uuid&#125;</b> — Reenvío de Factura</summary>
+
+```http
+PATCH {{url}}/auto-increment/invoices/{uuid}?client_uuid={{client_uuid}}
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+Reintenta la emisión de una factura autoincremental que haya fallado, usando su UUID interno.
+
+| Parámetro | Ubicación | Requerido | Descripción |
+|-----------|-----------|-----------|-------------|
+| `uuid` | path | ✅ Sí | UUID interno del documento a reenviar. |
+| `client_uuid` | query | No | UUID del cliente (Multi-Tenant). |
+
+</details>
+
+<details>
+<summary><span className="badge badge--warning margin-right--sm">PATCH</span> <b>/auto-increment/support-documents/&#123;uuid&#125;</b> — Reenvío de Documento Soporte</summary>
+
+```http
+PATCH {{url}}/auto-increment/support-documents/{uuid}?client_uuid={{client_uuid}}
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+| Parámetro | Ubicación | Requerido | Descripción |
+|-----------|-----------|-----------|-------------|
+| `uuid` | path | ✅ Sí | UUID interno del documento soporte a reenviar. |
+
+</details>
+
+<details>
+<summary><span className="badge badge--warning margin-right--sm">PATCH</span> <b>/auto-increment/pos-documents/&#123;uuid&#125;</b> — Reenvío de Documento POS</summary>
+
+```http
+PATCH {{url}}/auto-increment/pos-documents/{uuid}?client_uuid={{client_uuid}}
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+| Parámetro | Ubicación | Requerido | Descripción |
+|-----------|-----------|-----------|-------------|
+| `uuid` | path | ✅ Sí | UUID interno del documento POS a reenviar. |
+
+</details>
+
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/documents/&#123;uuid&#125;/resend</b> — Reenviar Documentos en Lote</summary>
+
 ```http
 POST {{url}}/documents/{uuid}/resend?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `uuid` | path | ✅ Sí | UUID interno del documento a reenviar. |
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
-
 Reenvía un documento específico procesado en modo asíncrono o que falló temporalmente.
 
+| Parámetro | Ubicación | Requerido | Descripción |
+|-----------|-----------|-----------|-------------|
+| `uuid` | path | ✅ Sí | UUID interno del documento a reenviar. |
+| `client_uuid` | query | No | UUID del cliente (Multi-Tenant). |
+
+</details>

@@ -1994,6 +1994,125 @@
           ]
         },
         {
+          "name": "Concepto de Reclamo @listID",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": []
+            },
+            "url": {
+              "raw": "{{url}}/claim-concepts",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "claim-concepts"
+              ]
+            },
+            "description": "Ambiente de Destino del Documento:"
+          },
+          "response": [
+            {
+              "name": "Concepto de Reclamo @listID",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": []
+                },
+                "url": {
+                  "raw": "{{url}}/claim-concepts",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "claim-concepts"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Fri, 21 Aug 2026 03:33:32 GMT"
+                },
+                {
+                  "key": "Server",
+                  "value": "Apache/2.4.53 (Win64) OpenSSL/1.1.1o PHP/8.1.6 mod_fcgid/2.3.10-dev"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.1.6"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "90"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "89"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5, max=100"
+                },
+                {
+                  "key": "Connection",
+                  "value": "Keep-Alive"
+                },
+                {
+                  "key": "Transfer-Encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"dataRecords\": {\n        \"data\": [\n            {\n                \"code\": \"01\",\n                \"description\": \"Documento con inconsistencias\"\n            },\n            {\n                \"code\": \"02\",\n                \"description\": \"Mercancía no entregada\"\n            },\n            {\n                \"code\": \"03\",\n                \"description\": \"Mercancía entregada parcialmente\"\n            },\n            {\n                \"code\": \"04\",\n                \"description\": \"Servicio no prestado\"\n            }\n        ]\n    },\n    \"success\": true\n}"
+            }
+          ]
+        },
+        {
           "name": "Condiciones de entrega (INCOTERMS)",
           "protocolProfileBehavior": {
             "disableBodyPruning": true
@@ -5200,7 +5319,7 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{url}}/company/customers/{{client_uuid}}?client_uuid={{client_uuid}}",
+                  "raw": "{{url}}/company/customers/{{client_uuid}}",
                   "host": [
                     "{{url}}"
                   ],
@@ -5212,7 +5331,8 @@
                   "query": [
                     {
                       "key": "client_uuid",
-                      "value": "{{client_uuid}}"
+                      "value": "{{client_uuid}}",
+                      "disabled": true
                     }
                   ]
                 }
@@ -5990,7 +6110,7 @@
                   "query": [
                     {
                       "key": "query",
-                      "value": "Factura",
+                      "value": "FacturaSSSSSSS",
                       "description": "Palabra clave que permite búscar por le nombre, numero o tipo de documento",
                       "disabled": true
                     },
@@ -13671,7 +13791,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"resolution_number\": \"18763005880468\",\r\n    \"prefix\": \"NC\",\r\n    \"notes\": \"Documento anulado por errores en datos del cliente\",\r\n    \"document_number\": \"7061\",\r\n\t\"operation_type_id\": 12,\r\n\t\"type_document_id\": 5,\r\n    \"graphic_representation\": 1,\r\n    \"send_email\": 1,\r\n    \"document_signature\": {\r\n        \"cashier\": \"Nombre del cajero(a)\",\r\n        \"seller\": \"Nombre del vendedor(a)\"\r\n    },\r\n    \"discrepancy_response\": {\r\n        \"reference_id\": \"LZT6004\",\r\n        \"response_id\": \"2\"\r\n    },\r\n    \"billing_reference\": {\r\n        \"number\": \"LZT6004\",\r\n        \"date\": \"2026-08-16\",\r\n        \"uuid\": \"ba87dd080aefd0558251633ceae95bb6cfe99b18625370c098edc73765bd65914a0447288ab72d1e24913e36813a4289\"\r\n    },\r\n    \"order_reference\":{\r\n\t\t\"reference_number\":\"4502878541\",\r\n\t\t\"reference_date\":\"2026-05-02\"\r\n\t},\r\n\t\"payments\": [{\r\n        \"payment_method_id\": 1,\r\n        \"means_payment_id\": 10,\r\n        \"value_paid\": \"224.00\"\r\n    }],\r\n    \"health\": {\r\n        \"operation_type\": \"SS-CUFE\",\r\n        \"invoice_period\": {\r\n            \"start_date\" : \"2026-07-01\",\r\n            \"start_time\" : \"23:59:59\",\r\n            \"end_date\"   : \"2026-07-30\",\r\n            \"end_time\"   : \"23:59:59\"\r\n        },\r\n        \"download_attachments\": {\r\n            \"url\": \"www.ips-1.com.co\",\r\n            \"arguments\": [\r\n                {\r\n                    \"name\": \"excelFile\",\r\n                    \"value\": \"a1b2c3.xlsx\"\r\n                },\r\n                {\r\n                    \"name\": \"txtFile\",\r\n                    \"value\": \"a1b2c3.txt\"\r\n                }\r\n            ]\r\n        },\r\n        \"document_delivery\": {\r\n            \"ws\": \"https://ws4erp.ips-987.com.co/WcfRecibiendoDocs4ERP.svc?wsdl\",\r\n            \"arguments\": [\r\n                {\r\n                    \"name\": \"Método-1\",\r\n                    \"value\": \"ClienteEntregaAcuseDeReciboDeFEV-VP\"\r\n                },\r\n                {\r\n                    \"name\": \"Método-2\",\r\n                    \"value\": \"ClienteEntregaConstanciaDeMercanciaEntregada\"\r\n                }\r\n            ]\r\n        },\r\n        \"provider_code\": \"2341702036\",\r\n        \"payment_modality\": \"02\",\r\n        \"coverage\": \"01\",\r\n        \"contract_number\": \"c12bab98915513f00c50e7efdde112763c65b421afcc1f3cea76302e1c80e21c\",\r\n        \"policy_number\": \"\",\r\n        \"copayment\": 0,\r\n        \"moderator_fee\": 0,\r\n        \"shared_payments\": 0,\r\n        \"advance\": 0,\r\n        \"justification_without_contract\": \"\"\r\n    },\r\n    \"customer\": {\r\n        \"country_id\": \"45\",\r\n        \"city_id\": \"836\",\r\n        \"identity_document_id\": \"1\",\r\n        \"type_organization_id\": 2,\r\n        \"tax_regime_id\": 2,\r\n        \"tax_level_id\": 5,\r\n        \"company_name\": \"LOPEZ GOMEZ LEWIS OSWALDO\",\r\n        \"dni\": \"1063279307\",\r\n        \"mobile\": \"3108435423\",\r\n        \"email\": \"lws_1234@hotmail.com\",\r\n        \"address\": \"Calle 64 #1823\",\r\n        \"postal_code\": \"661002\"\r\n    },\r\n    \"lines\": [\r\n        {\r\n            \"invoiced_quantity\": \"2\",\r\n            \"quantity_units_id\": \"1093\",\r\n            \"line_extension_amount\": \"100.00\",\r\n            \"free_of_charge_indicator\": false,\r\n            \"description\": \"TIJERA NECROPSIA AVES\",\r\n            \"code\": \"HMT83\",\r\n            \"type_item_identifications_id\": \"4\",\r\n            \"reference_price_id\": \"1\",\r\n            \"price_amount\": \"50\",\r\n            \"base_quantity\": \"2\",\r\n            \"tax_totals\": [\r\n                {\r\n                    \"tax_id\": \"1\",\r\n                    \"tax_amount\": 19,\r\n                    \"taxable_amount\": 100,\r\n                    \"percent\": 19\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"invoiced_quantity\": \"2\",\r\n            \"quantity_units_id\": \"1093\",\r\n            \"line_extension_amount\": \"100.00\",\r\n            \"free_of_charge_indicator\": false,\r\n            \"description\": \"TIJERA NECROPSIA AVES 2\",\r\n            \"code\": \"HMT84\",\r\n            \"type_item_identifications_id\": \"4\",\r\n            \"reference_price_id\": \"1\",\r\n            \"price_amount\": \"50\",\r\n            \"base_quantity\": \"2\",\r\n            \"tax_totals\": [\r\n                {\r\n                    \"tax_id\": \"1\",\r\n                    \"tax_amount\": 5,\r\n                    \"taxable_amount\": 100,\r\n                    \"percent\": 5\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"legal_monetary_totals\": {\r\n        \"line_extension_amount\": \"200.00\",\r\n        \"tax_exclusive_amount\": \"200.00\",\r\n        \"tax_inclusive_amount\": \"224.00\",\r\n        \"payable_amount\": 224.00\r\n    },\r\n    \"tax_totals\": [\r\n        {\r\n            \"tax_id\": \"1\",\r\n            \"tax_amount\": 19,\r\n            \"taxable_amount\": 100,\r\n            \"percent\": 19\r\n        },\r\n        {\r\n            \"tax_id\": \"1\",\r\n            \"tax_amount\": 5,\r\n            \"taxable_amount\": 100,\r\n            \"percent\": 5\r\n        }\r\n    ]\r\n}\r\n",
+              "raw": "{\r\n    \"resolution_number\": \"18763005880468\",\r\n    \"prefix\": \"NC\",\r\n    \"notes\": \"Documento anulado por errores en datos del cliente\",\r\n    \"document_number\": \"7061\",\r\n\t\"operation_type_id\": 12,\r\n\t\"type_document_id\": 5,\r\n    \"graphic_representation\": 1,\r\n    \"send_email\": 1,\r\n    \"document_signature\": {\r\n        \"cashier\": \"Nombre del cajero(a)\",\r\n        \"seller\": \"Nombre del vendedor(a)\"\r\n    },\r\n    \"discrepancy_response\": {\r\n        \"reference_id\": \"LZT6004\",\r\n        \"response_id\": \"2\"\r\n    },\r\n    \"billing_reference\": {\r\n        \"number\": \"LZT6004\",\r\n        \"date\": \"2026-08-16\",\r\n        \"uuid\": \"ba87dd080aefd0558251633ceae95bb6cfe99b18625370c098edc73765bd65914a0447288ab72d1e24913e36813a4289\"\r\n    },\r\n    \"order_reference\":{\r\n\t\t\"reference_number\":\"4502878541\",\r\n\t\t\"reference_date\":\"2026-05-02\"\r\n\t},\r\n\t\"payments\": [{\r\n        \"payment_method_id\": 1,\r\n        \"means_payment_id\": 10,\r\n        \"value_paid\": \"224.00\"\r\n    }],\r\n    \"health\": {\r\n        \"operation_type\": \"SS-CUDE\",\r\n        \"invoice_period\": {\r\n            \"start_date\" : \"2026-07-01\",\r\n            \"start_time\" : \"23:59:59\",\r\n            \"end_date\"   : \"2026-07-30\",\r\n            \"end_time\"   : \"23:59:59\"\r\n        },\r\n        \"download_attachments\": {\r\n            \"url\": \"www.ips-1.com.co\",\r\n            \"arguments\": [\r\n                {\r\n                    \"name\": \"excelFile\",\r\n                    \"value\": \"a1b2c3.xlsx\"\r\n                },\r\n                {\r\n                    \"name\": \"txtFile\",\r\n                    \"value\": \"a1b2c3.txt\"\r\n                }\r\n            ]\r\n        },\r\n        \"document_delivery\": {\r\n            \"ws\": \"https://ws4erp.ips-987.com.co/WcfRecibiendoDocs4ERP.svc?wsdl\",\r\n            \"arguments\": [\r\n                {\r\n                    \"name\": \"Método-1\",\r\n                    \"value\": \"ClienteEntregaAcuseDeReciboDeFEV-VP\"\r\n                },\r\n                {\r\n                    \"name\": \"Método-2\",\r\n                    \"value\": \"ClienteEntregaConstanciaDeMercanciaEntregada\"\r\n                }\r\n            ]\r\n        },\r\n        \"provider_code\": \"2341702036\",\r\n        \"payment_modality\": \"02\",\r\n        \"coverage\": \"01\",\r\n        \"contract_number\": \"c12bab98915513f00c50e7efdde112763c65b421afcc1f3cea76302e1c80e21c\",\r\n        \"policy_number\": \"\",\r\n        \"copayment\": 0,\r\n        \"moderator_fee\": 0,\r\n        \"shared_payments\": 0,\r\n        \"advance\": 0,\r\n        \"justification_without_contract\": \"\"\r\n    },\r\n    \"customer\": {\r\n        \"country_id\": \"45\",\r\n        \"city_id\": \"836\",\r\n        \"identity_document_id\": \"1\",\r\n        \"type_organization_id\": 2,\r\n        \"tax_regime_id\": 2,\r\n        \"tax_level_id\": 5,\r\n        \"company_name\": \"LOPEZ GOMEZ LEWIS OSWALDO\",\r\n        \"dni\": \"1063279307\",\r\n        \"mobile\": \"3108435423\",\r\n        \"email\": \"lws_1234@hotmail.com\",\r\n        \"address\": \"Calle 64 #1823\",\r\n        \"postal_code\": \"661002\"\r\n    },\r\n    \"lines\": [\r\n        {\r\n            \"invoiced_quantity\": \"2\",\r\n            \"quantity_units_id\": \"1093\",\r\n            \"line_extension_amount\": \"100.00\",\r\n            \"free_of_charge_indicator\": false,\r\n            \"description\": \"TIJERA NECROPSIA AVES\",\r\n            \"code\": \"HMT83\",\r\n            \"type_item_identifications_id\": \"4\",\r\n            \"reference_price_id\": \"1\",\r\n            \"price_amount\": \"50\",\r\n            \"base_quantity\": \"2\",\r\n            \"tax_totals\": [\r\n                {\r\n                    \"tax_id\": \"1\",\r\n                    \"tax_amount\": 19,\r\n                    \"taxable_amount\": 100,\r\n                    \"percent\": 19\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"invoiced_quantity\": \"2\",\r\n            \"quantity_units_id\": \"1093\",\r\n            \"line_extension_amount\": \"100.00\",\r\n            \"free_of_charge_indicator\": false,\r\n            \"description\": \"TIJERA NECROPSIA AVES 2\",\r\n            \"code\": \"HMT84\",\r\n            \"type_item_identifications_id\": \"4\",\r\n            \"reference_price_id\": \"1\",\r\n            \"price_amount\": \"50\",\r\n            \"base_quantity\": \"2\",\r\n            \"tax_totals\": [\r\n                {\r\n                    \"tax_id\": \"1\",\r\n                    \"tax_amount\": 5,\r\n                    \"taxable_amount\": 100,\r\n                    \"percent\": 5\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"legal_monetary_totals\": {\r\n        \"line_extension_amount\": \"200.00\",\r\n        \"tax_exclusive_amount\": \"200.00\",\r\n        \"tax_inclusive_amount\": \"224.00\",\r\n        \"payable_amount\": 224.00\r\n    },\r\n    \"tax_totals\": [\r\n        {\r\n            \"tax_id\": \"1\",\r\n            \"tax_amount\": 19,\r\n            \"taxable_amount\": 100,\r\n            \"percent\": 19\r\n        },\r\n        {\r\n            \"tax_id\": \"1\",\r\n            \"tax_amount\": 5,\r\n            \"taxable_amount\": 100,\r\n            \"percent\": 5\r\n        }\r\n    ]\r\n}\r\n",
               "options": {
                 "raw": {
                   "language": "json"
@@ -16536,6 +16656,45 @@
           "response": []
         },
         {
+          "name": "send 031",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"code\": \"031\",\r\n    \"notes\": \"Reclamo de la Factura Electrónica de Venta.\",\r\n    \"claim_code\": \"01\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/events/send/{{trackId}}",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "events",
+                "send",
+                "{{trackId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "send 032",
           "request": {
             "method": "POST",
@@ -17750,12 +17909,12 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{url}}/numbersToLetters/58547125",
+          "raw": "{{url}}/numbers-to-letters/58547125",
           "host": [
             "{{url}}"
           ],
           "path": [
-            "numbersToLetters",
+            "numbers-to-letters",
             "58547125"
           ]
         }

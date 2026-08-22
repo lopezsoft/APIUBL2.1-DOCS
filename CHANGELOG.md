@@ -4,6 +4,39 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.8.0] - 2026-08-22
+
+### Añadido
+* **Estandarización de Componentes de Código:** Incorporación de pestañas de código interactivas (`<Tabs>` / `<TabItem>`) con snippets listos para copiar en **cURL**, **JavaScript (Axios)**, **PHP (Guzzle/cURL)**, **Python** y **C#/.NET** en todos los módulos de endpoints principales.
+* **Respuestas JSON Completas y Estados DIAN:** Adición de respuestas estructuradas reales en todas las rutas de la API, incluyendo respuestas de aprobación DIAN, errores 401/422 y estados de procesamiento asíncrono (202 y StatusCode 98).
+* **Navegación e Índice A-Z en Glosario:** Implementación de navegación alfabética interactiva con anclas explícitas (`#a` hasta `#z`) y más de 150 términos técnicos, regulatorios y normativos.
+
+### Modificado
+* **Refactorización UI/UX Global (26 archivos):** Reestructuración integral de toda la suite de documentación en 3 oleadas operativas:
+  * Encapsulamiento de endpoints en acordeones colapsables (`<details>`) con insignias semánticas de método HTTP (`badge--info`, `badge--success`, `badge--warning`, `badge--danger`).
+  * Eliminación de títulos y encabezados H2/H3 duplicados para una barra lateral y tabla de contenidos (TOC) limpia y scannable.
+  * Consolidación de tablas repetitivas del parámetro multi-tenant `client_uuid` en avisos `:::info` centralizados por documento.
+* **Compatibilidad Plena con Modo Oscuro:** Reemplazo de bloques `<div>` con colores fijos por componentes y *admonitions* nativos (`:::info`, `:::tip`, `:::warning`, `:::danger`) y variables CSS dinámicas del tema (`var(--ifm-color-...)`).
+* **Optimización de Páginas de Soporte:** Actualización de `docs/response-json.md`, `docs/interactive-tools.md` y suite Sandbox (`docs/sandbox/postman.md`, `magic-values.md`, `quickstart.md`, `test-cert.md`).
+
+---
+
+## [3.7.0] - 2026-08-17
+
+### Añadido
+* **Glosario Integral DIAN & Salud (`docs/glossary.md`):** Más de 140 definiciones técnicas, tributarias y normativas actualizadas con base en la Resolución 000948 de 2026 (RIPS, CUCON, REPS, copagos, cuotas moderadoras, anticipos, pagos compartidos, CUNE, RADIAN, POS y PAT).
+* **Limpieza y Unificación de la Suite Sandbox (`docs/sandbox/`):** Corrección y alineación de la guía Quickstart para establecer el modelo de cuentas y credenciales independientes (100% gratuito y sin contrato en Sandbox), soporte completo de POS y Sector Salud, y eliminación de bloques redundantes en Magic Values y Test Cert.
+* **Modernización de la Landing Page (`/`):** Actualización de la página de inicio (`src/pages/index.tsx` y `HomepageFeatures`) con insignias interactivas, accesos directos al Sandbox, Endpoints API y Sector Salud (v3.7.0).
+
+### Modificado
+* **Configuración del Sitio y Footer:** Actualizada la referencia del copyright a `v3.7.0` y optimizada la barra de navegación lateral y enlaces de pie de página en `docusaurus.config.ts`.
+* **Consistencia de Enlaces Internos:** Actualizados todos los enlaces cruzados en `docs/intro.md`, `docs/use-cases/` y artículos de blog.
+
+### Eliminado
+* **Sección Marco Regulatorio (`docs/regulatory-framework/`):** Removidos 28 archivos redundantes y obsoletos para simplificar la navegación y concentrar el contenido en las especificaciones técnicas activas de la API.
+
+---
+
 ## [3.6.0] - 2026-08-16
 
 ### Añadido

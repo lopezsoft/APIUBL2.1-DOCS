@@ -3,55 +3,119 @@ sidebar_position: 3
 sidebar_label: 🧾 Facturación y POS
 ---
 
-# 📄 Facturación y Documentos Equivalentes (POS)
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-> ✅ **Autenticación REQUERIDA**
-> Incluir en todos los endpoints de esta sección el header: `Authorization: Bearer {token}`
+# 📄 Facturación y Documentos Equivalentes (POS) {#facturacion-pos}
 
-:::info ¿Dónde obtener el `client_uuid`? — Parámetro Multi-Tenant para Casas de Software
-Si operas como **Casa de Software** o **Cuenta Principal**, puedes emitir facturas, notas y documentos equivalentes en nombre de tus empresas cliente agregando el parámetro `client_uuid` en la query string de la URL:
-- **URL con Query Param:** `POST {{url}}/invoice?client_uuid={{client_uuid}}`
-- **Header:** `Authorization: Bearer {token_cuenta_principal}`
-- **Comportamiento:** La factura se procesará y firmará electrónicamente en nombre de la empresa cliente especificada por su UUID.
+:::info Autenticación Requerida
+Incluir en todos los endpoints: `Authorization: Bearer {token}`
+:::
 
-**¿Dónde encontrar el `client_uuid` de tus clientes?**  
-Puedes consultar el listado completo de tus empresas cliente y sus respectivos `client_uuid` mediante el endpoint:
+:::info Parámetro Multi-Tenant: `client_uuid`
+Todos los endpoints de esta sección aceptan el parámetro opcional `?client_uuid={{client_uuid}}` en la query string. Permite procesar documentos en nombre de empresas cliente cuando operas como **Casa de Software**.
+
+Obtén el listado de tus clientes y sus UUIDs en:
 ```http
 GET {{url}}/company/customers
 Authorization: Bearer {token}
-Content-Type: application/json
 ```
 :::
 
-## 1. Emisión de Facturas (Invoices)
+## 📋 Tipos de Documento Soportados {#tipos-de-documento}
 
-### Enviar Factura - 🟘 POST
+| `type_document_id` | Tipo de Documento | Endpoint |
+|---|---|---|
+| `1` | Factura Electrónica de Venta | `POST /invoice` |
+| `4` | Nota Débito | `POST /notes/debit` |
+| `5` | Nota Crédito | `POST /notes/credit` |
+| `7` | Factura Sector Salud (FEV) | `POST /invoice` |
+| `20` | Documento Equivalente POS | `POST /invoice` |
+| `25` | Boleta de Ingreso a Espectáculo Público (Cine) | `POST /invoice` |
+| `60` | Servicios Públicos Domiciliarios (SPD) | `POST /invoice` |
+
+---
+
+## 1. Emisión de Facturas {#emision-facturas}
+
+<details open>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/invoice</b> — Enviar Factura Electrónica</summary>
+
 ```http
 POST {{url}}/invoice?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
-
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
 
 **Tipos soportados principales:**
 - Factura nacional (01)
 - Factura de exportación (02)
 - Factura contingencia (03, 04)
 
-**Ejemplos de Casos Soportados (Según Colección Postman):**
-*   Factura Básica, Decimales, Ajustes.
-*   Factura Sector Salud, Mandatos, Compra y Venta de Divisas.
-*   Factura con Propina, Obsequio (Regalos), Descuentos, Retenciones y Cargos.
-*   Facturas en Moneda Extranjera (Euro, USD) y Exportación.
-*   Factura con Impuestos (Licores AD VALOREM / ICL, ICUI, Bolsas, Varios impuestos).
+**Ejemplos de Casos Soportados:**
+- Factura Básica, Decimales, Ajustes.
+- Factura Sector Salud, Mandatos, Compra y Venta de Divisas.
+- Factura con Propina, Obsequio (Regalos), Descuentos, Retenciones y Cargos.
+- Facturas en Moneda Extranjera (Euro, USD) y Exportación.
+- Factura con Impuestos (Licores AD VALOREM / ICL, ICUI, Bolsas, Varios impuestos).
 
-**Body:** JSON con estructura completa. Ver [Campos de Documentos](/docs/billing-fields) para todos los detalles técnicos.
+**Body:** JSON con estructura completa. Ver [Campos del Documento](/docs/billing-fields) para todos los detalles técnicos.
 
-**Respuesta Exitosa (DIAN 200 OK):**
+📦 [Ver ejemplos de Factura completos](/docs/jsons-billing/invoices)
+
+<Tabs>
+<TabItem value="curl" label="cURL">
+
+```bash
+curl -X POST "{{url}}/invoice" \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "resolution_number": "18764074347312",
+    "prefix": "LZT",
+    "document_number": "836",
+    "operation_type_id": 1,
+    "type_document_id": 1,
+    "payments": [{"payment_method_id": 1, "means_payment_id": 10, "value_paid": "224.00"}],
+    "customer": { "company_name": "Cliente Ejemplo", "dni": "1063279307", "email": "cliente@correo.com" },
+    "lines": [{"invoiced_quantity": "1", "line_extension_amount": "200.00", "description": "Producto", "price_amount": "200.00", "base_quantity": "1"}],
+    "legal_monetary_totals": {"line_extension_amount": "200.00", "tax_exclusive_amount": "200.00", "tax_inclusive_amount": "224.00", "payable_amount": "224.00"}
+  }'
+```
+
+</TabItem>
+<TabItem value="js" label="JavaScript (Axios)">
+
+```js
+const response = await axios.post(`${url}/invoice`, payload, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  }
+});
+const cufe = response.data.XmlDocumentKey;
+```
+
+</TabItem>
+<TabItem value="php" label="PHP (Guzzle)">
+
+```php
+$response = $client->post("{$url}/invoice", [
+    'headers' => [
+        'Authorization' => "Bearer {$token}",
+        'Content-Type'  => 'application/json',
+    ],
+    'json' => $payload,
+]);
+$cufe = json_decode($response->getBody())->XmlDocumentKey;
+```
+
+</TabItem>
+</Tabs>
+
+<details>
+<summary>✅ Respuesta Exitosa — DIAN 200 OK</summary>
+
 ```json
 {
   "message": "El documento ha sido procesado por la DIAN.",
@@ -62,32 +126,59 @@ Content-Type: application/json
     "IsValid": "true",
     "StatusCode": "00",
     "StatusDescription": "Procesado Correctamente.",
-    "StatusMessage": "La Factura Electrónica SETT50, ha sido autorizada.",
+    "StatusMessage": "La Factura Electrónica LZT836, ha sido autorizada.",
     "XmlBase64Bytes": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4..."
   }
 }
 ```
 
+</details>
+
+<details>
+<summary>❌ Rechazo DIAN (HTTP 422)</summary>
+
+```json
+{
+  "message": "El documento ha sido rechazado por la DIAN.",
+  "send_to_queue": 0,
+  "response": {
+    "IsValid": "false",
+    "StatusCode": "99",
+    "StatusDescription": "Documento con errores en campos obligatorios.",
+    "ErrorMessage": {
+      "string": [
+        "CAU04b: El campo TaxAmount es obligatorio cuando ExistsWithholdingTax es verdadero."
+      ]
+    }
+  }
+}
+```
+
+</details>
+
+</details>
+
 ---
 
-## 2. Notas de Crédito y Débito
+## 2. Notas de Crédito y Débito {#notas-credito-debito}
 
-### Enviar Nota Crédito - 🟘 POST
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/notes/credit</b> — Enviar Nota Crédito</summary>
+
 ```http
 POST {{url}}/notes/credit?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
-
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
 
 **Casos:** Devoluciones, Descuentos globales, Correcciones hacia abajo.  
 **Campo Clave:** `type_document_id: 5`
 
-**Respuesta Exitosa (DIAN 200 OK):**
+📦 [Ver ejemplos de Nota Crédito](/docs/jsons-billing/credit-note)
+
+<details>
+<summary>✅ Respuesta Exitosa — DIAN 200 OK</summary>
+
 ```json
 {
   "message": "El documento ha sido procesado por la DIAN.",
@@ -104,47 +195,50 @@ Content-Type: application/json
 }
 ```
 
----
+</details>
 
-### Enviar Nota Débito - 🟘 POST
+</details>
+
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/notes/debit</b> — Enviar Nota Débito</summary>
+
 ```http
 POST {{url}}/notes/debit?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
-
 **Casos:** Intereses, Cargos adicionales, Correcciones hacia arriba.  
 **Campo Clave:** `type_document_id: 4`
 
+</details>
+
 ---
 
-## 3. Documentos Equivalentes (POS y Otros)
+## 3. Documentos Equivalentes (POS y Otros) {#documentos-equivalentes}
 
-### POS Electrónico (Documento 20) - 🟘 POST
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/invoice</b> — POS Electrónico (Documento 20)</summary>
+
 ```http
 POST {{url}}/invoice?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
-
 **Casos:**
-*   POS con cliente (consumidor final u otros).
-*   POS sin envío de email.
-**Campo Clave:** `type_document_id: 20` (P.O.S)
+- POS con cliente (consumidor final u otros).
+- POS sin envío de email.
 
----
+**Campo Clave:** `type_document_id: 20`
 
-### Notas para POS - 🟘 POST
+📦 [Ver ejemplos de POS](/docs/jsons-pos/pos)
+
+</details>
+
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/notes/credit | /notes/debit</b> — Notas para POS</summary>
+
 ```http
 POST {{url}}/notes/credit?client_uuid={{client_uuid}}
 POST {{url}}/notes/debit?client_uuid={{client_uuid}}
@@ -152,42 +246,34 @@ Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
-
 Notas de crédito o débito asociadas a un documento P.O.S.
 
----
+</details>
 
-### Boleta de Ingreso a Cine - 🟘 POST
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/invoice</b> — Boleta de Ingreso a Cine (Documento 25)</summary>
+
 ```http
 POST {{url}}/invoice?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+Documento equivalente para ingreso a cine (Documento 25).  
+**Campo Clave:** `type_document_id: 25`
 
-Documento equivalente para ingreso a cine (Documento 25).
+</details>
 
----
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/invoice</b> — SPD — Servicios Públicos Domiciliarios (Documento 60)</summary>
 
-### 60 SPD (Servicios Públicos Domiciliarios) - 🟘 POST
 ```http
 POST {{url}}/invoice?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+Factura o documento equivalente por servicios públicos domiciliarios.  
+**Campo Clave:** `type_document_id: 60`
 
-Factura o documento equivalente por servicios públicos domiciliarios.
-
+</details>

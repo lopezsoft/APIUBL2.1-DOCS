@@ -1,69 +1,55 @@
 ---
 sidebar_position: 5
 description: "Glosario de términos técnicos, normativas y acrónimos de facturación electrónica, DIAN y Sector Salud (Resolución 000948 de 2026)"
-sidebar_label: Glosario
+sidebar_label: 📚 Glosario
 ---
 
-# 📚 Glosario Técnico
+# 📚 Glosario Técnico {#glosario}
 
-<div style={{backgroundColor: '#e7f3ff', padding: '1.5rem', borderRadius: '8px', border: '2px solid #0066cc', margin: '1.5rem 0'}}>
-  Este glosario contiene los <strong>términos técnicos, normativas, acrónimos y conceptos principales</strong> relacionados con la facturación electrónica, documentos equivalentes, nómina electrónica, RADIAN y el <strong>Sector Salud (Resolución 000948 de 2026 / RIPS)</strong> en Colombia.
-</div>
+:::info 📖 Referencia Normativa y Conceptual
+Este glosario contiene los **términos técnicos, normativas, acrónimos y conceptos principales** relacionados con la facturación electrónica, documentos equivalentes, nómina electrónica, RADIAN y el **Sector Salud (Resolución 000948 de 2026 / RIPS)** en Colombia.
+:::
 
-## 🗯️ Navegación Alfabética
+## 🗯️ Navegación Alfabética {#navegacion}
 
 <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(40px, 1fr))', gap: '0.5rem', margin: '1.5rem 0'}}>
-  <a href="#a" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>A</a>
-  <a href="#b" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>B</a>
-  <a href="#c" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>C</a>
-  <a href="#d" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>D</a>
-  <a href="#e" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>E</a>
-  <a href="#f" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>F</a>
-  <a href="#g" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>G</a>
-  <a href="#h" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>H</a>
-  <a href="#i" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>I</a>
-  <a href="#j" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>J</a>
-  <a href="#l" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>L</a>
-  <a href="#m" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>M</a>
-  <a href="#n" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>N</a>
-  <a href="#o" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>O</a>
-  <a href="#p" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>P</a>
-  <a href="#q" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>Q</a>
-  <a href="#r" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>R</a>
-  <a href="#s" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>S</a>
-  <a href="#t" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>T</a>
-  <a href="#u" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>U</a>
-  <a href="#v" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>V</a>
-  <a href="#w" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>W</a>
-  <a href="#x" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>X</a>
-  <a href="#z" style={{padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid #dee2e6', fontWeight: 'bold'}}>Z</a>
+  <a href="#a" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>A</a>
+  <a href="#b" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>B</a>
+  <a href="#c" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>C</a>
+  <a href="#d" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>D</a>
+  <a href="#e" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>E</a>
+  <a href="#f" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>F</a>
+  <a href="#g" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>G</a>
+  <a href="#h" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>H</a>
+  <a href="#i" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>I</a>
+  <a href="#j" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>J</a>
+  <a href="#l" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>L</a>
+  <a href="#m" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>M</a>
+  <a href="#n" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>N</a>
+  <a href="#o" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>O</a>
+  <a href="#p" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>P</a>
+  <a href="#q" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>Q</a>
+  <a href="#r" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>R</a>
+  <a href="#s" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>S</a>
+  <a href="#t" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>T</a>
+  <a href="#u" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>U</a>
+  <a href="#v" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>V</a>
+  <a href="#w" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>W</a>
+  <a href="#x" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>X</a>
+  <a href="#z" style={{padding: '0.5rem', backgroundColor: 'var(--ifm-card-background-color)', borderRadius: '4px', textAlign: 'center', textDecoration: 'none', border: '1px solid var(--ifm-color-emphasis-300)', fontWeight: 'bold'}}>Z</a>
 </div>
 
-<div style={{backgroundColor: '#fff3cd', padding: '1.5rem', borderRadius: '8px', border: '2px solid #ffc107', margin: '1.5rem 0'}}>
-  <h3 style={{marginTop: 0}}>⚠️ Nota Crítica sobre IDs de API vs Códigos DIAN</h3>
-  <p><strong>Esta es la distinción más importante para utilizar la API correctamente:</strong></p>
-  <ul>
-    <li><strong>ID (de la base de datos de la API):</strong> Número entero único usado en las peticiones (ej: <code>type_document_id: 7</code>).</li>
-    <li><strong>Code (DIAN):</strong> Código normativo de la DIAN, usado exclusivamente para referencia legal (ej: Code 01 = Factura de Venta).</li>
-  </ul>
-  <div style={{backgroundColor: '#856404', color: 'white', padding: '1rem', borderRadius: '6px', marginTop: '1rem'}}>
-    <strong>🔑 REGLA FUNDAMENTAL:</strong> En el cuerpo de las peticiones SIEMPRE utilizas el <strong>ID numérico de la API</strong>, NUNCA el <strong>código alfanumérico DIAN</strong>.
-  </div>
-  <div style={{marginTop: '1rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem'}}>
-    <div style={{backgroundColor: '#f8d7da', padding: '0.75rem', borderRadius: '6px', border: '1px solid #dc3545'}}>
-      ❌ <strong>INCORRECTO:</strong><br/>
-      <code>"type_document_id": "01"</code>
-    </div>
-    <div style={{backgroundColor: '#d4edda', padding: '0.75rem', borderRadius: '6px', border: '1px solid #28a745'}}>
-      ✅ <strong>CORRECTO:</strong><br/>
-      <code>"type_document_id": 7</code>
-    </div>
-  </div>
-</div>
+:::warning ⚠️ Nota Crítica: IDs de API vs Códigos DIAN
+**Esta es la distinción más importante para utilizar la API correctamente:**
+* **ID (Base de Datos API):** Número entero único usado en las peticiones JSON (ej: `type_document_id: 1` para Factura Electrónica).
+* **Code (DIAN):** Código normativo de la DIAN, usado exclusivamente para referencia regulatoria (ej: Code `01` = Factura de Venta).
+
+**🔑 REGLA FUNDAMENTAL:** En el cuerpo de las peticiones SIEMPRE utilizas el **ID numérico de la API**, NUNCA el código alfanumérico DIAN.
+:::
 
 ---
 
-## A
+## A {#a}
 
 ### Additional Document Reference (Documento Adicional de Referencia)
 **Definición**: Grupo de datos que contiene referencias a documentos comerciales o de soporte adicionales.
@@ -73,8 +59,7 @@ sidebar_label: Glosario
 ---
 
 ### ADRES
-**Definición**: Administradora de los Recursos del Sistema General de Seguridad Social en Salud.
-* **Rol**: Entidad pública adscrita al MinSalud que administra los recursos financieros del SGSSS y efectúa pagos/giros directos a prestadores y proveedores.
+**Definición**: Administradora de los Recursos del Sistema General de Seguridad Social en Salud. Entidad pública adscrita al MinSalud que administra los recursos financieros del SGSSS y efectúa pagos/giros directos a prestadores y proveedores.
 
 ---
 
@@ -95,197 +80,225 @@ sidebar_label: Glosario
 
 ---
 
-## B
+## B {#b}
 
 ### Base Imponible
-**Definición**: El valor monetario sobre el cual se liquidan y calculan los impuestos y retenciones.
-* **Fórmula**: `Base Imponible = Subtotal - Descuentos`
+**Definición**: Valor sobre el cual se calcula el porcentaje de impuesto (IVA, INC, Retención) aplicable a cada línea o al total del documento.
 
 ---
 
-## C
+## C {#c}
 
 ### Certificado Digital
-**Definición**: Documento criptográfico en formato `.p12` emitido por una entidad de certificación acreditada (ONAC) que garantiza la identidad del emisor y la integridad del documento mediante firma digital XAdES-EPES.
+**Definición**: Archivo criptográfico PKCS#12 (`.p12` o `.pfx`) emitido por una entidad de certificación acreditada (ONAC) que garantiza la autoría, integridad y no repudio de los documentos XML transmitidos a la DIAN.
 
 ---
 
 ### Cobertura o Plan de Beneficios (`coverage`)
-**Definición**: Catálogo oficial del Ministerio de Salud (SISPRO) que identifica la fuente de financiación del servicio de salud (ej. `01` = UPC Contributiva, `02` = Presupuesto Máximo, `04` = SOAT, `05` = ARL, `06` = ADRES, `16` = UPC Subsidiada).
+**Definición**: Plan de beneficios en salud bajo el cual se prestan los servicios (ej. Plan de Beneficios en Salud - UPC, Plan Complementario, Pólizas de Salud, SOAT).
 
 ---
 
 ### Contingencia
-**Definición**: Procedimiento extraordinario cuando el facturador o la DIAN presentan indisponibilidad técnica:
-* **Tipo 03 (`type_document_id: 9`)**: Factura de Contingencia con numeración autorizada DIAN.
-* **Tipo 04 (`type_document_id: 10`)**: Factura de Contingencia por fallas atribuibles al emisor.
+**Definición**: Mecanismo operativo que permite emitir facturas cuando se presentan fallas técnicas atribuibles a la DIAN (Contingencia Tipo 04) o al facturador (Contingencia Tipo 03).
 
 ---
 
 ### Copago (`copayment`)
-**Definición**: Aporte en dinero que corresponde a una parte del valor del servicio demandado por el usuario, con el fin de contribuir a financiar el sistema (afiliados beneficiarios en el régimen contributivo y subsidiado). Su valor debe coincidir con el reporte en RIPS.
+**Definición**: Aporte en dinero correspondiente a una parte del valor del servicio cubierto por el Plan de Beneficios en Salud, a cargo exclusivo de los beneficiarios del régimen contributivo.
 
 ---
 
 ### CUCON
-**Definición**: Código Único de Contratación en Salud. Código expedido por la plataforma oficial del Registro de Contratación de Servicios de Salud (Ley 1966 de 2019) que se reporta en `health.contract_number`.
+**Definición**: Código Único de Facturación Electrónica en Contingencia.
 
 ---
 
 ### CUDE
-**Definición**: Código Único de Documento Electrónico. Cadena criptográfica (SHA-384) que identifica de forma unívoca las Notas Crédito, Notas Débito, Documentos Soporte y Documentos Equivalentes POS Electrónicos.
+**Definición**: Código Único de Documento Electrónico. Cadena criptográfica SHA-384 que identifica unívocamente notas crédito, notas débito, documentos soporte y documentos equivalentes POS.
 
 ---
 
 ### CUFE
-**Definición**: Código Único de Factura Electrónica. Cadena alfanumérica criptográfica generada mediante SHA-384 que autentica y garantiza la unicidad e inalterabilidad de una Factura Electrónica de Venta.
+**Definición**: Código Único de Facturación Electrónica. Cadena criptográfica generada mediante algoritmo SHA-384 que identifica de manera única e irrepetible cada factura electrónica de venta autorizada por la DIAN.
 
 ---
 
 ### CUNE
-**Definición**: Código Único de Nómina Electrónica. Identificador criptográfico SHA-384 que valida la autenticidad e integridad del documento soporte de pago de nómina electrónica ante la DIAN.
+**Definición**: Código Único de Nómina Electrónica. Identificador unívoco generado a partir de los datos de liquidación del Documento Soporte de Pago de Nómina Electrónica.
 
 ---
 
 ### Cuota Moderadora (`moderator_fee`)
-**Definición**: Pago monetario recaudado directamente al usuario (afiliados cotizantes y beneficiarios) cuyo objetivo es regular la utilización de los servicios de salud y estimular su buen uso.
+**Definición**: Pago monetario que regula la utilización de los servicios de salud y estimula su buen uso, a cargo de cotizantes y beneficiarios en el régimen contributivo.
 
 ---
 
-## D
+## D {#d}
 
 ### DIAN
-**Definición**: Dirección de Impuestos y Aduanas Nacionales de Colombia. Entidad gubernamental que reglamenta, administra y fiscaliza el sistema de facturación electrónica.
+**Definición**: Dirección de Impuestos y Aduanas Nacionales. Autoridad tributaria, aduanera y cambiaria de Colombia encargada de regular y validar los documentos fiscales electrónicos.
 
 ---
 
 ### Dígito Verificador (DV)
-**Definición**: Dígito numérico (del 0 al 9) calculado mediante el algoritmo Módulo 11 que complementa y valida la integridad del NIT.
+**Definición**: Cifra numérica calculada mediante el algoritmo oficial módulo 11 de la DIAN que valida la integridad y congruencia del NIT.
 
 ---
 
 ### Documento Equivalente POS Electrónico
-**Definición**: Comprobante fiscal generado mediante sistemas de caja P.O.S que se transmite de forma electrónica con validación previa de la DIAN y generación de CUDE (Resolución 000165 de 2024). En la API se emite vía `POST /pos` o `POST /auto-increment/pos-documents`.
+**Definición**: Documento electrónico (tipo `20`) que reemplaza la tradicional tirilla de máquina registradora POS y otorga derecho a deducción de costos y gastos cuando identifica al adquirente.
 
 ---
 
 ### Documento Soporte Electrónico (DS)
-**Definición**: Documento que acredita la adquisición de bienes o servicios a proveedores no obligados a expedir factura de venta (Resolución 000167). En la API se emite vía `POST /ds/document`.
+**Definición**: Documento electrónico (tipo `11`) expedido por el comprador para soportar transacciones con personas o proveedores no obligados a expedir factura de venta.
 
 ---
 
-## E
+## E {#e}
 
 ### EPS
-**Definición**: Entidad Promotora de Salud. Organización responsable de la afiliación y el aseguramiento en salud de los ciudadanos en el régimen contributivo y subsidiado en Colombia.
+**Definición**: Entidad Promotora de Salud. Entidad responsable de la afiliación, registro y recaudo de cotizaciones de los usuarios en el sistema de salud colombiano.
 
 ---
 
 ### Eventos RADIAN
-**Definición**: Mensajes electrónicos reglamentados por la DIAN (Resolución 000198 de 2024) para la circulación y factoring de la factura electrónica como título valor:
-* **030**: Acuse de recibo de la Factura Electrónica.
-* **031**: Reclamo contra la Factura Electrónica.
-* **032**: Recibo del bien o prestación del servicio.
-* **033**: Aceptación expresa.
-* **034**: Aceptación tácita.
+**Definición**: Mensajes electrónicos oficiales transmitidos a la DIAN para gestionar el ciclo de vida de la factura electrónica como título valor:
+* **Evento 030**: Acuse de recibo de la factura.
+* **Evento 031**: Reclamo de la factura (con `claim_code` del `01` al `04`).
+* **Evento 032**: Recibo de bienes y/o servicios.
+* **Evento 033**: Aceptación expresa.
 
 ---
 
-## F
+## F {#f}
 
 ### Factura Electrónica de Venta (FEV)
-**Definición**: Título valor y soporte fiscal emitido en formato XML UBL 2.1 con firma digital que cuenta con validación previa de la DIAN y generación de CUFE.
+**Definición**: Título valor digital que soporta transacciones de compraventa de bienes o prestación de servicios, validado previamente en tiempo real por la DIAN antes de su entrega al adquirente.
 
 ---
 
 ### Factura del Sector Salud
-**Definición**: Factura electrónica de venta emitida por IPS, profesionales independientes y proveedores de tecnologías en salud reglamentada por la **Resolución 000948 de 2026** (que deroga las Resoluciones 2275 de 2023, 558 y 1884 de 2024) y el **Documento Técnico 2 Versión 001** del MinSalud / DIAN. Requiere la inclusión del objeto `health`.
+**Definición**: Factura electrónica que incorpora el objeto regulatorio `health` conforme a la **Resolución 000948 de 2026**, integrando la información estructurada de atenciones de salud con los RIPS.
 
 ---
 
-## H
+## G {#g}
+
+### Generación de Documentos
+**Definición**: Proceso de estructuración y validación sintáctica del JSON de entrada para construir el XML conforme al estándar UBL 2.1 antes de la firma digital.
+
+---
+
+### Geolocalización DANE
+**Definición**: Codificación oficial de departamentos y municipios establecida por el Departamento Administrativo Nacional de Estadística (DANE) utilizada en los campos `city_id` y `department_id`.
+
+---
+
+## H {#h}
 
 ### Health (Objeto `health`)
-**Definición**: Estructura JSON del payload donde se reportan los campos adicionales del sector salud: código REPS (`provider_code`), modalidad de pago (`payment_modality`), cobertura (`coverage`), contrato (`contract_number`), póliza (`policy_number`), copagos (`copayment`), cuotas moderadoras (`moderator_fee`), pagos compartidos (`shared_payments`), anticipos (`advance`), causales sin contrato (`justification_without_contract`), periodo de facturación (`invoice_period`), adjuntos y web services de entrega.
+**Definición**: Objeto JSON opcional pero obligatorio para facturas del sector salud. Contiene información asistencial, periodos de atención, modalidad de pago, copagos y cuotas moderadoras.
 
 ---
 
-## I
+## I {#i}
 
 ### ICA
-**Definición**: Impuesto de Industria y Comercio. Tributo de orden municipal que grava la realización de actividades industriales, comerciales o de servicios.
+**Definición**: Impuesto de Industria y Comercio. Tributo territorial municipal que grava la realización de actividades industriales, comerciales o de servicios.
 
 ---
 
 ### INCOTERM
-**Definición**: International Commercial Terms. Términos internacionales estandarizados (FOB, CIF, DDP, EXW) que definen las responsabilidades de transporte, costo y riesgo en facturas de exportación (`type_document_id: 8`).
+**Definición**: Términos internacionales de comercio (ej. FOB, CIF, EXW) requeridos en facturas de exportación para definir responsabilidades entre comprador y vendedor.
 
 ---
 
 ### IPS
-**Definición**: Institución Prestadora de Servicios de Salud. Entidad habilitada en el REPS para brindar atención médica asistencial.
+**Definición**: Institución Prestadora de Servicios de Salud. Hospitales, clínicas, laboratorios y centros médicos habilitados para prestar servicios de salud.
 
 ---
 
 ### IVA
-**Definición**: Impuesto sobre las Ventas. Tributo nacional indirecto de tipo valor agregado (tarifas habituales: general 19%, reducida 5%, exenta 0%).
+**Definición**: Impuesto sobre las Ventas. Tributo nacional indirecto de valor agregado que grava la venta de bienes y la prestación de servicios (tarifas estándar: 0%, 5%, 19%).
 
 ---
 
-## J
+## J {#j}
 
-### JSON
-**Definición**: JavaScript Object Notation. Formato estándar ligero y estructurado utilizado por MATIAS API para recibir las solicitudes de los clientes y responder los resultados procesados de la DIAN.
+### JSON (JavaScript Object Notation)
+**Definición**: Formato estándar de intercambio de datos ligero y legible por humanos utilizado en toda la API de MATIAS para el envío y recepción de información.
 
 ---
 
-## M
+## L {#l}
+
+### Línea de Factura (`lines`)
+**Definición**: Array de ítems o conceptos facturados que detalla cantidades, precios unitarios, descuentos, tributos y descripciones del servicio o producto.
+
+---
+
+### Lote Masivo (Bulk)
+**Definición**: Conjunto de múltiples documentos electrónicos enviados de manera agrupada mediante `POST /bulk/documents` para procesamiento en cola asíncrona.
+
+---
+
+## M {#m}
 
 ### Magic Values
-**Definición**: Valores de prueba que se envían en la cabecera `X-Sandbox-Force-Status` en el entorno Sandbox para forzar escenarios específicos de error (rechazos, descuadres aritméticos, timeouts, fallos de esquema o CUDE inválido) sin alterar los datos del documento.
+**Definición**: Catálogo de 32 cabeceras HTTP especiales (`X-Sandbox-Force-Status`) utilizables en el ambiente Sandbox para simular rechazos, códigos de error y respuestas DIAN específicas.
 
 ---
 
 ### Modalidad de Pago (Salud)
-**Definición**: Catálogo `modalidadPago` de SISPRO para contratación en salud (Decreto 780 de 2016):
-* `01`: Pago individual por caso / Paquete / Canasta.
-* `02`: Pago global prospectivo.
-* `03`: Pago por capitación.
-* `04`: Pago por evento.
+**Definición**: Mecanismo contractual de pago de servicios de salud entre prestadores y pagadores (ej. Pago por evento `01`, Pago por capitación `02`, Pago por conjunto integral `03`).
 
 ---
 
-## N
+## N {#n}
 
 ### NIT
-**Definición**: Número de Identificación Tributaria asignado por la DIAN a personas naturales y jurídicas para efectos fiscales.
+**Definición**: Número de Identificación Tributaria asignado por la DIAN para la individualización de personas jurídicas y naturales en Colombia.
 
 ---
 
 ### Nómina Electrónica
-**Definición**: Documento soporte de pago de nómina electrónica que respalda los costos y deducciones derivados de una relación laboral (Resolución 000013).
+**Definición**: Documento soporte de pago de nómina electrónica y notas de ajuste que sustentan los costos deducibles derivados de pagos laborales.
 
 ---
 
 ### Nota Crédito
-**Definición**: Documento electrónico utilizado para anular, corregir o conceder descuentos a una factura electrónica previa, generando su propio código CUDE (`type_document_id: 5`).
+**Definición**: Documento electrónico (tipo `5`) utilizado para anular facturas, conceder descuentos posteriores o registrar devoluciones de mercancías.
 
 ---
 
 ### Nota Débito
-**Definición**: Documento electrónico que incrementa el valor de una factura previa por conceptos como intereses de mora, gastos adicionales o ajustes contables (`type_document_id: 4`).
+**Definición**: Documento electrónico (tipo `4`) utilizado para registrar cargos adicionales, intereses de mora o aumentos de valor sobre facturas previamente emitidas.
 
 ---
 
-## P
+## O {#o}
+
+### ONAC
+**Definición**: Organismo Nacional de Acreditación de Colombia. Entidad responsable de acreditar a las Entidades de Certificación Digital que emiten certificados de firma válidos ante la DIAN.
+
+---
+
+### Operación de Facturación
+**Definición**: Código paramétrico (`operation_type_id`) que define el tipo de operación mercantil (ej. Estándar `1`, Servicios `2`, Salud `7`).
+
+---
+
+## P {#p}
 
 ### Pago Compartido (`shared_payments`)
-**Definición**: Montos recaudados por el prestador en planes voluntarios de salud (medicina prepagada, planes complementarios, pólizas) a cargo del usuario o titular.
+**Definición**: Montos recaudados por el prestador en planes voluntarios de salud (medicina prepagada, planes complementarios) a cargo del usuario o titular.
 
 ---
 
 ### Personal Access Token (PAT)
-**Definición**: Token de autenticación de larga duración (JWT estándar basado en Laravel Passport) que permite autenticar peticiones API desde sistemas ERP o servidores backend sin requerir logins repetitivos.
+**Definición**: Token de autenticación de larga duración (JWT estándar basado en Laravel Passport) que permite autenticar peticiones API desde sistemas ERP o servidores backend.
 
 ---
 
@@ -294,7 +307,14 @@ sidebar_label: Glosario
 
 ---
 
-## R
+## Q {#q}
+
+### QR Code (Código QR)
+**Definición**: Código bidimensional de respuesta rápida generado e insertado obligatoriamente en la representación gráfica (PDF) que enlaza al catálogo público de validación de la DIAN.
+
+---
+
+## R {#r}
 
 ### RADIAN
 **Definición**: Plataforma oficial administrada por la DIAN que registra y custodia los eventos y operaciones de factoring electrónico sobre facturas electrónicas de venta como título valor.
@@ -316,7 +336,7 @@ sidebar_label: Glosario
 
 ---
 
-## S
+## S {#s}
 
 ### Sector Salud (FEV Salud)
 **Definición**: Régimen especial de emisión de facturación electrónica obligatorio para prestadores de servicios y proveedores de tecnologías en salud reglamentado por el MinSalud y la DIAN.
@@ -328,14 +348,14 @@ sidebar_label: Glosario
 
 ---
 
-## T
+## T {#t}
 
 ### TRM
 **Definición**: Tasa Representativa del Mercado. Tipo de cambio oficial peso colombiano / dólar estadounidense certificado por la Superintendencia Financiera de Colombia.
 
 ---
 
-## U
+## U {#u}
 
 ### UBL 2.1
 **Definición**: Universal Business Language (versión 2.1). Estándar XML internacional adoptado por la DIAN para la estructura formal de los documentos tributarios electrónicos en Colombia.
@@ -343,35 +363,45 @@ sidebar_label: Glosario
 ---
 
 ### UPC (Unidad de Pago por Capitación)
-**Definición**: Valor anual que reconoce el Estado a las EPS por cada afiliado para garantizar la prestación de los servicios del Plan de Beneficios en Salud (modalidades: UPC Contributiva y UPC Subsidiada).
+**Definición**: Valor anual que reconoce el Estado a las EPS por cada afiliado para garantizar la prestación de los servicios del Plan de Beneficios en Salud.
 
 ---
 
-## W
+## V {#v}
+
+### Validación Previa
+**Definición**: Mecanismo tecnológico mediante el cual la DIAN revisa y valida en tiempo real las reglas fiscales y aritméticas del XML antes de autorizar su entrega legal al adquirente.
+
+---
+
+## W {#w}
 
 ### Webhook
 **Definición**: Mecanismo de notificación HTTP asíncrono en tiempo real mediante el cual la API avisa a tu servidor cuando un documento o evento cambia de estado o completa su validación ante la DIAN.
 
 ---
 
-## X
+## X {#x}
 
 ### XML
 **Definición**: Extensible Markup Language. Formato de texto estructurado en el que se codifican, firman y transmiten los documentos electrónicos ante la DIAN.
 
 ---
 
-## 📊 Tablas de Referencia Rápida
+## Z {#z}
+
+### ZIP (Contenedor AttachedDocument)
+**Definición**: Archivo comprimido `.zip` generado por la API que contiene el documento XML firmado electrónicamente junto con el `ApplicationResponse` oficial de aprobación emitido por la DIAN.
+
+---
+
+## 📊 Tablas de Referencia Rápida {#tablas-referencia}
 
 ### 📄 Identificadores de Tipos de Documento en la API (`type_document_id`)
 
-<div style={{backgroundColor: '#fff3cd', padding: '1rem', borderRadius: '8px', border: '1px solid #ffc107', marginBottom: '1rem'}}>
-  <strong>⚠️ REGLA DE ORO:</strong> En tus peticiones a la API utiliza el <strong>ID (API)</strong> numérico. La columna <strong>Código DIAN</strong> es únicamente de referencia regulatoria.
-</div>
-
 | ID (API) | Código DIAN | Tipo de Documento | Endpoint Principal | Identificador Criptográfico |
 |:---:|:---:|---|---|:---:|
-| **7** | `01` | Factura Electrónica de Venta (Estándar / Salud) | `POST /invoice` | CUFE |
+| **1** | `01` | Factura Electrónica de Venta (Estándar / Salud) | `POST /invoice` | CUFE |
 | **8** | `02` | Factura de Exportación | `POST /invoice` | CUFE |
 | **9** | `03` | Factura de Contingencia (Tipo 03) | `POST /invoice` | CUFE |
 | **10** | `04` | Factura de Contingencia (Tipo 04) | `POST /invoice` | CUFE |
@@ -403,41 +433,10 @@ sidebar_label: Glosario
 
 ---
 
-## 🔗 Enlaces Relacionados
-
-<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', margin: '1.5rem 0'}}>
-  <a href="/docs/billing-fields" style={{textDecoration: 'none', color: 'inherit'}}>
-    <div style={{padding: '1rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '1px solid #0066cc'}}>
-      📋 <strong>Campos del Payload</strong><br/>
-      <small>Diccionario de campos y salud</small>
-    </div>
-  </a>
-  <a href="/docs/intro" style={{textDecoration: 'none', color: 'inherit'}}>
-    <div style={{padding: '1rem', backgroundColor: '#d1ecf1', borderRadius: '8px', border: '1px solid #17a2b8'}}>
-      🚀 <strong>Guía de Inicio</strong><br/>
-      <small>Introducción y conceptos</small>
-    </div>
-  </a>
-  <a href="/docs/sandbox/quickstart" style={{textDecoration: 'none', color: 'inherit'}}>
-    <div style={{padding: '1rem', backgroundColor: '#d4edda', borderRadius: '8px', border: '1px solid #28a745'}}>
-      ⚡ <strong>Sandbox Quickstart</strong><br/>
-      <small>Pruebas en 5 minutos</small>
-    </div>
-  </a>
-  <a href="/docs/endpoints/01-intro-auth" style={{textDecoration: 'none', color: 'inherit'}}>
-    <div style={{padding: '1rem', backgroundColor: '#fff3cd', borderRadius: '8px', border: '1px solid #ffc107'}}>
-      🔌 <strong>Endpoints API</strong><br/>
-      <small>Referencia técnica</small>
-    </div>
-  </a>
-</div>
-
----
-
-<div style={{backgroundColor: '#f8f9fa', padding: '1rem', borderRadius: '8px', textAlign: 'center', marginTop: '2rem'}}>
+<div style={{backgroundColor: 'var(--ifm-card-background-color)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--ifm-color-emphasis-300)', textAlign: 'center', marginTop: '2rem'}}>
   <small>
-    📅 <strong>Última actualización:</strong> Agosto 2026 (v3.6.0) • 
-    📚 <strong>Términos:</strong> 140+ definiciones • 
+    📅 <strong>Versión:</strong> 3.7.0 (Agosto 2026) • 
+    📚 <strong>Términos:</strong> 150+ definiciones completas • 
     🎯 <strong>Nivel:</strong> ⭐⭐⭐ Referencia Técnica y Normativa
   </small>
 </div>

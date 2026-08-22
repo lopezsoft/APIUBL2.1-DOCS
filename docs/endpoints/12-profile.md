@@ -6,16 +6,25 @@ sidebar_label: 👤 Perfil
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# 👤 Perfil
+# 👤 Perfil {#perfil}
 
-> ✅ **Autenticación REQUERIDA**
-> Incluir en todos los endpoints de esta sección el header: `Authorization: Bearer {token}`
+:::warning Autenticación Requerida
+Incluir en todos los endpoints de esta sección el header: `Authorization: Bearer {token}`
+:::
 
-## Datos del Usuario Autenticado
+:::info Parámetro Multi-Tenant: `client_uuid`
+Si operas como **Casa de Software**, puedes consultar o actualizar información en nombre de un cliente agregando `?client_uuid={{client_uuid}}`.
+:::
 
-### Obtener Datos del Usuario - 🔵 GET
+---
+
+## 👤 Gestión del Perfil {#gestion-perfil}
+
+<details open>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/profile</b> — Obtener Datos del Usuario</summary>
+
 ```http
-GET {{url}}/profile
+GET {{url}}/profile?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
@@ -27,7 +36,9 @@ Content-Type: application/json
 |---|---|---|---|
 | `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
-**Respuesta Exitosa (HTTP 200):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "dataRecords": {
@@ -55,20 +66,26 @@ Content-Type: application/json
 }
 ```
 
-**Respuesta de Error (HTTP 401 - No Autenticado):**
+</details>
+
+<details>
+<summary>❌ No Autenticado (HTTP 401)</summary>
+
 ```json
 {
   "message": "Unauthenticated."
 }
 ```
 
----
+</details>
 
-## Actualizar perfil de usuario
+</details>
 
-### Actualizar perfil de usuario - 🟠 PUT
+<details>
+<summary><span className="badge badge--warning margin-right--sm">PUT</span> <b>/profile/&#123;id&#125;</b> — Actualizar Perfil de Usuario</summary>
+
 ```http
-PUT {{url}}/profile/{id}
+PUT {{url}}/profile/{id}?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
@@ -76,8 +93,8 @@ Content-Type: application/json
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `id` | path | Sí | ID del usuario a actualizar. |
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+| `id` | path | ✅ Sí | ID del usuario a actualizar. |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
 **Body (JSON):**
 ```json
@@ -89,7 +106,9 @@ Content-Type: application/json
 }
 ```
 
-**Respuesta Exitosa (HTTP 200):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "dataRecords": {
@@ -115,23 +134,25 @@ Content-Type: application/json
 }
 ```
 
----
+</details>
 
-## Actualizar correo electrónico del usuario
+</details>
 
-### Actualizar correo electrónico del usuario - 🟠 PUT
+<details>
+<summary><span className="badge badge--warning margin-right--sm">PUT</span> <b>/profile/update-email</b> — Actualizar Correo Electrónico</summary>
+
 ```http
-PUT {{url}}/profile/update-email
+PUT {{url}}/profile/update-email?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Descripción:** Permite al usuario actualizar su correo electrónico. Requiere que el nuevo correo no esté en uso por otro usuario. El `email_verified_at` se establece en null y se envía automáticamente un correo de verificación al nuevo email.
+**Descripción:** Permite al usuario actualizar su correo electrónico. Requiere que el nuevo correo no esté en uso. Se enviará automáticamente un correo de verificación al nuevo email.
 
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
 **Body (JSON):**
 ```json
@@ -140,7 +161,9 @@ Content-Type: application/json
 }
 ```
 
-**Respuesta Exitosa (HTTP 200):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "success": true,
@@ -154,26 +177,32 @@ Content-Type: application/json
 }
 ```
 
-**Respuesta de Error de Validación (HTTP 422):**
+</details>
+
+<details>
+<summary>❌ Error de Validación (HTTP 422)</summary>
+
 ```json
 {
   "message": "Validación fallida",
   "errors": {
     "email": [
-      "El correo electrónico ya está en uso, por favor elige otro correo electrónico. Si este es tu correo electrónico, por favor inicia sesión con él."
+      "El correo electrónico ya está en uso, por favor elige otro correo electrónico."
     ]
   },
   "success": false
 }
 ```
 
----
+</details>
 
-## Actualizar imagen de perfil
+</details>
 
-### Actualizar imagen de perfil - 🟠 PUT
+<details>
+<summary><span className="badge badge--warning margin-right--sm">PUT</span> <b>/profile/&#123;id&#125;/image</b> — Actualizar Imagen de Perfil</summary>
+
 ```http
-PUT {{url}}/profile/{id}/image
+PUT {{url}}/profile/{id}/image?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
@@ -183,8 +212,8 @@ Content-Type: application/json
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `id` | path | Sí | ID del usuario. |
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). |
+| `id` | path | ✅ Sí | ID del usuario. |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
 **Body (JSON):**
 ```json
@@ -281,10 +310,16 @@ pm.request.headers.add({key: 'Content-Type', value: 'application/json'});
 </TabItem>
 </Tabs>
 
-**Respuesta de Error (HTTP 400 - Imagen Vacía):**
+<details>
+<summary>❌ Imagen Vacía (HTTP 400)</summary>
+
 ```json
 {
   "message": "La imagen en base64 está vacía",
   "success": false
 }
 ```
+
+</details>
+
+</details>

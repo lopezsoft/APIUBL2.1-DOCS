@@ -3,44 +3,43 @@ sidebar_position: 1
 sidebar_label: 🔐 Autenticación
 ---
 
-# 🔌 Introducción y Autenticación
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-<div style={{backgroundColor: '#e7f3ff', padding: '1.5rem', borderRadius: '8px', border: '2px solid #0066cc', margin: '1.5rem 0'}}>
-  <strong>📖 Referencia Completa de Endpoints</strong><br/>
-  Los endpoints son las URL que se utilizan para acceder a los recursos de la API. Cada endpoint es un punto de acceso que devuelve datos o realiza operaciones en el servidor.
-  
-  <br/><br/>
-  <a href="/postman_collection.json" target="_blank" download className="button button--primary">
-    📥 Descargar Colección de Postman Completa
-  </a>
-</div>
+# 🔌 Introducción y Autenticación {#introduccion-autenticacion}
+
+:::info 📖 Referencia Completa de Endpoints
+Los endpoints son las URL que se utilizan para acceder a los recursos de la API. Cada endpoint es un punto de acceso que devuelve datos o realiza operaciones en el servidor.
+
+<a href="https://documenter.getpostman.com/view/8699065/2s9YyvBLby" target="_blank" rel="noopener noreferrer" className="button button--warning">
+  📮 Ver Colección Oficial de Postman
+</a>
+:::
 
 <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', margin: '1.5rem 0'}}>
-  <div style={{padding: '1rem', backgroundColor: '#d4edda', borderRadius: '8px', border: '1px solid #28a745', textAlign: 'center'}}>
+  <div style={{padding: '1rem', backgroundColor: 'var(--ifm-color-success-contrast-background)', borderRadius: '8px', border: '1px solid var(--ifm-color-success)', textAlign: 'center'}}>
     <div style={{fontSize: '2rem'}}>🟢</div>
     <strong>Públicos</strong><br/>
     <small>Sin autenticación</small>
   </div>
-  <div style={{padding: '1rem', backgroundColor: '#fff3cd', borderRadius: '8px', border: '1px solid #ffc107', textAlign: 'center'}}>
+  <div style={{padding: '1rem', backgroundColor: 'var(--ifm-color-warning-contrast-background)', borderRadius: '8px', border: '1px solid var(--ifm-color-warning)', textAlign: 'center'}}>
     <div style={{fontSize: '2rem'}}>🔐</div>
     <strong>Privados</strong><br/>
     <small>Requieren token</small>
   </div>
-  <div style={{padding: '1rem', backgroundColor: '#d1ecf1', borderRadius: '8px', border: '1px solid #17a2b8', textAlign: 'center'}}>
+  <div style={{padding: '1rem', backgroundColor: 'var(--ifm-color-info-contrast-background)', borderRadius: '8px', border: '1px solid var(--ifm-color-info)', textAlign: 'center'}}>
     <div style={{fontSize: '2rem'}}>📄</div>
     <strong>Documentos</strong><br/>
     <small>CRUD y consultas</small>
   </div>
-  <div style={{padding: '1rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '1px solid #0066cc', textAlign: 'center'}}>
+  <div style={{padding: '1rem', backgroundColor: 'var(--ifm-color-info-contrast-background)', borderRadius: '8px', border: '1px solid var(--ifm-color-info)', textAlign: 'center'}}>
     <div style={{fontSize: '2rem'}}>🔔</div>
     <strong>Webhooks</strong><br/>
     <small>v3.0.0</small>
   </div>
 </div>
 
-## 🎯 Introducción a los Endpoints de la API
-
-### 🎟️ Flujo Completo de una Factura Electrónica
+## 🎯 Flujo Completo de una Factura Electrónica {#flujo-completo}
 
 ```
 1. AUTENTICACIÓN        2. CONSULTA              3. ENVÍO                4. ESTADO
@@ -51,38 +50,82 @@ sidebar_label: 🔐 Autenticación
   Públicos                  Públicos               Privados               Privados
 ```
 
-## 🏷️ Tipos de Endpoints
+## 🏷️ Tipos de Endpoints {#tipos-de-endpoints}
 
 | Tipo            | Autenticación | Uso                         | Headers                         |
 | --------------- | ------------- | --------------------------- | ------------------------------- |
 | **🟢 Públicos** | ❌ No         | Tablas DIAN, autenticación  | Ninguno                         |
 | **🔐 Privados** | ✅ Sí         | Documentos, estado, eventos | `Authorization: Bearer {token}` |
 
-<div style={{backgroundColor: '#fff3cd', padding: '1rem', borderRadius: '8px', border: '1px solid #ffc107', marginTop: '1rem'}}>
-  <strong>⚠️ Importante:</strong> Los endpoints privados requieren el header <code>Authorization: Bearer {'{token}'}</code> en todas las solicitudes.
-</div>
+:::warning Importante
+Los endpoints privados requieren el header `Authorization: Bearer {token}` en **todas** las solicitudes.
+:::
 
 ---
 
-## Autenticación
+## 🔑 Autenticación {#autenticacion}
 
-### Iniciar Sesión - 🟘 POST
+<details open>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/auth/login</b> — Iniciar Sesión</summary>
 
 ```http
 POST {{url}}/auth/login
 Content-Type: application/json
 ```
 
-**Body requerido:**
-```json
-{
-  "email": "demo@lopezsoft.net.co",
-  "password": "DEMO123456",
-  "remember_me": 0
-}
+**Parámetros del Body:**
+
+| Campo | Tipo | Requerido | Descripción |
+|-------|------|-----------|-------------|
+| `email` | `string` | ✅ Sí | Correo electrónico registrado |
+| `password` | `string` | ✅ Sí | Contraseña de la cuenta |
+| `remember_me` | `integer` | ✅ Sí | Debe ser `0` |
+
+<Tabs>
+<TabItem value="curl" label="cURL">
+
+```bash
+curl -X POST "{{url}}/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "demo@lopezsoft.net.co",
+    "password": "DEMO123456",
+    "remember_me": 0
+  }'
 ```
 
-**Respuesta Exitosa (HTTP 200):**
+</TabItem>
+<TabItem value="js" label="JavaScript (Axios)">
+
+```js
+const response = await axios.post(`${url}/auth/login`, {
+  email: 'demo@lopezsoft.net.co',
+  password: 'DEMO123456',
+  remember_me: 0
+});
+const token = response.data.access_token;
+```
+
+</TabItem>
+<TabItem value="php" label="PHP (Guzzle)">
+
+```php
+$response = $client->post("{$url}/auth/login", [
+    'json' => [
+        'email'       => 'demo@lopezsoft.net.co',
+        'password'    => 'DEMO123456',
+        'remember_me' => 0,
+    ],
+]);
+$token = json_decode($response->getBody())->access_token;
+```
+
+</TabItem>
+</Tabs>
+
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImYyZTFlYjgyZDUyMjEz...",
@@ -98,13 +141,33 @@ Content-Type: application/json
 }
 ```
 
-### Obtener Usuario Actual - 🟢 GET
+</details>
+
+<details>
+<summary>❌ Credenciales Inválidas (HTTP 401)</summary>
+
+```json
+{
+  "message": "Credenciales inválidas",
+  "success": false
+}
+```
+
+</details>
+
+</details>
+
+<details>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/auth/user</b> — Obtener Usuario Actual</summary>
+
 ```http
 GET {{url}}/auth/user
 Authorization: Bearer {token}
 ```
 
-**Respuesta Exitosa (HTTP 200):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "id": 1,
@@ -115,32 +178,60 @@ Authorization: Bearer {token}
 }
 ```
 
-### Cerrar Sesión - 🟢 GET
+</details>
+
+</details>
+
+<details>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/auth/logout</b> — Cerrar Sesión</summary>
+
 ```http
 GET {{url}}/auth/logout
 Authorization: Bearer {token}
 ```
-**Uso:** Revoca el token actual. Recomendado al final de sesión.
 
-**Respuesta Exitosa (HTTP 200):**
+Revoca el token actual. Recomendado al final de sesión.
+
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "message": "Successfully logged out"
 }
 ```
 
+</details>
+
+</details>
+
 ---
 
-## Gestión de Tokens (Personal Access Tokens) {#personal-access-tokens}
+## 🔐 Gestión de Tokens (Personal Access Tokens) {#personal-access-tokens}
 
-### Listar Tokens - 🟢 GET
+:::tip PAT vs OAuth2 — ¿Cuándo usar cada uno?
+| | **PAT** | **OAuth2 (login)** |
+|---|---|---|
+| **Caso de uso** | Integraciones servidor-a-servidor, scripts automatizados, ERP | Apps web con usuarios que inician sesión |
+| **Creación** | Self-service desde la API | Login con email/contraseña |
+| **Expiración** | Configurable: 1–90 días | Fija: hasta 90 días |
+| **Revocación** | Selectiva por ID | Solo logout total |
+| **Recomendado para** | ✅ Integraciones B2B | ✅ Portales web |
+:::
+
+<details open>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/tokens</b> — Listar Tokens</summary>
+
 ```http
 GET {{url}}/tokens
 Authorization: Bearer {token}
 ```
-Obtiene la lista de tokens del usuario.
 
-**Respuesta Exitosa (HTTP 200):**
+Obtiene la lista de todos los Personal Access Tokens del usuario.
+
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "success": true,
@@ -157,13 +248,25 @@ Obtiene la lista de tokens del usuario.
 }
 ```
 
-### Listar Token por ID - 🟢 GET
+</details>
+
+</details>
+
+<details>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/tokens/&#123;token_id&#125;</b> — Obtener Token por ID</summary>
+
 ```http
 GET {{url}}/tokens/{token_id}
 Authorization: Bearer {token}
 ```
 
-**Respuesta Exitosa (HTTP 200):**
+| Parámetro | Ubicación | Descripción |
+|-----------|-----------|-------------|
+| `token_id` | path | ID del token a consultar |
+
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "success": true,
@@ -178,22 +281,87 @@ Authorization: Bearer {token}
 }
 ```
 
-### Crear Nuevo Token - 🔵 POST
+</details>
+
+<details>
+<summary>❌ Token no encontrado (HTTP 404)</summary>
+
+```json
+{
+  "message": "Token no encontrado",
+  "success": false
+}
+```
+
+</details>
+
+</details>
+
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/tokens</b> — Crear Nuevo Token</summary>
+
 ```http
 POST {{url}}/tokens
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
-**Body:**
-```json
-{
-  "name": "Token Producción",
-  "description": "Token para integración ERP",
-  "expires_in_days": 60
-}
+
+**Parámetros del Body:**
+
+| Campo | Tipo | Requerido | Descripción |
+|-------|------|-----------|-------------|
+| `name` | `string` | ✅ Sí | Nombre descriptivo del token |
+| `description` | `string` | No | Descripción del uso del token |
+| `expires_in_days` | `integer` | ✅ Sí | Días de vigencia (1–90) |
+
+<Tabs>
+<TabItem value="curl" label="cURL">
+
+```bash
+curl -X POST "{{url}}/tokens" \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Token Producción",
+    "description": "Token para integración ERP",
+    "expires_in_days": 60
+  }'
 ```
 
-**Respuesta Exitosa (HTTP 201):**
+</TabItem>
+<TabItem value="js" label="JavaScript (Axios)">
+
+```js
+const response = await axios.post(`${url}/tokens`, {
+  name: 'Token Producción',
+  description: 'Token para integración ERP',
+  expires_in_days: 60
+}, {
+  headers: { Authorization: `Bearer ${token}` }
+});
+// Guardar: response.data.token (solo se muestra una vez)
+```
+
+</TabItem>
+<TabItem value="php" label="PHP (Guzzle)">
+
+```php
+$response = $client->post("{$url}/tokens", [
+    'headers' => ['Authorization' => "Bearer {$token}"],
+    'json'    => [
+        'name'            => 'Token Producción',
+        'description'     => 'Token para integración ERP',
+        'expires_in_days' => 60,
+    ],
+]);
+```
+
+</TabItem>
+</Tabs>
+
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 201)</summary>
+
 ```json
 {
   "success": true,
@@ -207,13 +375,29 @@ Content-Type: application/json
 }
 ```
 
-### Eliminar (Revocar) Token - 🔴 DELETE
+:::caution Guarda el token ahora
+El valor `token` solo se muestra **una vez** al crearlo. No se puede recuperar después.
+:::
+
+</details>
+
+</details>
+
+<details>
+<summary><span className="badge badge--danger margin-right--sm">DELETE</span> <b>/tokens/&#123;token_id&#125;</b> — Revocar Token</summary>
+
 ```http
 DELETE {{url}}/tokens/{token_id}
 Authorization: Bearer {token}
 ```
 
-**Respuesta Exitosa (HTTP 200):**
+| Parámetro | Ubicación | Descripción |
+|-----------|-----------|-------------|
+| `token_id` | path | ID del token a revocar |
+
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "message": "Token revoked successfully",
@@ -221,14 +405,23 @@ Authorization: Bearer {token}
 }
 ```
 
-### Revocar Todos los Tokens - 🔵 POST
+</details>
+
+</details>
+
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/tokens/revoke-all</b> — Revocar Todos los Tokens</summary>
+
 ```http
 POST {{url}}/tokens/revoke-all
 Authorization: Bearer {token}
 ```
+
 Revoca todos tus tokens **excepto el que estás usando actualmente**.
 
-**Respuesta Exitosa (HTTP 200):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "dataRecords": {
@@ -240,3 +433,7 @@ Revoca todos tus tokens **excepto el que estás usando actualmente**.
   "success": true
 }
 ```
+
+</details>
+
+</details>

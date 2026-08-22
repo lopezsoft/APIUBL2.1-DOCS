@@ -3,46 +3,95 @@ sidebar_position: 4
 sidebar_label: 📑 Documento Soporte
 ---
 
-# 📦 Documento Soporte
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-> ✅ **Autenticación REQUERIDA**
-> Incluir en todos: `Authorization: Bearer {token}`
+# 📦 Documento Soporte {#documento-soporte}
 
-:::info ¿Dónde obtener el `client_uuid`? — Parámetro Multi-Tenant para Casas de Software
-Si operas como **Casa de Software** o **Cuenta Principal**, puedes emitir documentos soporte y notas de ajuste en nombre de tus empresas cliente agregando el parámetro `client_uuid` en la query string de la URL:
-- **URL con Query Param:** `POST {{url}}/ds/document?client_uuid={{client_uuid}}`
-- **Header:** `Authorization: Bearer {token_cuenta_principal}`
-- **Comportamiento:** El documento soporte se emitirá y registrará en la DIAN en nombre de la empresa cliente indicada.
+:::warning Autenticación Requerida
+Incluir en todos los endpoints: `Authorization: Bearer {token}`
+:::
 
-**¿Dónde encontrar el `client_uuid` de tus clientes?**  
-Puedes consultar el listado completo de tus empresas cliente y sus respectivos `client_uuid` mediante el endpoint:
+:::info Parámetro Multi-Tenant: `client_uuid`
+Todos los endpoints aceptan el parámetro opcional `?client_uuid={{client_uuid}}`. Permite emitir documentos en nombre de empresas cliente cuando operas como **Casa de Software**.
 ```http
 GET {{url}}/company/customers
 Authorization: Bearer {token}
-Content-Type: application/json
 ```
 :::
 
-Los documentos soporte son utilizados para certificar las adquisiciones efectuadas a sujetos **no obligados a expedir factura de venta** o documento equivalente.
+Los documentos soporte certifican adquisiciones efectuadas a sujetos **no obligados a expedir factura de venta** o documento equivalente.
 
-## Enviar Documento Soporte - 🟘 POST
+:::tip Orden de configuración recomendado
+Antes de emitir documentos soporte, asegúrate de tener configurados: **Resolución DIAN** → **Software DIAN** → **Certificado Digital**.
+:::
+
+## 📋 Diferencias clave: Documento Soporte vs Factura {#diferencias}
+
+| Característica | Factura Electrónica | Documento Soporte |
+|---|---|---|
+| Endpoint | `POST /invoice` | `POST /ds/document` |
+| `type_document_id` | `1` (FEV) | No aplica (definido en payload) |
+| Proveedor | Obligado a facturar | **No obligado** a facturar |
+| Nota de ajuste | Nota Crédito/Débito | `POST /ds/adjustment-note` |
+| Referenciado en | `billing_reference` | `billing_reference` |
+
+📦 Ver ejemplos en [/docs/jsons-support-document](/docs/jsons-support-document/support-document)
+
+---
+
+## 1. Emisión {#emision}
+
+<details open>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/ds/document</b> — Enviar Documento Soporte</summary>
+
 ```http
 POST {{url}}/ds/document?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
-
 **Variantes disponibles:**
-- Documento Soporte Residente.
-- Documento Soporte No Residente.
+- Documento Soporte **Residente**.
+- Documento Soporte **No Residente**.
 - Casos especiales: IVA + RTE IVA, con decimales.
 
-**Respuesta Exitosa (DIAN 200 OK):**
+<Tabs>
+<TabItem value="curl" label="cURL">
+
+```bash
+curl -X POST "{{url}}/ds/document" \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{ ... }'
+```
+
+</TabItem>
+<TabItem value="js" label="JavaScript (Axios)">
+
+```js
+const response = await axios.post(`${url}/ds/document`, payload, {
+  headers: { Authorization: `Bearer ${token}` }
+});
+const cude = response.data.XmlDocumentKey;
+```
+
+</TabItem>
+<TabItem value="php" label="PHP (Guzzle)">
+
+```php
+$response = $client->post("{$url}/ds/document", [
+    'headers' => ['Authorization' => "Bearer {$token}"],
+    'json'    => $payload,
+]);
+```
+
+</TabItem>
+</Tabs>
+
+<details>
+<summary>✅ Respuesta Exitosa — DIAN 200 OK</summary>
+
 ```json
 {
   "message": "El documento ha sido procesado por la DIAN.",
@@ -58,27 +107,50 @@ Content-Type: application/json
 }
 ```
 
+</details>
+
+<details>
+<summary>❌ Rechazo DIAN (HTTP 422)</summary>
+
+```json
+{
+  "message": "El documento ha sido rechazado por la DIAN.",
+  "response": {
+    "IsValid": "false",
+    "StatusCode": "99",
+    "ErrorMessage": {
+      "string": ["Error en campos obligatorios del documento soporte."]
+    }
+  }
+}
+```
+
+</details>
+
+</details>
+
 ---
 
-## Enviar Nota de Ajuste (Documento Soporte) - 🟘 POST
+## 2. Nota de Ajuste {#nota-ajuste}
+
+<details open>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/ds/adjustment-note</b> — Enviar Nota de Ajuste</summary>
+
 ```http
 POST {{url}}/ds/adjustment-note?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+**Uso:** Para ajustar valores de un documento soporte previamente emitido.
 
 **Variantes disponibles:**
-- Nota de ajuste a Documento Soporte Residente y No Residente.
+- Nota de ajuste a Documento Soporte **Residente** y **No Residente**.
 - Nota de ajuste con IVA + RTE IVA.
 
-**Uso:** Para ajustar valores de un documento soporte previamente emitido (notas crédito/débito en el entorno de documento soporte).
+<details>
+<summary>✅ Respuesta Exitosa — DIAN 200 OK</summary>
 
-**Respuesta Exitosa (DIAN 200 OK):**
 ```json
 {
   "message": "El documento ha sido procesado por la DIAN.",
@@ -94,3 +166,6 @@ Content-Type: application/json
 }
 ```
 
+</details>
+
+</details>

@@ -3,69 +3,48 @@ sidebar_position: 20
 sidebar_label: 📦 Envío Masivo (Bulk)
 ---
 
-# 📦 Envío Masivo (Bulk)
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-> ✅ **Autenticación REQUERIDA**
-> Incluir en todos los endpoints de esta sección el header: `Authorization: Bearer {token}`
+# 📦 Envío Masivo de Documentos (Bulk) {#bulk-documents}
 
-## Listar lotes de la compañía
+:::warning Autenticación Requerida
+Incluir en todos los endpoints de esta sección el header: `Authorization: Bearer {token}`
+:::
 
-### Listar lotes de la compañía - 🔵 GET
+:::danger ⚠️ Retención de datos de solo 2 días
+Los registros temporales de los lotes masivos y su detalle de items se **eliminan automáticamente a los 2 días** de haber sido procesados. Asegúrate de consultar el lote y almacenar el `document_uuid` retornado para cada documento.
+:::
+
+:::info Parámetro Multi-Tenant: `client_uuid`
+Si operas como **Casa de Software**, puedes emitir y consultar lotes en nombre de una empresa cliente agregando `?client_uuid={{client_uuid}}`.
 ```http
-GET {{url}}/bulk/documents
+GET {{url}}/company/customers
 Authorization: Bearer {token}
-Content-Type: application/json
 ```
-
-**Descripción:** Lista paginada de todos los lotes de envío masivo de la compañía actual, ordenados del más reciente al más antiguo.
-
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `status` | query | No | Filtrar por estado del lote |
-| `per_page` | query | No | Lotes por página |
-| `page` | query | No | Número de página |
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
-
-**Respuesta Exitosa (HTTP 200):**
-```json
-{
-  "data": [
-    [
-      {
-        "filename": "soporte_pago.pdf",
-        "content": "JVBERi0xLjQKMSAwIG9iago8PAovVHlwZSAvQ2F0YWxvZw...",
-        "content_type": "application/pdf"
-      }
-    ]
-  ],
-  "meta": {
-    "current_page": 0,
-    "per_page": 0,
-    "total": 0,
-    "last_page": 0
-  }
-}
-```
+:::
 
 ---
 
-## Crear lote de documentos para procesamiento asíncrono
+## 🚀 Emisión y Procesamiento de Lotes {#emision-lotes}
 
-### Crear lote de documentos para procesamiento asíncrono - 🟘 POST
+<details open>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/bulk/documents</b> — Crear Lote de Documentos (Asíncrono)</summary>
+
 ```http
-POST {{url}}/bulk/documents
+POST {{url}}/bulk/documents?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
+Idempotency-Key: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
 ```
 
-**Descripción:** Acepta un lote de documentos electrónicos para procesamiento en cola. Retorna 202 Accepted inmediatamente con batch_id para polling posterior. Soporta idempotencia mediante header Idempotency-Key.
+**Descripción:** Acepta un lote de documentos electrónicos para procesamiento en cola. Retorna `202 Accepted` inmediatamente con `batch_id` para consultar su progreso.
 
-**Parámetros:**
+**Headers y Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `Idempotency-Key` | header | No | UUID v4 para idempotencia. Si se reenvía el mismo key con el mismo payload, retorna el lote original sin reprocesar. Válido por 24 horas. |
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+| `Idempotency-Key` | header | No | UUID v4 para idempotencia (evita procesar dos veces el mismo lote). Válido por 24h. |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
 **Body (JSON):**
 ```json
@@ -75,89 +54,167 @@ Content-Type: application/json
   "default_resolution_number": "18764002566734",
   "default_prefix": "SETT",
   "documents": [
-    [
-      {
-        "filename": "soporte_pago.pdf",
-        "content": "JVBERi0xLjQKMSAwIG9iago8PAovVHlwZSAvQ2F0YWxvZw...",
-        "content_type": "application/pdf"
+    {
+      "type_document_id": 1,
+      "customer": {
+        "company_name": "Cliente A SAS",
+        "dni": "900123456",
+        "email": "facturacion@clientea.com"
+      },
+      "lines": [
+        {
+          "description": "Servicio de Consultoría",
+          "invoiced_quantity": "1",
+          "price_amount": "500000.00",
+          "line_extension_amount": "500000.00"
+        }
+      ],
+      "legal_monetary_totals": {
+        "line_extension_amount": "500000.00",
+        "tax_exclusive_amount": "500000.00",
+        "tax_inclusive_amount": "595000.00",
+        "payable_amount": "595000.00"
       }
-    ]
+    }
   ]
 }
 ```
 
----
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 202 Accepted)</summary>
 
-## Consultar estado completo de un lote
-
-### Consultar estado completo de un lote - 🔵 GET
-```http
-GET {{url}}/bulk/documents/{batchId}
-Authorization: Bearer {token}
-Content-Type: application/json
-```
-
-**Descripción:** Retorna el estado detallado del lote con resumen de cada item. Incluye contadores de éxito/fallo y timestamps.
-
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `batchId` | path | Sí | UUID del lote (retornado en el POST) |
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
-
-**Respuesta Exitosa (HTTP 200):**
-```json
-[
-  {
-    "filename": "soporte_pago.pdf",
-    "content": "JVBERi0xLjQKMSAwIG9iago8PAovVHlwZSAvQ2F0YWxvZw...",
-    "content_type": "application/pdf"
-  }
-]
-```
-
----
-
-## Listar items de un lote con filtros
-
-### Listar items de un lote con filtros - 🔵 GET
-```http
-GET {{url}}/bulk/documents/{batchId}/items
-Authorization: Bearer {token}
-Content-Type: application/json
-```
-
-**Descripción:** Lista paginada de los items de un lote, con filtros opcionales por estado y tipo de documento.
-
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `batchId` | path | Sí | UUID del lote |
-| `status` | query | No | Filtrar por estado del item |
-| `kind` | query | No | Filtrar por tipo de documento |
-| `per_page` | query | No | Items por página |
-| `page` | query | No | Número de página |
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
-
-**Respuesta Exitosa (HTTP 200):**
 ```json
 {
-  "batch_id": "string",
-  "status": "string",
+  "success": true,
+  "message": "Lote encolado para procesamiento",
+  "batch_id": "b8f4155a-7ca2-11f0-be83-d843ae899220",
+  "total_documents": 1,
+  "status": "pending",
+  "created_at": "2026-08-20T14:30:00Z"
+}
+```
+
+</details>
+
+</details>
+
+---
+
+## 📊 Consulta de Estado del Lote {#consulta-estado}
+
+<details open>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/bulk/documents/&#123;batchId&#125;</b> — Consultar Estado del Lote</summary>
+
+```http
+GET {{url}}/bulk/documents/{batchId}?client_uuid={{client_uuid}}
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Parámetros:**
+| Nombre | Ubicación | Requerido | Descripción |
+|---|---|---|---|
+| `batchId` | path | ✅ Sí | UUID del lote obtenido al crearlo. |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
+
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
+```json
+{
+  "batch_id": "b8f4155a-7ca2-11f0-be83-d843ae899220",
+  "status": "completed",
+  "total_documents": 1,
+  "processed_documents": 1,
+  "successful_documents": 1,
+  "failed_documents": 0,
+  "created_at": "2026-08-20T14:30:00Z",
+  "finished_at": "2026-08-20T14:30:12Z"
+}
+```
+
+</details>
+
+</details>
+
+<details>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/bulk/documents/&#123;batchId&#125;/items</b> — Listar Items del Lote</summary>
+
+```http
+GET {{url}}/bulk/documents/{batchId}/items?page=1&per_page=20&status=success&client_uuid={{client_uuid}}
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Parámetros:**
+| Nombre | Ubicación | Requerido | Descripción |
+|---|---|---|---|
+| `batchId` | path | ✅ Sí | UUID del lote. |
+| `status` | query | No | Filtrar por estado (`success`, `failed`, `pending`). |
+| `per_page` | query | No | Registros por página. |
+| `page` | query | No | Número de página. |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
+
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
+```json
+{
+  "batch_id": "b8f4155a-7ca2-11f0-be83-d843ae899220",
   "items": [
-    [
-      {
-        "filename": "soporte_pago.pdf",
-        "content": "JVBERi0xLjQKMSAwIG9iago8PAovVHlwZSAvQ2F0YWxvZw...",
-        "content_type": "application/pdf"
-      }
-    ]
+    {
+      "index": 0,
+      "status": "success",
+      "document_uuid": "dde72910-eb42-11ef-9b27-f02f74cac485",
+      "document_number": "SETT101",
+      "cufe": "cf9864294501e8a9578235dd2ab3c4fd...",
+      "dian_status": "00"
+    }
   ],
   "meta": {
-    "current_page": 0,
-    "per_page": 0,
-    "total": 0,
-    "last_page": 0
+    "current_page": 1,
+    "per_page": 20,
+    "total": 1,
+    "last_page": 1
   }
 }
 ```
+
+</details>
+
+</details>
+
+<details>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/bulk/documents</b> — Listar Todos los Lotes</summary>
+
+```http
+GET {{url}}/bulk/documents?page=1&per_page=15&client_uuid={{client_uuid}}
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
+```json
+{
+  "data": [
+    {
+      "batch_id": "b8f4155a-7ca2-11f0-be83-d843ae899220",
+      "status": "completed",
+      "total_documents": 1,
+      "created_at": "2026-08-20T14:30:00Z"
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "per_page": 15,
+    "total": 1,
+    "last_page": 1
+  }
+}
+```
+
+</details>
+
+</details>

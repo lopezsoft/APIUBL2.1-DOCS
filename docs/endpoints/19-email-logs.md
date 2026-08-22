@@ -3,38 +3,34 @@ sidebar_position: 19
 sidebar_label: 📧 Registros de Email
 ---
 
-# 📧 Registros de Email
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-> ✅ **Autenticación REQUERIDA**
-> Incluir en todos los endpoints de esta sección el header: `Authorization: Bearer {token}`
+# 📧 Registros de Email {#registros-email}
 
-## Obtener registro de email específico
+:::warning Autenticación Requerida
+Incluir en todos los endpoints de esta sección el header: `Authorization: Bearer {token}`
+:::
 
-### Obtener registro de email específico - 🔵 GET
+:::info Parámetro Multi-Tenant: `client_uuid`
+Si operas como **Casa de Software**, puedes auditar y consultar los registros de correos de tus empresas cliente agregando `?client_uuid={{client_uuid}}`.
 ```http
-GET {{url}}/email-logs/{id}
+GET {{url}}/company/customers
 Authorization: Bearer {token}
-Content-Type: application/json
 ```
+:::
 
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `id` | path | Sí |  |
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
-
-**Respuesta Exitosa (HTTP 200):**
-```json
-{}
-```
+Permite auditar el estado de entrega, rebotes y aperturas de los correos electrónicos enviados a los adquirentes con las representaciones gráficas (PDF) y archivos XML adjuntos.
 
 ---
 
-## Listar todos los registros de email
+## 📋 Consulta de Logs de Envío {#consulta-logs}
 
-### Listar todos los registros de email - 🔵 GET
+<details open>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/email-logs</b> — Listar Registros de Email</summary>
+
 ```http
-GET {{url}}/email-logs
+GET {{url}}/email-logs?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
@@ -42,24 +38,42 @@ Content-Type: application/json
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
-**Respuesta Exitosa (HTTP 200):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
-  "data": [
-    {}
-  ]
+  "dataRecords": {
+    "current_page": 1,
+    "data": [
+      {
+        "id": 104,
+        "document_id": 836,
+        "recipient_email": "cliente@correo.com",
+        "subject": "Factura Electrónica FVL-836",
+        "status": "delivered",
+        "sent_at": "2026-08-20T10:15:30Z",
+        "delivered_at": "2026-08-20T10:15:35Z",
+        "opened_at": "2026-08-20T11:02:10Z"
+      }
+    ],
+    "total": 1
+  },
+  "success": true
 }
 ```
 
----
+</details>
 
-## Buscar registros de email por ID de documento
+</details>
 
-### Buscar registros de email por ID de documento - 🔵 GET
+<details>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/email-logs/&#123;id&#125;</b> — Obtener Registro por ID</summary>
+
 ```http
-GET {{url}}/email-logs/document/{document_id}
+GET {{url}}/email-logs/{id}?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
@@ -67,14 +81,70 @@ Content-Type: application/json
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `document_id` | path | Sí |  |
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software. |
+| `id` | path | ✅ Sí | ID numérico del registro de email. |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
-**Respuesta Exitosa (HTTP 200):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
-  "data": [
-    {}
-  ]
+  "dataRecords": {
+    "data": {
+      "id": 104,
+      "document_id": 836,
+      "recipient_email": "cliente@correo.com",
+      "subject": "Factura Electrónica FVL-836",
+      "status": "delivered",
+      "smtp_response": "250 2.0.0 OK Message accepted for delivery",
+      "sent_at": "2026-08-20T10:15:30Z",
+      "delivered_at": "2026-08-20T10:15:35Z"
+    }
+  },
+  "success": true
 }
 ```
+
+</details>
+
+</details>
+
+<details>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/email-logs/document/&#123;document_id&#125;</b> — Buscar por ID de Documento</summary>
+
+```http
+GET {{url}}/email-logs/document/{document_id}?client_uuid={{client_uuid}}
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Parámetros:**
+| Nombre | Ubicación | Requerido | Descripción |
+|---|---|---|---|
+| `document_id` | path | ✅ Sí | ID interno del documento electrónico emitido. |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
+
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
+```json
+{
+  "dataRecords": {
+    "data": [
+      {
+        "id": 104,
+        "document_id": 836,
+        "recipient_email": "cliente@correo.com",
+        "subject": "Factura Electrónica FVL-836",
+        "status": "delivered",
+        "sent_at": "2026-08-20T10:15:30Z"
+      }
+    ]
+  },
+  "success": true
+}
+```
+
+</details>
+
+</details>

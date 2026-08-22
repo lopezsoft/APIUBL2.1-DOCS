@@ -1,48 +1,121 @@
 ---
 sidebar_position: 9
-sidebar_label: 🏥 Membresías y Salud
+sidebar_label: 📊 Membresías
 ---
 
-# 📊 Gestión de Membresías y Consumo
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-> ✅ **Autenticación REQUERIDA**
-> Incluir en todos: `Authorization: Bearer {token}`
+# 📊 Gestión de Membresías y Consumo {#membresias}
+
+:::warning Autenticación Requerida
+Incluir en todos los endpoints: `Authorization: Bearer {token}`
+:::
 
 Esta sección abarca la gestión de cuotas de emisión, límites de plan y analíticas de consumo en tiempo real, diseñado para casas de software, ERPs y plataformas SaaS integradoras.
 
 ---
 
-## Membresías y Consumo {#memberships-consumption}
+## 📈 Membresías y Consumo {#memberships-consumption}
 
-Permite a los integradores consultar los límites de plan, consumo diario/mensual y métricas avanzadas.
+<details open>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/memberships/summary</b> — Resumen de Membresía</summary>
 
-### Resumen de Membresía - 🟢 GET
 ```http
 GET {{url}}/memberships/summary
 Authorization: Bearer {token}
 ```
+
 Obtiene el resumen de la membresía: tipo de plan, límites, consumo, validez y cuotas asignadas a los clientes (con paginación).
 
----
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
 
-### Consumo Actual - 🟢 GET
+```json
+{
+  "dataRecords": {
+    "data": {
+      "plan": "Enterprise",
+      "total_documents": 10000,
+      "used_documents": 3254,
+      "remaining_documents": 6746,
+      "renewal_date": "2027-01-01",
+      "is_active": true
+    }
+  },
+  "success": true
+}
+```
+
+</details>
+
+<details>
+<summary>❌ Plan sin cuota (HTTP 402)</summary>
+
+```json
+{
+  "message": "Su plan de membresía no tiene documentos disponibles.",
+  "success": false
+}
+```
+
+</details>
+
+</details>
+
+<details>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/memberships/analytics/consumption</b> — Consumo Actual</summary>
+
 ```http
 GET {{url}}/memberships/analytics/consumption
 Authorization: Bearer {token}
 ```
+
 Consulta el nivel de consumo, los porcentajes de utilización, límites diarios/mensuales y las fechas de corte o renovación.
 
----
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
 
-### Asignar Cuotas a Clientes - 🔵 POST
+```json
+{
+  "dataRecords": {
+    "data": {
+      "daily_used": 45,
+      "daily_limit": 500,
+      "monthly_used": 3254,
+      "monthly_limit": 10000,
+      "usage_percentage": 32.5,
+      "cut_date": "2026-08-31"
+    }
+  },
+  "success": true
+}
+```
+
+</details>
+
+</details>
+
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/memberships/quotas</b> — Asignar Cuotas a Clientes</summary>
+
 ```http
 POST {{url}}/memberships/quotas
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
+
 Permite a una casa de software establecer sub-cuotas de emisión de documentos para una empresa cliente.
 
-**Body (JSON):**
+**Parámetros del Body:**
+
+| Campo | Tipo | Requerido | Descripción |
+|---|---|---|---|
+| `client_company_id` | `integer` | ✅ Sí | ID de la empresa cliente. |
+| `assigned_documents` | `integer` | ✅ Sí | Cantidad de documentos asignados. |
+| `start_date` | `string` | No | Fecha inicio de vigencia (`YYYY-MM-DD`). |
+| `end_date` | `string` | No | Fecha fin de vigencia (`YYYY-MM-DD`). |
+
 ```json
 {
   "client_company_id": 45,
@@ -52,26 +125,22 @@ Permite a una casa de software establecer sub-cuotas de emisión de documentos p
 }
 ```
 
-| Campo | Tipo | Requerido | Descripción |
-|---|---|---|---|
-| `client_company_id` | integer | ✅ Sí | ID de la empresa cliente a la que se le asigna la cuota. |
-| `assigned_documents` | integer | ✅ Sí | Cantidad de documentos asignados. |
-| `start_date` | string | No | Fecha inicio de vigencia (YYYY-MM-DD). |
-| `end_date` | string | No | Fecha fin de vigencia (YYYY-MM-DD). |
+</details>
 
 ---
 
-### Analíticas Avanzadas de Membresía - 🟢 GET
+## 📊 Analíticas Avanzadas {#analiticas}
 
-Todos estos endpoints requieren `Authorization: Bearer {token}`:
+:::tip Caché de estadísticas
+Las analíticas avanzadas se calculan con caché para mejor rendimiento. Usa `POST /memberships/analytics/clear-cache` para invalidar el caché y forzar datos en tiempo real.
+:::
 
 | Endpoint | Método | Descripción |
 |---|---|---|
-| `{{url}}/memberships/analytics/overview` | `GET` | Resumen ejecutivo de uso y estado global de la cuenta. |
-| `{{url}}/memberships/analytics/conversions` | `GET` | Métricas de conversión y tasa de éxito de emisión. |
-| `{{url}}/memberships/analytics/notifications` | `GET` | Notificaciones proactivas de consumos altos o próximos al límite de la cuota. |
-| `{{url}}/memberships/analytics/abuse-patterns` | `GET` | Detección de anomalías o patrones inusuales de tráfico. |
-| `{{url}}/memberships/analytics/revenue-projection` | `GET` | Proyección estimada de costos y consumo. |
-| `{{url}}/memberships/analytics/dashboard` | `GET` | Datos estructurados listos para renderizar en tableros de control. |
-| `{{url}}/memberships/analytics/clear-cache` | `POST` | Invalida y limpia la memoria caché temporal de estadísticas de la cuenta. |
-
+| `/memberships/analytics/overview` | <span className="badge badge--info">GET</span> | Resumen ejecutivo de uso y estado global de la cuenta. |
+| `/memberships/analytics/conversions` | <span className="badge badge--info">GET</span> | Métricas de conversión y tasa de éxito de emisión. |
+| `/memberships/analytics/notifications` | <span className="badge badge--info">GET</span> | Notificaciones proactivas de consumos altos o próximos al límite. |
+| `/memberships/analytics/abuse-patterns` | <span className="badge badge--info">GET</span> | Detección de anomalías o patrones inusuales de tráfico. |
+| `/memberships/analytics/revenue-projection` | <span className="badge badge--info">GET</span> | Proyección estimada de costos y consumo. |
+| `/memberships/analytics/dashboard` | <span className="badge badge--info">GET</span> | Datos estructurados listos para renderizar en tableros de control. |
+| `/memberships/analytics/clear-cache` | <span className="badge badge--success">POST</span> | Invalida la caché temporal de estadísticas de la cuenta. |

@@ -6,31 +6,27 @@ sidebar_label: 📊 Configuración de Reportes
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# 📊 Configuración de Reportes
+# 📊 Configuración de Reportes {#configuracion-reportes}
 
-> ✅ **Autenticación REQUERIDA**
-> Incluir en todos los endpoints de esta sección el header: `Authorization: Bearer {token}`
+:::warning Autenticación Requerida
+Incluir en todos los endpoints de esta sección el header: `Authorization: Bearer {token}`
+:::
 
-:::info ¿Dónde obtener el `client_uuid`? — Parámetro Multi-Tenant para Casas de Software
-Si operas como **Casa de Software** o **Cuenta Principal**, puedes configurar los encabezados, pies de página y logos de los reportes de tus empresas cliente agregando el parámetro `client_uuid` en la query string de la URL:
-- **URL con Query Param:** `{{url}}/settings/reports?client_uuid={{client_uuid}}`
-- **Header:** `Authorization: Bearer {token_cuenta_principal}`
-- **Comportamiento:** La configuración del reporte gráfico se aplicará a la empresa cliente especificada por su UUID.
-
-**¿Dónde encontrar el `client_uuid` de tus clientes?**  
-Puedes consultar el listado completo de tus empresas cliente y sus respectivos `client_uuid` mediante el endpoint:
+:::info Parámetro Multi-Tenant: `client_uuid`
+Si operas como **Casa de Software**, puedes configurar encabezados y logos de reporte para tus clientes agregando `?client_uuid={{client_uuid}}`.
 ```http
 GET {{url}}/company/customers
 Authorization: Bearer {token}
-Content-Type: application/json
 ```
 :::
 
 ---
 
-## Listar Encabezados de Reporte
+## 📋 Encabezados y Pies de Página {#encabezados}
 
-### Listar Encabezados de Reporte - 🔵 GET
+<details open>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/settings/reports</b> — Listar Encabezados de Reporte</summary>
+
 ```http
 GET {{url}}/settings/reports?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
@@ -40,9 +36,11 @@ Content-Type: application/json
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
-**Respuesta Exitosa (HTTP 200):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "dataRecords": {
@@ -58,11 +56,13 @@ Content-Type: application/json
 }
 ```
 
----
+</details>
 
-## Crear Encabezado de Reporte
+</details>
 
-### Crear Encabezado de Reporte - 🟘 POST
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/crud?tbPrefix=T063</b> — Crear Encabezado de Reporte</summary>
+
 ```http
 POST {{url}}/crud?tbPrefix=T063&client_uuid={{client_uuid}}
 Authorization: Bearer {token}
@@ -72,7 +72,7 @@ Content-Type: application/json
 **Descripción:** Crea un nuevo encabezado y pie de página para los reportes y representaciones gráficas enviando el contenido formateado en HTML dentro del objeto `records` serializado en JSON.
 
 :::info 💡 Guía para Desarrolladores — Formato HTML en `records`
-Puedes enviar contenido con etiquetas HTML (negrita, alineación, saltos de línea) dentro de `line1`, `line2` y `foot`. Los datos se envían serializados en el campo `records`.
+Puedes enviar contenido con etiquetas HTML (negrita, alineación, saltos de línea) dentro de `line1`, `line2` y `foot`.
 :::
 
 <Tabs>
@@ -98,7 +98,7 @@ const response = await axios.post(`${url}/crud?tbPrefix=T063`, {
 ```
 
 </TabItem>
-<TabItem value="php" label="PHP (Guzzle / cURL)">
+<TabItem value="php" label="PHP (cURL)">
 
 ```php
 <?php
@@ -161,19 +161,17 @@ var records = new {
     foot = "<p style=\"text-align: center;\">Email: gerencia@lopezsoft.net.co</p>"
 };
 
-var payload = new { records = JsonSerializer.Serialize(records) };
-
 var client = new HttpClient();
 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-var response = await client.PostAsJsonAsync($"{url}/crud?tbPrefix=T063", payload);
+var response = await client.PostAsJsonAsync($"{url}/crud?tbPrefix=T063", new {
+    records = JsonSerializer.Serialize(records)
+});
 ```
 
 </TabItem>
 <TabItem value="postman" label="Postman">
 
 ```javascript
-// Pre-request Script
 const records = {
     line1: '<p class="ql-align-center">EMPRESA S.A.S </p><p class="ql-align-center">N.I.T: 999.999.999-2 </p>',
     line2: '<p>CRA 15A # 47-24. Dosquebradas - Risaralda CEL: 310-843-5431</p>',
@@ -189,26 +187,16 @@ pm.request.headers.add({key: 'Content-Type', value: 'application/json'});
 </TabItem>
 </Tabs>
 
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
+**Propiedades de `records`:**
+| Campo | Tipo | Requerido | Descripción |
 |---|---|---|---|
-| `tbPrefix` | query | ✅ Sí | Prefijo de la tabla. Siempre `T063` para encabezados de reporte. |
-| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
-
-**Body JSON resultante:**
-```json
-{
-  "records": "{\"line1\":\"<p class=\\\"ql-align-center\\\">EMPRESA S.A.S </p><p class=\\\"ql-align-center\\\">N.I.T: 999.999.999-2 </p>\",\"line2\":\"<p>CRA 15A # 47-24. Los Naranjos Dosquebradas - Risaralda CEL: 310-843-5431</p>\",\"foot\":\"<p style=\\\"text-align: center;\\\">Cel: 301 843 5431 - Email: gerencia@lopezsoft.net.co</p>\"}"
-}
-```
-
-| Propiedad en `records` | Tipo | Requerido | Descripción |
-|---|---|---|---|
-| `line1` | string (HTML) | ✅ Sí | Línea principal del encabezado (Razón social, NIT, régimen fiscal). |
-| `line2` | string (HTML) | No | Línea secundaria del encabezado (Dirección, ciudad, teléfonos). |
+| `line1` | string (HTML) | ✅ Sí | Línea principal del encabezado (Razón social, NIT, régimen). |
+| `line2` | string (HTML) | No | Línea secundaria (Dirección, ciudad, teléfonos). |
 | `foot` | string (HTML) | No | Pie de página del documento (Canales de contacto, web, notas). |
 
-**Respuesta Exitosa (HTTP 201):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 201)</summary>
+
 ```json
 {
   "success": true,
@@ -219,11 +207,13 @@ pm.request.headers.add({key: 'Content-Type', value: 'application/json'});
 }
 ```
 
----
+</details>
 
-## Actualizar Encabezado de Reporte
+</details>
 
-### Actualizar Encabezado de Reporte - 🟠 PUT
+<details>
+<summary><span className="badge badge--warning margin-right--sm">PUT</span> <b>/settings/reports/&#123;id&#125;</b> — Actualizar Encabezado</summary>
+
 ```http
 PUT {{url}}/settings/reports/{id}?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
@@ -236,9 +226,9 @@ Content-Type: application/json
 | `id` | path | ✅ Sí | ID del encabezado a actualizar. |
 | `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
-**Body (JSON):** Igual al POST de creación (`records` serializado con `line1`, `line2`, `foot`).
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
 
-**Respuesta Exitosa (HTTP 200):**
 ```json
 {
   "success": true,
@@ -246,18 +236,53 @@ Content-Type: application/json
 }
 ```
 
+</details>
+
+</details>
+
+<details>
+<summary><span className="badge badge--danger margin-right--sm">DELETE</span> <b>/settings/reports/&#123;id&#125;</b> — Eliminar Encabezado</summary>
+
+```http
+DELETE {{url}}/settings/reports/{id}?client_uuid={{client_uuid}}
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Parámetros:**
+| Nombre | Ubicación | Requerido | Descripción |
+|---|---|---|---|
+| `id` | path | ✅ Sí | ID del encabezado a eliminar. |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
+
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
+```json
+{
+  "success": true,
+  "message": "Encabezado eliminado correctamente"
+}
+```
+
+</details>
+
+</details>
+
 ---
 
-## Actualizar Logo del Encabezado
+## 🖼️ Logotipo de Reportes {#logotipo}
 
-### Actualizar Logo del Encabezado - 🟠 PUT
+<details>
+<summary><span className="badge badge--warning margin-right--sm">PUT</span> <b>/settings/reports/&#123;id&#125;/image</b> — Actualizar Logo del Encabezado</summary>
+
 ```http
 PUT {{url}}/settings/reports/{id}/image?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Descripción:** Actualiza la imagen/logo asociada a un encabezado de reporte enviando la imagen codificada en **Base64** dentro del objeto `records`.
+**Descripción:** Actualiza el logo asociado a un encabezado de reporte enviando la imagen codificada en **Base64** dentro del objeto `records`.
 
 :::info 💡 Guía para Desarrolladores — Carga de Imagen en Base64
 Convierte la imagen (PNG/JPG) a Base64 con el prefijo Data URI (ej. `data:image/png;base64,...`) y envíala en `imgdata`.
@@ -333,7 +358,6 @@ response = requests.put(
 <TabItem value="postman" label="Postman">
 
 ```javascript
-// Pre-request Script
 const records = {
     imgdata: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
 };
@@ -347,7 +371,9 @@ pm.request.headers.add({key: 'Content-Type', value: 'application/json'});
 </TabItem>
 </Tabs>
 
-**Respuesta Exitosa (HTTP 200):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "success": true,
@@ -355,35 +381,18 @@ pm.request.headers.add({key: 'Content-Type', value: 'application/json'});
 }
 ```
 
-**Respuesta de Error (HTTP 404 - Registro No Encontrado):**
+</details>
+
+<details>
+<summary>❌ Registro No Encontrado (HTTP 404)</summary>
+
 ```json
 {
   "success": false,
-  "message": "No se encontró el registro con id 7 para la compañía: LOPEZSOFT S.A.S."
+  "message": "No se encontró el registro con id para la compañía especificada"
 }
 ```
 
----
+</details>
 
-## Eliminar Encabezado de Reporte
-
-### Eliminar Encabezado de Reporte - 🔴 DELETE
-```http
-DELETE {{url}}/settings/reports/{id}?client_uuid={{client_uuid}}
-Authorization: Bearer {token}
-Content-Type: application/json
-```
-
-**Parámetros:**
-| Nombre | Ubicación | Requerido | Descripción |
-|---|---|---|---|
-| `id` | path | ✅ Sí | ID del encabezado a eliminar. |
-| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
-
-**Respuesta Exitosa (HTTP 200):**
-```json
-{
-  "success": true,
-  "message": "Encabezado eliminado correctamente"
-}
-```
+</details>

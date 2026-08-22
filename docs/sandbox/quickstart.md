@@ -22,15 +22,15 @@ El entorno de pruebas cuenta con los siguientes puntos de acceso oficiales:
 
 ---
 
-## 1. Crear cuenta
+## 1. Crear cuenta en el Sandbox
 
-Registra tu cuenta en **producción**. Las credenciales registradas se sincronizan automáticamente con el ambiente sandbox en tiempo real.
+El acceso al sandbox es **completamente gratuito y no requiere contrato**. Para comenzar tus pruebas, debes crear una **cuenta independiente en el entorno Sandbox**, ya sea desde el portal web visual o mediante el endpoint API de registro:
 
 <Tabs>
 <TabItem value="curl" label="cURL">
 
 ```bash
-curl -X POST {{url}}/register \
+curl -X POST {{SANDBOX_URL}}/register \
   -H "Content-Type: application/json" \
   -d '{
     "first_name": "Tu Nombre",
@@ -49,7 +49,9 @@ curl -X POST {{url}}/register \
 ```javascript
 import axios from 'axios';
 
-const response = await axios.post(`${url}/register`, {
+const SANDBOX_URL = 'https://sandbox-api.matias-api.com/api/ubl2.1';
+
+const response = await axios.post(`${SANDBOX_URL}/register`, {
   first_name: "Tu Nombre",
   last_name: "Tu Apellido",
   company_name: "Mi Empresa SAS",
@@ -69,7 +71,9 @@ console.log(response.data);
 use GuzzleHttp\Client;
 
 $client = new Client();
-$response = $client->post("{$url}/register", [
+$sandboxUrl = 'https://sandbox-api.matias-api.com/api/ubl2.1';
+
+$response = $client->post("{$sandboxUrl}/register", [
     'json' => [
         'first_name'            => 'Tu Nombre',
         'last_name'             => 'Tu Apellido',
@@ -87,15 +91,19 @@ echo $response->getBody();
 </TabItem>
 </Tabs>
 
-:::info 🔐 Registro Centralizado
-El registro se realiza a través del endpoint de producción (`{{url}}`). No necesitas crear una cuenta independiente para el sandbox; tus credenciales son globales.
+:::warning ⚠️ Cuentas Separadas: Producción vs Sandbox
+**Las credenciales de Producción NO funcionan en Sandbox, ni las de Sandbox en Producción.**
+
+Debes crear **DOS CUENTAS INDEPENDIENTES** según el entorno en el que vayas a operar:
+* **Cuenta de Sandbox:** Creada en `https://sandbox-auth.matias-api.com/` o vía `POST {{SANDBOX_URL}}/register`. No requiere contrato y es 100% gratuita para desarrollo y pruebas.
+* **Cuenta de Producción:** Creada en el ambiente productivo proporcionado al contratar el servicio. Requiere certificado digital real y resoluciones DIAN vigentes.
 :::
 
 ---
 
 ## 2. Iniciar sesión en el Sandbox
 
-Realiza el login en el sandbox utilizando las **mismas credenciales** de tu cuenta:
+Inicia sesión con las **credenciales de tu cuenta de Sandbox** para obtener el token JWT de acceso (`access_token`):
 
 ```bash
 curl -X POST {{SANDBOX_URL}}/auth/login \
@@ -389,11 +397,12 @@ El sandbox ofrece paridad funcional total con el entorno de producción para los
 
 | Aspecto | Producción | Sandbox |
 |:---|:---|:---|
+| **Cuentas y Acceso** | Requiere contrato comercial activo; credenciales emitidas en producción | **100% Gratuito y sin contrato**; cuenta independiente creada en Sandbox |
 | **Dominio API** | `{{url}}` (ej. `https://api.matias-api.com/api/ubl2.1`) | `{{SANDBOX_URL}}` (`https://sandbox-api.matias-api.com/api/ubl2.1`) |
 | **Transmisión DIAN** | Transmisión SOAP en tiempo real a los servidores de la DIAN | Respuestas DIAN simuladas y mockeadas automáticamente |
 | **Firma Digital** | Certificado digital de firma emitido por entidad de certificación (ONAC) | Certificado digital de prueba (*Test Cert*) asignado automáticamente |
 | **Persistencia** | Datos persistidos en base de datos de producción | Aislamiento completo de base de datos |
-| **Autenticación** | JWT estándar (Laravel Passport) | JWT estándar (Laravel Passport) |
+| **Autenticación** | JWT estándar (Laravel Passport) | JWT estándar (Laravel Passport) con credenciales de Sandbox |
 | **Endpoints Disponibles** | 20 módulos oficiales | **100% de paridad funcional** |
 | **Tasa de Cambio (TRM)** | Consulta en tiempo real de la TRM oficial | Valores adaptables y controlables |
 

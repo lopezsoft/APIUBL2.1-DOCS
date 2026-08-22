@@ -6,33 +6,29 @@ sidebar_label: 🔐 Certificado Digital
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# 🔐 Certificado de Firma Digital
+# 🔐 Certificado de Firma Digital {#certificado-digital}
 
-> ✅ **Autenticación REQUERIDA**  
-> Incluir en todos los endpoints de esta sección el header: `Authorization: Bearer {token}`
+:::warning Autenticación Requerida
+Incluir en todos los endpoints de esta sección el header: `Authorization: Bearer {token}`
+:::
 
 El certificado de firma digital (`.p12` o `.pfx`) es indispensable para la emisión y firma electrónica de los documentos fiscales ante la DIAN. Solo se puede tener un certificado activo por empresa.
 
-:::info ¿Dónde obtener el `client_uuid`? — Parámetro Multi-Tenant para Casas de Software
-Si operas como **Casa de Software** o **Cuenta Principal**, puedes consultar, cargar y renovar los certificados digitales de tus empresas cliente agregando el parámetro `client_uuid` en la query string de la URL:
-- **URL con Query Param:** `{{url}}/certificate?client_uuid={{client_uuid}}`
-- **Header:** `Authorization: Bearer {token_cuenta_principal}`
-- **Comportamiento:** La operación se ejecutará sobre la empresa cliente especificada por su UUID.
-
-**¿Dónde encontrar el `client_uuid` de tus clientes?**  
-Puedes consultar el listado completo de tus empresas cliente y sus respectivos `client_uuid` mediante el endpoint:
+:::info Parámetro Multi-Tenant: `client_uuid`
+Si operas como **Casa de Software**, puedes administrar los certificados de tus clientes agregando `?client_uuid={{client_uuid}}`.
 ```http
 GET {{url}}/company/customers
 Authorization: Bearer {token}
-Content-Type: application/json
 ```
 :::
 
 ---
 
-## Obtener Certificado Activo
+## 🔐 Gestión del Certificado {#gestion-certificado}
 
-### Obtener Certificado Activo - 🔵 GET
+<details open>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/certificate</b> — Obtener Certificado Activo</summary>
+
 ```http
 GET {{url}}/certificate?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
@@ -44,9 +40,11 @@ Content-Type: application/json
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `client_uuid` | query | No | UUID del cliente asociado a una cuenta principal (opcional). |
+| `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
-**Respuesta Exitosa (HTTP 200):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "dataRecords": {
@@ -62,21 +60,23 @@ Content-Type: application/json
 }
 ```
 
----
+</details>
 
-## Cargar / Registrar Certificado Digital
+</details>
 
-### Cargar / Registrar Certificado Digital - 🟘 POST
+<details>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/certificate</b> — Cargar Certificado Digital</summary>
+
 ```http
 POST {{url}}/certificate?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Descripción:** Carga un nuevo archivo de certificado digital `.p12` o `.pfx` codificado en **Base64** junto con su contraseña privada y una descripción opcional.
+**Descripción:** Carga un nuevo archivo `.p12` o `.pfx` codificado en **Base64** junto con su contraseña privada.
 
-:::info 💡 Guía para Desarrolladores — Envío del Certificado `.p12` en Base64
-El archivo binario `.p12` o `.pfx` debe convertirse a **Base64** (con o sin prefijo Data URI `data:application/x-pkcs12;base64,`) y asignarse a la propiedad `certificate` dentro del string JSON `records`.
+:::info 💡 Guía para Desarrolladores — Envío del Certificado en Base64
+El archivo binario `.p12` o `.pfx` debe convertirse a **Base64** (con o sin prefijo Data URI `data:application/x-pkcs12;base64,`) y asignarse a la propiedad `certificate` dentro de `records`.
 :::
 
 <Tabs>
@@ -87,7 +87,7 @@ import fs from 'fs';
 import axios from 'axios';
 
 // 1. Leer el archivo .p12 y convertir a Base64
-const p12Buffer = fs.readFileSync('ruta/al/certificado.p12');
+const p12Buffer = fs.readFileSync('certificado.p12');
 const base64Certificate = 'data:application/x-pkcs12;base64,' + p12Buffer.toString('base64');
 
 // 2. Definir los datos del certificado
@@ -109,15 +109,13 @@ const response = await axios.post(`${url}/certificate`, {
 ```
 
 </TabItem>
-<TabItem value="php" label="PHP (Guzzle / cURL)">
+<TabItem value="php" label="PHP (cURL)">
 
 ```php
 <?php
-// 1. Leer .p12 y codificar en Base64
-$p12Data = file_get_contents('ruta/al/certificado.p12');
+$p12Data = file_get_contents('certificado.p12');
 $base64Cert = 'data:application/x-pkcs12;base64,' . base64_encode($p12Data);
 
-// 2. Armar payload
 $records = [
     'certificate' => $base64Cert,
     'password'    => 'password_del_certificado',
@@ -126,7 +124,6 @@ $records = [
 
 $payload = json_encode(['records' => json_encode($records)]);
 
-// 3. Enviar petición con cURL
 $ch = curl_init("{$url}/certificate");
 curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
@@ -150,7 +147,6 @@ import base64
 import json
 import requests
 
-# 1. Leer binario del certificado y pasar a Base64
 with open("certificado.p12", "rb") as f:
     b64_cert = "data:application/x-pkcs12;base64," + base64.b64encode(f.read()).decode("utf-8")
 
@@ -160,7 +156,6 @@ records = {
     "description": "Certificado digital de producción"
 }
 
-# 2. Enviar petición
 response = requests.post(
     f"{url}/certificate",
     json={"records": json.dumps(records)},
@@ -187,19 +182,17 @@ var records = new {
     description = "Certificado digital de producción"
 };
 
-var payload = new { records = JsonSerializer.Serialize(records) };
-
 var client = new HttpClient();
 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-var response = await client.PostAsJsonAsync($"{url}/certificate", payload);
+var response = await client.PostAsJsonAsync($"{url}/certificate", new {
+    records = JsonSerializer.Serialize(records)
+});
 ```
 
 </TabItem>
 <TabItem value="postman" label="Postman">
 
 ```javascript
-// Pre-request Script en Postman
 const records = {
     certificate: "data:application/x-pkcs12;base64,MIIKgAIBAz...",
     password: "password_del_certificado",
@@ -220,20 +213,16 @@ pm.request.headers.add({key: 'Content-Type', value: 'application/json'});
 |---|---|---|---|
 | `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
-**Body JSON resultante:**
-```json
-{
-  "records": "{\"certificate\":\"data:application/x-pkcs12;base64,MIIKgAIBAzCCCmcGCSqGSIb3DQEHAaCCC...\",\"password\":\"clave_certificado\",\"description\":\"Certificado digital de producción\"}"
-}
-```
-
-| Propiedad en `records` | Tipo | Requerido | Descripción |
+**Propiedades de `records`:**
+| Campo | Tipo | Requerido | Descripción |
 |---|---|---|---|
-| `certificate` | string | ✅ Sí | Contenido completo del archivo `.p12` codificado en Base64. |
-| `password` | string | ✅ Sí | Contraseña privada del certificado digital. |
+| `certificate` | string | ✅ Sí | Archivo `.p12` codificado en Base64. |
+| `password` | string | ✅ Sí | Contraseña privada del certificado. |
 | `description` | string | No | Descripción identificativa del certificado. |
 
-**Respuesta Exitosa (HTTP 201):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 201)</summary>
+
 ```json
 {
   "success": true,
@@ -241,27 +230,29 @@ pm.request.headers.add({key: 'Content-Type', value: 'application/json'});
 }
 ```
 
----
+</details>
 
-## Actualizar / Renovar Certificado
+</details>
 
-### Actualizar / Renovar Certificado - 🟠 PUT
+<details>
+<summary><span className="badge badge--warning margin-right--sm">PUT</span> <b>/certificate</b> — Actualizar / Renovar Certificado</summary>
+
 ```http
 PUT {{url}}/certificate?client_uuid={{client_uuid}}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Descripción:** Renueva o actualiza el certificado digital activo de la empresa. El payload y formato son idénticos a los del endpoint de creación (`POST /certificate`).
+**Descripción:** Renueva o actualiza el certificado digital activo. El payload y formato son idénticos a los de creación (`POST /certificate`).
 
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
 | `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
-**Body (JSON):** Igual al POST de creación (`records` serializado con `certificate`, `password` y `description`).
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
 
-**Respuesta Exitosa (HTTP 200):**
 ```json
 {
   "success": true,
@@ -269,31 +260,39 @@ Content-Type: application/json
 }
 ```
 
----
+</details>
 
-## Validar Expiración del Certificado
+</details>
 
-### Validar Expiración del Certificado - 🔵 GET
+<details>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/certificate/expiration/&#123;dni&#125;</b> — Validar Expiración del Certificado</summary>
+
 ```http
 GET {{url}}/certificate/expiration/{dni}
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Descripción:** Verifica la fecha de expiración, los días restantes de vigencia y si el certificado digital se encuentra expirado a partir del NIT de la empresa.
+**Descripción:** Verifica la fecha de expiración y vigencia del certificado digital a partir del NIT de la empresa.
 
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
 | `dni` | path | ✅ Sí | NIT de la empresa a consultar (sin dígito de verificación ni guiones). |
 
-**Respuesta Exitosa (HTTP 200):**
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
 ```json
 {
   "dataRecords": {
-        "data": {
-            "expiration_date": "2028-07-09 14:56:30"
-        }
+    "data": {
+      "expiration_date": "2028-07-09 14:56:30"
     }
+  }
 }
 ```
+
+</details>
+
+</details>

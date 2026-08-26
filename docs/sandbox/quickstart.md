@@ -370,7 +370,8 @@ El sandbox ofrece paridad funcional total con el entorno de producción para los
 |:---|:---:|:---|
 | `/events/import-track-id` | `POST` | Importar documento por CUFE/trackId |
 | `/events/document-receptions` | `GET` | Listar recepciones de documentos |
-| `/events/send/{trackId}` | `POST` | Enviar evento DIAN (030, 031, 032, 033, 034) |
+| `/events/send/{trackId}` | `POST` | Enviar evento DIAN (030, 031, 032, 033) |
+| `/events/{id}/cancel` | `POST` | Cancelar evento RADIAN en estado PENDING |
 | `/events/status/{trackId}` | `GET` | Consultar estado del evento RADIAN |
 | `/status/zip/{trackId}` | `POST` | Consultar estado ZIP de envío |
 | `/status/document/{trackId}` | `POST` | Consultar estado del documento |

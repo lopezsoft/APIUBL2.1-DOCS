@@ -699,7 +699,113 @@ Reenvía el correo de notificación asociado a un evento ya procesado.
 
 ---
 
-## 🗑️ 5. Eliminación
+## 🚫 5. Cancelación de Eventos Encolados {#cancelar-evento}
+
+<details open>
+<summary><span className="badge badge--success margin-right--sm">POST</span> <b>/&#123;id&#125;/cancel</b> — Cancelar Evento en Estado PENDING</summary>
+
+```http
+POST {{url}}/events/{id}/cancel?client_uuid={{client_uuid}}
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Descripción:** Permite cancelar un evento RADIAN mientras se encuentre en estado `PENDING`, antes de que el job programado de fondo (`ProcessEventsMasterJob`, ejecutado cada minuto) lo tome y lo transmita a la DIAN.
+
+:::info Reglas de Transición y Concurrencia
+* **Transición Exclusiva:** Únicamente permite transicionar de `PENDING` → `CANCELLED`.
+* **Protección contra Condiciones de Carrera:** El backend utiliza bloqueo pesimista en base de datos (`lockForUpdate()`) para garantizar que el cron de transmisión y la solicitud de cancelación no colisionen.
+* **Estados no Cancelables:** Si el evento ya se encuentra en estado `PROCESSING`, `ACCEPTED` o `REJECTED`, la cancelación será rechazada automáticamente con código HTTP 400.
+:::
+
+**Parámetros:**
+
+| Parámetro | Ubicación | Tipo | Requerido | Descripción |
+|-----------|-----------|------|:---------:|-------------|
+| `id` | Path | `integer` | ✅ Sí | ID numérico del registro del evento en `event_masters` (**no** el CUFE/trackId). |
+| `client_uuid` | Query | `string` | No | UUID de la empresa cliente para operaciones multi-tenant (Casa de Software). |
+
+<Tabs>
+<TabItem value="curl" label="cURL">
+
+```bash
+curl -X POST "{{url}}/events/128/cancel" \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json"
+```
+
+</TabItem>
+<TabItem value="js" label="JavaScript (Axios)">
+
+```js
+const eventId = 128;
+
+const response = await axios.post(`${url}/events/${eventId}/cancel`, {}, {
+  headers: { 
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  }
+});
+```
+
+</TabItem>
+<TabItem value="php" label="PHP (Guzzle)">
+
+```php
+$eventId = 128;
+
+$response = $client->post("{$url}/events/{$eventId}/cancel", [
+    'headers' => [
+        'Authorization' => "Bearer {$token}",
+        'Content-Type'  => 'application/json',
+    ],
+]);
+```
+
+</TabItem>
+</Tabs>
+
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200 OK)</summary>
+
+```json
+{
+  "message": "Evento cancelado exitosamente.",
+  "success": true
+}
+```
+
+</details>
+
+<details>
+<summary>❌ Evento ya en procesamiento o transmitido (HTTP 400 Bad Request)</summary>
+
+```json
+{
+  "message": "El evento no se puede cancelar porque ya se encuentra en procesamiento o fue transmitido a la DIAN.",
+  "success": false
+}
+```
+
+</details>
+
+<details>
+<summary>❌ Evento no encontrado o no pertenece a la empresa (HTTP 404 Not Found)</summary>
+
+```json
+{
+  "message": "Evento no encontrado o no pertenece a la empresa autenticada.",
+  "success": false
+}
+```
+
+</details>
+
+</details>
+
+---
+
+## 🗑️ 6. Eliminación de Recepción {#eliminar-recepcion}
 
 <details>
 <summary><span className="badge badge--danger margin-right--sm">DELETE</span> <b>/document-receptions/&#123;id&#125;</b> — Eliminar Recepción</summary>
@@ -710,8 +816,9 @@ Reenvía el correo de notificación asociado a un evento ya procesado.
 |-------|------|-------------|
 | `id` | `int` | ID interno de la recepción |
 
-> [!CAUTION]
-> No se puede eliminar una recepción si ya tiene eventos con estado `ACCEPTED` o `PROCESSING`.
+:::caution Restricción de Eliminación
+No se puede eliminar una recepción si ya tiene eventos con estado `ACCEPTED` o `PROCESSING`.
+:::
 
 <details>
 <summary>💻 Ver Respuesta Exitosa (200)</summary>

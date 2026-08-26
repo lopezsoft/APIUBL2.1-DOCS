@@ -7,6 +7,7 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 ## [3.8.0] - 2026-08-22
 
 ### Añadido
+* **Cancelación de Eventos RADIAN (`POST /events/{id}/cancel`):** Endpoint para cancelar eventos encolados en estado `PENDING` antes de su transmisión automática por el cron `ProcessEventsMasterJob`, con bloqueo pesimista `lockForUpdate()` para prevenir condiciones de carrera.
 * **Estandarización de Componentes de Código:** Incorporación de pestañas de código interactivas (`<Tabs>` / `<TabItem>`) con snippets listos para copiar en **cURL**, **JavaScript (Axios)**, **PHP (Guzzle/cURL)**, **Python** y **C#/.NET** en todos los módulos de endpoints principales.
 * **Respuestas JSON Completas y Estados DIAN:** Adición de respuestas estructuradas reales en todas las rutas de la API, incluyendo respuestas de aprobación DIAN, errores 401/422 y estados de procesamiento asíncrono (202 y StatusCode 98).
 * **Navegación e Índice A-Z en Glosario:** Implementación de navegación alfabética interactiva con anclas explícitas (`#a` hasta `#z`) y más de 150 términos técnicos, regulatorios y normativos.

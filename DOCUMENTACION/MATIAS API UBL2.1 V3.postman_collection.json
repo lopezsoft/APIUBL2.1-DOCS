@@ -16771,6 +16771,37 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "cancel pending event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/events/{{id}}/cancel",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "events",
+                "{{id}}",
+                "cancel"
+              ]
+            },
+            "description": "Cancela un evento en estado PENDING antes de que sea procesado y transmitido a la DIAN por el job programado."
+          },
+          "response": []
         }
       ],
       "description": "End Points para el manejo de los eventos para el RADIAN"

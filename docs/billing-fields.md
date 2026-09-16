@@ -1600,7 +1600,7 @@ Sirve para referenciar múltiples órdenes de compra, contratos u otros document
 
 ---
 
-### `additional_data` 🟢 {#additional_data-}
+### `additional_data` 🟢 **NEW** {#additional_data-}
 
 Información que quieres ver impresa en el PDF del documento y que **no viaja a la DIAN**: centro de costo, datos del afiliado, orden de servicio, medios de pago internos.
 

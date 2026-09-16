@@ -7,6 +7,8 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 ## [3.8.0] - 2026-08-22
 
 ### Añadido
+* **Campo `additional_data` en documentos:** Nuevo campo de primer nivel para incluir información personalizada en el PDF (centro de costo, afiliados, órdenes de servicio) sin enviarla a la DIAN. Soporta secciones con campos tipados (`TEXT`, `NUMBER`, `DATE`, `CURRENCY`) y alineación configurable. Límites: 10 secciones, 20 campos/sección, title 60 chars, value 500 chars.
+* **Documentación Datos Adicionales en Plantillas (`docs/endpoints/company-templates`):** Nueva sección "Datos Adicionales en el PDF" que explica cómo `additional_data`, `customer.extra_data` y `lines[].extra_data` alimentan la representación gráfica, incluyendo el comportamiento de secciones fijas en la plantilla **Preprinted**.
 * **Cancelación de Eventos RADIAN (`POST /events/{id}/cancel`):** Endpoint para cancelar eventos encolados en estado `PENDING` antes de su transmisión automática por el cron `ProcessEventsMasterJob`, con bloqueo pesimista `lockForUpdate()` para prevenir condiciones de carrera.
 * **Estandarización de Componentes de Código:** Incorporación de pestañas de código interactivas (`<Tabs>` / `<TabItem>`) con snippets listos para copiar en **cURL**, **JavaScript (Axios)**, **PHP (Guzzle/cURL)**, **Python** y **C#/.NET** en todos los módulos de endpoints principales.
 * **Respuestas JSON Completas y Estados DIAN:** Adición de respuestas estructuradas reales en todas las rutas de la API, incluyendo respuestas de aprobación DIAN, errores 401/422 y estados de procesamiento asíncrono (202 y StatusCode 98).

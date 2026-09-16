@@ -1048,7 +1048,7 @@ Información del cliente o proveedor. _Este campo es obligatorio_ para todos los
 <details>
 <summary>🏷️ <strong>extra_data</strong> — Campos adicionales del cliente</summary>
 
-Arreglo de objetos `{title, value}` que se muestran en el PDF pero **no se envían a la DIAN**.
+Arreglo de objetos `{title, value}` con datos propios del adquiriente que se muestran en el PDF pero **no se envían a la DIAN**. Útil para mostrar número de socio, categoría, fecha de vinculación, etc.
 
 ```json
 "extra_data": [
@@ -1059,8 +1059,12 @@ Arreglo de objetos `{title, value}` que se muestran en el PDF pero **no se enví
 
 | Campo | Tipo | Requerido | Descripción |
 |-------|:----:|:---------:|-------------|
-| `title` | string | **Sí** | Etiqueta del campo adicional |
-| `value` | string | **Sí** | Valor del campo adicional |
+| `title` | string | **Sí** | Etiqueta del campo. Máx. 60 caracteres |
+| `value` | string | **Sí** | Valor a mostrar. Máx. 500 caracteres |
+
+:::tip ¿Dato del cliente o del documento?
+Si el dato es sobre la **operación** (centro de costo, orden de servicio), usa [`additional_data`](#additional_data-) a nivel de documento. `customer.extra_data` es exclusivamente para datos que **describen al adquiriente**.
+:::
 
 </details>
 
@@ -1282,83 +1286,70 @@ Este campo se informa a nivel de ítem y aplica solo para mandatos. Un mandante 
     | 0      | B/S ingreso propio                   |
     | 1      | B/S Ingresos Recibidos para Terceros |
 
-### `linea->extra_data`: **NEW**
+### `linea->extra_data`: **NEW** {#linea-extra-data}
 
-- Grupo de campos para información adicional de la línea. _Este campo es opcional_ y debe ser un arreglo de objetos.
-- Este campo es utilizado para enviar información adicional que no se encuentra en los campos estándar de la línea.
-- Esta información adicional se mostrará en la representación gráfica del documento y no se enviará a la DIAN.
+Genera **columnas dinámicas** en el detalle del PDF. Los datos se muestran en la representación gráfica del documento pero **no se envían a la DIAN**. _Este campo es opcional_ y debe ser un arreglo de objetos.
+
+:::info Columnas consistentes
+El campo `title` debe ser **idéntico** en todas las líneas que comparten la misma columna. La plantilla lo usa como encabezado de columna único; si varía entre líneas, se generan columnas distintas.
+:::
 
 <details open>
-<summary>📋 Campos disponibles y Estructura Técnica</summary>
-
-**NOTA**: Es importante que el campo `title` sea igual en cada línea donde se envía el mismo valor para la columna en la representación gráfica.
+<summary>📋 <strong>Campos disponibles</strong></summary>
 
 | Campo | Tipo | Requerido | Descripción |
-|------------|---------|-----------|-------------|
-| `title` | string | ✅ Sí | Título/nombre del campo adicional. Se convierte en cabecera de columna en la representación gráfica. |
-| `value` | string | ✅ Sí | Valor del campo adicional. Se muestra en la celda correspondiente. |
-| `align` | string | ❌ No | Alineación del texto en la columna. Valores: `left`, `center`, `right`. Default: `left`. |
-| `position` | integer | ❌ No | **🆕 NEW** — Posición de la columna en el PDF. Controla dónde se ubica el campo respecto a las columnas base. Default: después de recargos, antes de impuestos. Ver tabla de posiciones. |
+|-------|:----:|:---------:|-------------|
+| `title` | string | **Sí** | Encabezado de la columna en el PDF |
+| `value` | string | **Sí** | Valor de la celda en esa línea |
+| `align` | string | No | `left`, `center`, `right`. Default: `left` |
+| `position` | int | No | 1–7. Indica después de qué columna base se inserta. Fuera de rango → comportamiento legacy |
 
 </details>
 
 <details>
-<summary>🗺️ Guía de Posicionamiento y Reglas de Maquetación (PDF)</summary>
+<summary>🗺️ <strong>Guía de Posicionamiento (PDF)</strong></summary>
 
-El valor de `position` indica **después de qué columna base** se inserta la columna `extra_data` en la representación gráfica (PDF):
+El valor de `position` indica **después de qué columna base** se inserta la columna dinámica:
 
 | `position` | Columna insertada después de... | Ejemplo visual |
 |:----------:|--------------------------------|----------------|
-| `1` | **CÓDIGO** | `CÓDIGO | 👉 MI_CAMPO | DETALLE | CANT | ...` |
-| `2` | **DETALLE** | `CÓDIGO | DETALLE | 👉 MI_CAMPO | CANT | ...` |
-| `3` | **CANT** | `... | CANT | 👉 MI_CAMPO | U.M | ...` |
-| `4` | **U.M** | `... | U.M | 👉 MI_CAMPO | PRECIO | ...` |
-| `5` | **PRECIO** | `... | PRECIO | 👉 MI_CAMPO | DESCUENTO | ...` |
-| `6` | **DESCUENTO** (si aplica) | `... | DESCUENTO | 👉 MI_CAMPO | RECARGO | ...` |
-| `7` | **RECARGO** (si aplica) | `... | RECARGO | 👉 MI_CAMPO | IVA | ...` |
-| _sin valor_ | _(comportamiento legacy)_ | `... | RECARGO | 👉 MI_CAMPO | IVA | ...` |
+| `1` | **CÓDIGO** | `CÓDIGO \| 👉 MI_CAMPO \| DETALLE \| CANT \| ...` |
+| `2` | **DETALLE** | `CÓDIGO \| DETALLE \| 👉 MI_CAMPO \| CANT \| ...` |
+| `3` | **CANT** | `... \| CANT \| 👉 MI_CAMPO \| U.M \| ...` |
+| `4` | **U.M** | `... \| U.M \| 👉 MI_CAMPO \| PRECIO \| ...` |
+| `5` | **PRECIO** | `... \| PRECIO \| 👉 MI_CAMPO \| DESCUENTO \| ...` |
+| `6` | **DESCUENTO** (si aplica) | `... \| DESCUENTO \| 👉 MI_CAMPO \| RECARGO \| ...` |
+| `7` | **RECARGO** (si aplica) | `... \| RECARGO \| 👉 MI_CAMPO \| IVA \| ...` |
+| _sin valor_ | _(comportamiento legacy)_ | Después de recargos, antes de impuestos |
 
-:::info Comportamiento por defecto
-Si **no se envía** `position`, la columna extra se ubica en la posición legacy: después de los recargos y antes de los impuestos. Esto garantiza **compatibilidad total** con implementaciones existentes.
-:::
-
-:::warning Reglas importantes
-- **Rango válido:** 1-7. Valores mayores a 7 se ignoran silenciosamente y se aplica el comportamiento legacy.
+:::warning Reglas
+- **Rango válido:** 1–7. Valores mayores a 7 se ignoran silenciosamente (comportamiento legacy).
 - **Resolución de conflictos:** Si múltiples líneas definen el mismo `title` con diferente `position`, la **primera línea** que define el título determina la posición para toda la tabla.
-- `position` es **por columna** (por `title`), no por línea individual. Todas las líneas del documento comparten el mismo layout de tabla.
+- `position` es **por columna** (`title`), no por línea individual. Todas las líneas del documento comparten el mismo layout.
 :::
 
 </details>
 
 <details>
-<summary>📝 Ejemplo JSON Completo y Simulación de Layout</summary>
+<summary>📝 <strong>Ejemplo JSON completo</strong></summary>
 
 ```json
-"extra_data": [
+"invoice_lines": [
   {
-    "title": "CODIGO_BARRAS",
-    "value": "7703672001889",
-    "align": "center",
-    "position": 1
-  },
-  {
-    "title": "LOTE",
-    "value": "L-2025-001",
-    "align": "left",
-    "position": 2
-  },
-  {
-    "title": "FECHA_VENCIMIENTO",
-    "value": "2026-10-28",
-    "align": "center"
+    "code": "PROD-001",
+    "description": "Producto de ejemplo",
+    "extra_data": [
+      { "title": "LOTE", "value": "L-2026-001", "position": 2 },
+      { "title": "FECHA VENCIMIENTO", "value": "2026-12-31", "align": "center" }
+    ]
   }
 ]
 ```
 
-:::tip Resultado visual del ejemplo en el PDF
+:::tip Resultado visual en el PDF
 ```
-CÓDIGO | CODIGO BARRAS | DETALLE | LOTE | CANT | U.M | PRECIO | FECHA VENCIMIENTO | IVA | Vr. IVA | TOTAL
-         (position=1)              (position=2)                    (sin position → legacy)
+CÓDIGO | DETALLE | LOTE | CANT | U.M | PRECIO | FECHA VENCIMIENTO | IVA | TOTAL
+                (position=2)                    (sin position → legacy)
 ```
 :::
 
@@ -1606,6 +1597,146 @@ Sirve para referenciar múltiples órdenes de compra, contratos u otros document
 ```
 </details>
 
+
+---
+
+### `additional_data` 🟢 {#additional_data-}
+
+Información que quieres ver impresa en el PDF del documento y que **no viaja a la DIAN**: centro de costo, datos del afiliado, orden de servicio, medios de pago internos.
+
+:::info ¿Por qué existe esto?
+El modelo de factura electrónica cubre lo que exige la DIAN. Todo lo demás —lo que tu operación necesita ver en el documento— no tiene sitio en ese modelo. Este campo lo resuelve: envías los datos en el JSON y aparecen en el PDF sin modificar tu plantilla.
+:::
+
+#### Los tres ámbitos de datos adicionales
+
+| Ámbito | Clave en el JSON | Para qué |
+|---|---|---|
+| Documento | `additional_data` | Centro de costo, afiliado, orden de servicio |
+| Cliente | `customer.extra_data` | Nº de socio, categoría, fecha de vinculación |
+| Línea | `lines[].extra_data` | Lote, fecha de vencimiento, serial |
+
+Ninguno de los tres se envía a la DIAN.
+
+<details open>
+<summary>📦 <strong>Con secciones</strong> — Estructura recomendada</summary>
+
+Cada sección es un bloque con título; la plantilla la pinta como tal.
+
+```json
+"additional_data": [
+  {
+    "section": "INFORMACIÓN DEL CENTRO DE COSTO",
+    "fields": [
+      { "title": "Nombre del Centro de Costo", "value": "Sede Norte" },
+      { "title": "Dirección y Teléfono", "value": "Av. Siempre Viva 742 - 601 123 4567" },
+      { "title": "Ciudad", "value": "Bogotá D.C." }
+    ]
+  },
+  {
+    "section": "INFORMACIÓN DEL USUARIO",
+    "fields": [
+      { "title": "Afiliado Dependiente/Particular", "value": "Juan Pérez Gómez" },
+      { "title": "Identificación", "value": "1098765432" }
+    ]
+  }
+]
+```
+
+</details>
+
+<details>
+<summary>📋 <strong>Lista plana</strong> — Sin secciones</summary>
+
+Si solo necesitas un par de campos sueltos, omite las secciones:
+
+```json
+"additional_data": [
+  { "title": "Orden de servicio", "value": "OS-2026-0042" },
+  { "title": "Observación", "value": "Entrega en portería" }
+]
+```
+
+Se guardan como una sección sin título.
+
+</details>
+
+<details open>
+<summary>📐 <strong>Estructura de campos</strong></summary>
+
+**Sección:**
+
+| Campo | Tipo | Requerido | Descripción |
+|---|---|---|---|
+| `section` | string | No | Título del bloque. Omitido o `null` para campos sueltos. Máx. 120 |
+| `order` | int | No | Orden del bloque. Por defecto, el de llegada |
+| `fields` | array | **Sí** | Campos del bloque, al menos uno |
+
+**Campo:**
+
+| Campo | Tipo | Requerido | Por defecto | Descripción |
+|---|---|---|---|---|
+| `title` | string | **Sí** | — | Etiqueta. Máx. 60 |
+| `value` | string | **Sí** | — | Valor a imprimir. Máx. 500 |
+| `type` | string | No | `TEXT` | `TEXT`, `NUMBER`, `DATE`, `CURRENCY` |
+| `align` | string | No | `LEFT` | `LEFT`, `CENTER`, `RIGHT` |
+| `order` | int | No | orden de llegada | Orden dentro de la sección |
+
+El campo `type` le dice a la plantilla cómo formatear el valor, sin deducirlo del contenido:
+
+```json
+{ "title": "Anticipos", "value": "150000", "type": "CURRENCY", "align": "RIGHT" }
+```
+
+Se imprime como `$ 150.000,00` alineado a la derecha. Envía el valor **en crudo** (`150000`), no preformateado.
+
+</details>
+
+<details>
+<summary>⚠️ <strong>Validación y límites</strong></summary>
+
+Las peticiones que excedan estos límites se rechazan con **HTTP 422**, indicando qué campo lo provocó.
+
+| Regla | Límite |
+|---|---|
+| Secciones por documento | 10 |
+| Campos por sección | 20 |
+| Longitud de `title` | 60 |
+| Longitud de `value` | 500 |
+| Título de sección | 120 |
+
+**Casos tolerados** (el documento se emite igual):
+
+| Entrada | Comportamiento |
+|---|---|
+| `additional_data` ausente o `[]` | No se imprime ningún bloque |
+| Sección con `fields` vacío | Se descarta: no imprimiría nada |
+| Campo sin `value` | Se imprime la etiqueta con valor vacío |
+| `type` o `align` no reconocidos | Caen al valor por defecto |
+
+:::warning Se rechaza, no se trunca
+Un dato cortado a la mitad en una factura impresa es peor que un error al emitir. Si un valor supera el límite, la petición falla para que puedas corregirla antes de que el documento llegue a la DIAN.
+:::
+
+</details>
+
+<details>
+<summary>🖨️ <strong>Cómo llega al PDF — Plantilla Preprinted</strong></summary>
+
+Las plantillas del catálogo recorren `additional_data` y pintan cada sección con su título y sus campos. **Una sección nueva aparece en el PDF sin que nadie toque la plantilla**: ése es el objetivo del bloque.
+
+La plantilla **Preprinted** además coloca dos secciones en un sitio fijo del formato cuando las reconoce por su título:
+
+| Título de la sección | Dónde se pinta |
+|---|---|
+| Contiene *"centro de costo"* | Recuadro superior izquierdo |
+| Contiene *"del usuario"* o *"afiliado"* | Bloque de información del usuario |
+
+El resto de secciones se pintan en orden, a continuación del detalle.
+
+</details>
+
+---
 
 ## Ejemplo Mínimo Requerido {#ejemplo-mínimo-requerido}
 

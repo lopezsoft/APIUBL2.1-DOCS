@@ -325,3 +325,71 @@ Content-Type: application/json
 </details>
 
 </details>
+
+---
+
+## 📄 Datos Adicionales en el PDF {#datos-adicionales-pdf}
+
+Las plantillas gráficas pueden imprimir información complementaria que **no viaja a la DIAN**: centro de costo, datos del afiliado, orden de servicio, lotes, seriales y cualquier dato que tu operación necesite ver en el documento impreso.
+
+Para ello, el JSON del documento admite tres bloques independientes:
+
+| Ámbito | Clave en el JSON | Propósito típico |
+|---|---|---|
+| Documento | [`additional_data`](/docs/billing-fields#additional_data-) | Centro de costo, orden de servicio, información del afiliado |
+| Cliente | [`customer.extra_data`](/docs/billing-fields#customer-) | Nº de socio, categoría, fecha de vinculación |
+| Línea de detalle | [`lines[].extra_data`](/docs/billing-fields#linea-extra-data) | Lote, fecha de vencimiento, serial del producto |
+
+Ninguno de estos campos es transmitido a la DIAN. Su único efecto es sobre la **representación gráfica** (PDF) generada por la plantilla asignada a la empresa.
+
+<details>
+<summary>📐 Plantilla <strong>Preprinted</strong> — Secciones con posición fija</summary>
+
+La plantilla **Preprinted** interpreta el título de cada sección dentro de `additional_data` y la ubica en una posición predeterminada del formato:
+
+| Título de la sección (insensible a mayúsculas) | Dónde se pinta |
+|---|---|
+| Contiene `"centro de costo"` | Recuadro superior izquierdo del documento |
+| Contiene `"del usuario"` o `"afiliado"` | Bloque de información del usuario / afiliado |
+
+Cualquier otra sección se pinta en orden correlativo debajo del detalle de líneas.
+
+</details>
+
+<details>
+<summary>🗂️ Estructura de <code>additional_data</code></summary>
+
+```json
+{
+  "additional_data": {
+    "sections": [
+      {
+        "section": "Centro de Costo",
+        "order": 1,
+        "fields": [
+          { "title": "Área",          "value": "Ventas Norte",   "type": "TEXT",   "align": "LEFT",  "order": 1 },
+          { "title": "Orden",         "value": "OC-2024-001",    "type": "TEXT",   "align": "LEFT",  "order": 2 },
+          { "title": "Presupuesto",   "value": "5000000",        "type": "CURRENCY","align": "RIGHT", "order": 3 }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Límites de validación:**
+- Máximo **10 secciones** por documento.
+- Máximo **20 campos** por sección.
+- `section` (título): máximo 120 caracteres.
+- `title` del campo: máximo 60 caracteres.
+- `value` del campo: máximo 500 caracteres.
+
+**Tipos de campo permitidos:** `TEXT`, `NUMBER`, `DATE`, `CURRENCY`.
+
+:::tip
+Para campos tipo `CURRENCY`, envía el valor numérico en crudo (sin puntos ni comas de miles). La plantilla se encarga del formateo.
+:::
+
+Para la referencia completa con ejemplos → [**Datos adicionales del documento**](/docs/billing-fields#additional_data-)
+
+</details>

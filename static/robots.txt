@@ -1,0 +1,30 @@
+# robots.txt - https://docs.matias-api.com
+User-agent: *
+Allow: /
+
+# Agentes de IA y Asistentes de Código (Acceso permitido)
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://docs.matias-api.com/sitemap.xml

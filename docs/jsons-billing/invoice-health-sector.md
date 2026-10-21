@@ -93,7 +93,7 @@ A continuación se presenta el payload completo para emitir una Factura Electró
     "company_name": "Santiago Arango",
     "dni": "1152440359",
     "mobile": "3108435423",
-    "email": "lws_1234@hotmail.com",
+    "email": "cliente4@ejemplo.com",
     "address": "Direccion residencial",
     "postal_code": "661002"
   },
@@ -233,7 +233,7 @@ const payload = {
     company_name: "Santiago Arango",
     dni: "1152440359",
     mobile: "3108435423",
-    email: "lws_1234@hotmail.com",
+    email: "cliente4@ejemplo.com",
     address: "Direccion residencial",
     postal_code: "661002"
   },
@@ -353,7 +353,7 @@ $response = $client->post("{$url}/invoice", [
             'company_name'         => 'Santiago Arango',
             'dni'                  => '1152440359',
             'mobile'               => '3108435423',
-            'email'                => 'lws_1234@hotmail.com',
+            'email'                => 'cliente4@ejemplo.com',
             'address'              => 'Direccion residencial',
             'postal_code'          => '661002'
         ],

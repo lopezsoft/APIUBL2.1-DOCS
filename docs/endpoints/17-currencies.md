@@ -1,6 +1,7 @@
 ---
 sidebar_position: 17
 sidebar_label: 💰 Monedas
+description: "Monedas y tasas de cambio de la empresa para documentos en moneda extranjera."
 ---
 
 import Tabs from '@theme/Tabs';
@@ -67,7 +68,8 @@ Content-Type: application/json
         "active": 1
       }
     ]
-  }
+  },
+  "success": true
 }
 ```
 
@@ -84,11 +86,13 @@ Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
-**Descripción:** Obtiene la lista de monedas y tasas de cambio actualmente asignadas a la empresa emisora.
+**Descripción:** Obtiene, paginada (15 por página), la lista de monedas y tasas de cambio asignadas a la empresa emisora. Cada registro incluye en `currency` los datos de la moneda del catálogo.
 
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
+| `uid` | query | No | Filtra por el `id` de una moneda configurada en la empresa. |
+| `page` | query | No | Número de página (default: `1`). |
 | `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
 <details>
@@ -97,6 +101,7 @@ Content-Type: application/json
 ```json
 {
   "dataRecords": {
+    "current_page": 1,
     "data": [
       {
         "id": 7,
@@ -106,7 +111,13 @@ Content-Type: application/json
         "national_currency": 1,
         "plural_name": "PESOS",
         "singular_name": "PESO",
-        "denomination": "COP"
+        "denomination": "COP",
+        "currency": {
+          "id": 272,
+          "CurrencyISO": "COP",
+          "CurrencyName": "Peso Colombiano",
+          "Symbol": "$"
+        }
       },
       {
         "id": 8,
@@ -116,12 +127,23 @@ Content-Type: application/json
         "national_currency": 0,
         "plural_name": "DÓLARES",
         "singular_name": "DÓLAR",
-        "denomination": "USD"
+        "denomination": "USD",
+        "currency": {
+          "id": 164,
+          "CurrencyISO": "USD",
+          "CurrencyName": "Dólar Estadounidense",
+          "Symbol": "$"
+        }
       }
-    ]
-  }
+    ],
+    "per_page": 15,
+    "total": 2
+  },
+  "success": true
 }
 ```
+
+El objeto `currency` está recortado: trae los mismos campos que `GET /currency/all`. El paginador incluye además los campos estándar (`from`, `to`, `last_page`, `links`, etc.).
 
 </details>
 
@@ -277,21 +299,63 @@ pm.request.headers.add({key: 'Content-Type', value: 'application/json'});
 | Campo | Tipo | Requerido | Descripción |
 |---|---|---|---|
 | `currency_id` | integer | ✅ Sí | ID de la moneda del catálogo (`GET /currency/all`). |
-| `exchange_rate_value` | number | ✅ Sí | Tasa de cambio respecto al peso colombiano. |
-| `national_currency` | integer | ✅ Sí | `1` si es la moneda funcional local, `0` si es extranjera. |
-| `plural_name` | string | ✅ Sí | Nombre en plural (ej. `DÓLARES`). |
-| `singular_name` | string | ✅ Sí | Nombre en singular (ej. `DÓLAR`). |
-| `denomination` | string | ✅ Sí | Código ISO de la moneda (ej. `USD`, `EUR`). |
+| `exchange_rate_value` | number | No | Tasa de cambio respecto al peso colombiano (default: `0`). |
+| `national_currency` | integer | No | `1` si es la moneda funcional local, `0` si es extranjera (default: `0`). |
+| `plural_name` | string | No | Nombre en plural (ej. `DÓLARES`). |
+| `singular_name` | string | No | Nombre en singular (ej. `DÓLAR`). |
+| `denomination` | string | No | Código ISO de la moneda (ej. `USD`, `EUR`). |
+
+El body debe incluir `records` como **string JSON**. Esto aplica a `POST`, `PUT` y `DELETE` de `/currency`.
 
 <details>
-<summary>✅ Respuesta Exitosa (HTTP 201)</summary>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
 
 ```json
 {
-  "success": true,
-  "message": "Moneda registrada exitosamente"
+  "message": "Registro creado correctamente.",
+  "record": {
+    "id": 8,
+    "currency_id": 164,
+    "company_id": 1,
+    "exchange_rate_value": "4200.50",
+    "national_currency": 0,
+    "plural_name": "DÓLARES",
+    "singular_name": "DÓLAR",
+    "denomination": "USD"
+  },
+  "success": true
 }
 ```
+
+</details>
+
+<details>
+<summary>❌ Moneda duplicada (HTTP 400)</summary>
+
+La moneda ya está configurada para la empresa:
+
+```json
+{
+  "success": false,
+  "message": "La moneda ya existe para la empresa"
+}
+```
+
+</details>
+
+<details>
+<summary>❌ Sin `records` o JSON inválido (HTTP 422)</summary>
+
+```json
+{
+  "message": "El campo records es requerido",
+  "errors": {
+    "records": ["El campo records es requerido"]
+  }
+}
+```
+
+Si `records` no es un JSON válido, el mensaje es `El campo records debe ser un JSON válido`.
 
 </details>
 
@@ -312,13 +376,20 @@ Content-Type: application/json
 | `id` | path | ✅ Sí | ID de la moneda configurada en la empresa. |
 | `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
+**Body (JSON):** `records` como string JSON, con las mismas propiedades que en `POST`. `currency_id` es obligatorio; `exchange_rate_value` y `national_currency` toman `0` si los omites, y los nombres quedan vacíos. Envía siempre la configuración completa de la moneda.
+
+```json
+{
+  "records": "{\"currency_id\":164,\"exchange_rate_value\":4350.25,\"national_currency\":0,\"plural_name\":\"DÓLARES\",\"singular_name\":\"DÓLAR\",\"denomination\":\"USD\"}"
+}
+```
+
 <details>
 <summary>✅ Respuesta Exitosa (HTTP 200)</summary>
 
 ```json
 {
-  "success": true,
-  "message": "Tasa de cambio actualizada exitosamente"
+  "success": true
 }
 ```
 
@@ -341,16 +412,123 @@ Content-Type: application/json
 | `id` | path | ✅ Sí | ID de la moneda configurada a eliminar. |
 | `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
-<details>
-<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+**Body (JSON):** `records` es obligatorio también en el borrado. Cada campo que envíes dentro de `records` se añade como condición: solo se elimina la fila que coincida con el `id` **y** con esos valores. Para borrar solo por `id`, envía un objeto vacío.
 
 ```json
 {
-  "success": true,
-  "message": "Moneda eliminada exitosamente"
+  "records": "{}"
+}
+```
+
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
+Devuelve las filas eliminadas (un arreglo vacío si ninguna coincidió):
+
+```json
+{
+  "records": [
+    {
+      "id": 8,
+      "currency_id": 164,
+      "company_id": 1,
+      "exchange_rate_value": "4200.50",
+      "national_currency": 0,
+      "plural_name": "DÓLARES",
+      "singular_name": "DÓLAR",
+      "denomination": "USD"
+    }
+  ],
+  "success": true
 }
 ```
 
 </details>
 
 </details>
+
+---
+
+## 💱 Tasa de Cambio {#tasa-cambio}
+
+<details>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/currency/change</b> — Cotizar entre dos Monedas</summary>
+
+```http
+GET {{url}}/currency/change?source=USD&target=COP&quantity=100
+Authorization: Bearer {token}
+```
+
+**Descripción:** Consulta la cotización entre dos monedas con un proveedor externo de tasas de cambio.
+
+**Parámetros:**
+| Nombre | Ubicación | Requerido | Descripción |
+|---|---|---|---|
+| `source` | query | ✅ Sí | Código ISO de la moneda de origen (ej. `USD`). |
+| `target` | query | ✅ Sí | Código ISO de la moneda de destino (ej. `COP`). |
+| `quantity` | query | ✅ Sí | Cantidad a convertir. |
+
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
+```json
+{
+  "value": 4200.5,
+  "amount": 420050,
+  "success": true
+}
+```
+
+</details>
+
+</details>
+
+<details>
+<summary><span className="badge badge--info margin-right--sm">GET</span> <b>/currency/change/local</b> — Convertir a la Moneda Nacional</summary>
+
+```http
+GET {{url}}/currency/change/local?source=USD&quantity=100
+Authorization: Bearer {token}
+```
+
+**Descripción:** Convierte una cantidad desde la moneda `source` hacia la moneda marcada como nacional (`national_currency: 1`). Requiere tener configurada la moneda nacional.
+
+**Parámetros:**
+| Nombre | Ubicación | Requerido | Descripción |
+|---|---|---|---|
+| `source` | query | ✅ Sí | Código ISO de la moneda de origen (ej. `USD`). |
+| `quantity` | query | No | Cantidad a convertir (default: `1`). |
+
+<details>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
+```json
+{
+  "records": [
+    { "value": 4200.5, "amount": 420050 }
+  ],
+  "success": true
+}
+```
+
+</details>
+
+<details>
+<summary>❌ Moneda nacional no configurada (HTTP 404)</summary>
+
+```json
+{
+  "success": false,
+  "message": "Debe crear la moneda nacional."
+}
+```
+
+Si la moneda nacional configurada no existe en el catálogo, el mensaje es `No existe la moneda.`
+
+</details>
+
+</details>
+
+:::note Sandbox
+En sandbox, ambos endpoints de tasa de cambio devuelven un factor fijo de `1.0`: `value` y `amount` valen `1.0 × quantity`.
+:::

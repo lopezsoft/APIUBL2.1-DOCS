@@ -133,7 +133,7 @@ A continuación se muestra un ejemplo de un JSON que representa una factura en e
     "tax_level_id": "5",
     "company_name": "QUIMI ROMAR S.L.",
     "dni": "444444016",
-    "email": "ryc.consultor@gmail.com",
+    "email": "cliente5@ejemplo.com",
     "address": "CRTA MONCADA - NAQUERA CV 315 KM 11.2"
   },
   "legal_monetary_totals": {

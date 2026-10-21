@@ -44,7 +44,7 @@ A continuación se muestra un ejemplo de un JSON que representa un documento sop
 		"company_name": "Santiago Arango",
 		"dni": "1152440359",
     "mobile": "3108435423",
-		"email": "lws_1234@hotmail.com",
+		"email": "cliente4@ejemplo.com",
     "address": "Direccion residencial",
     "postal_code": "661002"
 	},

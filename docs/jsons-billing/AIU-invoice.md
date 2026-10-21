@@ -28,7 +28,7 @@ A continuación se muestra un ejemplo de un JSON que representa una factura AIU.
     "tax_level_id": 5,
     "company_name": "Santiago Arango",
     "dni": "1152440359",
-    "email": "arangotorosantiago@outlook.com",
+    "email": "cliente2@ejemplo.com",
     "address": "Direccion residencial"
   },
   "legal_monetary_totals": {

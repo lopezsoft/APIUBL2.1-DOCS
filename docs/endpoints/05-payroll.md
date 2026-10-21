@@ -1,6 +1,7 @@
 ---
 sidebar_position: 5
 sidebar_label: 💼 Nómina Electrónica
+description: "Nómina electrónica: emisión, reemplazo y eliminación del documento soporte de pago de nómina ante la DIAN."
 ---
 
 import Tabs from '@theme/Tabs';
@@ -85,6 +86,7 @@ $response = $client->post("{$url}/ep/payroll", [
 
 ```json
 {
+  "uuid": "c83f5e10-7dd3-11f0-ba9f-f02f74cac485",
   "message": "El documento ha sido procesado por la DIAN.",
   "send_to_queue": 0,
   "XmlDocumentKey": "860ff75995712a3bf5e9d14233e70bf2aca76b8ab5afdf41040e40331fe597c1bbb659a3af87e295a767a39921202e2e",
@@ -94,11 +96,34 @@ $response = $client->post("{$url}/ep/payroll", [
     "StatusCode": "00",
     "StatusDescription": "Procesado Correctamente.",
     "StatusMessage": "El Documento Soporte de Pago de Nómina Electrónica NIE10, ha sido autorizado."
-  }
+  },
+  "XmlBase64Bytes": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4...",
+  "AttachedDocument": null,
+  "qr": {
+    "qrDian": "https://catalogo-vpfe.dian.gov.co/document/searchqr?documentkey=860ff759..."
+  },
+  "pdf": null,
+  "warnings": [],
+  "success": true
 }
 ```
 
+| Campo | Descripción |
+|---|---|
+| `uuid` | Identificador del envío en la plataforma. |
+| `response` | Respuesta de la DIAN. El documento es válido solo con `IsValid: "true"` y `StatusCode: "00"`; un rechazo de la DIAN también llega con HTTP `200`. |
+| `AttachedDocument`, `pdf` | Siempre `null` en nómina: no se genera AttachedDocument, PDF ni correo. |
+| `warnings` | Normalmente `[]`. Si la DIAN validó el documento pero falla un paso posterior, trae `ATTACHED_DOCUMENT_NOT_GENERATED` y la respuesta **sigue siendo exitosa**: no reenvíes el documento, ya es válido ante la DIAN. |
+
 </details>
+
+:::info Habilitación y errores
+- **Habilitación:** mientras el software de nómina está en pruebas, la respuesta tiene otra forma (incluye `XmlDocumentKey`, `ZipKey` y la respuesta del set de pruebas) y no trae `uuid` ni `warnings`.
+- **Documento ya validado:** si el número ya está validado ante la DIAN se responde HTTP `400` con el mensaje `El documento (...) con numero ... ya se encuentra validado.` y el registro del envío en `data`.
+- **Errores `5xx`:** incluyen un campo `reference` para que soporte ubique el caso.
+
+Estas reglas aplican también a `/ep/payroll/replace` y `/ep/payroll/delete`.
+:::
 
 </details>
 
@@ -122,6 +147,7 @@ Content-Type: application/json
 
 ```json
 {
+  "uuid": "d1a4b7e2-7dd3-11f0-ba9f-f02f74cac485",
   "message": "El documento ha sido procesado por la DIAN.",
   "send_to_queue": 0,
   "XmlDocumentKey": "...",
@@ -130,7 +156,15 @@ Content-Type: application/json
     "StatusCode": "00",
     "StatusDescription": "Procesado Correctamente.",
     "StatusMessage": "La Nota de Nómina Electrónica ha sido autorizada."
-  }
+  },
+  "XmlBase64Bytes": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4...",
+  "AttachedDocument": null,
+  "qr": {
+    "qrDian": "https://catalogo-vpfe.dian.gov.co/document/searchqr?documentkey=..."
+  },
+  "pdf": null,
+  "warnings": [],
+  "success": true
 }
 ```
 
@@ -162,6 +196,7 @@ La nota de eliminación es una acción irreversible ante la DIAN. Úsala únicam
 
 ```json
 {
+  "uuid": "e6b2c9f4-7dd3-11f0-ba9f-f02f74cac485",
   "message": "El documento ha sido procesado por la DIAN.",
   "send_to_queue": 0,
   "XmlDocumentKey": "...",
@@ -170,7 +205,15 @@ La nota de eliminación es una acción irreversible ante la DIAN. Úsala únicam
     "StatusCode": "00",
     "StatusDescription": "Procesado Correctamente.",
     "StatusMessage": "La Nota de Eliminación de Nómina ha sido autorizada."
-  }
+  },
+  "XmlBase64Bytes": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4...",
+  "AttachedDocument": null,
+  "qr": {
+    "qrDian": "https://catalogo-vpfe.dian.gov.co/document/searchqr?documentkey=..."
+  },
+  "pdf": null,
+  "warnings": [],
+  "success": true
 }
 ```
 

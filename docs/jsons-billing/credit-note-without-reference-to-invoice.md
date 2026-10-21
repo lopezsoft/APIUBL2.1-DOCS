@@ -36,7 +36,7 @@ A continuación se muestra un ejemplo de un JSON que representa una nota crédit
         "company_name": "Lewis Lopez",
         "dni": "1063279307",
         "mobile": "3108435423",
-        "email": "lws_1234@hotmail.com",
+        "email": "cliente4@ejemplo.com",
         "address": "Direccion residencial",
         "postal_code": "661002"
     },

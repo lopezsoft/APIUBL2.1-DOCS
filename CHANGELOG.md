@@ -4,6 +4,49 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.9.0] - 2026-10-21
+
+### Añadido
+* **Documentación para agentes de IA:** `/llms.txt` (índice), `/llms-full.txt` (documentación completa), cada página en Markdown (`/docs/<ruta>.md`), negociación con `Accept: text/markdown` y especificación pública OpenAPI 3 en `/openapi.json`. Se generan en cada build con el plugin local `plugins/llms-txt` a partir del sidebar, con las URL reales de cada página.
+* **Barra «Usar con IA» en cada página:** Copiar Markdown, Ver .md, Abrir en ChatGPT y Abrir en Claude. Página nueva [Documentación para IA](/docs/ai-ready).
+* **Recepción y RADIAN (`07-events-radian`):** requisito de plan de pago vigente (`403 RECEPTION_NOT_IN_PLAN`), eventos automáticos vs. manuales, `POST /events/send-bulk` (acuse 030 en bloque), secciones nuevas **Buzón de recepción** (`/events/mailbox`, `address`, `quota`, `{id}`, `{id}/retry`) y **Personas de recepción** (`/events/reception-people`).
+* **Consultas:** `GET /documents/{uuid}` y `DELETE /documents/{id}`; parámetro `type_document_id` en `GET /status`.
+* **Emisión:** campo raíz `uuid` anti-duplicados, catálogo de `warnings`, errores `409 DOCUMENT_IN_TRANSMISSION` / `DOCUMENT_IN_VALIDATION` y `500 DOCUMENT_POSSIBLY_SENT`, conciliación de la regla 90.
+* **Membresías:** `GET /memberships/recharges`, `DELETE /memberships/quotas/{clientCompanyId}` y estadísticas de almacenamiento y correos (`/memberships/server-stats`, `/storage`, `/emails`).
+* **Autenticación:** verificación de correo, recuperación de contraseña, `GET /profile/types`.
+* **Webhooks:** `GET /webhooks/{id}` y `POST /webhooks/{id}/deliveries/{deliveryId}/retry`; evento `bulk.batch.completed`.
+* **Marca blanca de correos (`21-email-branding`):** página nueva para `/settings/email-branding`.
+* **Cupos de certificado MATICERTS** incluidos en los planes pagados (`15-digital-certificate`).
+
+### Modificado
+* **Envío masivo:** `bulk-documents.mdx` es la guía completa y `20-bulk-documents` la referencia, ya coherentes. Cada documento va en `{kind, payload}`, la respuesta es `201`, nuevo estado `POSSIBLY_SENT`, catálogo de `error_code`, idempotencia y retención real (purga a los 7 días).
+  * **Cambios incompatibles del contrato bulk (revise su integración; detalle en [Cambios y compatibilidad](/docs/bulk-documents/#cambios-y-compatibilidad)):**
+    * `items[].response` ya no trae `raw` (XML, AttachedDocument, QR y PDF en base64): solo el [resumen](/docs/bulk-documents/#campo-response). Descargue XML y PDF con el `document_uuid` en los endpoints del documento.
+    * `response.status_code` es el código HTTP (entero, p. ej. `200`); el código DIAN pasó a `dian_status_code`.
+    * `items[].document_uuid` es el uuid del **envío** que identifica el documento y, en general, no coincide con el `documents[].uuid` que usted envió. Guarde el que devuelve la API ([campos de cada item](/docs/bulk-documents/#campos-item)).
+    * `documents[].uuid` es [anti-duplicados](/docs/bulk-documents/#uuid-anti-duplicados) y no se puede reutilizar: el item termina `FAILED` con `error_code` `DUPLICATE_DOCUMENT_UUID`.
+    * `SUCCESS` / `REJECTED_BY_DIAN` se decide por la respuesta de la DIAN, no por el código HTTP ([cómo se decide](/docs/bulk-documents/#decision-resultado)).
+    * Nuevos `429` con `Retry-After` (documentos en proceso por empresa y lote en admisión): respete `Retry-After` y reintente con el mismo `Idempotency-Key` ([códigos de error](/docs/bulk-documents/#errores)).
+* **Especificación OpenAPI (`/openapi.json`):** incluye `p_type`, `p_year` y `_dni` en `GET /documents/consume`, `validation_state` y `type_document_id` en `GET /status`, y los errores `409 DOCUMENT_IN_TRANSMISSION` / `DOCUMENT_IN_VALIDATION` y `503 DIAN_STATUS_UNAVAILABLE` de la emisión. Corrige las cuotas de membresía (sin `client_uuid`, `400` para tokens que no son de Casa de Software, `402`/`403`/`409`/`422` reales), la forma real de `GET /memberships/summary` (envuelta en `data`, con `search` y `page`), `POST /resolutions` (`200` con `record`, no `201`) y `PUT /resolutions/{id}` (no es parcial; `200` con solo `success`) y `POST /events/send/mail/{trackId}` (id numérico del evento, `400` al superar 4 correos).
+* **Respuestas de emisión:** el rechazo de la DIAN llega con HTTP 200 y `IsValid: "false"`; el 422 queda para errores de validación del JSON. Documento duplicado: HTTP 400. Nueva sección «Formato de los errores» en `response-json`.
+* **Autenticación:** el login rechazado responde 404 con el mensaje real; PAT de 1 a 365 días (90 por defecto), token en `dataRecords.data.token`.
+* **Empresa y clientes:** contrato real de sub-cuentas (`/register` vs. `POST /company/{uuid}/customer`), listado paginado, habilitar/deshabilitar, estadísticas e imágenes con `imgname`.
+* **Resoluciones y Software DIAN:** valores correctos de `type_document_id` (7 factura, 11 documento soporte, 20 POS...), `environment_id` (1 producción, 2 pruebas) y `type_id`.
+* **Webhooks:** rutas sin el `/ubl2.1` duplicado, catálogo real (18 eventos), sobre `{id, type, created_at, api_version, data}`, headers y verificación HMAC, política de reintentos.
+* **Certificado digital:** propiedad `records.data`, `PUT /certificate/{id}`.
+* **Sincronización con la documentación del backend:** contrastadas punto por punto `docs/api` (envío masivo, clientes, cuotas, datos adicionales), `CHANGELOG_API` (entradas del 2026-08-01 al 2026-10-21) y las guías de marca blanca, buzón, MATICERTS y regla 90 contra el código; se publicó lo que faltaba (p. ej. datos adicionales solo en Preprinted y su posición real, `GET /documents/consume` con 422 y alias `p_dni`) y se descartó lo que el código contradice.
+* **OpenAPI:** las correcciones del contrato que aún no están en las anotaciones del backend viven en `scripts/openapi-overrides.json` (JSON Merge Patch) y se aplican al regenerar con `npm run openapi:public`.
+* **Robots y servidor:** `robots.txt` permite de forma explícita a los agentes de IA; el `.htaccess` (ahora en `static/`, viaja en el build) devuelve 404 reales en vez de 500.
+* Ejemplos con datos ficticios en lugar de datos reales de empresas y personas.
+
+### Eliminado
+* **Analíticas de membresías** (`/memberships/analytics/*`) de la documentación pública: son del panel interno.
+* **Detalles internos** (variables de entorno, tablas, comandos, colas y bloqueos) de las páginas de envío masivo y eventos.
+* **Informes técnicos de release** (`docs/AAAA-MM-DD-HHMM-*.md`): siguen en el repositorio pero ya no se publican.
+* **Script `scripts/generate-llms-txt.js` y `static/llms*.txt`:** reemplazados por el plugin, que usa las URL reales (el script enlazaba `/docs/endpoints/01-intro-auth`, que respondía 500) y limpia el JSX.
+
+---
+
 ## [3.8.0] - 2026-08-22
 
 ### Añadido

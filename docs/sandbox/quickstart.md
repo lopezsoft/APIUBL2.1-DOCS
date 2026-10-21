@@ -32,6 +32,7 @@ El acceso al sandbox es **completamente gratuito y no requiere contrato**. Para 
 ```bash
 curl -X POST {{SANDBOX_URL}}/register \
   -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
   -d '{
     "first_name": "Tu Nombre",
     "last_name": "Tu Apellido",
@@ -59,6 +60,8 @@ const response = await axios.post(`${SANDBOX_URL}/register`, {
   password: "tu-password-seguro",
   password_confirmation: "tu-password-seguro",
   dni: "900123456"
+}, {
+  headers: { Accept: 'application/json' }
 });
 
 console.log(response.data);
@@ -74,7 +77,8 @@ $client = new Client();
 $sandboxUrl = 'https://sandbox-api.matias-api.com/api/ubl2.1';
 
 $response = $client->post("{$sandboxUrl}/register", [
-    'json' => [
+    'headers' => ['Accept' => 'application/json'],
+    'json'    => [
         'first_name'            => 'Tu Nombre',
         'last_name'             => 'Tu Apellido',
         'company_name'          => 'Mi Empresa SAS',
@@ -91,6 +95,41 @@ echo $response->getBody();
 </TabItem>
 </Tabs>
 
+**Respuesta Exitosa (HTTP 200):** no incluye token ni datos de la cuenta.
+
+```json
+{
+  "message": "Empresa creada con éxito. Verifique su dirección de correo electrónico: tu@email.com",
+  "success": true
+}
+```
+
+- El `dni` va **solo con dígitos** (sin dígito de verificación, puntos ni guiones); el DV lo calcula la API.
+- En el sandbox, la cuenta principal recibe una suscripción de **5.000 documentos por 1 año**.
+- Envía siempre `Accept: application/json`: sin esa cabecera, los errores de validación (422) llegan como una redirección (HTTP 302). Ver todos los campos y errores en [Registro en la API](/docs/intro#registro-en-la-api).
+
+### 1.1 Verificar el correo (obligatorio)
+
+La cuenta queda con el correo **sin verificar**. Abre el enlace que llega a tu correo antes de iniciar sesión: hasta hacerlo, `POST /auth/login` responde **HTTP 404**:
+
+```json
+{
+  "message": "El correo electrónico no ha sido verificado. Comuníquese con el administrador.",
+  "success": false
+}
+```
+
+Si el correo no llegó o el enlace venció, pide uno nuevo:
+
+```bash
+curl -X POST {{SANDBOX_URL}}/email/verification-notification \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{"email": "tu@email.com"}'
+```
+
+Más detalles en [Verificación de Correo](/docs/endpoints/intro-auth#verificacion-correo).
+
 :::warning ⚠️ Cuentas Separadas: Producción vs Sandbox
 **Las credenciales de Producción NO funcionan en Sandbox, ni las de Sandbox en Producción.**
 
@@ -103,11 +142,12 @@ Debes crear **DOS CUENTAS INDEPENDIENTES** según el entorno en el que vayas a o
 
 ## 2. Iniciar sesión en el Sandbox
 
-Inicia sesión con las **credenciales de tu cuenta de Sandbox** para obtener el token JWT de acceso (`access_token`):
+Con el correo verificado, inicia sesión con las **credenciales de tu cuenta de Sandbox** para obtener el token JWT de acceso (`access_token`):
 
 ```bash
 curl -X POST {{SANDBOX_URL}}/auth/login \
   -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
   -d '{
     "email": "tu@email.com",
     "password": "tu-password-seguro"
@@ -115,20 +155,35 @@ curl -X POST {{SANDBOX_URL}}/auth/login \
 ```
 
 **Respuesta Exitosa (HTTP 200):**
+
 ```json
 {
   "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs...",
-  "token_type": "Bearer",
-  "expires_at": "2026-05-15 20:00:00",
+  "token_id": "f2e1eb82d52213a6b1c0d3e4f5a60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f9",
   "user": {
     "id": 1,
-    "first_name": "Lewis",
-    "last_name": "Lopez Gomez",
+    "type_id": 2,
+    "first_name": "TU NOMBRE",
+    "last_name": "TU APELLIDO",
     "email": "tu@email.com",
-    "roles": ["admin"]
-  }
+    "avatar": null,
+    "active": 1,
+    "name": "TU NOMBRE TU APELLIDO",
+    "avatarUrl": null,
+    "user_type": {
+      "id": 2,
+      "user_type_name": "DESARROLLADOR",
+      "type": 2,
+      "active": 1
+    }
+  },
+  "expires_at": "2026-05-15 20:00:00",
+  "message": "Bienvenido. Su sesión ha sido iniciada con éxito.",
+  "success": true
 }
 ```
+
+Si el login falla, la API responde **HTTP 404** (no 401) con `message` y `success: false` (por ejemplo, `Credenciales inválidas.`). Ver todos los motivos en [Autenticación](/docs/endpoints/intro-auth#autenticacion).
 
 ---
 
@@ -140,24 +195,35 @@ Genera tu token de acceso persistente de larga duración para realizar pruebas a
 curl -X POST {{SANDBOX_URL}}/tokens \
   -H "Authorization: Bearer {access_token}" \
   -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
   -d '{"name": "Token Integracion ERP Sandbox"}'
 ```
 
+`expires_in_days` es opcional (de 1 a 365; por defecto, 90). Cada usuario puede crear hasta **10 tokens por día**; al superarlo, la API responde **HTTP 429**.
+
 **Respuesta Exitosa (HTTP 201):**
+
 ```json
 {
-  "success": true,
-  "message": "Token de acceso creado exitosamente",
-  "token": "1|eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs...",
-  "data": {
-    "name": "Token Integracion ERP Sandbox",
-    "expires_at": "2026-05-02 12:00:00"
-  }
+  "dataRecords": {
+    "data": {
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs...",
+      "token_id": "cb6282ed9f5cb116416928518f9dd93b53aafc2c0273722bbe5eb7eb96d7ccfac10178f43b8fe617",
+      "name": "Token Integracion ERP Sandbox",
+      "description": null,
+      "expires_at": "2026-05-02 12:00:00",
+      "created_at": "2026-02-01 12:00:00"
+    }
+  },
+  "message": "Token creado exitosamente. Asegúrese de guardar el token, ya que no podrá verlo nuevamente.",
+  "success": true
 }
 ```
 
+El token está en `dataRecords.data.token` y solo se muestra **una vez**: guárdalo en ese momento.
+
 :::tip 🔑 Autenticación JWT Estándar
-Tanto en producción como en el ambiente sandbox, el token generado es un **JWT estándar (Laravel Passport)**, garantizando un esquema de autenticación idéntico y seguro para todos tus entornos.
+Tanto en producción como en el ambiente sandbox, el token generado es un **JWT estándar**, garantizando un esquema de autenticación idéntico y seguro para todos tus entornos.
 :::
 
 ---
@@ -277,7 +343,35 @@ Todos los endpoints con numeración automática soportan la llamada **`PATCH /{u
 
 ### 4.7 Eventos RADIAN (Recepción y Trazabilidad)
 
+En el sandbox, el módulo de recepción está **siempre habilitado** (no se responde `403` `RECEPTION_NOT_IN_PLAN`) y el cupo de recepción es **ilimitado**. Aun así, el sandbox **no crea** los prerrequisitos de la recepción: sin ellos, importar o enviar eventos responde `400`.
+
+:::warning Prerrequisitos antes de importar o enviar eventos
+1. **Numeración activa de eventos** (`type_document_id` `12`), registrada en el portal o con [`POST /resolutions`](/docs/endpoints/dian-resolutions#configuracion-manual). Sin ella: `400` `No tiene una numeración activa para los eventos de recepción`.
+2. **Persona de recepción**, creada con `POST /events/reception-people` (ver [Personas de Recepción](/docs/endpoints/events-radian#personas-recepcion)). Sin ella: `400` `No tiene una persona de recepción asignada` (al importar, puedes evitarlo enviando los datos de la persona en `reception_person`).
+3. *(Opcional)* **Modo automático**: una empresa nueva arranca en modo **manual**, así que importar un documento no crea eventos. Si quieres que los eventos 030, 032 y 033 se generen solos, activa el modo con `PUT /events/reception-people/mode` y `{"send_events": true}` (ver [modo de eventos](/docs/endpoints/events-radian#eventos-automaticos)).
+:::
+
 ```bash
+# 1. Registrar la persona de recepción (la primera queda por defecto)
+curl -X POST {{SANDBOX_URL}}/events/reception-people \
+  -H "Authorization: Bearer {tu_token}" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "identity_document_id": 1,
+    "dni": "1234567890",
+    "first_name": "Nombre",
+    "last_name": "Apellido",
+    "job_title": "Contador"
+  }'
+
+# 2. (Opcional) Activar el modo automático de eventos
+curl -X PUT {{SANDBOX_URL}}/events/reception-people/mode \
+  -H "Authorization: Bearer {tu_token}" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{"send_events": true}'
+
 # Importar un documento por CUFE/trackId
 curl -X POST {{SANDBOX_URL}}/events/import-track-id \
   -H "Authorization: Bearer {tu_token}" \
@@ -371,8 +465,18 @@ El sandbox ofrece paridad funcional total con el entorno de producción para los
 | `/events/import-track-id` | `POST` | Importar documento por CUFE/trackId |
 | `/events/document-receptions` | `GET` | Listar recepciones de documentos |
 | `/events/send/{trackId}` | `POST` | Enviar evento DIAN (030, 031, 032, 033) |
+| `/events/send-bulk` | `POST` | Enviar en bloque el acuse 030 de varios documentos |
 | `/events/{id}/cancel` | `POST` | Cancelar evento RADIAN en estado PENDING |
 | `/events/status/{trackId}` | `GET` | Consultar estado del evento RADIAN |
+| `/events/mailbox` | `GET` | Bandeja del buzón de recepción (correos entrantes) |
+| `/events/mailbox/{id}` | `GET` | Detalle de un correo del buzón |
+| `/events/mailbox/address` | `GET` | Dirección del buzón de recepción de la empresa |
+| `/events/mailbox/quota` | `GET` | Consumo del cupo de recepción (ilimitado en sandbox) |
+| `/events/mailbox/{id}/retry` | `POST` | Reintentar el procesamiento de un correo del buzón |
+| `/events/reception-people` | `GET` · `POST` | Listar o registrar personas de recepción |
+| `/events/reception-people/mode` | `PUT` | Cambiar el modo de eventos de la empresa (`send_events`) |
+| `/events/reception-people/{uuid}` | `PUT` · `DELETE` | Actualizar o eliminar una persona de recepción |
+| `/events/reception-people/{uuid}/default` | `POST` | Marcar una persona de recepción como la de por defecto |
 | `/status/zip/{trackId}` | `POST` | Consultar estado ZIP de envío |
 | `/status/document/{trackId}` | `POST` | Consultar estado del documento |
 | `/documents/{uuid}/files` | `GET` | Obtener archivos asociados (PDF, XML, ApplicationResponse) |
@@ -399,11 +503,11 @@ El sandbox ofrece paridad funcional total con el entorno de producción para los
 | Aspecto | Producción | Sandbox |
 |:---|:---|:---|
 | **Cuentas y Acceso** | Requiere contrato comercial activo; credenciales emitidas en producción | **100% Gratuito y sin contrato**; cuenta independiente creada en Sandbox |
-| **Dominio API** | `{{url}}` (ej. `https://api.matias-api.com/api/ubl2.1`) | `{{SANDBOX_URL}}` (`https://sandbox-api.matias-api.com/api/ubl2.1`) |
+| **Dominio API** | `{{url}}` (URL entregada al contratar el servicio) | `{{SANDBOX_URL}}` (`https://sandbox-api.matias-api.com/api/ubl2.1`) |
 | **Transmisión DIAN** | Transmisión SOAP en tiempo real a los servidores de la DIAN | Respuestas DIAN simuladas y mockeadas automáticamente |
 | **Firma Digital** | Certificado digital de firma emitido por entidad de certificación (ONAC) | Certificado digital de prueba (*Test Cert*) asignado automáticamente |
 | **Persistencia** | Datos persistidos en base de datos de producción | Aislamiento completo de base de datos |
-| **Autenticación** | JWT estándar (Laravel Passport) | JWT estándar (Laravel Passport) con credenciales de Sandbox |
+| **Autenticación** | JWT estándar | JWT estándar con credenciales de Sandbox |
 | **Endpoints Disponibles** | 20 módulos oficiales | **100% de paridad funcional** |
 | **Tasa de Cambio (TRM)** | Consulta en tiempo real de la TRM oficial | Valores adaptables y controlables |
 

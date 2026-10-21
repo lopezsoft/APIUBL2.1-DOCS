@@ -56,14 +56,15 @@ Esta guía enumera los errores más frecuentes al trabajar con la API MATIAS de 
 **Causas posibles:**
 1. Token OAuth2 ha expirado (duración: 90 días máximo)
 2. Token no incluido en header Authorization
-3. Credenciales email/password incorrectas
+3. Token no emitido: si el login falló, `POST /auth/login` responde **404** `"Credenciales inválidas."` y no entrega token
 4. Token malformado o corrupto
 5. Token revocado manualmente
 
 **Solución:**
 ```bash
 # 1. Obtener nuevo token
-curl -X POST https://api-v2.matias-api.com/api/ubl2.1/auth/login \
+curl -X POST "{{url}}/auth/login" \
+  -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -d '{
     "email": "tu-email@empresa.com",
@@ -83,14 +84,15 @@ curl -X POST https://api-v2.matias-api.com/api/ubl2.1/auth/login \
 }
 
 # 3. Usar en requests posteriores
-curl -X POST https://api-v2.matias-api.com/api/ubl2.1/invoices \
+curl -X POST "{{url}}/invoice" \
   -H "Authorization: Bearer YOUR_NEW_TOKEN" \
+  -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -d '{...}'
 ```
 
 :::tip 💡 Pro tip
-**Novedad v3.0.0:** Puedes crear **Personal Access Tokens** con duración configurable (1-90 días) para evitar estar renovando constantemente. [Ver guía de PAT](/docs/endpoints/intro-auth#personal-access-tokens)
+**Novedad v3.0.0:** Puedes crear **Personal Access Tokens** con duración configurable (de 1 a 365 días; 90 por defecto) para evitar estar renovando constantemente. [Ver guía de PAT](/docs/endpoints/intro-auth#personal-access-tokens)
 :::
 
 ---
@@ -465,14 +467,20 @@ El monto debe ser ≤ al monto base **(50 ≤ 100)** ✓
 **Respuesta del API:**
 ```json
 {
-  "success": false,
-  "message": "El documento (Factura electrónica) con numero LZT2002, ya se encuentra validado"
+  "message": "El documento (Factura electrónica) con numero LZT2002 ya se encuentra validado.",
+  "data": {
+    "uuid": "dde72910-eb42-11ef-9b27-f02f74cac485",
+    "document_number": "LZT2002",
+    "XmlDocumentKey": "cf9864294501e8a9578235dd2ab3c4fd...",
+    "is_valid": 1
+  },
+  "success": false
 }
 ```
 
-**HTTP Status**: 422 - Unprocessable Entity
+**HTTP Status**: 400 - Bad Request
 
-**Causa:** El mismo `prefix` + `document_number` ya existe en el sistema
+**Causa:** El mismo `prefix` + `document_number` ya fue validado por la DIAN. En `data` llega el registro del envío existente.
 
 **💡 Soluciones:**
 
@@ -492,13 +500,159 @@ El monto debe ser ≤ al monto base **(50 ≤ 100)** ✓
 
 **Solución - Opción 3: Consultar documento anterior**
 ```bash
-curl -X GET "https://api.matias-app.com/api/invoices?prefix=LZT&document_number=2002" \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+# Estado del documento (validación y QR)
+curl -X GET "{{url}}/status?prefix=LZT&number=LZT2002" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Accept: application/json"
+
+# O búsqueda en el listado de documentos
+curl -X GET "{{url}}/documents?prefix=LZT&number=LZT2002" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Accept: application/json"
 ```
 
 :::warning 📜 IMPORTANTE
 Los prefijos deben estar **registrados previamente** en tu resolución de facturación ante la DIAN.
 :::
+
+---
+
+## 🚦 Errores de Transmisión Concurrente, Validación Pendiente y Posible Envío
+
+:::danger Regla de oro
+Ninguno de estos casos se resuelve emitiendo el documento con **otro número**. Consulta primero el estado del documento con `GET /documents/{uuid}` o `GET /status?prefix=...&number=...`.
+:::
+
+### ❌ `DOCUMENT_IN_TRANSMISSION` — el número ya se está transmitiendo
+
+**HTTP Status**: 409 - Conflict
+
+```json
+{
+  "code": "DOCUMENT_IN_TRANSMISSION",
+  "message": "El documento LZT2002 ya se está transmitiendo a la DIAN en otra solicitud; consulte su estado antes de enviarlo de nuevo.",
+  "data": {
+    "document_number": "LZT2002"
+  },
+  "success": false
+}
+```
+
+**Causa:** otra solicitud (un reintento, un doble clic o un lote) está transmitiendo ese mismo número a la DIAN.
+
+**Solución:** no envíes el mismo documento en paralelo. Espera unos segundos y consulta su estado antes de reenviarlo.
+
+### ❌ `DOCUMENT_IN_VALIDATION` — la DIAN aún valida el envío anterior
+
+**HTTP Status**: 409 - Conflict (solo en producción)
+
+```json
+{
+  "code": "DOCUMENT_IN_VALIDATION",
+  "message": "La DIAN aún está validando el documento LZT2002 (CUFE/CUDE cf9864294501e8a9...). No se transmitió de nuevo: consulte su estado en unos minutos antes de reenviarlo.",
+  "data": {
+    "uuid": "dde72910-eb42-11ef-9b27-f02f74cac485",
+    "document_number": "LZT2002",
+    "document_key": "cf9864294501e8a9..."
+  },
+  "success": false
+}
+```
+
+**Causa:** el envío anterior de ese número quedó en `StatusCode 98` y la DIAN sigue validándolo.
+
+**Solución:** espera unos minutos y consulta el estado con `POST /status/document/{trackId}` usando `data.document_key`.
+
+### ❌ `DIAN_STATUS_UNAVAILABLE` — no se pudo confirmar el envío anterior
+
+**HTTP Status**: 503 - Service Unavailable (solo en producción)
+
+```json
+{
+  "success": false,
+  "code": "DIAN_STATUS_UNAVAILABLE",
+  "message": "No se pudo confirmar en la DIAN el estado del envío anterior del documento LZT2002 (CUFE/CUDE cf9864294501e8a9...). No se transmitió de nuevo para no duplicarlo: intente en unos minutos.",
+  "data": {
+    "uuid": "dde72910-eb42-11ef-9b27-f02f74cac485",
+    "document_number": "LZT2002",
+    "document_key": "cf9864294501e8a9..."
+  }
+}
+```
+
+**Causa:** no es una caída general de la DIAN: la API no pudo confirmar el estado del envío anterior de ese número y, para no duplicarlo, **no transmitió** el documento.
+
+**Solución:** reintenta en unos minutos con el mismo número.
+
+### ❌ `DOCUMENT_POSSIBLY_SENT` — posible envío sin respuesta definitiva
+
+**HTTP Status**: normalmente 500 - Internal Server Error
+
+```json
+{
+  "success": false,
+  "message": "No se obtuvo una respuesta definitiva para el documento LZT2002 y es posible que la DIAN lo haya recibido. No lo emita de nuevo: consulte su estado con el uuid del envío antes de cualquier reintento. Detalle: Error interno del servidor. ...",
+  "reference": "3b0c6f5e-8d2a-4c7e-9f1b-2a6d5e4c3b21",
+  "code": "DOCUMENT_POSSIBLY_SENT",
+  "data": {
+    "uuid": "dde72910-eb42-11ef-9b27-f02f74cac485",
+    "document_number": "LZT2002"
+  }
+}
+```
+
+**Causa:** el error (timeout, respuesta inesperada o fallo al guardar) ocurrió **después** de transmitir el documento a la DIAN. El consecutivo se conserva.
+
+**Solución:** no reemitas. Consulta `GET /documents/{uuid}` con `data.uuid` (o `GET /status`) y actúa según su estado. Si reportas el caso a soporte, incluye `reference`.
+
+### ❌ "El uuid proporcionado ya se usó en otro documento de la empresa"
+
+**HTTP Status**: 409 - Conflict
+
+```json
+{
+  "success": false,
+  "message": "El uuid proporcionado ya se usó en otro documento de la empresa. No se emitió de nuevo: consulte ese documento o envíe un uuid nuevo."
+}
+```
+
+**Causa:** el `uuid` anti-duplicados que enviaste ya pertenece a otro documento de la empresa. No se transmitió nada.
+
+**Solución:** consulta ese documento con `GET /documents/{uuid}` o envía un `uuid` nuevo si se trata de otro documento.
+
+### ⚠️ Avisos de regla 90: `ALREADY_AUTHORIZED_*` / `ALREADY_PROCESSED_NOT_CONFIRMED`
+
+En producción, cuando la DIAN responde "documento procesado anteriormente" (regla 90), la API concilia el número con la DIAN y lo informa en `warnings`:
+
+| `code` | Significado | Acción |
+|---|---|---|
+| `ALREADY_AUTHORIZED_RECOVERED` | La DIAN ya había autorizado ese número con el mismo contenido: se devuelve el documento autorizado. | Ninguna: el documento es válido. |
+| `ALREADY_AUTHORIZED_OTHER_CONTENT` | La DIAN autorizó ese número con **otro contenido**. El documento enviado no se marcó como válido. | No lo reenvíes con ese número; consulta el documento autorizado. |
+| `ALREADY_PROCESSED_NOT_CONFIRMED` | La DIAN indicó que lo procesó, pero no confirmó la autorización. | Consulta su estado antes de reenviarlo. |
+
+### ⚠️ Avisos posteriores a la aceptación: `PDF_NOT_GENERATED` / `EMAIL_NOT_SENT` / `ATTACHED_DOCUMENT_NOT_GENERATED`
+
+```json
+{
+  "warnings": [
+    {
+      "code": "PDF_NOT_GENERATED",
+      "message": "El documento fue validado por la DIAN, pero no se pudo generar la representación gráfica. No reenvíe el documento: ya es válido ante la DIAN."
+    }
+  ]
+}
+```
+
+**Causa:** la DIAN validó el documento, pero falló un paso posterior (PDF, correo o AttachedDocument).
+
+**Solución:** **no reenvíes el documento**: ya es válido. Genera el PDF con `POST /documents/pdf/{trackId}?regenerate=1` o reenvía el correo con `POST /documents/sendmail/{trackId}`. Ver [Avisos de la respuesta](/docs/response-json#warnings).
+
+### 📦 Envío masivo: `DUPLICATE_DOCUMENT_UUID` y `POSSIBLY_SENT`
+
+- **`DUPLICATE_DOCUMENT_UUID`**: el item termina en `FAILED` porque la empresa ya emitió un documento con ese `uuid`. No se emite de nuevo; consulta el documento existente con `GET /documents/{uuid}`.
+- **`POSSIBLY_SENT`**: el item no obtuvo una respuesta definitiva de la DIAN después de transmitirse. No lo reenvíes en otro lote; consulta su estado con `GET /documents/{uuid}` usando el `document_uuid` del item.
+
+Más detalles en [Envío Masivo de Documentos](/docs/bulk-documents).
 
 ---
 
@@ -602,7 +756,14 @@ Los prefijos deben estar **registrados previamente** en tu resolución de factur
 | `NIT verificador inválido` | 🔢 Dígito incorrecto | 🔍 Usa herramienta NITValidator |
 | `Total no coincide` | 🧮 Cálculo de suma | 📊 Valida con TotalCalculator |
 | `Tax not calculated correctly` | 💰 Fórmula impuesto | 🎯 Usa: amount = base × (percent/100) |
-| `Duplicate document` | 🔄 Factura duplicada | ➕ Incrementa number o cambia prefix |
+| `400 ... ya se encuentra validado.` | 🔄 Número ya validado | 🔍 Consulta `GET /status`; ➕ usa el siguiente número |
+| `409 DOCUMENT_IN_TRANSMISSION` | 🚦 Envío en paralelo del mismo número | ⏳ Espera y consulta el estado; no reenvíes en paralelo |
+| `409 DOCUMENT_IN_VALIDATION` | ⏳ La DIAN sigue en `98` | 🔍 Consulta el estado en unos minutos con `data.document_key` |
+| `503 DIAN_STATUS_UNAVAILABLE` | 🔌 No se confirmó el envío anterior (no se transmitió) | 🔄 Reintenta más tarde con el mismo número |
+| `DOCUMENT_POSSIBLY_SENT` | 📡 Fallo después de transmitir | 🚫 No reemitas; consulta `GET /documents/{uuid}` |
+| `409 uuid ya se usó` | 🆔 `uuid` anti-duplicados repetido | 🔍 Consulta ese documento o usa un `uuid` nuevo |
+| `warnings` `ALREADY_*` | 🔁 Regla 90 conciliada | 📖 Revisa el `code` del aviso |
+| `warnings` `PDF_NOT_GENERATED` / `EMAIL_NOT_SENT` | 📄 Falló un paso posterior | ✅ Documento válido: no lo reenvíes |
 | `Currency invalid for export` | 💱 Moneda incorrecta | 💵 Usa currency_id: 272 (USD) |
 | `Tax not allowed in export` | 🌎 IVA en exportación | ❌ Usa tax_totals: [] |
 | `Discount exceeds amount` | 🏷️ Descuento > base | ⚖️ Asegura que amount ≤ base_amount |
@@ -650,8 +811,9 @@ Los prefijos deben estar **registrados previamente** en tu resolución de factur
 ### 📡 Paso 1: Verificar Respuesta Completa
 
 ```bash
-curl -X POST https://api.matias-app.com/api/invoices \
+curl -X POST "{{url}}/invoice" \
   -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -d @factura.json \
   -v  # Modo verbose para ver toda la respuesta

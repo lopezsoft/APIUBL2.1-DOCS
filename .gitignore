@@ -28,5 +28,7 @@ yarn-error.log*
 
 *.log
 .htaccess
+# El .htaccess del sitio viaja en el build desde static/.
+!static/.htaccess
 .env
 *.zip

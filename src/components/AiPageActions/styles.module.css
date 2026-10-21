@@ -1,0 +1,62 @@
+/* Barra «Usar con IA»: solo variables de Infima, se adapta a claro/oscuro. */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--ifm-spacing-horizontal);
+  margin-bottom: var(--ifm-spacing-vertical);
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: var(--ifm-button-border-radius);
+  background: var(--ifm-background-surface-color);
+  color: var(--ifm-font-color-base);
+  font-size: 0.8rem;
+  line-height: 1.4;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color var(--ifm-transition-fast), color var(--ifm-transition-fast);
+}
+
+.action:hover,
+.action:focus-visible {
+  border-color: var(--ifm-color-primary);
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+}
+
+.action:focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+}
+
+/* En oscuro el primario del sitio no llega a 4,5:1 sobre la superficie:
+   se usa su variante más clara para el texto, el borde y el foco. */
+[data-theme='dark'] .action:hover,
+[data-theme='dark'] .action:focus-visible {
+  border-color: var(--ifm-color-primary-lightest);
+  color: var(--ifm-color-primary-lightest);
+  outline-color: var(--ifm-color-primary-lightest);
+}
+
+.action[aria-busy='true'] {
+  cursor: progress;
+}
+
+/* Visible solo para lectores de pantalla (anuncia el resultado de copiar). */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

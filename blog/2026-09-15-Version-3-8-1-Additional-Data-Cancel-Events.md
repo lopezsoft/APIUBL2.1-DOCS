@@ -51,7 +51,7 @@ Nuevo endpoint `POST /api/ubl2.1/events/{id}/cancel` para cancelar eventos en es
 - Solo transicion `PENDING` a `CANCELLED`.
 - Devuelve `400` si ya esta en `PROCESSING`, `ACCEPTED` o `REJECTED`.
 - Devuelve `404` si no existe o no pertenece a la empresa autenticada.
-- Usa `lockForUpdate()` para evitar condicion de carrera con el cron.
+- La cancelacion es atomica: no compite con el envio automatico del evento.
 
 [Ver endpoint de cancelacion](/docs/endpoints/events-radian#cancelar-evento)
 

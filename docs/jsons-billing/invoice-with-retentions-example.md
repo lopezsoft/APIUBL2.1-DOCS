@@ -31,7 +31,7 @@ A continuación se muestra un ejemplo de un JSON que representa una factura con 
     "company_name": "NOMBRE DEL CLIENTE",
     "dni": "123456",
     "mobile": "310548121",
-    "email": "correo@hotmail.com",
+    "email": "cliente8@ejemplo.com",
     "address": "Direccion residencial",
     "postal_code": "000000"
   },

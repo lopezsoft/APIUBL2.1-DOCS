@@ -1,13 +1,12 @@
 {
   "name": "MATIAS-API",
-  "version": "3.8.0",
+  "version": "3.9.0",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
-    "generate:llms": "node scripts/generate-llms-txt.js",
-    "prebuild": "node scripts/generate-llms-txt.js",
     "build": "docusaurus build",
+    "openapi:public": "node scripts/build-public-openapi.js",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",

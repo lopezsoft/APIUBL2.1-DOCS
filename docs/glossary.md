@@ -41,7 +41,7 @@ Este glosario contiene los **términos técnicos, normativas, acrónimos y conce
 
 :::warning ⚠️ Nota Crítica: IDs de API vs Códigos DIAN
 **Esta es la distinción más importante para utilizar la API correctamente:**
-* **ID (Base de Datos API):** Número entero único usado en las peticiones JSON (ej: `type_document_id: 1` para Factura Electrónica).
+* **ID (Base de Datos API):** Número entero único usado en las peticiones JSON (ej: `type_document_id: 7` para Factura Electrónica).
 * **Code (DIAN):** Código normativo de la DIAN, usado exclusivamente para referencia regulatoria (ej: Code `01` = Factura de Venta).
 
 **🔑 REGLA FUNDAMENTAL:** En el cuerpo de las peticiones SIEMPRE utilizas el **ID numérico de la API**, NUNCA el código alfanumérico DIAN.
@@ -87,6 +87,11 @@ Este glosario contiene los **términos técnicos, normativas, acrónimos y conce
 
 ---
 
+### Buzón de Recepción {#buzon-de-recepcion}
+**Definición**: Dirección de correo única por empresa, con la forma `{identificador}@{dominio}`, a la que los proveedores envían sus facturas electrónicas para que la API las registre como recepciones. Se asigna al registrar la primera [persona de recepción](#persona-de-recepcion) y no cambia. Se consulta con `GET /events/mailbox/address`. Ver [Buzón de recepción](/docs/endpoints/events-radian/#buzon-recepcion).
+
+---
+
 ## C {#c}
 
 ### Certificado Digital
@@ -106,6 +111,11 @@ Este glosario contiene los **términos técnicos, normativas, acrónimos y conce
 
 ### Copago (`copayment`)
 **Definición**: Aporte en dinero correspondiente a una parte del valor del servicio cubierto por el Plan de Beneficios en Salud, a cargo exclusivo de los beneficiarios del régimen contributivo.
+
+---
+
+### Correo Retenido
+**Definición**: Correo del [buzón de recepción](#buzon-de-recepcion) que llegó cuando el plan de pago de la empresa estaba vencido. Queda con `status` `IGNORED` y `reason_code` `PLAN_EXPIRED` (`is_held` = `true`), no consume cupo y se procesa automáticamente al renovar el plan si no han pasado más de 30 días desde su llegada (también con `POST /events/mailbox/{id}/retry`). Una suscripción de pago **cancelada** no retiene correos: quedan `IGNORED` sin retención. Ver [Correos retenidos](/docs/endpoints/events-radian/#correos-retenidos).
 
 ---
 
@@ -169,6 +179,8 @@ Este glosario contiene los **términos técnicos, normativas, acrónimos y conce
 * **Evento 031**: Reclamo de la factura (con `claim_code` del `01` al `04`).
 * **Evento 032**: Recibo de bienes y/o servicios.
 * **Evento 033**: Aceptación expresa.
+
+Solo aplican a **facturas electrónicas de venta a crédito**: las facturas de contado (o sin medio de pago) y las notas crédito/débito no admiten eventos. Ver [Eventos RADIAN](/docs/endpoints/events-radian/).
 
 ---
 
@@ -256,6 +268,11 @@ Este glosario contiene los **términos técnicos, normativas, acrónimos y conce
 
 ---
 
+### Modo de Eventos (Automático / Manual)
+**Definición**: Configuración de la empresa (`send_events`) que define qué eventos RADIAN se generan sin intervención del usuario al registrar una factura a crédito (buzón o importación por Excel/CUFE). **Automático** (`true`): se crean y envían el `030`, el `032` y el `033`. **Manual** (`false`, valor inicial de una empresa nueva): no se crea ninguno, tampoco el `030`; el usuario los envía con `POST /events/send/{trackId}` o `POST /events/send-bulk`. Se cambia con `PUT /events/reception-people/mode`.
+
+---
+
 ## N {#n}
 
 ### NIT
@@ -297,6 +314,11 @@ Este glosario contiene los **términos técnicos, normativas, acrónimos y conce
 
 ---
 
+### Persona de Recepción {#persona-de-recepcion}
+**Definición**: Persona cuyos datos firman (acusan, reciben, aceptan o reclaman) los eventos RADIAN de la empresa. Una empresa puede tener varias, con una **por defecto**: la que firma los eventos automáticos del buzón y la que se usa cuando no se indica `reception_person_uuid`. La persona indicada al importar por Excel o CUFE firma solo los eventos automáticos de esa recepción; los envíos manuales usan la persona de su propia solicitud o la por defecto. Se administra con `/events/reception-people`. Ver [Personas de recepción](/docs/endpoints/events-radian/#personas-recepcion).
+
+---
+
 ### Personal Access Token (PAT)
 **Definición**: Token de autenticación de larga duración (JWT estándar basado en Laravel Passport) que permite autenticar peticiones API desde sistemas ERP o servidores backend.
 
@@ -318,6 +340,11 @@ Este glosario contiene los **términos técnicos, normativas, acrónimos y conce
 
 ### RADIAN
 **Definición**: Plataforma oficial administrada por la DIAN que registra y custodia los eventos y operaciones de factoring electrónico sobre facturas electrónicas de venta como título valor.
+
+---
+
+### RECEPTION_NOT_IN_PLAN
+**Definición**: Código de error (`error_code`) de la respuesta `403` que devuelve todo el módulo de recepción (`/events/*`: eventos RADIAN, importación, buzón y personas de recepción) cuando la empresa no tiene un plan de pago vigente (plan FREE, plan vencido o sin suscripción). Para una sub-cuenta cuenta el plan de su Casa de Software. Reemplaza al código `MAILBOX_NOT_IN_PLAN`, que el buzón ya no emite. Ver [Requisito de plan](/docs/endpoints/events-radian/#requisito-de-plan).
 
 ---
 
@@ -401,12 +428,12 @@ Este glosario contiene los **términos técnicos, normativas, acrónimos y conce
 
 | ID (API) | Código DIAN | Tipo de Documento | Endpoint Principal | Identificador Criptográfico |
 |:---:|:---:|---|---|:---:|
-| **1** | `01` | Factura Electrónica de Venta (Estándar / Salud) | `POST /invoice` | CUFE |
+| **7** | `01` | Factura Electrónica de Venta (Estándar / Salud) | `POST /invoice` | CUFE |
 | **8** | `02` | Factura de Exportación | `POST /invoice` | CUFE |
 | **9** | `03` | Factura de Contingencia (Tipo 03) | `POST /invoice` | CUFE |
 | **10** | `04` | Factura de Contingencia (Tipo 04) | `POST /invoice` | CUFE |
 | **11** | `05` | Documento Soporte Electrónico | `POST /ds/document` | CUDS / CUDE |
-| **20** | `20` | Documento Equivalente POS Electrónico | `POST /pos` | CUDE |
+| **20** | `20` | Documento Equivalente POS Electrónico | `POST /invoice` | CUDE |
 | **5** | `91` | Nota Crédito Electrónica | `POST /notes/credit` | CUDE |
 | **4** | `92` | Nota Débito Electrónica | `POST /notes/debit` | CUDE |
 

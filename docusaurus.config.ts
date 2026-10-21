@@ -7,7 +7,7 @@ const config: Config = {
   tagline: 'Integración fácil y rápida',
   favicon: 'img/favicon.ico',
   customFields: {
-    version: '3.8.0',
+    version: '3.9.0',
   },
 
   // Set the production url of your site here
@@ -15,6 +15,9 @@ const config: Config = {
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
+  // Con barra final, como las sirve Apache (DirectorySlash): las canónicas,
+  // el sitemap y los enlaces dejan de pasar por un 301.
+  trailingSlash: true,
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
@@ -36,6 +39,19 @@ const config: Config = {
     locales: ['es'],
   },
 
+  // Descubrimiento de la documentación para agentes de IA (llms.txt / OpenAPI).
+  // La versión Markdown de cada página va como rel="alternate" (AiPageActions).
+  headTags: [
+    {
+      tagName: 'link',
+      attributes: { rel: 'describedby', type: 'text/plain', href: '/llms.txt', title: 'llms.txt' },
+    },
+    {
+      tagName: 'link',
+      attributes: { rel: 'service-desc', type: 'application/json', href: '/openapi.json', title: 'OpenAPI' },
+    },
+  ],
+
   // Scripts que se cargan ANTES del bundle (para inyectar configuración)
   scripts: [
     {
@@ -50,6 +66,16 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
+          // Los informes técnicos de cada release (docs/AAAA-MM-DD-HHMM-*.md)
+          // son internos: viven en docs/ pero no se publican. Se conservan
+          // las exclusiones por defecto de Docusaurus.
+          exclude: [
+            '**/_*.{js,jsx,ts,tsx,md,mdx}',
+            '**/_*/**',
+            '**/*.test.{js,jsx,ts,tsx}',
+            '**/__tests__/**',
+            '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*.md',
+          ],
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
@@ -70,6 +96,32 @@ const config: Config = {
   ],
 
   plugins: [
+    [
+      './plugins/llms-txt',
+      {
+        sidebarId: 'tutorialSidebar',
+        title: 'MATIAS API UBL 2.1',
+        summary:
+          'API REST de facturación electrónica para Colombia (DIAN, UBL 2.1): factura electrónica, POS electrónico, documento soporte, notas crédito/débito, nómina electrónica, eventos RADIAN y sector salud (Res. 000948 de 2026).',
+        intro: [
+          'Guía rápida para agentes de IA:',
+          '',
+          '- Base URL: en los ejemplos, `{{url}}` es la base URL de la API. Sandbox (gratuito, sin envío a la DIAN): `https://sandbox-api.matias-api.com/api/ubl2.1`. La de producción se entrega al contratar el servicio.',
+          '- Autenticación: header `Authorization: Bearer {token}` (token de acceso personal), además de `Accept: application/json` y `Content-Type: application/json`.',
+          '- Casas de Software: agregan `?client_uuid={uuid}` para operar en nombre de una empresa cliente.',
+          '- Cada página de este índice está en Markdown plano (`.md`). También se obtiene enviando `Accept: text/markdown` a la URL HTML.',
+          '- Especificación OpenAPI 3 de los endpoints públicos: https://docs.matias-api.com/openapi.json',
+        ].join('\n'),
+        rootSectionTitle: 'Inicio',
+        optional: [
+          { title: 'Documentación completa en un solo archivo', url: '/llms-full.txt', description: 'todas las páginas de este índice concatenadas' },
+          { title: 'Especificación OpenAPI 3 (JSON)', url: '/openapi.json', description: 'endpoints públicos, parámetros y esquemas' },
+          { title: 'Colección Postman Sandbox Quickstart (JSON)', url: '/sandbox-quickstart.postman_collection.json', description: 'flujo mínimo de integración contra el sandbox' },
+          { title: 'Colección Postman completa (JSON)', url: '/postman_collection.json', description: 'todos los endpoints con ejemplos; archivo grande (más de 5 MB)' },
+          { title: 'Notas de versión', url: '/blog', description: 'cambios de la API y de la documentación' },
+        ],
+      },
+    ],
     [
       '@docusaurus/plugin-pwa',
       {
@@ -124,6 +176,7 @@ const config: Config = {
           label: 'Integración',
         },
         { to: '/blog', label: 'Blog', position: 'left' },
+        { to: '/docs/ai-ready', label: '🤖 Para IA', position: 'left' },
         {
           href: 'https://github.com/lopezsoft',
           label: 'GitHub',
@@ -181,6 +234,14 @@ const config: Config = {
               to: '/docs/glossary',
             },
             {
+              label: 'Documentación para IA (llms.txt)',
+              to: '/docs/ai-ready',
+            },
+            {
+              label: 'OpenAPI 3 (JSON)',
+              href: 'https://docs.matias-api.com/openapi.json',
+            },
+            {
               label: 'Blog',
               to: '/blog',
             },
@@ -221,7 +282,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} LOPEZSOFT SAS - Todos los derechos reservados. | MATIAS API v3.8.0 🚀 Refactorización UI/UX Global + Sector Salud (Res. 000948 de 2026) + PAT + Sandbox + Bulk`,
+      copyright: `Copyright © ${new Date().getFullYear()} LOPEZSOFT SAS - Todos los derechos reservados. | MATIAS API v3.9.0 🤖 Documentación para IA (llms.txt + OpenAPI) + Recepción RADIAN + Sector Salud (Res. 000948 de 2026) + Bulk`,
     },
     prism: {
       theme: prismThemes.github,

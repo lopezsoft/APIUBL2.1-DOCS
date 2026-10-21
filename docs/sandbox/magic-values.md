@@ -21,8 +21,7 @@ El sandbox soporta **32 magic values** que permiten simular diferentes respuesta
 
 Envía el encabezado HTTP `X-Sandbox-Force-Status` en **cualquier** petición de generación o transmisión de documentos:
 
-* `POST /invoice` — Factura electrónica estándar y Sector Salud (Resolución 000948 de 2026)
-* `POST /pos` — Documento Equivalente POS Electrónico
+* `POST /invoice` — Factura electrónica estándar, Sector Salud (Resolución 000948 de 2026) y Documento Equivalente POS Electrónico
 * `POST /notes/credit` — Nota crédito electrónica
 * `POST /notes/debit` — Nota débito electrónica
 * `POST /ds/document` — Documento Soporte electrónico
@@ -36,8 +35,10 @@ Envía el encabezado HTTP `X-Sandbox-Force-Status` en **cualquier** petición de
 * `POST /auto-increment/support-documents` — Documento Soporte automático
 * `POST /auto-increment/adjustment-notes` — Nota de Ajuste automática
 * `POST /auto-increment/pos-documents` — Documento POS automático
-* `POST /auto-increment/pos-credit-notes` — Nota Crédito POS automática
-* `POST /auto-increment/pos-debit-notes` — Nota Débito POS automática
+
+:::note Notas del POS
+No existen rutas propias para el POS ni para sus notas (`/pos`, `/auto-increment/pos-credit-notes` o `/auto-increment/pos-debit-notes`). El POS se emite con `POST /invoice` o `POST /auto-increment/pos-documents`, y sus notas con `POST /notes/credit`, `POST /notes/debit`, `POST /auto-increment/credit-notes` o `POST /auto-increment/debit-notes`.
+:::
 
 ```bash
 # Ejemplo 1: Forzar rechazo de validación en una factura
@@ -86,8 +87,25 @@ Aplican a **todos** los tipos de documento:
 | `ERROR_DUPLICATE` | Documento ya reportado previamente | `89` | Probar idempotencia y duplicados |
 | `ERROR_AUTH` | Error de autenticación del certificado | `IFE043` | Probar manejo de fallos en credenciales de firma |
 | `ERROR_SCHEMA` | Error de validación XSD del documento | `FAD06` | Probar control de esquemas XML inválidos |
-| `ERROR_500` | Error interno del servicio DIAN (HTTP 500) | — | Probar resiliencia ante caídas del servidor fiscal |
-| `ERROR_TIMEOUT` | Timeout de conexión con los servidores DIAN | — | Probar reintentos por tiempo de espera agotado |
+| `ERROR_500` | Error interno del servicio DIAN durante la transmisión. La API responde HTTP 500 con `code: "DOCUMENT_POSSIBLY_SENT"` | — | Probar el manejo de un posible envío: consultar el estado, no reintentar |
+| `ERROR_TIMEOUT` | Timeout de conexión con la DIAN durante la transmisión. La API responde HTTP 500 (no 504) con `code: "DOCUMENT_POSSIBLY_SENT"` | — | Probar el manejo de un posible envío: consultar el estado, no reintentar |
+
+:::warning `ERROR_500` y `ERROR_TIMEOUT` simulan un posible envío
+El fallo se simula **durante la transmisión**, cuando el documento ya pudo llegar a la DIAN. Por eso la API conserva el consecutivo y responde HTTP 500 con `code: "DOCUMENT_POSSIBLY_SENT"`, `data.uuid`, `data.document_number` y `reference`. La conducta correcta es **consultar el estado** con `GET /documents/{uuid}` o `GET /status`, no reintentar con otro número. En el envío masivo, estos items quedan en `POSSIBLY_SENT`.
+:::
+
+```json
+{
+  "success": false,
+  "message": "No se obtuvo una respuesta definitiva para el documento SETP990000001 y es posible que la DIAN lo haya recibido. No lo emita de nuevo: consulte su estado con el uuid del envío antes de cualquier reintento. Detalle: Error interno del servidor. DIAN Web Service error: HTTP 500 Internal Server Error (simulated by sandbox)",
+  "reference": "3b0c6f5e-8d2a-4c7e-9f1b-2a6d5e4c3b21",
+  "code": "DOCUMENT_POSSIBLY_SENT",
+  "data": {
+    "uuid": "dde72910-eb42-11ef-9b27-f02f74cac485",
+    "document_number": "SETP990000001"
+  }
+}
+```
 
 ---
 
@@ -105,9 +123,13 @@ Aplicables a Facturación Estándar, Exportación y Sector Salud:
 | `ERROR_NIT_INVALID` | NIT del adquirente inexistente o DV incorrecto | `DAJ48` | Probar validación de datos maestros |
 | `ERROR_RESOLUTION_EXPIRED` | Resolución agotada o con fecha límite vencida | `FAD09B` | Probar control de agotamiento de resoluciones |
 | `ERROR_DATE_OUT_OF_RANGE` | Fecha de emisión fuera de los días permitidos | `FAD11` | Probar desfase temporal en la transmisión |
-| `ERROR_ALREADY_PROCESSED` | Documento procesado y aprobado previamente | `90` | Probar retransmisión de facturas aceptadas |
+| `ERROR_ALREADY_PROCESSED` | Documento procesado y aprobado previamente (regla 90). En sandbox llega el rechazo tal cual (ver nota) | `90` | Probar retransmisión de facturas aceptadas |
 | `ERROR_SOFTWARE_SECURITY` | SoftwareSecurityCode (PIN) no autorizado | `FAB27` | Probar bloqueos de software no autorizado |
 | `ERROR_ENVIRONMENT` | El schemeID no coincide con el entorno | `FAD07` | Probar envíos accidentales entre Prod y Test |
+
+:::info `ERROR_ALREADY_PROCESSED` en sandbox
+En sandbox la conciliación con la DIAN está desactivada: se recibe el rechazo tal cual (HTTP 200, `response.IsValid: "false"`, `StatusCode: "99"` con la regla `90`), sin los avisos `ALREADY_*` (`ALREADY_AUTHORIZED_RECOVERED`, `ALREADY_AUTHORIZED_OTHER_CONTENT`, `ALREADY_PROCESSED_NOT_CONFIRMED`) que sí aparecen en producción cuando la API concilia el número con la DIAN. Ver [Documento duplicado y regla 90](/docs/response-json#documento-duplicado).
+:::
 
 ---
 
@@ -176,8 +198,7 @@ Todos los 32 magic values operan de manera transversal en **todos** los endpoint
 
 | Tipo de Documento | Endpoint | Compatibilidad Magic Values |
 |---|---|:---:|
-| Factura Electrónica (Estándar / Salud) | `POST /invoice` | ✅ Los 32 |
-| Documento POS Electrónico | `POST /pos` | ✅ Los 32 |
+| Factura Electrónica (Estándar / Salud) y POS | `POST /invoice` | ✅ Los 32 |
 | Nota Crédito Electrónica | `POST /notes/credit` | ✅ Los 32 |
 | Nota Débito Electrónica | `POST /notes/debit` | ✅ Los 32 |
 | Documento Soporte Electrónico | `POST /ds/document` | ✅ Los 32 |
@@ -191,24 +212,33 @@ Todos los 32 magic values operan de manera transversal en **todos** los endpoint
 | DS Auto-increment | `POST /auto-increment/support-documents` | ✅ Los 32 |
 | Ajuste DS Auto-increment | `POST /auto-increment/adjustment-notes` | ✅ Los 32 |
 | POS Auto-increment | `POST /auto-increment/pos-documents` | ✅ Los 32 |
-| NC POS Auto-increment | `POST /auto-increment/pos-credit-notes` | ✅ Los 32 |
-| ND POS Auto-increment | `POST /auto-increment/pos-debit-notes` | ✅ Los 32 |
 
 ---
 
 ## 📦 Estructuras de Respuesta
 
 ### 1. Respuesta Exitosa — `ACCEPTED` (Sin Magic Value)
+
+La respuesta aceptada tiene la misma estructura que en producción (sin objeto `data`); se muestran los campos principales. Ver [Respuestas de la API](/docs/response-json#respuesta-exitosa).
+
 ```json
 {
-  "success": true,
+  "uuid": "dde72910-eb42-11ef-9b27-f02f74cac485",
   "message": "Solicitud procesada por la DIAN.",
-  "data": {
-    "XmlDocumentKey": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "send_to_queue": 0,
+  "XmlDocumentKey": "a1b2c3d4e5f67890abcdef1234567890...",
+  "response": {
+    "IsValid": "true",
     "StatusCode": "00",
     "StatusDescription": "Procesado Correctamente.",
-    "IsValid": "true"
-  }
+    "XmlDocumentKey": "a1b2c3d4e5f67890abcdef1234567890..."
+  },
+  "XmlBase64Bytes": "",
+  "AttachedDocument": {},
+  "qr": {},
+  "pdf": {},
+  "warnings": [],
+  "success": true
 }
 ```
 

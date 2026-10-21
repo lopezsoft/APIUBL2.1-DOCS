@@ -375,7 +375,7 @@ Asegúrate de tener un token válido. Si no tienes uno, [obtén tu token aquí](
 :::
 
 ```bash
-curl -X POST https://api-v2.matias-api.com/api/ubl2.1/invoices \
+curl -X POST {{url}}/invoice \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d @factura-exportacion.json
@@ -400,11 +400,11 @@ curl -X POST https://api-v2.matias-api.com/api/ubl2.1/invoices \
   },
   "AttachedDocument": {
     "path": "1/ad/ad09010914030002500000043.xml",
-    "url": "https://api-v2.matias-api.com/attachments/1/ad/ad09010914030002500000043.xml"
+    "url": "https://sandbox-api.matias-api.com/attachments/1/ad/ad09010914030002500000043.xml"
   },
   "pdf": {
     "path": "1/fv09010914030002500000097.pdf",
-    "url": "https://api-v2.matias-api.com/pdf/1/fv09010914030002500000097.pdf"
+    "url": "https://sandbox-api.matias-api.com/pdf/1/fv09010914030002500000097.pdf"
   },
   "success": true
 }

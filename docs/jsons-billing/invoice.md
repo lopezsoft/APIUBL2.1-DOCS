@@ -42,7 +42,7 @@ A continuación se muestra un ejemplo de un JSON que representa una factura. Est
     "company_name": "LOPEZ GOMEZ LEWIS OSWALDO",
     "dni": "1063279307",
     "mobile": "3108435423",
-    "email": "lws_1234@hotmail.com",
+    "email": "cliente4@ejemplo.com",
     "address": "Calle 64 #1823",
     "postal_code": "661002"
   },

@@ -52,7 +52,7 @@ A continuación se muestra un ejemplo de un JSON que representa una factura con 
     "identity_document_id": "3",
     "company_name": "LOPEZ GOMEZ LEWIS OSWALDO",
     "dni": "1063279307",
-    "email": "lopezsoft.com@gmail.com"
+    "email": "cliente3@ejemplo.com"
   },
   "lines": [
     {

@@ -1,6 +1,7 @@
 ---
 sidebar_position: 4
 sidebar_label: 📑 Documento Soporte
+description: "Emisión de documento soporte y nota de ajuste para adquisiciones a no obligados a facturar, incluidos no residentes."
 ---
 
 import Tabs from '@theme/Tabs';
@@ -90,11 +91,12 @@ $response = $client->post("{$url}/ds/document", [
 </Tabs>
 
 <details>
-<summary>✅ Respuesta Exitosa — DIAN 200 OK</summary>
+<summary>✅ Respuesta Exitosa — Producción (HTTP 200)</summary>
 
 ```json
 {
-  "message": "El documento ha sido procesado por la DIAN.",
+  "uuid": "7e3a91c4-7dd2-11f0-ba9f-f02f74cac485",
+  "message": "Solicitud procesada por la DIAN.",
   "send_to_queue": 0,
   "XmlDocumentKey": "9fa2bd902a5b498c79a844ba5e70f3c67009fc5a0fea1cb0cd4aeac38a10a7425f0e08ad71b83c821372adb1771e07dd",
   "response": {
@@ -103,29 +105,62 @@ $response = $client->post("{$url}/ds/document", [
     "StatusCode": "00",
     "StatusDescription": "Procesado Correctamente.",
     "StatusMessage": "El Documento Soporte DSE12, ha sido autorizado."
-  }
+  },
+  "XmlBase64Bytes": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4...",
+  "AttachedDocument": {
+    "pathZip": null,
+    "path": "1/ad/ad09010914030002500000012.xml",
+    "url": "https://sandbox-api.matias-api.com/attachments/1/ad/ad09010914030002500000012.xml",
+    "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4..."
+  },
+  "qr": {
+    "qrDian": "https://catalogo-vpfe.dian.gov.co/document/searchqr?documentkey=9fa2bd90...",
+    "url": "https://sandbox-api.matias-api.com/qr/1/QR-7e3a91c4-7dd2-11f0-ba9f-f02f74cac485.png",
+    "path": "1/QR-7e3a91c4-7dd2-11f0-ba9f-f02f74cac485.png",
+    "data": "iVBORw0KGgoAAAANSUhEUgAA..."
+  },
+  "pdf": null,
+  "warnings": [],
+  "success": true
 }
 ```
+
+`uuid` identifica el envío en la plataforma y `warnings` informa los pasos posteriores a la aceptación que hayan fallado (un warning nunca significa reenviar). Ver [Advertencias](/docs/endpoints/invoices-pos#warnings-emision).
 
 </details>
 
 <details>
-<summary>❌ Rechazo DIAN (HTTP 422)</summary>
+<summary>⚠️ Rechazo DIAN — Producción (HTTP 200, <code>IsValid: "false"</code>)</summary>
+
+Un rechazo de la DIAN **no** es un error HTTP: llega con HTTP `200` y `success: true`, y el resultado fiscal está en `response.IsValid`, `response.StatusCode` y `response.ErrorMessage`. El HTTP `422` se reserva para errores de validación del JSON.
 
 ```json
 {
-  "message": "El documento ha sido rechazado por la DIAN.",
+  "uuid": "7e3a91c4-7dd2-11f0-ba9f-f02f74cac485",
+  "message": "Solicitud procesada por la DIAN.",
+  "send_to_queue": 0,
+  "XmlDocumentKey": "9fa2bd902a5b498c79a844ba5e70f3c67009fc5a0fea1cb0cd4aeac38a10a7425f0e08ad71b83c821372adb1771e07dd",
   "response": {
     "IsValid": "false",
     "StatusCode": "99",
     "ErrorMessage": {
       "string": ["Error en campos obligatorios del documento soporte."]
     }
-  }
+  },
+  "XmlBase64Bytes": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4...",
+  "AttachedDocument": null,
+  "qr": null,
+  "pdf": null,
+  "warnings": [],
+  "success": true
 }
 ```
 
 </details>
+
+:::info Mismas reglas que la factura
+El documento soporte usa el mismo flujo de emisión que `POST /invoice`: la respuesta de habilitación, los warnings de la regla 90 (`ALREADY_AUTHORIZED_*`), el `409` por `uuid` ya usado y los errores `409 DOCUMENT_IN_TRANSMISSION`, `409 DOCUMENT_IN_VALIDATION`, `503 DIAN_STATUS_UNAVAILABLE` y `DOCUMENT_POSSIBLY_SENT` aplican igual. Ver [Respuestas, advertencias y errores de emisión](/docs/endpoints/invoices-pos#respuestas-emision).
+:::
 
 </details>
 
@@ -153,19 +188,38 @@ Content-Type: application/json
 
 ```json
 {
-  "message": "El documento ha sido procesado por la DIAN.",
+  "uuid": "a41d07b8-7dd2-11f0-ba9f-f02f74cac485",
+  "message": "Solicitud procesada por la DIAN.",
   "send_to_queue": 0,
-  "XmlDocumentKey": "9fa2bd902a5b498c79a844ba5e70f3c67009fc5a0fea1cb0cd4aeac38a10a7425f0e08ad71b83c821372adb1771e07dd",
+  "XmlDocumentKey": "4c7e19d02b8a5f63e1d9a0b7c4f2e8a1d6b3c9f0e7a2d5b8c1f4e9a6d3b0c7e2f5a8d1b4c7e0f3a6d9b2c5e8f1a4d7b0",
   "response": {
     "ErrorMessage": {},
     "IsValid": "true",
     "StatusCode": "00",
     "StatusDescription": "Procesado Correctamente.",
-    "StatusMessage": "El Documento Soporte DSE12, ha sido autorizado."
-  }
+    "StatusMessage": "La Nota de Ajuste al Documento Soporte NAS3, ha sido autorizada."
+  },
+  "XmlBase64Bytes": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4...",
+  "AttachedDocument": {
+    "pathZip": null,
+    "path": "1/ad/ad09010914030002500000013.xml",
+    "url": "https://sandbox-api.matias-api.com/attachments/1/ad/ad09010914030002500000013.xml",
+    "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4..."
+  },
+  "qr": {
+    "qrDian": "https://catalogo-vpfe.dian.gov.co/document/searchqr?documentkey=4c7e19d0...",
+    "url": "https://sandbox-api.matias-api.com/qr/1/QR-a41d07b8-7dd2-11f0-ba9f-f02f74cac485.png",
+    "path": "1/QR-a41d07b8-7dd2-11f0-ba9f-f02f74cac485.png",
+    "data": "iVBORw0KGgoAAAANSUhEUgAA..."
+  },
+  "pdf": null,
+  "warnings": [],
+  "success": true
 }
 ```
 
 </details>
+
+La nota de ajuste sigue las mismas reglas de respuesta, rechazo DIAN (HTTP `200` con `IsValid: "false"`) y errores que el documento soporte. Ver [Respuestas, advertencias y errores de emisión](/docs/endpoints/invoices-pos#respuestas-emision).
 
 </details>

@@ -26,7 +26,7 @@ A continuación se muestra un ejemplo de un JSON que representa una nota crédit
   "customer": {
     "company_name": "LOPEZ GOMEZ LEWIS OSWALDO",
     "dni": "1063279307",
-    "email": "lws_1234@hotmail.com",
+    "email": "cliente4@ejemplo.com",
     "points": 0
   },
   "discrepancy_response": {

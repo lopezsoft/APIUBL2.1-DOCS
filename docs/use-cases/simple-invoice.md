@@ -38,7 +38,7 @@ Primero, necesitas autenticarte en la API:
 
 ### Solicitud
 ```bash
-curl -X POST https://api-v2.matias-api.com/api/ubl2.1/auth/login \
+curl -X POST {{url}}/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "tu-email@empresa.com",
@@ -71,17 +71,17 @@ En v3.0.0 puedes crear **Personal Access Tokens** directamente desde tu cuenta s
 
 ```bash
 # 1. Primero haz login para obtener un token temporal
-# 2. Luego crea un PAT que dure más tiempo (1-90 días)
-curl -X POST https://api-v2.matias-api.com/api/ubl2.1/v3/auth/tokens \
+# 2. Luego crea un PAT que dure más tiempo (1-365 días; 90 por defecto)
+curl -X POST {{url}}/tokens \
   -H "Authorization: Bearer {token_temporal}" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "Token Producción",
+    "name": "Token Produccion",
     "expires_in_days": 60
   }'
 ```
 
-[📖 Ver guía completa de Personal Access Tokens](/docs/endpoints/intro-auth#personal-access-tokens)
+[📖 Ver guía completa de Personal Access Tokens](../endpoints/01-intro-auth.md#personal-access-tokens)
 :::
 
 ## Paso 2: Preparar los Datos de la Factura
@@ -110,7 +110,7 @@ Reúne la información necesaria:
   "tax_level_id": 5,
   "company_name": "LOPEZ GOMEZ LEWIS OSWALDO",
   "dni": "1063279307",
-  "email": "lws_1234@hotmail.com",
+  "email": "cliente4@ejemplo.com",
   "address": "Calle 64 #1823",
   "postal_code": "661002"
 }
@@ -153,7 +153,7 @@ Monta el JSON completo usando la estructura real del API:
     "company_name": "LOPEZ GOMEZ LEWIS OSWALDO",
     "dni": "1063279307",
     "mobile": "3108435423",
-    "email": "lws_1234@hotmail.com",
+    "email": "cliente4@ejemplo.com",
     "address": "Calle 64 #1823",
     "postal_code": "661002"
   },
@@ -222,7 +222,7 @@ Antes de enviarla a la API, verifica:
 ✅ **Cliente**
 - `dni: "1063279307"` (válido con dígito verificador)
 - `company_name: "LOPEZ GOMEZ LEWIS OSWALDO"` (no vacío)
-- `email: "lws_1234@hotmail.com"` (formato correcto)
+- `email: "cliente4@ejemplo.com"` (formato correcto)
 - `country_id: "45"` (Colombia)
 
 ✅ **Líneas**
@@ -246,7 +246,7 @@ Antes de enviarla a la API, verifica:
 Una vez validada localmente, envía la factura:
 
 ```bash
-curl -X POST https://api.matias-app.com/api/invoices \
+curl -X POST "{{url}}/invoice" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -268,7 +268,7 @@ curl -X POST https://api.matias-app.com/api/invoices \
     "company_name": "LOPEZ GOMEZ LEWIS OSWALDO",
     "dni": "1063279307",
     "mobile": "3108435423",
-    "email": "lws_1234@hotmail.com",
+    "email": "cliente4@ejemplo.com",
     "address": "Calle 64 #1823",
     "postal_code": "661002"
   },
@@ -345,7 +345,7 @@ curl -X POST https://api.matias-app.com/api/invoices \
   "AttachedDocument": {
     "pathZip": "1/ad/z09010914030002500000042.zip",
     "path": "1/ad/ad09010914030002500000041.xml",
-    "url": "https://api-v2.matias-api.com/attachments/1/ad/ad09010914030002500000041.xml",
+    "url": "https://sandbox-api.matias-api.com/attachments/1/ad/ad09010914030002500000041.xml",
     "data": ""
   },
   "qr": {
@@ -356,7 +356,7 @@ curl -X POST https://api.matias-app.com/api/invoices \
   },
   "pdf": {
     "path": "1/fv09010914030002500000095.pdf",
-    "url": "https://api-v2.matias-api.com/pdf/1/fv09010914030002500000095.pdf",
+    "url": "https://sandbox-api.matias-api.com/pdf/1/fv09010914030002500000095.pdf",
     "data": ""
   },
   "success": true
@@ -377,10 +377,19 @@ curl -X POST https://api.matias-app.com/api/invoices \
 :::
 
 ### Si Hay Errores
+
+Si el número ya fue validado ante la DIAN, la API responde **HTTP 400** con el registro del envío existente en `data` (ver [Respuestas de la API](../response-json.md)):
+
 ```json
 {
-  "success": false,
-  "message": "El documento (Factura electrónica) con numero LZT2002, ya se encuentra validado"
+  "message": "El documento (Factura electrónica) con numero LZT2002 ya se encuentra validado.",
+  "data": {
+    "uuid": "dde72910-eb42-11ef-9b27-f02f74cac485",
+    "document_number": "LZT2002",
+    "XmlDocumentKey": "cf9864294501e8a9578235dd2ab3c4fd...",
+    "is_valid": 1
+  },
+  "success": false
 }
 ```
 
@@ -398,8 +407,9 @@ curl -X POST https://api.matias-app.com/api/invoices \
 Para obtener los detalles completos de tu factura después de haberla creado:
 
 ```bash
-curl -X GET "https://api.matias-app.com/api/invoices/LZT-2002" \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+curl -X GET "{{url}}/status?number=LZT2002&type_document_id=7" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Accept: application/json"
 ```
 
 ### Respuesta
@@ -429,7 +439,7 @@ curl -X GET "https://api.matias-app.com/api/invoices/LZT-2002" \
   "AttachedDocument": {
     "pathZip": "1/ad/z09010914030002500000042.zip",
     "path": "1/ad/ad09010914030002500000041.xml",
-    "url": "https://api-v2.matias-api.com/attachments/1/ad/ad09010914030002500000041.xml",
+    "url": "https://sandbox-api.matias-api.com/attachments/1/ad/ad09010914030002500000041.xml",
     "data": ""
   },
   "qr": {
@@ -440,7 +450,7 @@ curl -X GET "https://api.matias-app.com/api/invoices/LZT-2002" \
   },
   "pdf": {
     "path": "1/fv09010914030002500000095.pdf",
-    "url": "https://api-v2.matias-api.com/pdf/1/fv09010914030002500000095.pdf",
+    "url": "https://sandbox-api.matias-api.com/pdf/1/fv09010914030002500000095.pdf",
     "data": ""
   },
   "success": true
@@ -461,14 +471,14 @@ Con los datos de la respuesta puedes:
 
 ## Paso 7: Enviar Comprobante al Cliente
 
-Si configuraste `send_email: 1`, la API enviará automáticamente. Para enviar nuevamente:
+Si configuraste `send_email: 1`, la API enviará automáticamente. Para enviar nuevamente, usa el CUFE de la factura (`XmlDocumentKey`) como `{trackId}` (ver [envío y reenvío de correos](../endpoints/06-queries-status.md#correos-adquirentes)):
 
 ```bash
-curl -X POST https://api.matias-app.com/api/invoices/12345/send-email \
+curl -X POST "{{url}}/documents/sendmail/{trackId}" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "compras@cliente.com"
+    "email_to": "compras@cliente.com"
   }'
 ```
 
@@ -505,9 +515,9 @@ curl -X POST https://api.matias-app.com/api/invoices/12345/send-email \
 
 ¡Felicidades! Has emitido tu primera factura electrónica. Ahora puedes:
 
-- 📖 [Consultar la guía de Facturas con Descuentos](/docs/use-cases/invoice-with-discounts)
-- 📖 [Aprender sobre Exportaciones](/docs/use-cases/export-scenarios)
-- 📋 [Ver Referencias Técnicas](/docs/billing-fields)
+- 📖 [Consultar la guía de Facturas con Descuentos](./invoice-with-discounts.md)
+- 📖 [Aprender sobre Exportaciones](./export-scenarios.md)
+- 📋 [Ver Referencias Técnicas](../billing-fields.md)
 
 ---
 

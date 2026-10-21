@@ -1,6 +1,7 @@
 ---
 sidebar_position: 2
 sidebar_label: 🟢 Tablas y Catálogos
+description: "Endpoints públicos sin token: tablas paramétricas DIAN, catálogos (impuestos, unidades, ubicaciones) y funciones auxiliares (dígito de verificación, números a letras)."
 ---
 
 import Tabs from '@theme/Tabs';

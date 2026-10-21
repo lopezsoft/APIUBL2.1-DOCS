@@ -1,0 +1,62 @@
+# Apache — docs.matias-api.com (sitio estático generado por Docusaurus)
+# Backend del asistente: api-docs.matias-api.com
+#
+# Este archivo viaja en el build (static/.htaccess → build/.htaccess).
+# HTTP → HTTPS lo resuelve el servidor (Plesk/nginx) antes de llegar aquí.
+
+DirectoryIndex index.html
+Options -Indexes
+
+# Errores: la página 404 de Docusaurus. Antes, cualquier ruta inexistente
+# (incluido /robots.txt cuando faltaba) entraba en un bucle de reescritura y
+# respondía 500; un 5xx en robots.txt hace que los rastreadores traten el
+# sitio entero como prohibido (RFC 9309).
+ErrorDocument 404 /404.html
+
+# Tipos y charset de los recursos para agentes de IA.
+AddType "text/markdown; charset=utf-8" .md
+AddType "text/plain; charset=utf-8" .txt
+AddCharset utf-8 .json .html .xml
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Negociación de contenido: un agente que pide Accept: text/markdown
+  # recibe la versión Markdown de la página (/docs/intro/ → /docs/intro.md).
+  # Las URL sin barra final las redirige antes mod_dir (DirectorySlash), igual
+  # que las canónicas del sitio (trailingSlash: true). Un q=0 explícito no
+  # cuenta como aceptación.
+  RewriteCond %{HTTP_ACCEPT} text/markdown [NC]
+  RewriteCond %{HTTP_ACCEPT} !text/markdown\s*;\s*q=0(\.0+)?\s*(,|$) [NC]
+  RewriteCond %{DOCUMENT_ROOT}/$1.md -f
+  RewriteRule ^(.+?)/?$ $1.md [L]
+
+  # Lo demás se sirve tal cual: archivos y carpetas existentes (con su
+  # index.html). Lo inexistente cae en el ErrorDocument 404, sin reescrituras.
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header set X-XSS-Protection "1; mode=block"
+  Header always append X-Frame-Options SAMEORIGIN
+  Header set X-Content-Type-Options nosniff
+  Header set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  Header set Permissions-Policy "geolocation=(self), microphone=()"
+  Header set Referrer-Policy "no-referrer-when-downgrade"
+
+  # Indexable por buscadores y agentes de IA.
+  Header set X-Robots-Tag "all"
+
+  # La misma URL puede devolver HTML o Markdown según Accept.
+  Header append Vary Accept
+
+  # Descubrimiento del índice para agentes (también va como <link> en el HTML).
+  Header add Link "</llms.txt>; rel=\"describedby\"; type=\"text/plain\""
+
+  # Recursos para IA y herramientas: lectura cruzada y caché corta.
+  <FilesMatch "\.(md|txt|json)$">
+    Header set Access-Control-Allow-Origin "*"
+    Header set Cache-Control "public, max-age=3600"
+  </FilesMatch>
+</IfModule>

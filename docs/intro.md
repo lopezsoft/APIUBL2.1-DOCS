@@ -209,8 +209,10 @@ Ofrecemos **dos opciones** para autenticarte según las necesidades de tu integr
 │      ↓                         ↓                              │
 │  [Email/Password]         [Credenciales]                     │
 │      ↓                         ↓                              │
-│  Confirmación Email       access_token (90 días máx)         │
-│                                ↓                              │
+│  Confirmación Email       access_token (90 días)             │
+│  (OBLIGATORIA: enlace          ↓                              │
+│   del correo; sin ella                                        │
+│   el login responde 404)                                      │
 │  ────────────────────────────────────────────────────────    │
 │                                                               │
 │  3. USAR TOKEN                4. REVOCACIÓN                  │
@@ -233,23 +235,24 @@ Ofrecemos **dos opciones** para autenticarte según las necesidades de tu integr
 ├─────────────────────────────────────────────────────────────┤
 │                                                               │
 │  1. LOGIN INICIAL          2. CREAR PAT                      │
-│  POST /auth/login          POST /v3/auth/tokens              │
+│  POST /auth/login          POST /tokens                      │
 │      ↓                           ↓                            │
 │  [Obtener token inicial]    [name, expires_in_days]          │
 │      ↓                           ↓                            │
-│  Token temporal (90 días)   Personal Token (1-90 días)       │
+│  Token temporal (90 días)   Personal Token (1-365 días)      │
 │                                  ↓                            │
 │  ────────────────────────────────────────────────────────    │
 │                                                               │
 │  3. USAR PAT                  4. GESTIÓN                     │
-│  Bearer {pat_token}           GET /v3/auth/tokens (listar)   │
-│      ↓                        DELETE /v3/auth/tokens/{id}    │
-│  [Solicitudes API]                   ↓                       │
-│      ↓                        Token específico revocado      │
-│  Respuestas JSON                                             │
+│  Bearer {pat_token}           GET /tokens (listar)           │
+│      ↓                        GET /tokens/{id}               │
+│  [Solicitudes API]            DELETE /tokens/{id}            │
+│      ↓                        POST /tokens/revoke-all        │
+│  Respuestas JSON                     ↓                       │
+│                               Token específico revocado      │
 │                                                               │
 │  VENTAJAS PAT:                                               │
-│  ✅ Expiración configurable (1-90 días)                     │
+│  ✅ Expiración configurable (1-365 días, 90 por defecto)    │
 │  ✅ Múltiples tokens por cuenta                             │
 │  ✅ Revocación selectiva instantánea                        │
 │  ✅ Autogestión completa (sin contactar soporte)            │
@@ -264,7 +267,8 @@ La autenticación para acceder a la API se gestiona mediante **Tokens de acceso*
 
 :::info Ventajas de Personal Access Tokens (PAT)
 - **Creación self-service:** Tú mismo los creas y los gestionas directamente.
-- **Expiración configurable:** Desde 1 hasta 90 días (recomendado: 30-60 días).
+- **Expiración configurable:** Desde 1 hasta 365 días; si no se indica, 90 días (recomendado: 30-60 días).
+- **Límite de creación:** Hasta 10 tokens nuevos por día y usuario.
 - **Revocación instantánea:** Revoca cualquier token de forma selectiva.
 - **Múltiples tokens:** Usa tokens únicos para diferentes servidores o entornos de integración.
 
@@ -289,45 +293,67 @@ Para acceder y utilizar los servicios de la API, el primer paso es registrarse e
 
 ### ⚙️ Opciones de Registro {#opciones-de-registro}
 
-1. **A través de nuestro sitio web:** Complete el formulario de registro y recibirá las credenciales por correo electrónico.
-2. **Mediante el servicio REST:** Realice una petición `POST` al endpoint `{{URL}}/register` con los parámetros obligatorios.
+1. **A través de nuestro sitio web:** Complete el formulario de registro y verifique su correo con el enlace que recibirá.
+2. **Mediante el servicio REST:** Realice una petición `POST` al endpoint público `{{URL}}/register` (sin token), con las cabeceras `Content-Type: application/json` y `Accept: application/json`.
+
+:::warning Este endpoint crea cuentas principales, no sub-cuentas
+`POST /register` crea una **cuenta principal** (usuario y empresa) de tipo desarrollador. Si usted es una **Casa de Software** y quiere crear la cuenta de un cliente, use [`POST /company/{uuid}/customer`](/docs/endpoints/company#clientes-casa-software) con su token. Enviar `company_id` a `/register` responde 422.
+:::
+
+**Campos obligatorios:**
 
 | Parámetro | Tipo | Requerido | Descripción | Ejemplo |
 |-----------|------|-----------|-------------|----------|
-| `first_name` | `string` | ✅ Sí | Nombre del usuario | `"Lewis"` |
-| `last_name` | `string` | ✅ Sí | Apellido del usuario | `"Lopez Gomez"` |
-| `email` | `string` | ✅ Sí | Correo electrónico válido | `"correo@correo.com"` |
+| `first_name` | `string` | ✅ Sí | Nombre del usuario (máx. 100) | `"Juan"` |
+| `last_name` | `string` | ✅ Sí | Apellido del usuario (máx. 100) | `"Perez"` |
+| `company_name` | `string` | ✅ Sí | Razón social de la empresa (máx. 100) | `"Mi Empresa SAS"` |
+| `email` | `string` | ✅ Sí | Correo electrónico válido y con dominio existente (máx. 255). Único | `"usuario@miempresa.com"` |
 | `password` | `string` | ✅ Sí | Contraseña (mínimo 8 caracteres) | `"MiPassword123!"` |
-| `password_confirmation` | `string` | ✅ Sí | Confirmación de contraseña | `"MiPassword123!"` |
-| `address` | `string` | ✅ Sí | Dirección física | `"Calle 123 #45-67"` |
-| `city_id` | `integer` | ✅ Sí | ID de ciudad ([ver glosario](/docs/glossary)) | `836` |
-| `company_name` | `string` | ✅ Sí | Nombre de la empresa | `"Mi Empresa S.A."` |
-| `dni` | `string` | ✅ Sí | Número de identificación (NIT) | `"1234567890"` |
-| `identity_document_id` | `integer` | ✅ Sí | Tipo de documento (1=CC, 3=NIT) | `3` |
-| `mobile` | `string` | ✅ Sí | Teléfono celular | `"3108435431"` |
-| `tax_level_id` | `integer` | ✅ Sí | Nivel fiscal ([ver glosario](/docs/glossary)) | `5` |
-| `tax_regime_id` | `integer` | ✅ Sí | Régimen fiscal ([ver glosario](/docs/glossary)) | `2` |
-| `type_organization_id` | `integer` | ✅ Sí | Tipo de organización ([ver glosario](/docs/glossary)) | `1` |
+| `password_confirmation` | `string` | ✅ Sí | Confirmación de la contraseña | `"MiPassword123!"` |
+| `dni` | `string` | ✅ Sí | NIT o documento, **solo dígitos** (sin dígito de verificación, puntos ni guiones), máx. 15. Único. El DV lo calcula la API | `"900123456"` |
+
+**Campos opcionales** (si no se envían, se usa el valor por defecto):
+
+| Parámetro | Tipo | Por defecto | Descripción |
+|-----------|------|-------------|-------------|
+| `trade_name` | `string` | — | Nombre comercial (máx. 250). Se guarda tal como se envía |
+| `identity_document_id` | `integer` | `3` | Tipo de documento ([ver glosario](/docs/glossary)) |
+| `type_organization_id` | `integer` | `1` | Tipo de organización ([ver glosario](/docs/glossary)) |
+| `tax_regime_id` | `integer` | `1` | Régimen fiscal ([ver glosario](/docs/glossary)) |
+| `tax_level_id` | `integer` | `5` | Nivel fiscal ([ver glosario](/docs/glossary)) |
+| `country_id` | `integer` | `45` | País |
+| `city_id` | `integer` | `149` | Ciudad ([ver glosario](/docs/glossary)) |
+| `address` | `string` | `""` | Dirección física |
+| `location` | `string` | `""` | Ubicación (texto libre) |
+| `postal_code` | `string` | `""` | Código postal |
+| `mobile` | `string` | `""` | Teléfono celular |
+| `phone` | `string` | `""` | Teléfono fijo |
+| `web` | `string` | `""` | Sitio web |
+
+- El usuario se crea siempre como **desarrollador**: un `type_id` enviado se ignora.
+- Nombres, apellidos y razón social se guardan en **mayúsculas**.
+- La cuenta recibe una suscripción inicial **FREE de 100 documentos por 1 año**. En el sandbox, la cuenta principal recibe en su lugar una suscripción de pruebas de **5.000 documentos por 1 año**.
+- La respuesta **no** incluye token: el correo queda **sin verificar** y hay que abrir el enlace del correo antes de iniciar sesión (ver [Paso 2](#obtener-el-token-de-acceso)).
 
 <details>
 <summary>📦 Ver JSON de Petición (Request Body)</summary>
 
 ```json
 {
-  "first_name": "Lewis",
-  "last_name": "Lopez Gomez",
-  "email": "correo@correo.com", 
+  "first_name": "Juan",
+  "last_name": "Perez",
+  "company_name": "Mi Empresa SAS",
+  "email": "usuario@miempresa.com",
   "password": "MiPassword123!",
   "password_confirmation": "MiPassword123!",
-  "address": "Calle 123 #45-67", 
-  "city_id": 836, 
-  "company_name": "Mi Empresa S.A.", 
-  "dni": "1234567890", 
-  "identity_document_id": 3, 
-  "mobile": "3108435431", 
-  "tax_level_id": 5, 
-  "tax_regime_id": 2,
-  "type_organization_id": 1
+  "dni": "900123456",
+  "address": "Calle 123 #45-67",
+  "mobile": "3001234567",
+  "city_id": 149,
+  "identity_document_id": 3,
+  "type_organization_id": 1,
+  "tax_regime_id": 1,
+  "tax_level_id": 5
 }
 ```
 </details>
@@ -337,25 +363,23 @@ Para acceder y utilizar los servicios de la API, el primer paso es registrarse e
 
 ```json
 {
-  "message": "Empresa creada con éxito. Verifique su dirección de correo electrónico: gerencia@lopezsoft.net.co",
+  "message": "Empresa creada con éxito. Verifique su dirección de correo electrónico: usuario@miempresa.com",
   "success": true
 }
 ```
 </details>
 
 <details>
-<summary>📦 Ver Respuestas de Error (HTTP 422 / 500)</summary>
+<summary>📦 Ver Respuestas de Error (HTTP 422 / 400 / 500)</summary>
 
-**Respuesta HTTP 422 (Error de Validación):**
+**Respuesta HTTP 422 (Error de Validación):** formato estándar, sin campo `success`. Requiere `Accept: application/json`; sin esa cabecera, la respuesta es una redirección (HTTP 302).
+
 ```json
 {
-  "message": "El correo electrónico ya existe (and 2 more errors)",
+  "message": "El correo electrónico ya existe (and 1 more error)",
   "errors": {
     "email": [
       "El correo electrónico ya existe"
-    ],
-    "password": [
-      "El campo password debe contener al menos 8 caracteres."
     ],
     "dni": [
       "El NIT ya existe"
@@ -364,20 +388,52 @@ Para acceder y utilizar los servicios de la API, el primer paso es registrarse e
 }
 ```
 
-**Respuesta HTTP 500 (Error Interno):**
+| Campo | Mensajes posibles |
+|-------|-------------------|
+| `first_name` | `El nombre es requerido` |
+| `last_name` | `El apellido es requerido` |
+| `company_name` | `El nombre de la empresa es requerido` |
+| `email` | `El correo electrónico es requerido` · `El correo electrónico no es válido o su dominio no existe` · `El correo electrónico ya existe` |
+| `dni` | `El NIT es requerido` · `El NIT ya existe` · `El NIT debe contener solo dígitos, sin puntos, guiones ni dígito de verificación` · `El NIT no puede tener más de 15 dígitos` |
+| `company_id` | `Este endpoint no crea sub-cuentas. Use POST /api/ubl2.1/company/{uuid}/customer con el token del desarrollador.` |
+
+Los errores de `password` (longitud, confirmación) usan los mensajes estándar de validación.
+
+**Respuesta HTTP 400 (Dato Inválido):** un valor de catálogo no existe (por ejemplo, `country_id`, `city_id` o `tax_level_id`). No se crea nada. El `message` trae el detalle técnico del rechazo: revise los IDs contra el [glosario](/docs/glossary).
+
 ```json
 {
   "success": false,
-  "message": "Error interno del servidor. Por favor, intente más tarde."
+  "message": "Detalle técnico del valor de catálogo rechazado"
 }
 ```
+
+**Respuesta HTTP 500 (Error Interno):**
+
+```json
+{
+  "success": false,
+  "message": "Error interno del servidor. ...",
+  "reference": "3f1c2b9e-8d7a-4c6b-9e5f-1a2b3c4d5e6f"
+}
+```
+
+Indique la `reference` al soporte técnico.
+
+:::caution Si el 500 llega por el correo de verificación
+Si falla el envío del correo de verificación, la API responde 500 aunque **la cuenta ya quedó creada**. No repita `POST /register` (respondería 422 `El correo electrónico ya existe`): pida un correo nuevo con [`POST /email/verification-notification`](/docs/endpoints/intro-auth#verificacion-correo).
+:::
 </details>
 
 ---
 
 ## 🔑 Paso 2: Obtener el Token de Acceso {#obtener-el-token-de-acceso}
 
-Una vez registrado y con los requisitos previos configurados en el portal, obtenga su token de acceso enviando una petición `POST` al endpoint `{{URL}}/auth/login`.
+:::warning Primero verifique su correo
+Después de `POST /register`, abra el enlace de verificación que llega al correo registrado. Hasta hacerlo, el login responde **HTTP 404** con `El correo electrónico no ha sido verificado. Comuníquese con el administrador.` Si el correo no llegó o el enlace venció, pida uno nuevo con [`POST /email/verification-notification`](/docs/endpoints/intro-auth#verificacion-correo).
+:::
+
+Con el correo verificado, obtenga su token de acceso enviando una petición `POST` al endpoint `{{URL}}/auth/login`. Para emitir documentos ante la DIAN necesitará, además, los [requisitos previos](#nota-importante) configurados en el portal.
 
 ### Parámetros del Body
 
@@ -385,16 +441,15 @@ Una vez registrado y con los requisitos previos configurados en el portal, obten
 |-------|------|-----------|-------------|
 | `email` | `string` | ✅ Sí | Correo electrónico registrado |
 | `password` | `string` | ✅ Sí | Contraseña de la cuenta |
-| `remember_me` | `integer` | ✅ Sí | Debe ser `0` |
+| `remember_me` | `boolean` | No | Opcional; no cambia la vigencia del token |
 
 <details>
 <summary>📦 Ver JSON de Petición (Request Body)</summary>
 
 ```json
 {
-  "email": "correo@correo.com",
-  "password": "MiPassword123!",
-  "remember_me": 0
+  "email": "usuario@miempresa.com",
+  "password": "MiPassword123!"
 }
 ```
 </details>
@@ -405,46 +460,53 @@ Una vez registrado y con los requisitos previos configurados en el portal, obten
 ```json
 {
   "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM",
+  "token_id": "f2e1eb82d52213a6b1c0d3e4f5a60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f9",
   "user": {
     "id": 1,
     "type_id": 2,
-    "first_name": "LEWIS",
-    "last_name": "LOPEZ GOMEZ",
-    "email": "gerencia@lopezsoft.net.co",
-    "avatar": "users/1/profile/agente-de-servicio-al-cliente.png",
+    "first_name": "JUAN",
+    "last_name": "PEREZ",
+    "email": "usuario@miempresa.com",
+    "avatar": null,
     "active": 1,
-    "name": "LEWIS LOPEZ GOMEZ",
-    "avatarUrl": "{{URL}}/storage/users/1/profile/agente-de-servicio-al-cliente.png",
+    "name": "JUAN PEREZ",
+    "avatarUrl": null,
     "user_type": {
-      "id": 1,
-      "user_type_name": "ADMINISTRADOR",
-      "type": 1,
+      "id": 2,
+      "user_type_name": "DESARROLLADOR",
+      "type": 2,
       "active": 1
     }
   },
-  "expires_at": "2025-02-02 19:55:42",
-  "message": "Bienvenido a Matias. Su sesión ha sido iniciada con éxito.",
+  "expires_at": "2026-05-02 19:55:42",
+  "message": "Bienvenido. Su sesión ha sido iniciada con éxito.",
   "success": true
 }
 ```
+
+El token vence en `expires_at` (por defecto, 90 días después del login).
 </details>
 
 <details>
-<summary>📦 Ver Respuesta de Credenciales Inválidas (HTTP 401)</summary>
+<summary>📦 Ver Respuestas de Inicio de Sesión Rechazado (HTTP 404)</summary>
+
+Todos los rechazos del login responden **HTTP 404** (no 401):
 
 ```json
 {
-  "message": "Credenciales inválidas",
+  "message": "Credenciales inválidas.",
   "success": false
 }
 ```
+
+Otros mensajes posibles: `El usuario se encuentra inactivo. Comuníquese con el administrador.`, `El correo electrónico no ha sido verificado. Comuníquese con el administrador.`, `No se ha encontrado el perfil de usuario.`, `No se ha encontrado la empresa asociada al usuario.` y `La empresa se encuentra inactiva. Comuníquese con el administrador.` [Ver detalle](/docs/endpoints/intro-auth#autenticacion).
 </details>
 
 ---
 
 ## 🔐 Paso 3: Uso del Token de Acceso {#uso-del-token-de-acceso}
 
-Incluya el token obtenido en todas sus llamadas HTTP a endpoints protegidos.
+Incluya el token obtenido en todas sus llamadas HTTP a endpoints protegidos. Los ejemplos consultan el usuario autenticado con `GET {{URL}}/auth/user` (equivalente a `GET {{URL}}/profile`), que responde con el usuario dentro de `dataRecords.data`.
 
 ### 📄 Formato del Encabezado
 ```http
@@ -466,7 +528,7 @@ const headers = {
    'Authorization': `Bearer ${token}`
 };
 
-axios.get('{{URL}}/v1/user', { headers })
+axios.get('{{URL}}/auth/user', { headers })
 .then(response => {
     console.log(response.data);
 })
@@ -481,7 +543,7 @@ axios.get('{{URL}}/v1/user', { headers })
 ```python
 import requests
 
-url = "{{URL}}/v1/user"
+url = "{{URL}}/auth/user"
 token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM..."
 
 headers = {
@@ -502,7 +564,7 @@ $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM...';
 
 $curl = curl_init();
 curl_setopt_array($curl, array(
-  CURLOPT_URL => "{{URL}}/v1/user",
+  CURLOPT_URL => "{{URL}}/auth/user",
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_CUSTOMREQUEST => "GET",
   CURLOPT_HTTPHEADER => array(
@@ -524,7 +586,7 @@ OkHttpClient client = new OkHttpClient().newBuilder().build();
 String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM...";
 
 Request request = new Request.Builder()
-  .url("{{URL}}/v1/user")
+  .url("{{URL}}/auth/user")
   .method("GET", null)
   .addHeader("Content-Type", "application/json")
   .addHeader("Accept", "application/json")
@@ -537,7 +599,7 @@ Response response = client.newCall(request).execute();
 <TabItem value="csharp" label="C#">
 
 ```csharp
-var client = new RestClient("{{URL}}/v1/user");
+var client = new RestClient("{{URL}}/auth/user");
 var token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM...";
 
 var request = new RestRequest(Method.GET);
@@ -555,7 +617,7 @@ Console.WriteLine(response.Content);
 require 'uri'
 require 'net/http'
 
-url = URI("{{URL}}/v1/user")
+url = URI("{{URL}}/auth/user")
 token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM..."
 
 http = Net::HTTP.new(url.host, url.port)
@@ -583,7 +645,7 @@ import (
 )
 
 func main() {
-  url := "{{URL}}/v1/user"
+  url := "{{URL}}/auth/user"
   token := "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM..."
   
   client := &http.Client {}
@@ -635,13 +697,15 @@ Para invalidar un token activo antes de que venza, envíe una petición **GET** 
 }
 ```
 
-**Respuesta de Error / No Autenticado (HTTP 401):**
+**Respuesta de Error / No Autenticado (HTTP 401):** sin token, o con un token inválido o ya revocado. Este JSON (sin campo `success`) solo se recibe si la petición envía `Accept: application/json`; sin esa cabecera, la respuesta es una redirección (HTTP 302).
+
 ```json
 {
-  "message": "Unauthenticated.",
-  "success": false
+  "message": "Unauthenticated."
 }
 ```
+
+El logout revoca solo el token usado en la petición. Para revocar un Personal Access Token concreto o todos los demás, use [`DELETE /tokens/{id}` o `POST /tokens/revoke-all`](/docs/endpoints/intro-auth#personal-access-tokens).
 </details>
 
 ---
@@ -654,29 +718,66 @@ Una vez completada la autenticación, explore los temas avanzados y recursos cla
 
 :::tip Eventos del Ciclo de Vida
 Los webhooks le permiten recibir notificaciones automáticas y seguras (firmadas con HMAC-SHA256) directamente en su servidor cuando ocurren eventos clave como:
-- **Facturas:** `invoice.created`, `invoice.accepted`, `invoice.rejected`
-- **Notas Crédito:** `credit_note.created`, `credit_note.accepted`
-- **Membresías:** `membership.limit_reached`, `membership.activated`
+- **Documentos electrónicos** (los mismos eventos para facturas, notas, documento soporte, nómina y demás tipos): `document.created`, `document.emitted`, `document.accepted`, `document.rejected`, `document.voided`
+- **Correos:** `email.sent`, `email.delivered`, `email.bounced`, `email.complaint`, `email.opened`, `email.clicked`
+- **Envío masivo:** `bulk.batch.completed`
 
-[📖 Ver documentación de Webhooks y firma HMAC](/docs/endpoints/webhooks)
+Suscribirse a un evento que no está en el catálogo responde 422 (`Evento inválido: <evento>`).
+
+[📖 Ver catálogo completo de eventos](/docs/endpoints/webhooks#eventos-disponibles) · [Firma HMAC](/docs/endpoints/webhooks#seguridad-hmac)
 :::
 
 ### 📊 Límites de Consumo y Membresías {#límites-de-consumo-y-membresías}
 
-Las cuentas cuentan con límites mensuales en la emisión de documentos, envíos de correo y espacio en la nube según su suscripción. Si excede su cupo, la API responderá con un error `402 Payment Required`.
+Cada cuenta tiene una **bolsa de documentos por periodo de suscripción** (normalmente anual, ampliable con recargas), no un cupo mensual. Los correos tienen sus propios topes según el plan: un máximo anual de correos (contado por año calendario, desde el 1 de enero), un máximo de destinatarios por envío y un máximo de reenvíos por documento. Consulte su saldo con `GET /memberships/summary` o el historial de recargas con `GET /memberships/recharges`.
 
 <details>
-<summary>📦 Ver JSON de Error de Límite (HTTP 402)</summary>
+<summary>📦 Ver Respuestas de Límite de Consumo (HTTP 402 / 429 / 413)</summary>
+
+**Sin cupo o membresía inactiva (HTTP 402)** — al enviar un documento:
 
 ```json
 {
-  "error": "Límite de documentos alcanzado",
-  "code": "DOCUMENT_LIMIT_REACHED",
-  "current_usage": 1000,
-  "limit": 1000,
-  "reset_date": "2026-03-01T00:00:00Z"
+  "success": false,
+  "message": "Límite de documentos de la membresía alcanzado o membresía inactiva."
 }
 ```
+
+**Plan FREE: límite diario alcanzado (HTTP 429)** — el plan FREE permite un número de documentos por día (10 por defecto):
+
+```json
+{
+  "success": false,
+  "message": "Límite diario alcanzado. Plan FREE permite 10 documentos por día.",
+  "limit": 10,
+  "consumed_today": 10,
+  "upgrade_url": "https://api.ejemplo.com/upgrade"
+}
+```
+
+**Envío masivo: cupo insuficiente para el lote (HTTP 402):**
+
+```json
+{
+  "success": false,
+  "message": "Cuota insuficiente para procesar el lote completo.",
+  "requested": 250
+}
+```
+
+**Envío masivo: lote mayor que el máximo de su suscripción (HTTP 413):**
+
+```json
+{
+  "success": false,
+  "message": "El lote excede el máximo permitido para tu suscripción.",
+  "max_items": 100,
+  "received": 250,
+  "upgrade_url": "https://api.ejemplo.com/upgrade"
+}
+```
+
+Las respuestas de límite no traen un código de error ni una fecha de reinicio: use `GET /memberships/summary` para conocer el consumo y el saldo.
 </details>
 
 [📖 Consultar consumo en tiempo real](/docs/endpoints/memberships-health#memberships-consumption)

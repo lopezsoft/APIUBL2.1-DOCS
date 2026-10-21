@@ -1,30 +1,35 @@
-# robots.txt - https://docs.matias-api.com
+# MATIAS API — documentación pública
+# Todo el sitio puede leerse e indexarse, incluidos los agentes de IA.
+#
+# Documentación para agentes de IA (Markdown plano):
+#   https://docs.matias-api.com/llms.txt        índice
+#   https://docs.matias-api.com/llms-full.txt   documentación completa
+#   https://docs.matias-api.com/openapi.json    especificación OpenAPI 3
+
 User-agent: *
 Allow: /
 
-# Agentes de IA y Asistentes de Código (Acceso permitido)
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: OAI-SearchBot
-Allow: /
-
+# Rastreadores y asistentes de IA (permitidos de forma explícita)
 User-agent: GPTBot
-Allow: /
-
-User-agent: Claude-Web
-Allow: /
-
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
 User-agent: ClaudeBot
-Allow: /
-
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: Claude-Web
 User-agent: anthropic-ai
-Allow: /
-
 User-agent: PerplexityBot
-Allow: /
-
+User-agent: Perplexity-User
 User-agent: Google-Extended
+User-agent: GoogleOther
+User-agent: Applebot-Extended
+User-agent: CCBot
+User-agent: cohere-ai
+User-agent: Meta-ExternalAgent
+User-agent: MistralAI-User
+User-agent: DuckAssistBot
+User-agent: Amazonbot
+User-agent: Bytespider
 Allow: /
 
 Sitemap: https://docs.matias-api.com/sitemap.xml

@@ -55,7 +55,7 @@ Configura un **Environment** en Postman con las siguientes variables para operar
 
 | Variable | Tipo | Valor Sugerido | Descripción |
 |:---|:---|:---|:---|
-| `url` | default | `https://api-v2.matias-api.com/api/ubl2.1` | URL base de producción. |
+| `url` | default | URL entregada al contratar | URL base de producción (en el sandbox: `https://sandbox-api.matias-api.com/api/ubl2.1`). |
 | `sandbox_url` | default | `https://sandbox-api.matias-api.com/api/ubl2.1` | URL base del Sandbox. |
 | `access_token` | secret | `eyJ...` | Token JWT obtenido en `/auth/login`. |
 | `pat_token` | secret | `1\|eyJ...` | Personal Access Token (PAT) persistente. |

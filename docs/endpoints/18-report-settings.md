@@ -1,6 +1,7 @@
 ---
 sidebar_position: 18
 sidebar_label: 📊 Configuración de Reportes
+description: "Encabezado de reportes y PDF: datos de contacto, logo y configuración por empresa."
 ---
 
 import Tabs from '@theme/Tabs';
@@ -33,9 +34,13 @@ Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
+**Descripción:** Lista, paginados (15 por página), los encabezados de reporte de la empresa. Si la empresa aún no tiene ninguno, el servidor crea uno vacío y lo devuelve, así que la lista nunca llega vacía.
+
 **Parámetros:**
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
+| `id` | query | No | Filtra por el `id` de un encabezado. |
+| `page` | query | No | Número de página (default: `1`). |
 | `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
 <details>
@@ -44,17 +49,25 @@ Content-Type: application/json
 ```json
 {
   "dataRecords": {
+    "current_page": 1,
     "data": [
       {
         "id": 7,
+        "company_id": 120,
         "line1": "<p class=\"ql-align-center\">EMPRESA S.A.S </p><p class=\"ql-align-center\">N.I.T: 999.999.999-2 </p>",
-        "line2": "<p>CRA 15A # 47-24. Dosquebradas - Risaralda CEL: 310-843-5431</p>",
-        "foot": "<p style=\"text-align: center;\">Email: gerencia@lopezsoft.net.co</p>"
+        "line2": "<p>Calle 00 # 00-00. Ciudad Ejemplo - Departamento CEL: 300-000-0000</p>",
+        "foot": "<p style=\"text-align: center;\">Email: contacto@empresa-ejemplo.com</p>",
+        "image": null
       }
-    ]
-  }
+    ],
+    "per_page": 15,
+    "total": 1
+  },
+  "success": true
 }
 ```
+
+El paginador incluye además los campos estándar (`from`, `to`, `last_page`, `links`, etc.).
 
 </details>
 
@@ -83,8 +96,8 @@ import axios from 'axios';
 
 const records = {
   line1: '<p class="ql-align-center">EMPRESA S.A.S </p><p class="ql-align-center">N.I.T: 999.999.999-2 </p><p class="ql-align-center">IVA REGIMEN COMÚN</p>',
-  line2: '<p>CRA 15A # 47-24. Dosquebradas - Risaralda CEL: 310-843-5431</p>',
-  foot: '<p style="text-align: center;">Email: gerencia@lopezsoft.net.co - Sitio web: https://lopezsoft.net.co</p>'
+  line2: '<p>Calle 00 # 00-00. Ciudad Ejemplo - Departamento CEL: 300-000-0000</p>',
+  foot: '<p style="text-align: center;">Email: contacto@empresa-ejemplo.com - Sitio web: https://empresa-ejemplo.com</p>'
 };
 
 const response = await axios.post(`${url}/crud?tbPrefix=T063`, {
@@ -104,8 +117,8 @@ const response = await axios.post(`${url}/crud?tbPrefix=T063`, {
 <?php
 $records = [
     'line1' => '<p class="ql-align-center">EMPRESA S.A.S</p><p class="ql-align-center">N.I.T: 999.999.999-2</p>',
-    'line2' => '<p>CRA 15A # 47-24. Dosquebradas - Risaralda CEL: 310-843-5431</p>',
-    'foot'  => '<p style="text-align: center;">Email: gerencia@lopezsoft.net.co</p>',
+    'line2' => '<p>Calle 00 # 00-00. Ciudad Ejemplo - Departamento CEL: 300-000-0000</p>',
+    'foot'  => '<p style="text-align: center;">Email: contacto@empresa-ejemplo.com</p>',
 ];
 
 $payload = json_encode(['records' => json_encode($records)]);
@@ -134,8 +147,8 @@ import requests
 
 records = {
     "line1": '<p class="ql-align-center">EMPRESA S.A.S</p><p class="ql-align-center">N.I.T: 999.999.999-2</p>',
-    "line2": '<p>CRA 15A # 47-24. Dosquebradas - Risaralda CEL: 310-843-5431</p>',
-    "foot": '<p style="text-align: center;">Email: gerencia@lopezsoft.net.co</p>'
+    "line2": '<p>Calle 00 # 00-00. Ciudad Ejemplo - Departamento CEL: 300-000-0000</p>',
+    "foot": '<p style="text-align: center;">Email: contacto@empresa-ejemplo.com</p>'
 }
 
 response = requests.post(
@@ -157,8 +170,8 @@ using System.Net.Http.Headers;
 
 var records = new {
     line1 = "<p class=\"ql-align-center\">EMPRESA S.A.S</p><p class=\"ql-align-center\">N.I.T: 999.999.999-2</p>",
-    line2 = "<p>CRA 15A # 47-24. Dosquebradas - Risaralda CEL: 310-843-5431</p>",
-    foot = "<p style=\"text-align: center;\">Email: gerencia@lopezsoft.net.co</p>"
+    line2 = "<p>Calle 00 # 00-00. Ciudad Ejemplo - Departamento CEL: 300-000-0000</p>",
+    foot = "<p style=\"text-align: center;\">Email: contacto@empresa-ejemplo.com</p>"
 };
 
 var client = new HttpClient();
@@ -174,8 +187,8 @@ var response = await client.PostAsJsonAsync($"{url}/crud?tbPrefix=T063", new {
 ```javascript
 const records = {
     line1: '<p class="ql-align-center">EMPRESA S.A.S </p><p class="ql-align-center">N.I.T: 999.999.999-2 </p>',
-    line2: '<p>CRA 15A # 47-24. Dosquebradas - Risaralda CEL: 310-843-5431</p>',
-    foot: '<p style="text-align: center;">Email: gerencia@lopezsoft.net.co</p>'
+    line2: '<p>Calle 00 # 00-00. Ciudad Ejemplo - Departamento CEL: 300-000-0000</p>',
+    foot: '<p style="text-align: center;">Email: contacto@empresa-ejemplo.com</p>'
 };
 
 const payload = { records: JSON.stringify(records) };
@@ -195,17 +208,48 @@ pm.request.headers.add({key: 'Content-Type', value: 'application/json'});
 | `foot` | string (HTML) | No | Pie de página del documento (Canales de contacto, web, notas). |
 
 <details>
-<summary>✅ Respuesta Exitosa (HTTP 201)</summary>
+<summary>✅ Respuesta Exitosa (HTTP 200)</summary>
+
+Devuelve la fila creada en `payload`. Si envías `records` como arreglo de objetos, `payload` trae la lista de filas creadas.
 
 ```json
 {
-  "success": true,
-  "message": "Encabezado creado exitosamente",
-  "data": {
-    "id": 7
-  }
+  "message": "Registro creado correctamente.",
+  "payload": {
+    "id": 7,
+    "company_id": 120,
+    "line1": "<p class=\"ql-align-center\">EMPRESA S.A.S</p><p class=\"ql-align-center\">N.I.T: 999.999.999-2</p>",
+    "line2": "<p>Calle 00 # 00-00. Ciudad Ejemplo - Departamento CEL: 300-000-0000</p>",
+    "foot": "<p style=\"text-align: center;\">Email: contacto@empresa-ejemplo.com</p>",
+    "image": null
+  },
+  "success": true
 }
 ```
+
+</details>
+
+<details>
+<summary>📏 Reglas del CRUD genérico (<code>/crud</code>)</summary>
+
+- `company_id` lo fija siempre el servidor con la empresa del token (o del `client_uuid`) y no se puede cambiar. `created_at` y `deleted_at` se ignoran. Si la tabla exige `uuid`, el servidor lo genera, y no se puede cambiar en un `PUT`.
+- `records` debe ser un objeto JSON o un arreglo de objetos. Con un arreglo, cada registro se valida por separado y la respuesta 400 trae el primer error. En un `PUT` con arreglo, cada registro debe incluir su llave primaria.
+- Solo se pueden escribir tablas propias de la empresa. Los catálogos y la configuración del sistema son de solo lectura.
+- Un registro de otra empresa responde igual que uno inexistente (404).
+- Un filtro `where` con condiciones `OR` no amplía el alcance: siempre se filtra por la empresa.
+- Las personas de recepción (`tbPrefix=T005`) no se escriben por el CRUD: se gestionan con `/events/reception-people`. Además, el módulo de recepción exige un plan de pago, también para leerlas: sin él, la respuesta es 403 con `error_code: RECEPTION_NOT_IN_PLAN`.
+
+| HTTP | Mensaje | Causa |
+|---|---|---|
+| 400 | `No se ha especificado el prefijo de la tabla (tbPrefix).` | Falta `tbPrefix`. |
+| 400 | `Debe enviar los registros (records).` | Falta `records` o viene vacío. |
+| 400 | `Cada registro de records debe ser un objeto JSON.` | Un elemento de `records` no es un objeto. |
+| 400 | `Cada registro debe incluir su id.` | `PUT` con arreglo sin la llave primaria en algún registro. |
+| 403 | `La tabla '<tabla>' es de solo lectura: pertenece a la configuración del sistema y no se puede modificar por el CRUD.` | Escritura sobre un catálogo del sistema. |
+| 403 | `La tabla '<tabla>' es de solo lectura por el CRUD: se gestiona con /api/ubl2.1/events/reception-people.` | Escritura sobre `T005`. |
+| 404 | `El prefijo de tabla '<prefijo>' no existe.` | `tbPrefix` desconocido. |
+| 404 | `La tabla '<tabla>' no está disponible en este sistema.` | El prefijo existe pero la tabla no está disponible. |
+| 404 | `Recurso no encontrado.` | El registro no existe o es de otra empresa. |
 
 </details>
 
@@ -226,13 +270,34 @@ Content-Type: application/json
 | `id` | path | ✅ Sí | ID del encabezado a actualizar. |
 | `client_uuid` | query | No | UUID del cliente (Casa de Software). |
 
+**Body (JSON):** `records` como string JSON con los campos a actualizar (`line1`, `line2`, `foot`). Si incluyes `imgdata` para cambiar también el logo, debes enviar `imgname` (ver [Actualizar Logo del Encabezado](#logotipo)).
+
+```json
+{
+  "records": "{\"line1\":\"<p>EMPRESA S.A.S</p>\",\"foot\":\"<p>Gracias por su compra</p>\"}"
+}
+```
+
 <details>
 <summary>✅ Respuesta Exitosa (HTTP 200)</summary>
 
 ```json
 {
-  "success": true,
-  "message": "Encabezado actualizado exitosamente"
+  "success": true
+}
+```
+
+</details>
+
+<details>
+<summary>❌ Registro No Encontrado (HTTP 404)</summary>
+
+El encabezado no existe o no pertenece a la empresa. Si falta `records` o no es un JSON válido, la respuesta es HTTP 422 (`El campo records es requerido` o `El campo records debe ser un JSON válido`).
+
+```json
+{
+  "success": false,
+  "message": "No se encontró el registro con id 7 para la compañía: EMPRESA DE EJEMPLO SAS"
 }
 ```
 
@@ -258,10 +323,23 @@ Content-Type: application/json
 <details>
 <summary>✅ Respuesta Exitosa (HTTP 200)</summary>
 
+La respuesta no incluye el campo `success`:
+
 ```json
 {
-  "success": true,
-  "message": "Encabezado eliminado correctamente"
+  "message": "Configuración eliminada exitosamente"
+}
+```
+
+</details>
+
+<details>
+<summary>❌ Registro No Encontrado (HTTP 404)</summary>
+
+```json
+{
+  "success": false,
+  "message": "No se encontró el registro con id 7 para la compañía: EMPRESA DE EJEMPLO SAS"
 }
 ```
 
@@ -285,8 +363,14 @@ Content-Type: application/json
 **Descripción:** Actualiza el logo asociado a un encabezado de reporte enviando la imagen codificada en **Base64** dentro del objeto `records`.
 
 :::info 💡 Guía para Desarrolladores — Carga de Imagen en Base64
-Convierte la imagen (PNG/JPG) a Base64 con el prefijo Data URI (ej. `data:image/png;base64,...`) y envíala en `imgdata`.
+Convierte la imagen (PNG/JPG) a Base64 con el prefijo Data URI (ej. `data:image/png;base64,...`) y envíala en `imgdata`, junto con `imgname`, el nombre del archivo original (ej. `logo.png`).
 :::
+
+**Propiedades de `records`:**
+| Campo | Tipo | Requerido | Descripción |
+|---|---|---|---|
+| `imgdata` | string | ✅ Sí | Imagen como Data URI en Base64. Se toma lo que sigue a la primera coma. |
+| `imgname` | string | ✅ Sí | Nombre del archivo original. Solo se usa su extensión: `png`, `jpg`, `jpeg`, `gif`, `webp`, `svg`, `jfif`, `bmp` o `ico`; cualquier otra se guarda como `png`. El nombre final del archivo lo asigna el servidor. |
 
 <Tabs>
 <TabItem value="js" label="JavaScript / Node.js" default>
@@ -299,7 +383,7 @@ const imgBuffer = fs.readFileSync('logo.png');
 const base64Img = 'data:image/png;base64,' + imgBuffer.toString('base64');
 
 const response = await axios.put(`${url}/settings/reports/${id}/image`, {
-  records: JSON.stringify({ imgdata: base64Img })
+  records: JSON.stringify({ imgdata: base64Img, imgname: 'logo.png' })
 }, {
   headers: {
     'Authorization': 'Bearer ' + token,
@@ -316,7 +400,10 @@ const response = await axios.put(`${url}/settings/reports/${id}/image`, {
 $imgData = file_get_contents('logo.png');
 $base64Img = 'data:image/png;base64,' . base64_encode($imgData);
 
-$payload = json_encode(['records' => json_encode(['imgdata' => $base64Img])]);
+$payload = json_encode(['records' => json_encode([
+    'imgdata' => $base64Img,
+    'imgname' => 'logo.png',
+])]);
 
 $ch = curl_init("{$url}/settings/reports/{$id}/image");
 curl_setopt_array($ch, [
@@ -346,7 +433,7 @@ with open("logo.png", "rb") as f:
 
 response = requests.put(
     f"{url}/settings/reports/{id}/image",
-    json={"records": json.dumps({"imgdata": b64_img})},
+    json={"records": json.dumps({"imgdata": b64_img, "imgname": "logo.png"})},
     headers={
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json"
@@ -359,7 +446,8 @@ response = requests.put(
 
 ```javascript
 const records = {
-    imgdata: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+    imgdata: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
+    imgname: "logo.png"
 };
 
 const payload = { records: JSON.stringify(records) };
@@ -376,22 +464,34 @@ pm.request.headers.add({key: 'Content-Type', value: 'application/json'});
 
 ```json
 {
-  "success": true,
-  "message": "Logo del encabezado actualizado exitosamente"
+  "success": true
 }
 ```
 
 </details>
 
 <details>
-<summary>❌ Registro No Encontrado (HTTP 404)</summary>
+<summary>❌ Errores</summary>
+
+| HTTP | Mensaje | Causa |
+|---|---|---|
+| 422 | `El campo records es requerido` | Falta `records` (formato estándar de validación, con `errors`). |
+| 422 | `El campo records debe ser un JSON válido` | `records` no es un JSON válido. |
+| 404 | `No se encontró el registro con id <id> para la compañía: <razón social>` | El encabezado no existe o no pertenece a la empresa. |
+| 404 | `La propiedad IMGDATA no está definida.` | `records` no incluye `imgdata`. |
+| 404 | `La cadena base64 de la imagen no es válida.` | `imgdata` viene vacío. |
+| 500 | `Error interno del servidor. La propiedad RECORDS no está definida.` | `records` es un JSON vacío o nulo (por ejemplo `null` o `[]`). |
+| 500 | `Error interno del servidor. ...` | `records` no incluye `imgname`. Envíalo siempre junto con `imgdata`. |
+| 500 | Respuesta `{"success": false, "error": "..."}` | Falló la actualización del registro. |
 
 ```json
 {
   "success": false,
-  "message": "No se encontró el registro con id para la compañía especificada"
+  "message": "No se encontró el registro con id 7 para la compañía: EMPRESA DE EJEMPLO SAS"
 }
 ```
+
+Las respuestas 500 incluyen además un `reference` para que soporte ubique el error.
 
 </details>
 

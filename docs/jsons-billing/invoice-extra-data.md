@@ -6,6 +6,18 @@ sidebar_position: 11
 
 A continuación se muestra un ejemplo de un JSON que representa una factura. Este JSON se puede utilizar para pruebas o para simular una factura real.
 
+El ejemplo trae los tres ámbitos de datos adicionales, ninguno de los cuales viaja a la DIAN:
+
+| Ámbito | Clave en el JSON | En el ejemplo |
+|---|---|---|
+| Documento | `additional_data` | Una sección de centro de costo con 3 campos y una sección sin título con un anticipo (`CURRENCY`) y una orden de servicio |
+| Cliente | `customer.extra_data` | Nº de socio y fecha de vinculación |
+| Línea | `lines[].extra_data` | Lote y fecha de expiración |
+
+:::caution additional_data solo se imprime con la plantilla Preprinted
+Las plantillas Classic, Minimal y Modern aceptan y validan el bloque, pero no lo imprimen en el PDF. Con Preprinted, la sección cuyo título contiene "centro de costo" va al recuadro superior izquierdo y la sección sin título se imprime en el cuerpo del documento, antes del detalle. El campo `Anticipos` también aparece en la fila ANTICIPOS de los totales, solo como información. Ver [`additional_data`](../billing-fields.md#additional_data-).
+:::
+
 ```json title="invoice-extra-data.json"
 {
   "resolution_number": "18764074347312",
@@ -34,7 +46,7 @@ A continuación se muestra un ejemplo de un JSON que representa una factura. Est
     "company_name": "LOPEZ GOMEZ LEWIS OSWALDO",
     "dni": "1063279307",
     "mobile": "3108435423",
-    "email": "lws_1234@hotmail.com",
+    "email": "cliente4@ejemplo.com",
     "address": "Calle 64 #1823",
     "postal_code": "661002",
     "extra_data": [
@@ -48,6 +60,22 @@ A continuación se muestra un ejemplo de un JSON que representa una factura. Est
       }
     ]
   },
+  "additional_data": [
+    {
+      "section": "INFORMACIÓN DEL CENTRO DE COSTO",
+      "fields": [
+        { "title": "Nombre del Centro de Costo", "value": "Sede Norte" },
+        { "title": "Dirección y Teléfono", "value": "Av. Siempre Viva 742 - 601 123 4567" },
+        { "title": "Ciudad", "value": "Bogotá D.C." }
+      ]
+    },
+    {
+      "fields": [
+        { "title": "Anticipos", "value": "150000", "type": "CURRENCY", "align": "RIGHT" },
+        { "title": "Orden de servicio", "value": "OS-2026-0042" }
+      ]
+    }
+  ],
   "lines": [
     {
       "invoiced_quantity": "2",

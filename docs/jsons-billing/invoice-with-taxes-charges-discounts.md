@@ -27,7 +27,7 @@ A continuación se muestra un ejemplo de un JSON que representa una factura con 
     "type_organization_id": 2,
     "company_name": "LOPEZ GOMEZ LEWIS OSWALDO",
     "dni": "1063279307",
-    "email": "lws_1234@hotmail.com",
+    "email": "cliente4@ejemplo.com",
     "postal_code": "661002"
   },
   "lines": [

@@ -3,7 +3,7 @@ id: bulk-documents
 title: Envío Masivo de Documentos (Bulk)
 sidebar_label: Envío Masivo (Bulk)
 sidebar_position: 10
-description: Endpoint para enviar lotes de documentos electrónicos de forma asíncrona. Soporta facturas, notas crédito/débito, documentos soporte, notas de ajuste y documentos POS.
+description: Guía completa del envío masivo asíncrono de documentos electrónicos (facturas, notas crédito/débito, documentos soporte, notas de ajuste y documentos POS) con estados, errores, idempotencia y webhook.
 keywords: [bulk, masivo, lote, batch, factura electrónica, DIAN, API, UBL 2.1]
 ---
 
@@ -13,19 +13,21 @@ import TabItem from '@theme/TabItem';
 # Envío Masivo de Documentos (Bulk)
 
 :::info Versión
-Disponible desde **v2.10.0** · Base path: `/api/ubl2.1/bulk/documents`
+Disponible desde **v2.10.0** · Base path: `/api/ubl2.1/bulk/documents` · Referencia rápida de endpoints: [📦 Envío Masivo (Bulk)](./endpoints/20-bulk-documents.md)
+
+¿Ya integrabas el envío masivo? Revisa [Cambios y compatibilidad](#cambios-y-compatibilidad) 🆕.
 :::
 
 :::warning 🚧 Endpoint en Fase BETA
-El envío masivo de documentos (Bulk) se encuentra actualmente en **Fase BETA**. Aunque es completamente funcional, esto conlleva que los límites de rate limit, las estructuras de respuesta asíncrona, políticas de retención o las ventanas temporales de procesamiento podrían recibir ajustes técnicos orientados a estabilizar la infraestructura. 
+El envío masivo de documentos (Bulk) se encuentra actualmente en **Fase BETA**. Aunque es completamente funcional, esto conlleva que los límites de rate limit, las estructuras de respuesta asíncrona, políticas de retención o las ventanas temporales de procesamiento podrían recibir ajustes técnicos orientados a estabilizar la infraestructura.
 
-Te sugerimos implementar primero tu flujo de integración apoyándote en el ambiente [Sandbox](./sandbox/quickstart) antes de liberar a usuarios finales en producción.
+Te sugerimos implementar primero tu flujo de integración apoyándote en el ambiente [Sandbox](./sandbox/quickstart.md) antes de liberar a usuarios finales en producción.
 :::
 
-:::danger ⚠️ IMPORTANTE: Retención de datos de solo 2 días
-Las tablas de envío masivo son **estrictamente temporales**. Los datos del lote bulk y sus items asociados se **eliminan automáticamente a los 2 días** sin posibilidad de recuperación.
+:::danger ⚠️ IMPORTANTE: el lote se elimina a los 7 días
+Los lotes y sus items son **temporales**. Un lote terminado (`COMPLETED`, `PARTIAL` o `FAILED`) se **elimina por completo a los 7 días de su creación**, sin posibilidad de recuperación. Ver [Retención de datos](#retencion).
 
-Cada item exitoso procesado por la DIAN retorna un **`document_uuid`**. **Debe extraer y almacenar este UUID en su sistema** una vez finalice el lote. Si el lote es purgado y usted no guardó el UUID, **aún podrá consultar el documento generado utilizando el [endpoint de consultas](./endpoints/queries-status#busqueda-listado) con el número y el prefijo**.
+Cada item que llegó a emitirse retorna un **`document_uuid`**. **Extrae y guarda este UUID en tu sistema** mientras el lote se procesa o apenas termine. Si el lote ya se purgó y no guardaste el UUID, **aún puedes consultar el documento con el [endpoint de búsqueda](./endpoints/06-queries-status.md#busqueda-listado) usando el número y el prefijo**.
 :::
 
 El endpoint de envío masivo permite procesar **múltiples documentos electrónicos** en un solo request HTTP. Los documentos se encolan para procesamiento asíncrono y puedes consultar el estado de cada uno individualmente.
@@ -34,31 +36,11 @@ El endpoint de envío masivo permite procesar **múltiples documentos electróni
 
 ## Flujo General
 
-```mermaid
-sequenceDiagram
-    participant C as 🖥️ Cliente
-    participant A as ⚡ API
-    participant Q as 📦 Cola
-    participant D as 🏛️ DIAN
-
-    C->>A: POST /bulk/documents (N docs)
-    A->>A: Validar request + cuota
-    A->>A: Persistir batch + items
-    A-->>C: 201 Created (batch_id)
-    A->>Q: Dispatch N jobs
-
-    loop Por cada documento
-        Q->>A: Procesar item
-        A->>D: Enviar documento UBL 2.1
-        D-->>A: Respuesta DIAN
-        A->>A: Actualizar item status
-    end
-
-    Q->>A: Finalizar batch
-    A->>A: Disparar webhook bulk.batch.completed
-    C->>A: GET /bulk/documents/{batch_id}
-    A-->>C: Estado completo del lote
-```
+1. 🖥️ Tu sistema envía `POST /bulk/documents` con N documentos.
+2. ⚡ La API valida el request y la cuota, registra el lote y sus items y responde `201 Created` con el `batch_id`.
+3. 📦 Cada documento se procesa por separado: se envía a la 🏛️ DIAN en UBL 2.1 y su item se actualiza con la respuesta.
+4. Cuando todos los items terminan, el lote se cierra y se dispara el webhook `bulk.batch.completed`.
+5. Consultas `GET /bulk/documents/{batch_id}` para ver el estado completo del lote.
 
 ---
 
@@ -68,38 +50,66 @@ Todos los endpoints requieren autenticación vía **Bearer Token** (Personal Acc
 
 ```
 Authorization: Bearer {tu-token}
+Accept: application/json
 ```
+
+- **Casas de Software:** agrega `?client_uuid={{client_uuid}}` para crear y consultar lotes en nombre de una empresa cliente. El lote queda asociado a esa empresa y solo se consulta con el mismo `client_uuid`.
+- **`Accept: application/json`:** envíalo siempre. Sin este header, algunos errores (validación, límites) pueden llegar como redirección `302` o como página HTML en lugar de JSON.
+
+:::warning Membresía requerida también para consultar
+Todo el grupo `/bulk` exige una membresía con cupo, no solo el `POST`. Si la empresa agotó su cuota o su membresía está inactiva, **también** `GET /bulk/documents`, `GET /bulk/documents/{batch_id}` y `GET /bulk/documents/{batch_id}/items` responden `402`:
+
+```json
+{
+  "success": false,
+  "message": "Límite de documentos de la membresía alcanzado o membresía inactiva."
+}
+```
+
+Si el `client_uuid` no corresponde a una empresa cliente activa vinculada a tu cuenta, la petición se rechaza antes de llegar al lote (hoy con un `500` y `{"success": false, "message": "Error interno al verificar la membresía."}`). Revisa el `client_uuid` antes de reintentar.
+
+Por eso conviene **guardar el `document_uuid` de cada item mientras el lote se procesa**. Si te quedas sin cupo, consulta tus documentos por `GET /documents` o `GET /status` ([Consultas y Estados](./endpoints/06-queries-status.md)).
+:::
 
 ---
 
 ## Límites por Plan
 
-| Plan | Docs por lote | Rate Limit | Descripción |
+| Plan | Docs por lote | Lotes por minuto | Descripción |
 |------|:------------:|:----------:|-------------|
-| **FREE** | 5 | 1 req/min | Plan gratuito con límite diario |
-| **Pago** | 50 | 10 req/min | Suscripción con cuota finita |
-| **Ilimitado** | 200 | 60 req/min | Plan Servidor / Enterprise |
+| **FREE** | 5 | 1 | Plan gratuito con límite diario |
+| **Pago** | 50 | 10 | Suscripción con cuota finita |
+| **Ilimitado** | 200 | 60 | Plan Servidor / Enterprise |
 
-:::tip Personalizable
-Los topes se configuran por variables de entorno (`BULK_MAX_ITEMS_FREE`, `BULK_MAX_ITEMS_PAID`, `BULK_MAX_ITEMS_UNLIMITED`) y pueden sobreescribirse por `membership_id` específico.
-:::
+- **Tope técnico:** ningún lote puede superar **200 documentos**, sea cual sea el plan.
+- **Docs por lote:** si el lote supera el tope de tu plan, la API responde `413` antes de validar el resto del body.
+- **Lotes por minuto:** el límite se cuenta **por usuario y por empresa**: varios usuarios de la misma empresa comparten el cupo.
+- **Cuota:** el lote completo debe caber en la cuota disponible de la suscripción, descontando los documentos que aún estén pendientes de lotes anteriores. Si no cabe, responde `402` y no se encola ningún documento.
+- **Documentos en proceso:** una empresa puede tener como máximo **1000 documentos en proceso** (en cola o procesándose) a la vez. Por encima responde `429` con `Retry-After`.
+
+Ver [Códigos de Error HTTP](#errores) para el formato de cada respuesta.
 
 ---
 
 ## Tipos de Documento Soportados
 
-| Valor (`kind`) | Descripción | Endpoint unitario equivalente |
-|:--------------:|-------------|-------------------------------|
-| `invoice` | Factura electrónica | `POST /invoices` |
-| `credit_note` | Nota crédito | `POST /credit-notes` |
-| `debit_note` | Nota débito | `POST /debit-notes` |
-| `support_document` | Documento soporte | `POST /support-documents` |
-| `adjustment_note` | Nota de ajuste | `POST /adjustment-notes` |
-| `pos_document` | Documento POS electrónico | `POST /pos-documents` |
+| Valor (`kind`) | Descripción | Endpoint unitario equivalente (`auto-increment`) | Endpoint unitario equivalente (`manual`) |
+|:--------------:|-------------|-------------------------------|-------------------------------|
+| `invoice` | Factura electrónica | `POST /auto-increment/invoices` | `POST /invoice` |
+| `credit_note` | Nota crédito | `POST /auto-increment/credit-notes` | `POST /notes/credit` |
+| `debit_note` | Nota débito | `POST /auto-increment/debit-notes` | `POST /notes/debit` |
+| `support_document` | Documento soporte | `POST /auto-increment/support-documents` | `POST /ds/document` |
+| `adjustment_note` | Nota de ajuste | `POST /auto-increment/adjustment-notes` | `POST /ds/adjustment-note` |
+| `pos_document` | Documento POS | `POST /auto-increment/pos-documents` | `POST /invoice` |
 
-:::note Compatibilidad de payload
-El `payload` de cada documento es **idéntico** al body que usarías en el endpoint unitario correspondiente. Si ya tienes integración con el endpoint unitario, puedes reutilizar el mismo JSON.
-:::
+### Compatibilidad de payload {#compatibilidad-payload}
+
+El `payload` de cada documento usa el **mismo formato JSON** que el body del endpoint unitario equivalente. Si ya tienes integración con el endpoint unitario, puedes reutilizar el mismo JSON. Hay diferencias importantes:
+
+- **El payload no pasa por las validaciones del endpoint unitario.** Al admitir el lote solo se verifica que `payload` sea un objeto JSON. Un dato inválido **no** produce un `422` con `errors`: el lote se acepta y ese item termina `FAILED` con el error que devuelva el procesamiento (ver [Catálogo de `error_code`](#error-code)). Los errores internos (`5xx`) se reintentan antes de quedar `FAILED`.
+- **Valida tu JSON antes de enviarlo masivamente**, por ejemplo probándolo una vez en el endpoint unitario o en el [Sandbox](./sandbox/quickstart.md).
+- **La empresa emisora es siempre la del lote** (la del token y el `client_uuid` del `POST /bulk/documents`). Un `client_uuid` o `companyId` dentro del `payload` se descarta.
+- **`payload.uuid` se reemplaza** por el UUID anti-duplicados del item (ver [`documents[].uuid`](#uuid-anti-duplicados)).
 
 ---
 
@@ -119,24 +129,58 @@ Acepta un lote de documentos para procesamiento asíncrono. Retorna inmediatamen
 |--------|------|:---------:|-------------|
 | `Authorization` | string | ✅ | `Bearer {token}` |
 | `Content-Type` | string | ✅ | `application/json` |
-| `Idempotency-Key` | UUID v4 | ❌ | Clave de idempotencia (válida 24h). Si se reenvía con el mismo payload, retorna el lote original sin reprocesar. |
+| `Accept` | string | Recomendado | `application/json`, para recibir todos los errores en JSON. |
+| `Idempotency-Key` | UUID v4 | ❌ | Clave de idempotencia (máx. 36 caracteres, válida 24 h). Ver [Idempotencia](#idempotencia). |
+
+#### Query Parameters
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|:---------:|-------------|
+| `client_uuid` | UUID | ❌ | Empresa cliente en cuyo nombre se emite el lote (Casas de Software). |
 
 #### Request Body
 
 | Campo | Tipo | Requerido | Descripción |
 |-------|------|:---------:|-------------|
-| `mode` | string | ✅ | `auto-increment` o `manual`. Ver [Modos de envío](#modos-de-envío). |
-| `stop_on_error` | boolean | ❌ | Si `true`, el procesamiento se detiene en el primer error. Default: `false`. |
-| `default_resolution_number` | string | ❌ | Número de resolución por defecto (se inyecta en items que no lo traigan). |
-| `default_prefix` | string | ❌ | Prefijo por defecto (se inyecta en items que no lo traigan). |
-| `documents` | array | ✅ | Array de documentos. Mínimo 1, máximo según plan. |
+| `mode` | string | ✅ | `auto-increment` o `manual`. Ver [Modos de envío](#modos-de-envio). |
+| `stop_on_error` | boolean | ❌ | Si `true`, el primer documento que no termine en `SUCCESS` cancela los items que siguen en cola. Default: `false`. |
+| `default_resolution_number` | string | ❌ | Número de resolución por defecto (máx. 50). Se copia en `payload.resolution_number` de los documentos que no lo traigan. |
+| `default_prefix` | string | ❌ | Prefijo por defecto (máx. 10). Se copia en `payload.prefix` de los documentos que no lo traigan. |
+| `documents` | array | ✅ | Documentos del lote. Mínimo 1; máximo el tope de tu plan y nunca más de 200. |
 | `documents[].kind` | string | ✅ | Tipo de documento. Ver [tipos soportados](#tipos-de-documento-soportados). |
-| `documents[].payload` | object | ✅ | Payload del documento (mismo formato que endpoint unitario). |
-| `documents[].uuid` | UUID v4 | ❌ | UUID precalculado para el documento. |
-| `documents[].client_reference` | string | ❌ | Referencia del cliente para tracking (máx. 64 chars). |
-| `documents[].attachments` | array | ❌ | Archivos adjuntos del documento. |
+| `documents[].payload` | object | ✅ | Body del endpoint unitario equivalente. Ver [Compatibilidad de payload](#compatibilidad-payload). |
+| `documents[].uuid` | UUID | ❌ | UUID anti-duplicados del documento. Debe ser válido y distinto dentro del lote. Ver [UUID anti-duplicados](#uuid-anti-duplicados). |
+| `documents[].client_reference` | string | ❌ | Tu referencia interna para rastrear el documento (máx. 64 caracteres). |
+| `documents[].attachments` | array | ❌ | Adjuntos del documento (máx. 4). Se copian en `payload.attachments` solo si el `payload` no trae adjuntos propios: si `payload.attachments` existe y no está vacío, estos se ignoran. Ver [Adjuntos](#adjuntos). |
+| `documents[].attachments[].filename` | string | ✅ (por adjunto) | Nombre del archivo (máx. 255). |
+| `documents[].attachments[].content` | string | ✅ (por adjunto) | Contenido del archivo en base64. |
+| `documents[].attachments[].content_type` | string | ❌ | Tipo MIME (máx. 100). |
+
+#### Adjuntos {#adjuntos}
+
+- Los adjuntos de `documents[].attachments` viajan dentro del `payload` (`payload.attachments`) y se guardan y vinculan al documento igual que en el endpoint unitario, con la empresa del lote.
+- Si el `payload` ya trae `attachments` con contenido, **manda el del `payload`** y `documents[].attachments` se ignora. Envía los adjuntos en uno solo de los dos lugares.
+- Si el documento se emite pero sus adjuntos no quedan vinculados, el item lleva el warning `ATTACHMENTS_NOT_LINKED` (ver [El campo `response`](#campo-response)).
+
+:::warning Cada documento va envuelto en `kind` + `payload`
+Los campos del documento (`type_document_id`, `customer`, `lines`…) van **dentro de `payload`**, nunca directamente en `documents[]`. Un documento sin `kind` o sin `payload` hace que todo el lote se rechace con `422` (`Cada documento debe especificar su tipo (kind).` / `Cada documento debe incluir su payload.`).
+:::
+
+#### UUID anti-duplicados {#uuid-anti-duplicados}
+
+Cada item se emite con un UUID que impide emitir dos veces el mismo documento:
+
+1. `documents[].uuid`, si lo envías.
+2. Si no, `payload.uuid`, solo si es un UUID válido (si no lo es, se ignora).
+3. Si tampoco, el `item_id` del propio item.
+
+- `documents[].uuid` debe ser un UUID válido y no repetirse dentro del lote (sin distinguir mayúsculas). Si no se cumple, **todo el lote** se rechaza con `422` (`El UUID del documento debe ser un UUID v4 válido.` / `El UUID del documento está repetido dentro del lote.`).
+- El UUID se registra antes de transmitir. Si la empresa ya tiene otro documento con ese UUID, el item **no se emite** y termina `FAILED` con `error_code` `DUPLICATE_DOCUMENT_UUID` y el mensaje `El uuid … ya se usó en el documento …. No se emitió de nuevo.`. Su `document_uuid` apunta al documento existente.
+- Si el item falla antes de transmitirse, el UUID queda libre y puedes reenviar el documento con el mismo UUID.
 
 #### Ejemplos de Request
+
+Los payloads de estos ejemplos están **abreviados**: usa el JSON completo del endpoint unitario (ver, por ejemplo, [Factura con varios impuestos](./jsons-billing/invoice-with-taxes.md)).
 
 <Tabs>
 <TabItem value="auto" label="Auto-increment" default>
@@ -150,66 +194,58 @@ Acepta un lote de documentos para procesamiento asíncrono. Retorna inmediatamen
   "documents": [
     {
       "kind": "invoice",
+      "uuid": "6f1c2b9e-3d4a-4e8b-9c71-2a5d8e0f4b13",
       "client_reference": "FACT-001",
       "payload": {
-        "type_document_id": 1,
+        "type_document_id": 7,
+        "operation_type_id": 1,
+        "send_email": 0,
+        "payments": [
+          {
+            "payment_method_id": 1,
+            "means_payment_id": 10,
+            "value_paid": "1190.00"
+          }
+        ],
         "customer": {
-          "identification_number": "900123456",
-          "name": "Cliente Ejemplo S.A.S",
-          "municipality_id": 149,
-          "email": "cliente@ejemplo.com"
+          "dni": "1234567890",
+          "company_name": "CLIENTE DE PRUEBA",
+          "email": "facturacion@ejemplo.com"
         },
+        "lines": [
+          {
+            "invoiced_quantity": "1",
+            "quantity_units_id": "70",
+            "line_extension_amount": "1000.00",
+            "free_of_charge_indicator": false,
+            "description": "Servicio de consultoría",
+            "code": "SRV-001",
+            "price_amount": "1000.00",
+            "base_quantity": "1",
+            "tax_totals": [
+              {
+                "tax_id": "1",
+                "tax_amount": 190.00,
+                "taxable_amount": 1000.00,
+                "percent": 19
+              }
+            ]
+          }
+        ],
         "legal_monetary_totals": {
           "line_extension_amount": "1000.00",
           "tax_exclusive_amount": "1000.00",
           "tax_inclusive_amount": "1190.00",
           "payable_amount": "1190.00"
-        },
-        "invoice_lines": [
-          {
-            "unit_measure_id": 70,
-            "invoiced_quantity": "1",
-            "line_extension_amount": "1000.00",
-            "free_of_charge_indicator": false,
-            "description": "Servicio de consultoría",
-            "code": "SRV-001",
-            "type_item_identification_id": 4,
-            "price_amount": "1000.00",
-            "base_quantity": "1"
-          }
-        ]
+        }
       }
     },
     {
       "kind": "invoice",
       "client_reference": "FACT-002",
       "payload": {
-        "type_document_id": 1,
-        "customer": {
-          "identification_number": "800456789",
-          "name": "Otro Cliente Ltda",
-          "municipality_id": 149,
-          "email": "otro@cliente.com"
-        },
-        "legal_monetary_totals": {
-          "line_extension_amount": "500.00",
-          "tax_exclusive_amount": "500.00",
-          "tax_inclusive_amount": "595.00",
-          "payable_amount": "595.00"
-        },
-        "invoice_lines": [
-          {
-            "unit_measure_id": 70,
-            "invoiced_quantity": "2",
-            "line_extension_amount": "500.00",
-            "free_of_charge_indicator": false,
-            "description": "Producto ejemplo",
-            "code": "PROD-001",
-            "type_item_identification_id": 4,
-            "price_amount": "250.00",
-            "base_quantity": "1"
-          }
-        ]
+        "type_document_id": 7,
+        "...": "resto del payload, igual que en el endpoint unitario"
       }
     }
   ]
@@ -228,11 +264,11 @@ Acepta un lote de documentos para procesamiento asíncrono. Retorna inmediatamen
       "kind": "invoice",
       "client_reference": "FACT-100",
       "payload": {
-        "type_document_id": 1,
+        "type_document_id": 7,
         "resolution_number": "18764002566734",
         "prefix": "SETT",
         "customer": { "...": "payload completo de factura" },
-        "invoice_lines": ["..."]
+        "lines": ["..."]
       }
     },
     {
@@ -240,25 +276,26 @@ Acepta un lote de documentos para procesamiento asíncrono. Retorna inmediatamen
       "client_reference": "NC-100",
       "payload": {
         "type_document_id": 5,
-        "resolution_number": "18764002566734",
+        "resolution_number": "18764002566735",
         "prefix": "NC",
         "billing_reference": {
           "number": "SETT990000001",
-          "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          "date": "2026-06-01",
+          "uuid": "CUFE-de-la-factura-referenciada"
         },
         "customer": { "...": "payload completo de nota crédito" },
-        "invoice_lines": ["..."]
+        "lines": ["..."]
       }
     },
     {
       "kind": "support_document",
       "client_reference": "DS-100",
       "payload": {
-        "type_document_id": 12,
+        "type_document_id": 11,
         "resolution_number": "18764002566999",
         "prefix": "SEDS",
-        "customer": { "...": "payload completo de doc soporte" },
-        "invoice_lines": ["..."]
+        "customer": { "...": "payload completo de documento soporte" },
+        "lines": ["..."]
       }
     }
   ]
@@ -272,7 +309,6 @@ Acepta un lote de documentos para procesamiento asíncrono. Retorna inmediatamen
 
 ```json
 {
-  "success": true,
   "message": "Lote aceptado para procesamiento asíncrono.",
   "batch_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
   "status": "PENDING",
@@ -294,9 +330,19 @@ Acepta un lote de documentos para procesamiento asíncrono. Retorna inmediatamen
       "item_id": "d4e5f6a7-b8c9-d0e1-f2a3-b4c5d6e7f8a9",
       "status": "QUEUED"
     }
-  ]
+  ],
+  "success": true
 }
 ```
+
+| Campo | Descripción |
+|-------|-------------|
+| `batch_id` | UUID del lote. Úsalo para consultar su estado. |
+| `status` | Estado del lote (`PENDING` al crearlo). En un replay idempotente, el estado actual del lote original. |
+| `status_url` | Ruta relativa para consultar el lote. |
+| `received` / `accepted` / `rejected` | Documentos recibidos y aceptados. El lote se acepta completo o se rechaza completo, así que `rejected` siempre es `0`. |
+| `estimated_completion_seconds` | Estimación de segundos hasta que termine el lote, según la cola actual. `0` si el lote ya terminó (replay). |
+| `items[]` | Un registro por documento con su `index` (posición en `documents[]`, desde 0), `client_reference`, `item_id` y `status`. |
 
 ---
 
@@ -306,7 +352,7 @@ Acepta un lote de documentos para procesamiento asíncrono. Retorna inmediatamen
 GET /api/ubl2.1/bulk/documents/{batch_id}
 ```
 
-Retorna el estado completo del lote con los items cargados.
+Retorna el estado completo del lote con todos sus items, ordenados por `index`.
 
 #### Parámetros de ruta
 
@@ -318,58 +364,86 @@ Retorna el estado completo del lote con los items cargados.
 
 ```json
 {
-  "success": true,
   "uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
   "company_id": 1,
   "user_id": 5,
   "mode": "auto-increment",
   "stop_on_error": false,
   "total_items": 2,
-  "succeeded": 2,
-  "failed": 0,
-  "status": "COMPLETED",
-  "idempotency_key": null,
+  "succeeded": 1,
+  "failed": 1,
+  "status": "PARTIAL",
+  "idempotency_key": "550e8400-e29b-41d4-a716-446655440000",
   "finished_at": "2026-06-01T19:31:00.000000Z",
   "created_at": "2026-06-01T19:30:00.000000Z",
   "updated_at": "2026-06-01T19:31:00.000000Z",
+  "batch_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "status_description": "Completado parcialmente",
+  "received": 2,
   "items": [
     {
       "uuid": "c1d2e3f4-a1b2-c3d4-e5f6-a7b8c9d0e1f2",
-      "batch_id": 1,
       "index": 0,
       "kind": "invoice",
       "client_reference": "FACT-001",
-      "document_uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "document_uuid": "3e7a9c51-8b2d-4f6e-a1c4-9d0b2e5f7a38",
       "shipping_history_id": 4200027,
       "status": "SUCCESS",
       "attempts": 1,
-      "response": "{...}",
       "error_code": null,
       "error_message": null,
-      "processed_at": "2026-06-01T19:30:05.000000Z",
       "created_at": "2026-06-01T19:30:00.000000Z",
-      "updated_at": "2026-06-01T19:30:05.000000Z"
+      "updated_at": "2026-06-01T19:30:05.000000Z",
+      "processed_at": "2026-06-01T19:30:05.000000Z",
+      "response": "{\"uuid\":\"3e7a9c51-8b2d-4f6e-a1c4-9d0b2e5f7a38\",\"document_number\":\"SETT990000001\",\"XmlDocumentKey\":\"cf9864294501e8a9578235dd2ab3c4fd\",\"cufe\":\"cf9864294501e8a9578235dd2ab3c4fd\",\"track_id\":null,\"is_valid\":true,\"status_code\":200,\"dian_status_code\":\"00\",\"dian_status\":\"ACCEPTED\",\"errors\":[],\"notifications\":[],\"warnings\":[],\"http_status\":200}",
+      "item_id": "c1d2e3f4-a1b2-c3d4-e5f6-a7b8c9d0e1f2",
+      "kind_description": "Factura electrónica",
+      "status_description": "Exitoso",
+      "document_number": "SETT990000001",
+      "cufe": "cf9864294501e8a9578235dd2ab3c4fd",
+      "track_id": null,
+      "dian_response": {
+        "is_valid": true,
+        "status_code": "00",
+        "status": "ACCEPTED",
+        "errors": [],
+        "notifications": []
+      },
+      "warnings": []
     },
     {
       "uuid": "d4e5f6a7-b8c9-d0e1-f2a3-b4c5d6e7f8a9",
-      "batch_id": 1,
       "index": 1,
       "kind": "invoice",
       "client_reference": "FACT-002",
-      "document_uuid": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
-      "shipping_history_id": 4200028,
-      "status": "SUCCESS",
+      "document_uuid": null,
+      "shipping_history_id": null,
+      "status": "FAILED",
       "attempts": 1,
-      "response": "{...}",
-      "error_code": null,
-      "error_message": null,
-      "processed_at": "2026-06-01T19:30:10.000000Z",
+      "error_code": "404",
+      "error_message": "No se encontró una resolución de facturación activa (resolution_number: 18764002566734, prefix: SETX).",
       "created_at": "2026-06-01T19:30:00.000000Z",
-      "updated_at": "2026-06-01T19:30:10.000000Z"
+      "updated_at": "2026-06-01T19:30:08.000000Z",
+      "processed_at": "2026-06-01T19:30:08.000000Z",
+      "response": null,
+      "item_id": "d4e5f6a7-b8c9-d0e1-f2a3-b4c5d6e7f8a9",
+      "kind_description": "Factura electrónica",
+      "status_description": "Fallido",
+      "error": {
+        "code": "404",
+        "message": "No se encontró una resolución de facturación activa (resolution_number: 18764002566734, prefix: SETX)."
+      }
     }
-  ]
+  ],
+  "success": true
 }
 ```
+
+Ver [Campos de cada item](#campos-item) para el significado de cada campo según el estado.
+
+:::note Lote inexistente
+Si el `batch_id` no existe, ya se purgó o pertenece a otra empresa, la API responde `404` con un único campo `message` (sin `success`). Sin el header `Accept: application/json` la respuesta puede ser una página HTML.
+:::
 
 ---
 
@@ -379,15 +453,15 @@ Retorna el estado completo del lote con los items cargados.
 GET /api/ubl2.1/bulk/documents/{batch_id}/items
 ```
 
-Lista los items de un lote con filtros opcionales y **paginación nativa de Laravel**.
+Lista los items de un lote, ordenados por `index`, con filtros opcionales y paginación estándar (`current_page`, `data`, `per_page`, `total`, `links`…). Cada elemento de `data` tiene los mismos campos que `items[]` en [Consultar Lote](#get-batch-status).
 
 #### Query Parameters
 
 | Parámetro | Tipo | Default | Descripción |
 |-----------|------|:-------:|-------------|
-| `status` | string | — | Filtrar: `QUEUED`, `SUCCESS`, `FAILED`, `REJECTED_BY_DIAN`, `CANCELLED` |
-| `kind` | string | — | Filtrar: `invoice`, `credit_note`, `debit_note`, etc. |
-| `per_page` | integer | `50` | Items por página (máx. 200) |
+| `status` | string | — | Filtrar: `QUEUED`, `PROCESSING`, `SUCCESS`, `FAILED`, `REJECTED_BY_DIAN`, `POSSIBLY_SENT`, `CANCELLED` |
+| `kind` | string | — | Filtrar: `invoice`, `credit_note`, `debit_note`, `support_document`, `adjustment_note`, `pos_document` |
+| `per_page` | integer | `50` | Items por página (de 1 a 200) |
 | `page` | integer | `1` | Número de página |
 
 #### Response `200 OK`
@@ -397,55 +471,56 @@ Lista los items de un lote con filtros opcionales y **paginación nativa de Lara
   "current_page": 1,
   "data": [
     {
-      "uuid": "c1d2e3f4-a1b2-c3d4-e5f6-a7b8c9d0e1f2",
-      "batch_id": 1,
-      "index": 0,
+      "uuid": "e5f6a7b8-c9d0-e1f2-a3b4-c5d6e7f8a9b0",
+      "index": 2,
       "kind": "invoice",
-      "client_reference": "FACT-001",
-      "document_uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-      "shipping_history_id": 4200027,
-      "status": "SUCCESS",
+      "client_reference": "FACT-003",
+      "document_uuid": "8a7b6c5d-4e3f-4a2b-9c1d-0e9f8a7b6c5d",
+      "shipping_history_id": 4200029,
+      "status": "POSSIBLY_SENT",
       "attempts": 1,
-      "response": "{...}",
-      "error_code": null,
-      "error_message": null,
-      "processed_at": "2026-06-01T19:30:05.000000Z",
+      "error_code": "DOCUMENT_POSSIBLY_SENT",
+      "error_message": "La respuesta no trae un resultado DIAN reconocible. Consulte el estado del envío antes de reenviar.",
       "created_at": "2026-06-01T19:30:00.000000Z",
-      "updated_at": "2026-06-01T19:30:05.000000Z"
-    },
-    {
-      "uuid": "d4e5f6a7-b8c9-d0e1-f2a3-b4c5d6e7f8a9",
-      "batch_id": 1,
-      "index": 1,
-      "kind": "invoice",
-      "client_reference": "FACT-002",
-      "document_uuid": null,
-      "shipping_history_id": null,
-      "status": "FAILED",
-      "attempts": 3,
-      "response": null,
-      "error_code": "VALIDATION_ERROR",
-      "error_message": "El NIT del cliente no es válido.",
-      "processed_at": "2026-06-01T19:30:18.000000Z",
-      "created_at": "2026-06-01T19:30:00.000000Z",
-      "updated_at": "2026-06-01T19:30:18.000000Z"
+      "updated_at": "2026-06-01T19:30:40.000000Z",
+      "processed_at": "2026-06-01T19:30:40.000000Z",
+      "response": "{\"uuid\":\"8a7b6c5d-4e3f-4a2b-9c1d-0e9f8a7b6c5d\",\"document_number\":\"SETT990000003\",\"XmlDocumentKey\":null,\"cufe\":null,\"track_id\":null,\"is_valid\":null,\"status_code\":200,\"dian_status_code\":null,\"dian_status\":\"POSSIBLY_SENT\",\"errors\":[],\"notifications\":[],\"warnings\":[],\"http_status\":200}",
+      "item_id": "e5f6a7b8-c9d0-e1f2-a3b4-c5d6e7f8a9b0",
+      "kind_description": "Factura electrónica",
+      "status_description": "Sin respuesta definitiva de la DIAN",
+      "document_number": "SETT990000003",
+      "cufe": null,
+      "track_id": null,
+      "dian_response": {
+        "is_valid": null,
+        "status_code": null,
+        "status": "POSSIBLY_SENT",
+        "errors": [],
+        "notifications": []
+      },
+      "warnings": [],
+      "error": {
+        "code": "DOCUMENT_POSSIBLY_SENT",
+        "message": "El documento pudo llegar a la DIAN sin respuesta definitiva. Consulte su estado con el document_uuid antes de cualquier acción; no lo reenvíe."
+      },
+      "next_action": "CHECK_STATUS"
     }
   ],
-  "first_page_url": "http://apidian.test/api/ubl2.1/bulk/documents/f47ac10b-.../items?page=1",
+  "first_page_url": "https://sandbox-api.matias-api.com/api/ubl2.1/bulk/documents/f47ac10b-58cc-4372-a567-0e02b2c3d479/items?page=1",
   "from": 1,
   "last_page": 1,
-  "last_page_url": "http://apidian.test/api/ubl2.1/bulk/documents/f47ac10b-.../items?page=1",
+  "last_page_url": "https://sandbox-api.matias-api.com/api/ubl2.1/bulk/documents/f47ac10b-58cc-4372-a567-0e02b2c3d479/items?page=1",
   "links": [
     { "url": null, "label": "&laquo; Previous", "active": false },
-    { "url": "...?page=1", "label": "1", "active": true },
+    { "url": "https://sandbox-api.matias-api.com/api/ubl2.1/bulk/documents/f47ac10b-58cc-4372-a567-0e02b2c3d479/items?page=1", "label": "1", "active": true },
     { "url": null, "label": "Next &raquo;", "active": false }
   ],
   "next_page_url": null,
-  "path": "http://apidian.test/api/ubl2.1/bulk/documents/f47ac10b-.../items",
+  "path": "https://sandbox-api.matias-api.com/api/ubl2.1/bulk/documents/f47ac10b-58cc-4372-a567-0e02b2c3d479/items",
   "per_page": 50,
   "prev_page_url": null,
-  "to": 2,
-  "total": 2
+  "to": 1,
+  "total": 1
 }
 ```
 
@@ -457,14 +532,14 @@ Lista los items de un lote con filtros opcionales y **paginación nativa de Lara
 GET /api/ubl2.1/bulk/documents
 ```
 
-Lista todos los lotes de la compañía, ordenados del más reciente al más antiguo. Retorna **paginación nativa de Laravel**.
+Lista los lotes de la compañía, ordenados del más reciente al más antiguo, con paginación estándar. Cada elemento de `data` trae los datos del lote **sin** `batch_id`, `status_description` ni `items` (el identificador del lote es `uuid`).
 
 #### Query Parameters
 
 | Parámetro | Tipo | Default | Descripción |
 |-----------|------|:-------:|-------------|
-| `status` | string | — | Filtrar: `PENDING`, `COMPLETED`, `PARTIAL`, `FAILED` |
-| `per_page` | integer | `15` | Lotes por página |
+| `status` | string | — | Filtrar: `PENDING`, `PROCESSING`, `COMPLETED`, `PARTIAL`, `FAILED` |
+| `per_page` | integer | `15` | Lotes por página (de 1 a 100) |
 | `page` | integer | `1` | Número de página |
 
 #### Response `200 OK`
@@ -504,17 +579,17 @@ Lista todos los lotes de la compañía, ordenados del más reciente al más anti
       "updated_at": "2026-06-01T21:04:45.000000Z"
     }
   ],
-  "first_page_url": "http://apidian.test/api/ubl2.1/bulk/documents?page=1",
+  "first_page_url": "https://sandbox-api.matias-api.com/api/ubl2.1/bulk/documents?page=1",
   "from": 1,
   "last_page": 1,
-  "last_page_url": "http://apidian.test/api/ubl2.1/bulk/documents?page=1",
+  "last_page_url": "https://sandbox-api.matias-api.com/api/ubl2.1/bulk/documents?page=1",
   "links": [
     { "url": null, "label": "&laquo; Previous", "active": false },
-    { "url": "...?page=1", "label": "1", "active": true },
+    { "url": "https://sandbox-api.matias-api.com/api/ubl2.1/bulk/documents?page=1", "label": "1", "active": true },
     { "url": null, "label": "Next &raquo;", "active": false }
   ],
   "next_page_url": null,
-  "path": "http://apidian.test/api/ubl2.1/bulk/documents",
+  "path": "https://sandbox-api.matias-api.com/api/ubl2.1/bulk/documents",
   "per_page": 15,
   "prev_page_url": null,
   "to": 2,
@@ -524,58 +599,207 @@ Lista todos los lotes de la compañía, ordenados del más reciente al más anti
 
 ---
 
-## Referencia de Estados
+## Campos de cada item {#campos-item}
 
-### Estados del Lote (`status`)
+Campos presentes en todos los items:
 
-| Estado | Emoji | Descripción |
-|--------|:-----:|-------------|
-| `PENDING` | ⏳ | Aceptado, no ha comenzado a procesarse |
-| `PROCESSING` | ⚙️ | Al menos un item está siendo procesado |
-| `COMPLETED` | ✅ | Todos los items procesados exitosamente |
-| `PARTIAL` | ⚠️ | Algunos exitosos, algunos fallidos |
-| `FAILED` | ❌ | Todos los items fallaron |
-| `CANCELLED` | 🚫 | Cancelado por `stop_on_error` |
+| Campo | Descripción |
+|-------|-------------|
+| `uuid` / `item_id` | Identificador del item (mismo valor). |
+| `index` | Posición del documento en `documents[]` (desde 0). |
+| `kind` / `kind_description` | Tipo de documento y su descripción legible. |
+| `client_reference` | Tu referencia interna. |
+| `document_uuid` | **UUID del envío del documento: guárdalo.** Es el que usas para consultarlo (`GET /documents/{uuid}`) y, en general, no coincide con el `documents[].uuid` que enviaste. En un item que no llegó a emitirse es el `documents[].uuid` que enviaste, o `null`; en `DUPLICATE_DOCUMENT_UUID`, el del documento que ya existía. |
+| `shipping_history_id` | Identificador numérico interno del envío. Para consultar el documento usa `document_uuid`. |
+| `status` / `status_description` | Estado del item y su descripción legible. Ver [Estados del Item](#estados-item). |
+| `attempts` | Intentos registrados (1 normalmente; hasta 3 con fallos transitorios). |
+| `error_code` / `error_message` | Código y mensaje del error (mensaje truncado a 500 caracteres). Ver [Catálogo de `error_code`](#error-code). |
+| `processed_at`, `created_at`, `updated_at` | Fechas en ISO 8601 (UTC). |
+| `response` | **String** con un JSON de resumen del resultado, o `null` (ver abajo). |
 
-### Estados del Item (`items[].status`)
+Campos adicionales según el estado:
 
-| Estado | Emoji | Descripción |
-|--------|:-----:|-------------|
-| `QUEUED` | 📋 | En cola, pendiente de procesamiento |
-| `PROCESSING` | ⚙️ | Siendo procesado actualmente |
-| `SUCCESS` | ✅ | Procesado exitosamente ante la DIAN |
-| `FAILED` | ❌ | Error en el procesamiento |
-| `REJECTED_BY_DIAN` | 🏛️❌ | Enviado a DIAN pero rechazado |
-| `CANCELLED` | 🚫 | Cancelado por `stop_on_error` |
+| Estado | Campos adicionales |
+|--------|--------------------|
+| `SUCCESS`, `REJECTED_BY_DIAN`, `POSSIBLY_SENT` | `document_number`, `cufe` (CUFE/CUDE), `track_id`, `dian_response` (`is_valid`, `status_code`, `status`, `errors`, `notifications`, o `null`) y `warnings`. |
+| `FAILED`, `REJECTED_BY_DIAN` | `error`: `{ "code": …, "message": … }` con los mismos valores de `error_code` y `error_message`. |
+| `POSSIBLY_SENT` | `error` con `code` (el `error_code`, o `POSSIBLY_SENT`) y un mensaje fijo que indica no reenviar, y `next_action: "CHECK_STATUS"`. |
+
+### El campo `response` {#campo-response}
+
+`response` ya **no** trae el contenido crudo del documento (XML, AttachedDocument, QR o PDF en base64). Es un string JSON con este resumen:
+
+| Clave | Descripción |
+|-------|-------------|
+| `uuid` | UUID del envío del documento (el mismo `document_uuid` del item). |
+| `document_number` | Número del documento (prefijo + consecutivo). |
+| `XmlDocumentKey` / `cufe` | CUFE/CUDE del documento. |
+| `track_id` | Identificador de seguimiento de la DIAN (en habilitación, el ZipKey). |
+| `is_valid` | `true` si la DIAN lo aceptó, `false` si lo rechazó, `null` si no hay resultado definitivo (también en habilitación, donde solo se confirma la recepción). |
+| `status_code` / `http_status` | Código HTTP entero de la emisión (por ejemplo, `200`). |
+| `dian_status_code` | StatusCode de la DIAN (por ejemplo, `"00"` o `"99"`). |
+| `dian_status` | `ACCEPTED`, `RECEIVED`, `REJECTED` o `POSSIBLY_SENT`. |
+| `errors` / `notifications` | Rechazos y notificaciones de la DIAN, por separado: un mensaje de la DIAN que contiene «Notificaci» va a `notifications`; los demás, a `errors`. En un `FAILED` por error HTTP, `errors` trae el mensaje del error. |
+| `warnings` | Avisos del procesamiento (lista de `{ "code", "message" }`). |
+
+Si el item termina `FAILED` por un error `4xx` de la emisión (salvo `408` y `429`), `response` **no** es `null`: trae el resumen con `errors: ["<mensaje del error>"]`, `status_code` y `http_status` iguales a ese código HTTP y `dian_status: null`.
+
+```json
+"{\"uuid\":null,\"document_number\":null,\"XmlDocumentKey\":null,\"cufe\":null,\"track_id\":null,\"is_valid\":null,\"status_code\":422,\"dian_status_code\":null,\"dian_status\":null,\"errors\":[\"Mensaje del error devuelto por la emisión.\"],\"notifications\":[],\"warnings\":[],\"http_status\":422}"
+```
+
+`response` es `null` si el item no se procesó, si el fallo ocurrió fuera de la emisión (por ejemplo, una resolución inexistente, `JOB_FAILED` o `STUCK`), si un error transitorio (`408`, `429`, `5xx`) agotó los 3 intentos, o si es un registro antiguo de gran tamaño. En esos casos el detalle está en `error_code` / `error_message`. El `payload` que enviaste nunca se devuelve. Para descargar XML o PDF usa los endpoints del documento con su `document_uuid` o CUFE ([Descarga de Archivos](./endpoints/06-queries-status.md#descarga-archivos)).
+
+Códigos posibles en `warnings`:
+
+| Código | Significado |
+|--------|-------------|
+| `RECONCILED` | El item se concilió con un envío ya existente de ese mismo documento (no se volvió a emitir). |
+| `ATTACHMENTS_NOT_LINKED` | El documento se emitió pero los adjuntos no quedaron vinculados. |
+| `PDF_NOT_GENERATED` | El documento se emitió pero no se generó el PDF. |
+| `EMAIL_NOT_SENT` | El documento se emitió pero no se envió el correo. |
+| `ATTACHED_DOCUMENT_NOT_GENERATED` | El documento se emitió pero no se generó el AttachedDocument. |
+| `ALREADY_AUTHORIZED_RECOVERED` / `ALREADY_AUTHORIZED_OTHER_CONTENT` | La DIAN ya tenía autorizado ese número; el documento se recuperó o la DIAN tiene autorizado un contenido distinto. |
 
 ---
 
-## Idempotencia
+## Referencia de Estados
 
-El endpoint `POST` soporta idempotencia mediante el header **`Idempotency-Key`**.
+### Estados del Lote (`status`) {#estados-lote}
+
+| Estado | Emoji | Descripción |
+|--------|:-----:|-------------|
+| `PENDING` | ⏳ | Aceptado; ningún item ha terminado todavía. |
+| `PROCESSING` | ⚙️ | Al menos un item terminó y quedan items pendientes. |
+| `COMPLETED` | ✅ | Todos los items terminaron en `SUCCESS`. |
+| `PARTIAL` | ⚠️ | Todos terminaron; al menos uno `SUCCESS` y al menos uno `FAILED`, `REJECTED_BY_DIAN`, `POSSIBLY_SENT` o `CANCELLED`. |
+| `FAILED` | ❌ | Todos terminaron y ninguno quedó en `SUCCESS`. |
+
+- Un lote **nunca queda en `CANCELLED`**: con `stop_on_error` termina en `PARTIAL` o `FAILED`, y son sus items en cola los que quedan `CANCELLED`.
+- Contadores: `succeeded` = items `SUCCESS`; `failed` = items `FAILED` + `REJECTED_BY_DIAN` + `POSSIBLY_SENT`. Los `CANCELLED` no suman en ninguno.
+- Un lote `FAILED` o `PARTIAL` puede tener documentos que sí llegaron a la DIAN (`REJECTED_BY_DIAN`, `POSSIBLY_SENT`): revisa cada item.
+
+### Estados del Item (`items[].status`) {#estados-item}
+
+| Estado | Emoji | Descripción |
+|--------|:-----:|-------------|
+| `QUEUED` | 📋 | En cola. También mientras espera un reintento (`attempts` mayor que 0, con el error del último intento). |
+| `PROCESSING` | ⚙️ | Siendo procesado. |
+| `SUCCESS` | ✅ | La DIAN lo aceptó (en habilitación: lo recibió). |
+| `FAILED` | ❌ | Falló antes de transmitirse a la DIAN. |
+| `REJECTED_BY_DIAN` | 🏛️❌ | Transmitido y rechazado por la DIAN. |
+| `POSSIBLY_SENT` 🆕 | ❓ | La transmisión empezó y no hubo respuesta definitiva de la DIAN. **No lo reenvíes:** consulta su estado. |
+| `CANCELLED` | 🚫 | Cancelado por `stop_on_error` antes de procesarse. |
+
+:::warning `POSSIBLY_SENT`: consultar, nunca reenviar
+El documento pudo quedar autorizado en la DIAN. Reenviarlo con otro número o con otro contenido puede generar un duplicado. Consulta su estado con el `document_uuid` (`GET /documents/{document_uuid}` o `GET /status`, ver [Consultas y Estados](./endpoints/06-queries-status.md#consulta-estados)) y decide según el resultado. `POSSIBLY_SENT` cuenta en `failed` del lote y del webhook y dispara `stop_on_error`.
+
+- Si el item trae `cufe` (`XmlDocumentKey`), consulta el estado directamente en la DIAN con [`POST /status/document/{CUFE}`](./endpoints/06-queries-status.md#consulta-estados). Si ese número se está transmitiendo en otra solicitud, el endpoint responde `409` con `code` `DOCUMENT_IN_TRANSMISSION`: consulta de nuevo en unos instantes.
+- Si `document_uuid` llega `null`, consulta con el UUID anti-duplicados del item (ver [Consultar el documento cuando `document_uuid` es `null`](#document-uuid-null)).
+:::
+
+### Cómo se decide el resultado {#decision-resultado}
+
+El resultado lo decide **la respuesta de la DIAN, no el código HTTP**: un rechazo de la DIAN llega con HTTP 200.
+
+| Respuesta | Estado del item | `dian_response.status` |
+|-----------|-----------------|------------------------|
+| `IsValid` = `true` y `StatusCode` = `00` | `SUCCESS` | `ACCEPTED` |
+| Habilitación: sin `IsValid`, con ZipKey | `SUCCESS` | `RECEIVED` (solo recibido; la validación es asíncrona: consulta `POST /status/zip/{track_id}`) |
+| `IsValid` presente y no válido | `REJECTED_BY_DIAN` | `REJECTED` (`error_code` = StatusCode DIAN) |
+| Respuesta sin resultado DIAN reconocible, o error después de iniciar la transmisión | `POSSIBLY_SENT` | `POSSIBLY_SENT` |
+| Error antes de transmitir | `FAILED` (o reintento si es transitorio) | — |
+
+En habilitación la respuesta no trae el número ni el UUID del envío: el item `SUCCESS` llega con `document_number` en `null` y su `document_uuid` es el `documents[].uuid` que enviaste (o `null` si no lo enviaste). Aun así el documento se puede ubicar con su UUID anti-duplicados (ver abajo).
+
+#### Consultar el documento cuando `document_uuid` es `null` {#document-uuid-null}
+
+Todo item se emite con un [UUID anti-duplicados](#uuid-anti-duplicados), que se registra y se vincula al envío **antes** de transmitir. Por eso, aunque `document_uuid` llegue `null` (en habilitación, o en un `POSSIBLY_SENT` cuya respuesta no trajo el UUID), puedes consultar el documento con [`GET /documents/{uuid}`](./endpoints/06-queries-status.md#busqueda-listado) usando, en este orden:
+
+1. El `documents[].uuid` que enviaste.
+2. Si no lo enviaste, el `payload.uuid` (solo si es un UUID válido).
+3. Si no enviaste ninguno, el `item_id` del item.
+
+`GET /documents/{uuid}` acepta tanto el UUID del envío como el anti-duplicados:
+
+| UUID consultado | `dataRecord` |
+|-----------------|--------------|
+| UUID del envío (`document_uuid`) | El envío del documento (con `is_valid` y `XmlDocumentKey`). |
+| UUID anti-duplicados | El vínculo anti-duplicados; el envío viene en `dataRecord.shipping_history`. |
+| Ninguno de los dos existe | `200` con `dataRecord: null`. |
+
+Enviar siempre `documents[].uuid` simplifica esta búsqueda: es un valor que ya tienes en tu sistema.
+
+### Catálogo de `error_code` {#error-code}
+
+| Estado | `error_code` | Significado | Qué hacer |
+|--------|--------------|-------------|-----------|
+| `FAILED` | Código HTTP como string: `"400"`, `"404"`, `"409"`, `"422"`… | Error del documento o de los datos (por ejemplo, `"404"` cuando no hay resolución activa). | Corregir y reenviar. El UUID anti-duplicados queda libre. |
+| `FAILED` | `"408"`, `"429"`, `"5xx"` | Error transitorio que persistió tras agotar los 3 intentos. | Reenviar. |
+| `FAILED` | `DUPLICATE_DOCUMENT_UUID` | El UUID ya se usó en otro documento de la empresa; no se emitió de nuevo. | Consultar el documento al que apunta `document_uuid`. Si es otro documento, enviar el tuyo con un UUID nuevo. |
+| `FAILED` | `JOB_FAILED` | El procesamiento del item no terminó y no hay envío del documento. | Reenviar sin riesgo: no existe el vínculo anti-duplicados, así que el documento no se transmitió. |
+| `FAILED` | `STUCK` | El item quedó detenido sin transmisión y se cerró en la conciliación (ver [Items detenidos](#items-detenidos)). | Reenviar sin riesgo, por la misma razón que `JOB_FAILED`. |
+| `FAILED` | Otro identificador técnico (código o tipo de la excepción) | Error interno sin código HTTP asociado. | Reenviar; si se repite, reportarlo a soporte con el `item_id`. |
+| `REJECTED_BY_DIAN` | StatusCode de la DIAN (por ejemplo, `"99"`) o `DIAN` | Rechazo de la DIAN. `DIAN` aparece cuando la respuesta no trae StatusCode o cuando el item se concilió con un envío rechazado. | Corregir según `dian_response.errors`. |
+| `POSSIBLY_SENT` | `DOCUMENT_POSSIBLY_SENT` | La transmisión empezó y no hubo respuesta definitiva. | **No reenviar.** Consultar el estado. |
+| `POSSIBLY_SENT` | `DOCUMENT_IN_TRANSMISSION` | Otro proceso estaba transmitiendo ese mismo número. | **No reenviar.** Consultar el estado. |
+| `POSSIBLY_SENT` | `DOCUMENT_IN_VALIDATION` | La DIAN aún valida un envío anterior del mismo número (StatusCode 98). | **No reenviar.** Consultar el estado. |
+
+:::note Cambio reciente
+Los casos `DOCUMENT_IN_TRANSMISSION` y `DOCUMENT_IN_VALIDATION` (un `409` del pipeline unitario) antes terminaban `FAILED`. Ahora terminan `POSSIBLY_SENT`, porque ese número puede quedar autorizado en la DIAN.
+:::
+
+### Reintentos automáticos {#reintentos}
+
+- Solo se reintentan los resultados transitorios **`408`, `429` y `5xx`**: hasta **3 intentos**, con 30 segundos de espera entre intentos. Mientras espera, el item vuelve a `QUEUED` con `attempts` mayor que 0 y el `error_code` / `error_message` del último intento.
+- Los demás errores `4xx` no se reintentan: el item queda `FAILED` de inmediato.
+- Un documento cuya transmisión ya empezó nunca se reemite. Si la API no pudo confirmar en la DIAN el estado de un envío anterior (`503`), en el siguiente intento el item se concilia con ese envío: normalmente termina `POSSIBLY_SENT` (`DOCUMENT_POSSIBLY_SENT`, warning `RECONCILED`); termina `SUCCESS` si el envío ya quedó válido, o `REJECTED_BY_DIAN` (`error_code` `DIAN`) si consta como rechazado.
+
+### Items detenidos y conciliación automática {#items-detenidos}
+
+Si el procesamiento de un item muere (por ejemplo, se detiene el proceso que lo atendía), la API lo resuelve sola. La revisión corre **cada 10 minutos**:
+
+- Un item que lleva **más de 30 minutos** en `PROCESSING` sin cambios se concilia con lo que conste de su envío. Termina `SUCCESS`, `REJECTED_BY_DIAN` (`error_code` `DIAN`) o `POSSIBLY_SENT`, con el warning `RECONCILED`, o `FAILED` con `STUCK` si nunca llegó a transmitirse.
+- Un item que sigue en `QUEUED` **más de 6 horas** se vuelve a despachar. No se emite dos veces: el item se reclama de forma atómica.
+- Nunca se reemite un documento que ya se transmitió.
+
+En la práctica, cuando falla el procesamiento, un lote puede quedarse en `PROCESSING` **unos 40 minutos** antes de cerrarse. Si haces polling, no lo des por perdido antes de ese tiempo.
+
+---
+
+## Idempotencia {#idempotencia}
+
+El endpoint `POST` soporta idempotencia mediante el header **`Idempotency-Key`** (un UUID v4, máximo 36 caracteres).
 
 | Escenario | Resultado |
 |-----------|-----------|
-| Primera vez con `Idempotency-Key` | Se crea el lote normalmente (201) |
-| Mismo key + mismo payload | Se retorna el lote original sin reprocesar (201) |
-| Mismo key + payload distinto | Error `409 Conflict` |
-| Sin header | Cada request crea un lote nuevo |
+| Primera vez con `Idempotency-Key` | Se crea el lote normalmente (`201`). |
+| Mismo key + mismo body | Se retorna el lote original con su estado actual, sin reprocesar (`201`; `estimated_completion_seconds` es `0` si ya terminó). |
+| Mismo key + body distinto | Error `409 Conflict`. |
+| Key de más de 36 caracteres | Error `422`. |
+| Sin header | Cada request crea un lote nuevo. |
+
+- La comparación se hace sobre el **body exacto** (huella SHA-256 de los bytes recibidos): cualquier cambio, incluso de espacios u orden de claves, cuenta como body distinto. Reenvía exactamente los mismos bytes.
+- Ante un `429` o un error de red, reintenta con el **mismo** `Idempotency-Key` y el mismo body: si el lote ya se había creado, recibes el original en lugar de un duplicado.
 
 :::warning Vigencia
-El `Idempotency-Key` tiene una validez de **24 horas**. Después de ese período, el mismo key puede reutilizarse.
+El `Idempotency-Key` tiene una validez de **24 horas** desde la creación del lote. Después de ese período, la key se libera y el mismo valor crea un lote nuevo.
 :::
 
 ---
 
-## Modos de Envío
+## Modos de Envío {#modos-de-envio}
 
 ### `auto-increment`
 
-El sistema asigna automáticamente el número de documento a partir de la resolución activa.
+El sistema asigna automáticamente el número de documento a partir de la resolución.
 
-- Usa `default_resolution_number` y `default_prefix` a nivel de lote, o `resolution_number` y `prefix` en cada `payload`.
-- Garantiza consecutivos sin huecos usando `lockForUpdate()`.
-- Si un item falla, el consecutivo **no se pierde** (se marca como consumido).
+- La resolución se busca por `resolution_number` + `prefix` (del `payload`, o de `default_resolution_number` / `default_prefix` del lote) y debe estar **activa**. Verifica además que esté vigente: en bulk no se valida su rango de fechas.
+- Si no existe una resolución activa con esos datos, el item termina `FAILED` con `error_code` `"404"` y el mensaje `No se encontró una resolución de facturación activa (resolution_number: …, prefix: …).`.
+- Un `document_number` enviado en el `payload` **se sobrescribe** con el consecutivo asignado.
+- **Consecutivos en fallos:**
+  - Si el item falla **antes de transmitirse**, la reserva de su número se libera. El siguiente número se calcula como el mayor reservado + 1, así que el número liberado solo se reutiliza si seguía siendo el último de la resolución; si ya se reservaron números posteriores, queda un hueco en la numeración.
+  - Si la transmisión ya empezó (`REJECTED_BY_DIAN`, `POSSIBLY_SENT`), el número queda asociado a ese documento.
 
 ### `manual`
 
@@ -588,20 +812,39 @@ Cada documento debe traer su propio `document_number` en el `payload`. El sistem
 | Valor | Comportamiento |
 |:-----:|----------------|
 | `false` | Todos los documentos se procesan independientemente. Los fallos no afectan a los demás. |
-| `true` | Si un documento falla, los items restantes (`QUEUED`) se cancelan con status `CANCELLED`. |
+| `true` | El primer documento que termine en un estado distinto de `SUCCESS` (`FAILED`, `REJECTED_BY_DIAN` o `POSSIBLY_SENT`) cancela los items que siguen en cola (`CANCELLED`). Los items que ya se estaban procesando terminan normalmente. El lote termina en `PARTIAL` o `FAILED`. |
 
 ---
 
-## Códigos de Error HTTP
+## Códigos de Error HTTP {#errores}
 
 | HTTP | Causa | Descripción |
 |:----:|-------|-------------|
-| `201` | ✅ Éxito | Lote aceptado para procesamiento |
-| `402` | Cuota insuficiente | La suscripción no tiene cuota suficiente para todo el lote |
-| `409` | Conflicto idempotencia | `Idempotency-Key` reutilizado con payload distinto |
-| `413` | Lote muy grande | El número de documentos excede el máximo del plan |
-| `422` | Validación | El request no cumple el esquema de validación |
-| `429` | Rate limit | Se excedió el número de requests por minuto |
+| `201` | ✅ Éxito | Lote aceptado (también en un replay idempotente). |
+| `402` | Membresía o cuota | Membresía sin cupo o inactiva, o cuota insuficiente para el lote completo. |
+| `404` | Lote no encontrado | En las consultas: el lote no existe, ya se purgó o pertenece a otra empresa. |
+| `409` | Conflicto idempotencia | `Idempotency-Key` reutilizado con un body distinto. |
+| `413` | Lote muy grande | El número de documentos excede el máximo de tu plan. Se valida antes que el esquema. |
+| `422` | Validación | El request no cumple el esquema, el `Idempotency-Key` supera 36 caracteres, o `documents` llega vacío. |
+| `429` | Límite de frecuencia o de carga | Lotes por minuto excedidos, demasiados documentos en proceso u otro lote de la empresa en admisión. |
+
+### Orden de los controles en `POST /bulk/documents` {#orden-controles}
+
+La API aplica los controles en este orden y responde con el primero que falla:
+
+1. `429`: lotes por minuto (por usuario y por empresa). El intento **se cuenta aunque la petición falle después**.
+2. `402`: membresía sin cupo o inactiva.
+3. `422` `Compañía o lote inválido.` si `documents` está vacío o no es un array; luego `413` por el tope del plan y `402` por cuota insuficiente (con `requested`).
+4. `422`: esquema del request.
+5. `422`: `Idempotency-Key` de más de 36 caracteres.
+6. `429`: otro lote de la empresa en admisión (la API espera hasta 5 segundos antes de responder).
+7. Replay idempotente: `201` con el lote original, o `409` si el body difiere.
+8. `429`: demasiados documentos en proceso.
+9. `402`: cuota revalidada (solo `message`).
+
+:::warning Un reintento idempotente también pasa por los controles
+Reintentar con el mismo `Idempotency-Key` consume cupo de lotes por minuto y pasa por membresía, tope del plan, cuota y esquema **antes** de devolver el lote original. Por ejemplo, si la cuota se agotó entretanto, recibes `402` aunque el lote ya exista. Además, la cuota disponible descuenta los documentos aún pendientes de lotes en curso, incluido el propio lote original: mientras ese lote se procesa, el replay puede recibir `402` si lo que queda de cuota no alcanza para volver a cubrir el lote completo. Guarda el `batch_id` del primer `201` para no depender del replay.
+:::
 
 <Tabs>
 <TabItem value="413" label="Error 413" default>
@@ -611,12 +854,24 @@ Cada documento debe traer su propio `document_number` en el `payload`. El sistem
   "success": false,
   "message": "El lote excede el máximo permitido para tu suscripción.",
   "max_items": 50,
-  "received": 75
+  "received": 75,
+  "upgrade_url": "https://sandbox-api.matias-api.com/upgrade"
 }
 ```
 
+Topes por plan: FREE 5, Pago 50, Ilimitado 200.
+
 </TabItem>
 <TabItem value="402" label="Error 402">
+
+La API responde `402` en tres formas:
+
+```json
+{
+  "success": false,
+  "message": "Límite de documentos de la membresía alcanzado o membresía inactiva."
+}
+```
 
 ```json
 {
@@ -626,13 +881,22 @@ Cada documento debe traer su propio `document_number` en el `payload`. El sistem
 }
 ```
 
-</TabItem>
-<TabItem value="422" label="Error 422">
+Al revalidar la cuota justo antes de crear el lote (descontando los documentos pendientes de lotes anteriores), la respuesta trae solo `message`:
 
 ```json
 {
-  "success": false,
-  "message": "Error de validación de datos.",
+  "message": "Cuota insuficiente para procesar el lote completo."
+}
+```
+
+</TabItem>
+<TabItem value="422" label="Error 422">
+
+Errores de esquema, con el formato estándar de validación (`message` con el primer error y `errors` por campo; sin `success`):
+
+```json
+{
+  "message": "El campo mode es obligatorio (auto-increment o manual). (and 1 more error)",
   "errors": {
     "mode": ["El campo mode es obligatorio (auto-increment o manual)."],
     "documents.0.kind": [
@@ -642,37 +906,118 @@ Cada documento debe traer su propio `document_number` en el `payload`. El sistem
 }
 ```
 
+Otros mensajes de esquema:
+
+| Regla | Mensaje |
+|-------|---------|
+| `mode` con un valor distinto de `auto-increment` o `manual` | `El campo mode debe ser auto-increment o manual.` (el de «obligatorio» solo sale cuando falta) |
+| `payload` que no es un objeto JSON | `El payload de cada documento debe ser un objeto JSON.` |
+| `uuid` no válido / repetido en el lote | `El UUID del documento debe ser un UUID v4 válido.` / `El UUID del documento está repetido dentro del lote.` |
+| Más de 4 adjuntos | `Cada documento admite máximo 4 adjuntos.` |
+| Adjunto sin `filename` / sin `content` | `Cada adjunto debe incluir filename.` / `Cada adjunto debe incluir content (base64).` |
+| `client_reference` de más de 64 caracteres | `La referencia del cliente no puede exceder 64 caracteres.` |
+| Más de 200 documentos | `El lote no puede contener más de 200 documentos.` (solo cuando el tope del plan no lo frena antes con `413`) |
+| `content_type` de más de 100, `filename` de más de 255, `default_resolution_number` de más de 50, `default_prefix` de más de 10, o `stop_on_error` no booleano | Mensaje estándar de validación (longitud máxima o tipo). |
+
+`Idempotency-Key` de más de 36 caracteres (solo `message`):
+
+```json
+{
+  "message": "Idempotency-Key no puede superar 36 caracteres (use un UUID v4)."
+}
+```
+
+`documents` vacío o ausente (se valida antes que el esquema):
+
+```json
+{
+  "success": false,
+  "message": "Compañía o lote inválido."
+}
+```
+
+Según el entorno, un `documents` vacío también puede llegar como error de esquema (`Debe incluir al menos un documento en el lote.`).
+
 </TabItem>
 <TabItem value="409" label="Error 409">
 
 ```json
 {
-  "success": false,
   "message": "Idempotency-Key reutilizado con payload distinto."
 }
 ```
+
+</TabItem>
+<TabItem value="429" label="Error 429">
+
+**Lotes por minuto.** En el plan FREE la respuesta **no trae `Retry-After`** ni `X-RateLimit-Reset`: espera **60 segundos** (la ventana es de 1 minuto). Los `X-RateLimit-Limit` / `X-RateLimit-Remaining` que acompañen este `429` corresponden al límite general de la API, no al de lotes por minuto.
+
+```json
+{
+  "success": false,
+  "message": "Plan FREE: máximo 1 lote bulk por minuto. Actualice su plan.",
+  "upgrade_url": "https://sandbox-api.matias-api.com/upgrade"
+}
+```
+
+En los planes de pago e ilimitado, la respuesta estándar de límite de frecuencia, con los headers `Retry-After`, `X-RateLimit-Limit`, `X-RateLimit-Remaining` y `X-RateLimit-Reset`. Las respuestas correctas también traen `X-RateLimit-Limit` y `X-RateLimit-Remaining`, útiles para dosificar los envíos.
+
+```json
+{
+  "message": "Too Many Attempts."
+}
+```
+
+**Demasiados documentos en proceso.** `Retry-After` estima en segundos cuánto tarda la cola en drenar los documentos que sobran (excedente × ~6 s ÷ procesos que atienden la cola, mínimo 1).
+
+```json
+{
+  "message": "La empresa ya tiene 980 documentos en proceso y el máximo simultáneo es 1000. Reintente más tarde."
+}
+```
+
+**Otro lote de la misma empresa en admisión.** La API espera hasta 5 segundos a que termine la admisión del otro lote y, si no termina, responde con `Retry-After: 5`.
+
+```json
+{
+  "message": "Hay otro lote de esta empresa en admisión. Reintente en unos segundos."
+}
+```
+
+Espera los segundos de `Retry-After` (60 en el plan FREE) y reintenta con el mismo `Idempotency-Key`.
 
 </TabItem>
 </Tabs>
 
 ---
 
-## Webhook
+## Webhook {#webhook}
 
-Cuando un lote finaliza (todos los items en estado terminal), se dispara el evento **`bulk.batch.completed`**:
+Cuando un lote finaliza (todos sus items en estado terminal), se dispara **una sola vez** el evento **`bulk.batch.completed`**. Llega con el sobre estándar de los webhooks:
 
 ```json
 {
-  "event": "bulk.batch.completed",
+  "id": "evt_aB3dE5fG7hJ9kL1mN3pQ5rS7",
+  "type": "bulk.batch.completed",
+  "created_at": "2026-06-01T19:31:01+00:00",
+  "api_version": "3.0",
   "data": {
+    "object": "document_batch",
     "batch_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-    "status": "COMPLETED",
-    "succeeded": 10,
-    "failed": 0,
+    "status": "PARTIAL",
+    "total_items": 10,
+    "succeeded": 9,
+    "failed": 1,
     "finished_at": "2026-06-01T19:31:00+00:00"
   }
 }
 ```
+
+- La clave del evento es `type` (no `event`).
+- `failed` incluye los items `REJECTED_BY_DIAN` y `POSSIBLY_SENT`.
+- No trae datos de los documentos: consulta el lote (`GET /bulk/documents/{batch_id}`) para el detalle de cada item.
+- Para recibirlo, suscribe un webhook al evento `bulk.batch.completed`. Es un evento válido aunque `GET /webhooks/events` no lo liste.
+- Se firma y se reintenta igual que el resto de eventos: ver [Seguridad HMAC](./endpoints/10-webhooks.md#seguridad-hmac) y [Reintentos automáticos](./endpoints/10-webhooks.md#reintentos).
 
 ---
 
@@ -681,9 +1026,10 @@ Cuando un lote finaliza (todos los items en estado terminal), se dispara el even
 ### Paso 1: Enviar el lote
 
 ```bash
-curl -X POST https://tu-api.com/api/ubl2.1/bulk/documents \
+curl -X POST "{{url}}/bulk/documents?client_uuid={{client_uuid}}" \
   -H "Authorization: Bearer {token}" \
   -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
   -H "Idempotency-Key: 550e8400-e29b-41d4-a716-446655440000" \
   -d '{
     "mode": "auto-increment",
@@ -692,109 +1038,127 @@ curl -X POST https://tu-api.com/api/ubl2.1/bulk/documents \
     "documents": [
       {
         "kind": "invoice",
+        "uuid": "6f1c2b9e-3d4a-4e8b-9c71-2a5d8e0f4b13",
         "client_reference": "MI-REF-001",
-        "payload": { "...payload completo de factura..." }
+        "payload": { "type_document_id": 7, "...": "payload completo de factura" }
       },
       {
         "kind": "invoice",
+        "uuid": "0d9e8f7a-6b5c-4d3e-8f2a-1b0c9d8e7f6a",
         "client_reference": "MI-REF-002",
-        "payload": { "...payload completo de factura..." }
+        "payload": { "type_document_id": 7, "...": "payload completo de factura" }
       }
     ]
   }'
 ```
 
-> **Respuesta:** `201 Created` con `batch_id`
+> **Respuesta:** `201 Created` con `batch_id`. Omite `?client_uuid=` si emites para tu propia empresa.
 
 ### Paso 2: Polling del estado
 
 Espera unos segundos (el `estimated_completion_seconds` te da una estimación) y luego consulta:
 
 ```bash
-curl -X GET https://tu-api.com/api/ubl2.1/bulk/documents/{batch_id} \
-  -H "Authorization: Bearer {token}"
+curl -X GET "{{url}}/bulk/documents/{batch_id}?client_uuid={{client_uuid}}" \
+  -H "Authorization: Bearer {token}" \
+  -H "Accept: application/json"
 ```
 
-> Repite hasta que `status` sea `COMPLETED`, `PARTIAL` o `FAILED`.
+> Repite hasta que `status` sea `COMPLETED`, `PARTIAL` o `FAILED`, o suscríbete al [webhook](#webhook) `bulk.batch.completed`.
 
 ### Paso 3: Guardar los `document_uuid`
 
-Una vez el lote esté completo, extraiga y persista el `document_uuid` de cada item exitoso. Este UUID es la referencia permanente del documento en el sistema.
+Guarda el `document_uuid` de **cada item que lo tenga**, no solo de los `SUCCESS`: los `REJECTED_BY_DIAN` y `POSSIBLY_SENT` también corresponden a documentos que llegaron a la DIAN. Este UUID es la referencia permanente del documento.
 
 ```javascript
 // Ejemplo: extraer UUIDs del response
-const completedBatch = await response.json();
-const documentUuids = completedBatch.items
-  .filter(item => item.status === 'SUCCESS')
+const batch = await response.json();
+const documents = batch.items
+  .filter(item => item.document_uuid)
   .map(item => ({
-    document_uuid: item.document_uuid,      // ← GUARDAR en su BD
-    client_reference: item.client_reference  // ← Su referencia interna
+    document_uuid: item.document_uuid,       // ← GUARDAR en su BD
+    client_reference: item.client_reference, // ← Su referencia interna
+    status: item.status,
+    document_number: item.document_number ?? null,
+    cufe: item.cufe ?? null
   }));
 
 // Persistir en su sistema para consultas futuras
-await saveToDatabase(documentUuids);
+await saveToDatabase(documents);
+
+// Documentos sin respuesta definitiva: consultar su estado, nunca reenviar
+const toCheck = batch.items.filter(item => item.next_action === 'CHECK_STATUS');
 ```
 
-### Paso 4: Consultar errores (si los hay)
+### Paso 4: Revisar los que no terminaron en `SUCCESS`
 
 ```bash
-curl -X GET "https://tu-api.com/api/ubl2.1/bulk/documents/{batch_id}/items?status=FAILED" \
-  -H "Authorization: Bearer {token}"
+curl -X GET "{{url}}/bulk/documents/{batch_id}/items?status=FAILED&client_uuid={{client_uuid}}" \
+  -H "Authorization: Bearer {token}" \
+  -H "Accept: application/json"
 ```
+
+Repite con `status=REJECTED_BY_DIAN` y `status=POSSIBLY_SENT`:
+
+- **`FAILED`:** corrige el documento según `error_code` / `error_message` y reenvíalo en un lote nuevo. Si no llegó a transmitirse, puedes usar el mismo `uuid`.
+- **`REJECTED_BY_DIAN`:** revisa `dian_response.errors` y corrige el documento.
+- **`POSSIBLY_SENT`:** consulta el estado con el `document_uuid` antes de cualquier acción; **no lo reenvíes**.
 
 ---
 
-## Retención y Mantenimiento de Datos {#retencion}
+## Retención de Datos {#retencion}
 
-Las tablas de envío masivo (`document_batches` y `document_batch_items`) son **tablas de orquestación temporal**. Los documentos electrónicos reales se persisten en `shipping_history` a través del pipeline unitario. Por lo tanto, los datos bulk se purgan agresivamente.
+El lote es solo un mecanismo de carga masiva: cada documento se emite y se conserva individualmente, igual que en el endpoint unitario. Por eso los datos del lote se limpian pronto.
 
-### Política de Retención
+| Qué | Cuándo | Efecto |
+|-----|:------:|--------|
+| `payload` de items `SUCCESS` | **1 día** después de procesado | Se vacía. El resumen del item (`document_uuid`, `document_number`, `cufe`, `dian_response`, `error`…) se conserva. |
+| `payload` de items `FAILED`, `REJECTED_BY_DIAN` y `CANCELLED` | **2 días** después de procesado | Se vacía. El resumen del item se conserva. |
+| Items `POSSIBLY_SENT` | — | No se limpian antes de la purga del lote. |
+| Lote completo (lote + items) | **7 días** desde la creación del lote | Se elimina, solo si el lote terminó (`COMPLETED`, `PARTIAL` o `FAILED`). |
 
-```mermaid
-graph LR
-    A["📄 Procesado OK"] -->|1 día| B["🧹 payload/response → null"]
-    C["❌ Error"] -->|2 días| B
-    B --> D["🗑️ batch + items eliminados"]
-    style A fill:#4ade80,color:#000
-    style C fill:#f87171,color:#000
-    style B fill:#facc15,color:#000
-    style D fill:#94a3b8,color:#000
-```
-
-| Resultado | Acción | Umbral |
-|:---------:|--------|:------:|
-| ✅ **Exitoso** | Limpia `payload` y `response` | **1 día** |
-| ❌ **Fallido** | Limpia `payload` y `response` | **2 días** |
-| 🗑️ **Todos** | Elimina batch + items | **2 días** |
-
-:::info ¿Por qué tan agresivo?
-El bulk es solo un mecanismo de carga masiva. Cada documento se valida y almacena individualmente en `shipping_history` a través del pipeline unitario. Las tablas bulk no contienen datos que no existan ya en las tablas principales del sistema.
-:::
-
-### Comando Artisan
-
-```bash
-# Simular sin modificar datos
-php artisan bulk:prune --dry-run
-
-# Ejecutar con defaults (éxito: 1 día, error: 2 días, purge: 2 días)
-php artisan bulk:prune
-```
-
-Se ejecuta automáticamente cada día a las **4:45 AM** (hora Colombia).
+- El `payload` nunca se expone por la API; su limpieza no cambia lo que ves en las consultas.
+- Hasta la purga del lote, sus items siguen disponibles en `GET /bulk/documents/{batch_id}` y en `/items`. Después, el endpoint responde `404`: consulta los documentos por su `document_uuid`, o por número y prefijo con [Búsqueda y Listado](./endpoints/06-queries-status.md#busqueda-listado).
 
 ---
 
 ## Notas Técnicas
 
 :::info Para desarrolladores
-- Cada item se procesa en un **job individual** en la cola `bulk-documents` con máximo **3 reintentos** y backoff de 30 segundos.
-- El procesamiento se estima en **~6 segundos por documento** (varía según latencia con DIAN).
-- Los consecutivos se generan con `lockForUpdate()` para garantizar secuencialidad en concurrencia.
-- El webhook `bulk.batch.completed` solo se dispara cuando **todos** los items alcanzaron un estado terminal.
-- Los campos `payload` y `response` se limpian automáticamente a los **2 días** para liberar almacenamiento.
+- Cada documento se procesa de forma independiente, con hasta **3 intentos** (30 segundos entre intentos) solo para fallos transitorios (`408`, `429`, `5xx`).
+- `estimated_completion_seconds` se calcula con la cola actual, a razón de **~6 segundos por documento** (varía según la latencia con la DIAN).
+- El webhook `bulk.batch.completed` se dispara una sola vez, cuando **todos** los items alcanzaron un estado terminal.
+- El lote completo se elimina a los **7 días** de su creación: guarda los `document_uuid` antes.
+- Si el procesamiento de un item muere, la API lo concilia sola en unos 40 minutos y nunca reemite un documento ya transmitido. Ver [Items detenidos y conciliación automática](#items-detenidos).
 :::
 
 :::danger Límite de tamaño
-El body del request no debe exceder **5 MB**. Para lotes grandes, divide en múltiples requests.
+Mantén el body del request por debajo de **5 MB**. Ese límite lo aplica el servidor web, no la validación de la API: un body mayor puede rechazarse sin el formato JSON de esta página. Para lotes grandes, divide en múltiples requests.
 :::
+
+---
+
+## Cambios y compatibilidad 🆕 {#cambios-y-compatibilidad}
+
+Si ya consumías el envío masivo, revisa estos cambios de la versión actual.
+
+### Cambios incompatibles
+
+| Cambio | Antes | Ahora | Qué debes hacer |
+|--------|-------|-------|-----------------|
+| `items[].response` | JSON con la clave `raw` (XML, AttachedDocument, QR y PDF en base64). | String JSON con el resumen: `uuid`, `document_number`, `XmlDocumentKey`/`cufe`, `track_id`, `is_valid`, `status_code`, `dian_status_code`, `dian_status`, `errors`, `notifications`, `warnings`, `http_status`. La clave `raw` ya no existe: los registros antiguos se normalizan al resumen y `raw` nunca se vuelve a exponer. | No leas `response.raw`. Descarga XML y PDF con el `document_uuid` ([Descarga de Archivos](./endpoints/06-queries-status.md#descarga-archivos)). Ver [El campo `response`](#campo-response). |
+| `response.status_code` y `response.dian_response` | `status_code` era el código HTTP de la emisión; el detalle de la DIAN venía en `response.dian_response` y en `raw`. | `status_code` sigue siendo el **código HTTP** entero (igual a `http_status`). `response` ya no trae `dian_response`: el StatusCode de la DIAN va en `dian_status_code` y, a nivel de item, en `dian_response.status_code`. | No busques el código de la DIAN en `status_code`: usa `dian_status_code` o `items[].dian_response`. |
+| `SUCCESS` frente a `REJECTED_BY_DIAN` | Lo decidía el código HTTP. | Lo decide la respuesta de la DIAN (`IsValid` = `true` y `StatusCode` = `00`). En habilitación, `SUCCESS` significa recibido (ZipKey). | Usa `dian_response` para el detalle. En habilitación, consulta el resultado con el `track_id`. Ver [Cómo se decide el resultado](#decision-resultado). |
+| Estado `POSSIBLY_SENT` | No existía. | Estado nuevo: cuenta en `failed`, dispara `stop_on_error` y el documento pudo llegar a la DIAN. | **No lo reenvíes:** consulta su estado. Ver [Estados del Item](#estados-item). |
+| `documents[].uuid` | Opcional, sin efecto anti-duplicados. | UUID anti-duplicados: debe ser un UUID válido y distinto dentro del lote. Si ya se usó en otro documento, el item termina `FAILED` con `DUPLICATE_DOCUMENT_UUID`. | No reutilices el UUID de otro documento. Ver [UUID anti-duplicados](#uuid-anti-duplicados). |
+| `items[].document_uuid` | UUID del envío solo en los `SUCCESS`; en los demás, el `documents[].uuid` que enviaste (o `null`). | El UUID del **envío** en todo item que tenga envío (también `REJECTED_BY_DIAN` y `POSSIBLY_SENT`); en `DUPLICATE_DOCUMENT_UUID`, el del documento existente; si no hay envío, el `documents[].uuid` enviado o `null`. | Guarda el `document_uuid` que devuelve la API. Ver [Campos de cada item](#campos-item). |
+| Nuevos `429` con `Retry-After` | Solo el de lotes por minuto. | Además, demasiados documentos en proceso y otro lote de la empresa en admisión. El límite de lotes por minuto se comparte por empresa. | Respeta `Retry-After` y reintenta con el mismo `Idempotency-Key`. |
+| Nuevos `422` | — | Tope técnico de 200 documentos, UUID repetido en el lote, reglas de adjuntos e `Idempotency-Key` de más de 36 caracteres. | Ajusta el armado del lote. Ver [Códigos de Error HTTP](#errores). |
+| `error_code` | Códigos sin catálogo. | Catálogo documentado: código HTTP como string, `DUPLICATE_DOCUMENT_UUID`, `JOB_FAILED`, `STUCK`, códigos de la DIAN, los de `POSSIBLY_SENT` y, para errores internos, un identificador técnico. | Actualiza tu mapeo de errores. Ver [Catálogo de `error_code`](#error-code). |
+
+### Cambios compatibles
+
+- Ahora documentado: el `413` incluye `upgrade_url`.
+- Los items exponen `item_id`, `kind_description`, `status_description`, `document_number`, `cufe`, `track_id`, `dian_response`, `warnings`, `error` y `next_action`.
+- El resumen de `response` se conserva hasta la purga del lote.
+- `per_page` se limita a 200 en items y a 100 en lotes.

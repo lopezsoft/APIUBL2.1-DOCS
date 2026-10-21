@@ -127,7 +127,32 @@ Notas u observaciones adicionales del documento. Se imprime en la representació
 
 ### `document_number` 🔴
 
-Número consecutivo del documento **sin prefijo**. _Este campo es obligatorio_ para todos los documentos. Debe ser un string numérico (ej. `"990000001"`). Este número debe estar dentro del rango autorizado por la resolución DIAN vigente.
+Número consecutivo del documento **sin prefijo**. _Este campo es obligatorio_ para todos los documentos. Debe ser un número entero (ej. `990000001`). Este número debe estar dentro del rango autorizado por la resolución DIAN vigente.
+
+:::note Numeración automática
+En los endpoints `/auto-increment/*` **no** se envía `document_number`: la plataforma lo asigna. Ver [Numeración Automática](/docs/endpoints/autoincrement).
+:::
+
+### `uuid` 🟢 **NEW** {#uuid}
+
+Identificador del documento **de tu lado** (anti-duplicados). _Este campo es opcional_ y va en la raíz del body. Se recomienda enviar un UUID (ej. `"3d6f1a8e-2b4c-4f7d-9e0a-6c1b5d8f2a47"`): la emisión no valida su formato, pero la consulta `GET /documents/{uuid}` sí exige un UUID válido.
+
+El `uuid` se registra **antes** de transmitir el documento a la DIAN, de modo que un reintento con el mismo `uuid` no emite un documento distinto:
+
+| Situación | Resultado |
+|---|---|
+| Reintentas el **mismo número** con el **mismo** `uuid` | Se procesa normalmente (no choca). |
+| El `uuid` ya pertenece a **otro** documento de la empresa (`POST /invoice`, `/notes/*`, `/ds/*` y los `PATCH /auto-increment/*`) | HTTP `409`: `El uuid proporcionado ya se usó en otro documento de la empresa. No se emitió de nuevo: consulte ese documento o envíe un uuid nuevo.` El consecutivo no se consume. |
+| El `uuid` ya fue usado y lo envías en `POST /auto-increment/*` | HTTP `400` con el estado del envío original. Ver [UUID ya usado](/docs/endpoints/autoincrement#uuid-ya-usado). |
+| La emisión falla antes de transmitir a la DIAN | El `uuid` se libera y puedes volver a usarlo. |
+
+Puedes consultar el documento con `GET /documents/{uuid}` usando tu `uuid` o el `uuid` del envío que devuelve la respuesta de emisión.
+
+- #### Ejemplo
+
+  ```json
+    "uuid": "3d6f1a8e-2b4c-4f7d-9e0a-6c1b5d8f2a47"
+  ```
 
 ### `operation_type_id` 🔴
 
@@ -348,10 +373,19 @@ La moneda debe estar **habilitada en su cuenta** del proveedor tecnológico. Si 
 ### `send_to_queue` 🟢
 
 :::caution NO IMPLEMENTADO
-Este campo **aún no está disponible** en la versión actual de la API. Se documenta como referencia para futuras versiones. No lo envíe en el request body, será ignorado.
+Este campo **aún no está disponible**. No lo envíe: con `send_to_queue: 1` la emisión **se rechaza** con HTTP `400` y no se consume el consecutivo.
+
+```json
+{
+  "success": false,
+  "message": "El envío a cola de procesamiento aún no está habilitado."
+}
+```
+
+Para procesamiento asíncrono use [`POST /bulk/documents`](/docs/endpoints/bulk-documents).
 :::
 
-Indicador para enviar el documento a una cola de procesamiento asíncrono. Cuando esté disponible, al enviar `1` la API encolará el documento y retornará un UUID para consultar el estado posteriormente. Será útil en envíos masivos.
+Indicador reservado para enviar el documento a una cola de procesamiento asíncrono. Omítalo o envíe `0`. En la respuesta de emisión, `send_to_queue` siempre es `0`.
 
 ### `rounding` 🟢
 
@@ -449,7 +483,7 @@ Grupo de información de la entrega de bienes o prestación de servicios (`cac:D
         "merchant_registration": "12454"
       },
       "delivery_contact": {
-        "email": "empresatransport@gmail.com",
+        "email": "cliente1@ejemplo.com",
         "mobile": "3164444444",
         "contact_name": "Nombre del contacto",
         "note": "Nota adicional de contacto"
@@ -921,6 +955,10 @@ Información específica y obligatoria para documentos electrónicos del **Secto
 | `policy_number` | string | ⚠️ Condicional | Número de la póliza de seguro. **Obligatorio** cuando se trate de atenciones cubiertas por póliza **SOAT** (cobertura `04`) o planes voluntarios de salud (pólizas de salud `12`). En los demás casos debe ir vacío `""`. |
 | `justification_without_contract` | string | ⚠️ Condicional | Código de justificación de atención cuando se factura sin contrato previo con el pagador (Catálogo `facturaSinContrato` de SISPRO). Obligatorio según causal específica (ej. urgencias, tutelas, portabilidad). Si hay contrato, enviar vacío `""`. |
 
+:::info Campos que el API exige
+Cuando envías `health`, el API exige `operation_type`, `provider_code`, `payment_modality`, `coverage` e `invoice_period` (con sus fechas y horas). `contract_number` y `policy_number` son opcionales para el API: si se omiten se informan vacíos (`""`). Si omites `contract_number` (o lo envías `null`), el API exige `justification_without_contract` y responde `422` sin él: `El campo health.justification_without_contract es requerido cuando no se envía health.contract_number`. Si hay contrato, envía `contract_number` y deja `justification_without_contract` vacío. Las columnas ⚠️ Condicional indican cuándo la normativa del sector salud exige el valor real.
+:::
+
 ---
 
 #### 📌 Catálogo de Modalidades de Pago (`payment_modality`)
@@ -973,14 +1011,16 @@ Se diligencia exclusivamente cuando el prestador no cuenta con acuerdo de volunt
 <details>
 <summary>💰 <strong>Copagos, Cuotas Moderadoras, Pagos Compartidos y Anticipos (PrepaidPayment)</strong></summary>
 
-Todos los montos numéricos deben ser mayores o iguales a `0`, expresados sin separadores de miles y con punto decimal. Estos valores se descuentan o informan de acuerdo con las reglas de interoperabilidad con **RIPS**:
+Todos los montos numéricos deben ser mayores o iguales a `0`, expresados sin separadores de miles y con punto decimal. Estos valores se descuentan o informan de acuerdo con las reglas de interoperabilidad con **RIPS**.
+
+Para el API los cuatro montos son **opcionales** (aceptan `null`): si no se envían, se informan como `0`. Aun así, la DIAN y la validación de RIPS pueden exigir el valor real recaudado, así que envíalos siempre que apliquen.
 
 | Campo | Tipo | Requerido | Descripción |
 |-------|:----:|:---------:|-------------|
-| `copayment` | number | ✅ Sí | Valor total efectivamente recaudado por el prestador correspondiente a **Copago**. En facturas multiusuario corresponde a la sumatoria de copagos. Debe coincidir exactamente con el valor reportado en el JSON de RIPS. |
-| `moderator_fee` | number | ✅ Sí | Valor efectivamente recaudado por concepto de **Cuota Moderadora**. En facturas multiusuario es la sumatoria de cuotas. Debe coincidir con el valor de RIPS. |
-| `shared_payments` | number | ✅ Sí | Valor recaudado por **Pagos Compartidos** en planes voluntarios de salud (medicina prepagada, pólizas, planes complementarios). Debe coincidir con RIPS. |
-| `advance` | number | ⚠️ Condicional | Valor del **Anticipo** a legalizar que se descuenta del valor de la factura en ejecución del contrato pactado. Enviar `0` si no hubo anticipos. |
+| `copayment` | number | No (por defecto `0`) | Valor total efectivamente recaudado por el prestador correspondiente a **Copago**. En facturas multiusuario corresponde a la sumatoria de copagos. Debe coincidir exactamente con el valor reportado en el JSON de RIPS. |
+| `moderator_fee` | number | No (por defecto `0`) | Valor efectivamente recaudado por concepto de **Cuota Moderadora**. En facturas multiusuario es la sumatoria de cuotas. Debe coincidir con el valor de RIPS. |
+| `shared_payments` | number | No (por defecto `0`) | Valor recaudado por **Pagos Compartidos** en planes voluntarios de salud (medicina prepagada, pólizas, planes complementarios). Debe coincidir con RIPS. |
+| `advance` | number | No (por defecto `0`) | Valor del **Anticipo** a legalizar que se descuenta del valor de la factura en ejecución del contrato pactado. |
 
 </details>
 
@@ -1001,7 +1041,7 @@ Define el lapso temporal de la prestación de los servicios de salud (obligatori
 <details>
 <summary>📎 <strong>Descarga de Adjuntos y Entrega Electrónica (download_attachments / document_delivery)</strong></summary>
 
-Permite configurar canales automatizados para la descarga de soportes clínicos y la entrega de acuses entre el prestador y el pagador/ERP:
+Permite configurar canales automatizados para la descarga de soportes clínicos y la entrega de acuses entre el prestador y el pagador/ERP. Ambos bloques son **opcionales**: si no se envían, no se incluyen en el XML. Si se envían, `url` / `ws` toman `""` y `arguments` toma `[]` cuando se omiten.
 
 #### Objeto `download_attachments` (Descarga de Soportes)
 | Campo | Tipo | Requerido | Descripción |
@@ -1012,7 +1052,7 @@ Permite configurar canales automatizados para la descarga de soportes clínicos 
 #### Objeto `document_delivery` (Integración de Web Service)
 | Campo | Tipo | Requerido | Descripción |
 |-------|:----:|:---------:|-------------|
-| `ws` | string | No | Endpoint WSDL/SOAP o REST para la recepción de acuses de recibo y constancias de entrega de la factura electrónica. |
+| `ws` | string | No | Endpoint WSDL/SOAP o REST para la recepción de acuses de recibo y constancias de entrega de la factura electrónica. Si se envía, debe ser una URL válida. |
 | `arguments` | array | No | Arreglo de objetos `{ "name": "...", "value": "..." }` con métodos o parámetros de consumo (ej. `"ClienteEntregaAcuseDeReciboDeFEV-VP"`). |
 
 </details>
@@ -1605,7 +1645,7 @@ Sirve para referenciar múltiples órdenes de compra, contratos u otros document
 Información que quieres ver impresa en el PDF del documento y que **no viaja a la DIAN**: centro de costo, datos del afiliado, orden de servicio, medios de pago internos.
 
 :::info ¿Por qué existe esto?
-El modelo de factura electrónica cubre lo que exige la DIAN. Todo lo demás —lo que tu operación necesita ver en el documento— no tiene sitio en ese modelo. Este campo lo resuelve: envías los datos en el JSON y aparecen en el PDF sin modificar tu plantilla.
+El modelo de factura electrónica cubre lo que exige la DIAN. Todo lo demás —lo que tu operación necesita ver en el documento— no tiene sitio en ese modelo. Este campo lo resuelve: envías los datos en el JSON y la plantilla **Preprinted** los imprime sin que haya que modificarla. Las plantillas Classic, Minimal y Modern no imprimen este bloque (ver [Cómo llega al PDF](#additional-data-pdf)).
 :::
 
 #### Los tres ámbitos de datos adicionales
@@ -1659,6 +1699,15 @@ Si solo necesitas un par de campos sueltos, omite las secciones:
 
 Se guardan como una sección sin título.
 
+:::warning No mezcles secciones y campos sueltos
+La validación revisa cada elemento por separado: los que traen `fields` (o `items`) son secciones y los demás son campos sueltos, así que un arreglo que mezcla las dos formas **no** se rechaza. El PDF, en cambio, decide la forma de todo el arreglo por el **primer elemento**:
+
+- Si el primer elemento no trae `fields` y trae un `value` no nulo, todo el arreglo se lee como lista plana y las secciones se descartan sin aviso.
+- En cualquier otro caso, todo se lee como secciones y los campos sueltos se descartan.
+
+Por eso, en una lista plana el **primer campo debe llevar `value` no nulo** (vale `""`). Si el primero no trae `value` o lo trae en `null`, no se imprime nada del bloque.
+:::
+
 </details>
 
 <details open>
@@ -1668,18 +1717,18 @@ Se guardan como una sección sin título.
 
 | Campo | Tipo | Requerido | Descripción |
 |---|---|---|---|
-| `section` | string | No | Título del bloque. Omitido o `null` para campos sueltos. Máx. 120 |
+| `section` | string | No | Título del bloque (alias: `title`). Omitido o `null` para campos sueltos. Máx. 120 |
 | `order` | int | No | Orden del bloque. Por defecto, el de llegada |
-| `fields` | array | **Sí** | Campos del bloque, al menos uno |
+| `fields` | array | **Sí** | Campos del bloque (alias: `items`). Es lo que identifica a un elemento como sección: sin `fields` el elemento se trata como un campo suelto. Un arreglo vacío se acepta y no imprime nada |
 
 **Campo:**
 
 | Campo | Tipo | Requerido | Por defecto | Descripción |
 |---|---|---|---|---|
-| `title` | string | **Sí** | — | Etiqueta. Máx. 60 |
-| `value` | string | **Sí** | — | Valor a imprimir. Máx. 500 |
-| `type` | string | No | `TEXT` | `TEXT`, `NUMBER`, `DATE`, `CURRENCY` |
-| `align` | string | No | `LEFT` | `LEFT`, `CENTER`, `RIGHT` |
+| `title` | string | **Sí** | — | Etiqueta (alias: `label`). No puede ir vacía. Máx. 60 |
+| `value` | string o number | No | vacío | Valor a imprimir. Debe ser un dato simple: un arreglo u objeto se rechaza. `null` u omitido se imprime vacío. Máx. 500 |
+| `type` | string | No | `TEXT` | `TEXT`, `NUMBER`, `DATE`, `CURRENCY` (alias: `value_type`; acepta minúsculas) |
+| `align` | string | No | `LEFT` | `LEFT`, `CENTER`, `RIGHT` (alias: `alignment`; acepta minúsculas) |
 | `order` | int | No | orden de llegada | Orden dentro de la sección |
 
 El campo `type` le dice a la plantilla cómo formatear el valor, sin deducirlo del contenido:
@@ -1688,7 +1737,18 @@ El campo `type` le dice a la plantilla cómo formatear el valor, sin deducirlo d
 { "title": "Anticipos", "value": "150000", "type": "CURRENCY", "align": "RIGHT" }
 ```
 
-Se imprime como `$ 150.000,00` alineado a la derecha. Envía el valor **en crudo** (`150000`), no preformateado.
+Con 2 decimales configurados, se imprime como `$ 150.000,00` alineado a la derecha. Envía el valor **en crudo** (`150000`), no preformateado.
+
+Cómo imprime cada `type` la plantilla Preprinted:
+
+| `type` | Se imprime |
+|---|---|
+| `CURRENCY` | El símbolo de la moneda del documento (por defecto `$`), un espacio y el número con punto de miles, coma decimal y los decimales de totales configurados en la empresa |
+| `NUMBER` | El número con punto de miles y sin decimales |
+| `DATE` | El valor tal cual: no se le aplica formato de fecha |
+| `TEXT` | El valor tal cual |
+
+`CURRENCY` y `NUMBER` solo dan formato si `value` es numérico. Si no lo es, se imprime tal cual. `align` fija la alineación del valor dentro de su celda.
 
 </details>
 
@@ -1699,20 +1759,57 @@ Las peticiones que excedan estos límites se rechazan con **HTTP 422**, indicand
 
 | Regla | Límite |
 |---|---|
-| Secciones por documento | 10 |
+| Elementos de primer nivel del arreglo (secciones o, en una lista plana, campos) | 10 |
 | Campos por sección | 20 |
 | Longitud de `title` | 60 |
 | Longitud de `value` | 500 |
 | Título de sección | 120 |
 
+El límite de 10 cuenta los elementos de primer nivel de `additional_data`, antes de distinguir secciones de campos. Una **lista plana** admite por tanto como máximo **10 campos**, no 20, y el exceso se rechaza con `El campo additional data admite como máximo 10 secciones.`
+
+**Se rechaza con HTTP 422** (en `POST /invoice`, `/notes/credit`, `/notes/debit`, `/ds/document`, `/ds/adjustment-note`, `POST /auto-increment/*` y `PATCH /auto-increment/*/{uuid}`):
+
+| Entrada | Mensaje |
+|---|---|
+| `additional_data` no es un arreglo | Llegan dos mensajes: `El campo additional_data debe ser un arreglo de secciones o de campos` y `El campo additional data debe ser un arreglo de secciones o de campos.` |
+| Más de 10 elementos | `El campo additional data admite como máximo 10 secciones.` |
+| Un elemento no es un objeto (por ejemplo, un texto suelto) | `El elemento 2 de additional data debe ser un objeto.` |
+| El título de la sección (`section` o `title`) no es texto | `El título de la sección 0 debe ser texto.` |
+| Título de sección de más de 120 caracteres | `El título de la sección 0 supera los 120 caracteres.` |
+| `fields` no es un arreglo | `Los campos de la sección 0 deben ser un arreglo.` |
+| Más de 20 campos en una sección | `La sección 0 admite como máximo 20 campos.` |
+| Un campo de la sección no es un objeto | `El campo 1 de la sección 0 debe ser un objeto.` |
+| Campo sin `title` o con `title` vacío | `El campo 0.1 requiere un título.` |
+| `title` de más de 60 caracteres | `El título del campo 0.1 supera los 60 caracteres.` |
+| `value` es un arreglo u objeto | `El valor del campo 0.1 debe ser un dato simple.` |
+| `value` de más de 500 caracteres | `El valor del campo 0.1 supera los 500 caracteres.` |
+| `type` distinto de `TEXT`, `NUMBER`, `DATE`, `CURRENCY` | `El tipo del campo 0.1 debe ser uno de: TEXT, NUMBER, DATE, CURRENCY.` |
+| `align` distinto de `LEFT`, `CENTER`, `RIGHT` | `La alineación del campo 0.1 debe ser una de: LEFT, CENTER, RIGHT.` |
+
+En los mensajes, el número que acompaña a «elemento» o «sección» es su índice dentro de `additional_data`, y `0.1` es la ruta del campo: sección `0`, campo `1` (en una lista plana es solo el índice del campo). Todos los mensajes llegan en `errors.additional_data`, y la validación del bloque se detiene en el primer error que encuentra. El error llega con el formato estándar de validación:
+
+```json
+{
+  "message": "El tipo del campo 0.1 debe ser uno de: TEXT, NUMBER, DATE, CURRENCY.",
+  "errors": {
+    "additional_data": [
+      "El tipo del campo 0.1 debe ser uno de: TEXT, NUMBER, DATE, CURRENCY."
+    ]
+  }
+}
+```
+
 **Casos tolerados** (el documento se emite igual):
 
 | Entrada | Comportamiento |
 |---|---|
-| `additional_data` ausente o `[]` | No se imprime ningún bloque |
-| Sección con `fields` vacío | Se descarta: no imprimiría nada |
-| Campo sin `value` | Se imprime la etiqueta con valor vacío |
-| `type` o `align` no reconocidos | Caen al valor por defecto |
+| `additional_data` ausente, `null` o `[]` | No se imprime ningún bloque |
+| Sección con `fields` vacío | Se acepta y no imprime nada |
+| Campo sin `value` o con `value: null` | Se imprime la etiqueta con valor vacío. Excepción: en una lista plana, si es el **primer** campo no se imprime nada del bloque (ver [Lista plana](#additional_data-)) |
+| Arreglo que mezcla secciones y campos sueltos | Se acepta, pero el PDF solo imprime una de las dos formas, según el primer elemento |
+| `type` o `align` en minúsculas (ej. `"currency"`, `"right"`) | Se aceptan |
+
+En el [envío masivo](/docs/endpoints/bulk-documents) el payload de cada documento no pasa por esta validación: allí un `type` o `align` no reconocido cae al valor por defecto (`TEXT` / `LEFT`), un campo sin `title` se omite y lo que excede los límites se recorta (secciones y campos de más, textos largos) en lugar de rechazarse.
 
 :::warning Se rechaza, no se trunca
 Un dato cortado a la mitad en una factura impresa es peor que un error al emitir. Si un valor supera el límite, la petición falla para que puedas corregirla antes de que el documento llegue a la DIAN.
@@ -1720,19 +1817,30 @@ Un dato cortado a la mitad en una factura impresa es peor que un error al emitir
 
 </details>
 
+<a id="additional-data-pdf"></a>
+
 <details>
 <summary>🖨️ <strong>Cómo llega al PDF — Plantilla Preprinted</strong></summary>
 
-Las plantillas del catálogo recorren `additional_data` y pintan cada sección con su título y sus campos. **Una sección nueva aparece en el PDF sin que nadie toque la plantilla**: ése es el objetivo del bloque.
+:::caution Solo la plantilla Preprinted imprime additional_data
+Las plantillas **Classic**, **Minimal** y **Modern** no leen el bloque. La API lo acepta y lo valida igual en `POST /invoice`, `/notes/credit`, `/notes/debit`, `/ds/document`, `/ds/adjustment-note`, `POST /auto-increment/*` y `PATCH /auto-increment/*/{uuid}`, pero con esas plantillas no aparece en el PDF. La plantilla de la empresa se elige en [Plantillas de la empresa](./endpoints/16-company-templates.md#datos-adicionales-pdf).
+:::
 
-La plantilla **Preprinted** además coloca dos secciones en un sitio fijo del formato cuando las reconoce por su título:
+Con **Preprinted**, una sección nueva aparece en el PDF sin que nadie toque la plantilla. La plantilla toma los datos del propio documento, así que se imprimen desde la primera emisión.
 
-| Título de la sección | Dónde se pinta |
-|---|---|
-| Contiene *"centro de costo"* | Recuadro superior izquierdo |
-| Contiene *"del usuario"* o *"afiliado"* | Bloque de información del usuario |
+**Secciones con sitio fijo.** Preprinted reconoce dos secciones por su título, sin distinguir mayúsculas, acentos ni espacios, y las coloca en un sitio fijo del formato:
 
-El resto de secciones se pintan en orden, a continuación del detalle.
+| El título de la sección contiene | Dónde se pinta | Etiquetas que se imprimen |
+|---|---|---|
+| *"centro de costo"* o *"centro costo"* | Recuadro superior izquierdo | El `title` de cada campo. Si envías menos de tres campos, los renglones que faltan se rotulan `Nombre del Centro de Costo`, `Dirección y Teléfono` y `Ciudad` |
+| *"del usuario"* o *"afiliado"* | Bloque **INFORMACIÓN DEL USUARIO** | Fijas: `Afiliado Dependiente/Particular`, `Identificación` y `Descripción`. El `title` que envíes se ignora |
+
+- Ambos bloques imprimen los campos **por posición** y solo los **3 primeros**: del 4.º en adelante no se imprimen.
+- Solo se usa la **primera** sección que coincide. Las demás secciones cuyo título también coincide no se imprimen, porque se excluyen del recorrido general.
+
+**El resto de secciones** se pinta en el orden en que llegan (o el que fijes con `order`), dentro del cuerpo del documento: después de **INFORMACIÓN DEL CLIENTE** y del bloque del usuario, y **antes** del documento de referencia (en las notas) y del detalle de líneas. Cada sección es una tabla con su título como franja (si la sección no tiene título, no lleva franja) y dos campos por renglón, con la forma `Etiqueta: valor`.
+
+**Campo `Anticipos`.** Si un campo de `additional_data` se titula `Anticipos` (sin distinguir mayúsculas ni acentos), Preprinted muestra además su valor en la fila **ANTICIPOS** de los totales. Esa fila es informativa: el **TOTAL A PAGAR** sigue siendo el total del documento.
 
 </details>
 
@@ -1857,4 +1965,3 @@ Este es un ejemplo con **SOLO los campos obligatorios** para generar una factura
     🎯 <strong>Nivel:</strong> ⭐⭐⭐ Avanzado
   </small>
 </div>
-```

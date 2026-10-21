@@ -106,7 +106,7 @@ A continuación, se detalla el JSON avanzado estructurado para el envío a la AP
         "merchant_registration": "12454"
       },
       "delivery_contact": {
-        "email": "empresatransport@gmail.com",
+        "email": "cliente1@ejemplo.com",
         "mobile": "3164444444",
         "contact_name": "Nombre del contacto",
         "note": "Nota adicional de contacto"

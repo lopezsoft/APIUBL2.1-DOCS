@@ -1,0 +1,1258 @@
+{
+  "paths": {
+    "/api/ubl2.1/bulk/documents": {
+      "post": {
+        "responses": {
+          "402": {
+            "description": "Membresía sin cupo, o cuota insuficiente para el lote completo (descuenta los documentos pendientes de lotes anteriores). En el control inicial trae {success:false, message[, requested]}; si la cuota se agota al admitir el lote, trae solo {message}."
+          },
+          "429": {
+            "description": "Tres causas: (1) rate limit por minuto, contado por usuario y por empresa (varios usuarios de la empresa comparten el cupo); en FREE responde {success:false, message, upgrade_url} sin Retry-After. (2) La empresa superaría el máximo de documentos en proceso (QUEUED/PROCESSING). (3) Otro lote de la misma empresa está en admisión. En (2) y (3) solo trae {message}. Reintente tras Retry-After con el mismo Idempotency-Key."
+          }
+        }
+      }
+    },
+    "/api/ubl2.1/invoice": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "Factura creada exitosamente. Si la DIAN ya había autorizado el mismo número (regla 90, o una clave autorizada tras un 98/timeout) se devuelve el documento autorizado (su XML, CUFE/CUDE y QR) con la advertencia ALREADY_AUTHORIZED_RECOVERED en `warnings`; si la DIAN lo autorizó con otro contenido, la respuesta es un rechazo con la advertencia ALREADY_AUTHORIZED_OTHER_CONTENT (o ALREADY_PROCESSED_NOT_CONFIRMED si la DIAN no confirma la clave)"
+          },
+          "409": {
+            "description": "code DOCUMENT_IN_TRANSMISSION: el mismo documento (empresa, tipo y número) ya se está transmitiendo a la DIAN en otra solicitud. code DOCUMENT_IN_VALIDATION: la DIAN aún está validando (98) el envío anterior de ese número (data.document_key). En ambos casos no se transmitió; consulte su estado antes de reenviarlo"
+          },
+          "503": {
+            "description": "code DIAN_STATUS_UNAVAILABLE: el número ya tiene un envío anterior sin validar (data.document_key) y no se pudo confirmar su estado en la DIAN. No se transmitió de nuevo para no duplicarlo; intente en unos minutos"
+          }
+        }
+      }
+    },
+    "/api/ubl2.1/notes/credit": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "Nota creada exitosamente. Si la DIAN ya había autorizado el mismo número (regla 90, o una clave autorizada tras un 98/timeout) se devuelve el documento autorizado (su XML, CUFE/CUDE y QR) con la advertencia ALREADY_AUTHORIZED_RECOVERED en `warnings`; si la DIAN lo autorizó con otro contenido, la respuesta es un rechazo con la advertencia ALREADY_AUTHORIZED_OTHER_CONTENT (o ALREADY_PROCESSED_NOT_CONFIRMED si la DIAN no confirma la clave)"
+          },
+          "409": {
+            "description": "code DOCUMENT_IN_TRANSMISSION: el mismo documento (empresa, tipo y número) ya se está transmitiendo a la DIAN en otra solicitud. code DOCUMENT_IN_VALIDATION: la DIAN aún está validando (98) el envío anterior de ese número (data.document_key). En ambos casos no se transmitió; consulte su estado antes de reenviarlo"
+          },
+          "503": {
+            "description": "code DIAN_STATUS_UNAVAILABLE: el número ya tiene un envío anterior sin validar (data.document_key) y no se pudo confirmar su estado en la DIAN. No se transmitió de nuevo para no duplicarlo; intente en unos minutos"
+          }
+        }
+      }
+    },
+    "/api/ubl2.1/ds/document": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "Documento soporte creado exitosamente. Si la DIAN ya había autorizado el mismo número (regla 90, o una clave autorizada tras un 98/timeout) se devuelve el documento autorizado (su XML, CUFE/CUDE y QR) con la advertencia ALREADY_AUTHORIZED_RECOVERED en `warnings`; si la DIAN lo autorizó con otro contenido, la respuesta es un rechazo con la advertencia ALREADY_AUTHORIZED_OTHER_CONTENT (o ALREADY_PROCESSED_NOT_CONFIRMED si la DIAN no confirma la clave)"
+          },
+          "409": {
+            "description": "code DOCUMENT_IN_TRANSMISSION: el mismo documento (empresa, tipo y número) ya se está transmitiendo a la DIAN en otra solicitud. code DOCUMENT_IN_VALIDATION: la DIAN aún está validando (98) el envío anterior de ese número (data.document_key). En ambos casos no se transmitió; consulte su estado antes de reenviarlo"
+          },
+          "503": {
+            "description": "code DIAN_STATUS_UNAVAILABLE: el número ya tiene un envío anterior sin validar (data.document_key) y no se pudo confirmar su estado en la DIAN. No se transmitió de nuevo para no duplicarlo; intente en unos minutos"
+          }
+        }
+      }
+    },
+    "/api/ubl2.1/ds/adjustment-note": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "Nota de ajuste creada exitosamente. Si la DIAN ya había autorizado el mismo número (regla 90, o una clave autorizada tras un 98/timeout) se devuelve el documento autorizado (su XML, CUFE/CUDE y QR) con la advertencia ALREADY_AUTHORIZED_RECOVERED en `warnings`; si la DIAN lo autorizó con otro contenido, la respuesta es un rechazo con la advertencia ALREADY_AUTHORIZED_OTHER_CONTENT (o ALREADY_PROCESSED_NOT_CONFIRMED si la DIAN no confirma la clave)"
+          },
+          "409": {
+            "description": "code DOCUMENT_IN_TRANSMISSION: el mismo documento (empresa, tipo y número) ya se está transmitiendo a la DIAN en otra solicitud. code DOCUMENT_IN_VALIDATION: la DIAN aún está validando (98) el envío anterior de ese número (data.document_key). En ambos casos no se transmitió; consulte su estado antes de reenviarlo"
+          },
+          "503": {
+            "description": "code DIAN_STATUS_UNAVAILABLE: el número ya tiene un envío anterior sin validar (data.document_key) y no se pudo confirmar su estado en la DIAN. No se transmitió de nuevo para no duplicarlo; intente en unos minutos"
+          }
+        }
+      }
+    },
+    "/api/ubl2.1/status/document/{trackId}": {
+      "post": {
+        "responses": {
+          "409": {
+            "description": "code DOCUMENT_IN_TRANSMISSION: el número se está transmitiendo a la DIAN en otra solicitud; consulte de nuevo en unos minutos"
+          }
+        }
+      }
+    },
+    "/api/ubl2.1/status": {
+      "get": {
+        "summary": "Consultar el estado de un documento por número",
+        "description": "Si hay varias filas para el número (parámetro number) se prefiere la validada por la DIAN y luego la más reciente; sin number, la más reciente. is_valid es true solo cuando la DIAN validó el documento; validation_state detalla el estado. qr.data (texto del QR en base64) y qr.qrDian corresponden a document_key.",
+        "parameters": [
+          {
+            "name": "number",
+            "in": "query",
+            "description": "Número del documento con prefijo (ej. NC3)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "prefix",
+            "in": "query",
+            "description": "Prefijo de la resolución",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "resolution",
+            "in": "query",
+            "description": "Número de resolución",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order_number",
+            "in": "query",
+            "description": "Número de orden del cliente",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type_document_id",
+            "in": "query",
+            "description": "Id del tipo de documento (también se acepta document_type). Un valor no numérico se ignora",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "client_uuid",
+            "in": "query",
+            "description": "UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "f0456784-69c4-11f1-abf9-d843ae899220"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "document": {
+                      "properties": {
+                        "uuid": {
+                          "type": "string"
+                        },
+                        "document_number": {
+                          "type": "string"
+                        },
+                        "order_number": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "document_key": {
+                          "description": "CUFE/CUDE vigente (XmlDocumentKey)",
+                          "type": "string"
+                        },
+                        "document_name": {
+                          "type": "string"
+                        },
+                        "is_valid": {
+                          "description": "true solo si la DIAN validó el documento",
+                          "type": "boolean"
+                        },
+                        "validation_state": {
+                          "type": "string",
+                          "enum": [
+                            "VALID",
+                            "NOT_VALIDATED",
+                            "PENDING_REVALIDATION",
+                            "NOT_FOUND_OR_REJECTED",
+                            "CERTIFICATE_EXPIRED",
+                            "PENDING_RESEND",
+                            "PENDING",
+                            "UNKNOWN"
+                          ]
+                        },
+                        "type_document_id": {
+                          "type": "integer"
+                        },
+                        "invoice_date": {
+                          "type": "string"
+                        },
+                        "qr": {
+                          "properties": {
+                            "qrDian": {
+                              "description": "URL de consulta de la DIAN con document_key",
+                              "type": "string",
+                              "nullable": true
+                            },
+                            "data": {
+                              "description": "Texto del QR en base64, con document_key",
+                              "type": "string",
+                              "nullable": true
+                            },
+                            "path": {
+                              "description": "Siempre null (se conserva por compatibilidad)",
+                              "type": "string",
+                              "nullable": true
+                            },
+                            "url": {
+                              "description": "Siempre null (se conserva por compatibilidad)",
+                              "type": "string",
+                              "nullable": true
+                            }
+                          },
+                          "type": "object"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": null
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Documento no encontrado"
+          }
+        }
+      }
+    },
+    "/api/ubl2.1/events/send/mail/{trackId}": {
+      "post": {
+        "parameters": [
+          {
+            "name": "trackId",
+            "in": "path",
+            "description": "id numérico del evento (el id de events en GET /api/ubl2.1/events/document-receptions/{documentId} o el event_id de send-bulk), no el CUFE/CUDE",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 4521
+            }
+          },
+          {
+            "name": "client_uuid",
+            "in": "query",
+            "description": "UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "f0456784-69c4-11f1-abf9-d843ae899220"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Correo enviado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Correo enviado correctamente"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Se alcanzó el límite de 4 correos por evento",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Se ha alcanzado el límite de envío de correos. No puede enviar más de 4 correos por evento."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "El evento no existe."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Reenvía el correo de un evento RADIAN ya registrado. Máximo 4 correos por evento. Exige plan de pago vigente (403 RECEPTION_NOT_IN_PLAN, antes que cualquier otra validación)."
+      }
+    },
+    "/api/ubl2.1/events/send/{trackId}": {
+      "post": {
+        "description": "Registra y transmite a la DIAN, en el momento, un evento RADIAN (acuse de recibo, reclamo, recibo del bien, aceptación) sobre un documento previamente recibido. Sale siempre, también si la empresa está en modo manual. Si el documento ya tiene ese evento (en cualquier numeración) se reutiliza en lugar de crear otro. Cuando `code=031` (Reclamo de la Factura Electrónica de Venta), el campo `claim_code` es obligatorio y debe ser un código válido del catálogo de motivos de reclamo de la DIAN. Firma la persona indicada en `reception_person_uuid` o, sin ella, la persona de recepción por defecto de la empresa.",
+        "responses": {
+          "400": {
+            "description": "El tipo de evento no existe, el código de reclamación es obligatorio (code=031), el código de reclamación no existe, la empresa no tiene persona de recepción, el evento ya fue aceptado o el documento no admite eventos (contado o sin medio de pago, nota crédito/débito u omitido; el mensaje dice el motivo)"
+          }
+        }
+      }
+    },
+    "/api/ubl2.1/documents/consume": {
+      "get": {
+        "description": "Documentos validados por la DIAN (is_valid = 1) del año, agrupados según p_type. Los totales cuentan documentos válidos, no el consumo cobrado de la membresía.",
+        "parameters": [
+          {
+            "name": "p_type",
+            "in": "query",
+            "description": "1: por mes y tipo de documento (empresa y sus clientes). 2: por año (empresa y sus clientes). 3: por cliente y mes. 4: por cliente y año. 6: un cliente (_dni) por mes y tipo de documento.",
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "enum": [
+                1,
+                2,
+                3,
+                4,
+                6
+              ]
+            }
+          },
+          {
+            "name": "p_year",
+            "in": "query",
+            "description": "Año (por defecto, el actual)",
+            "schema": {
+              "type": "integer",
+              "example": 2026
+            }
+          },
+          {
+            "name": "_dni",
+            "in": "query",
+            "description": "NIT del cliente (sin dígito de verificación). Obligatorio con p_type=6. También se acepta como p_dni.",
+            "schema": {
+              "type": "string",
+              "example": "901091403"
+            }
+          },
+          {
+            "name": "client_uuid",
+            "in": "query",
+            "description": "UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "f0456784-69c4-11f1-abf9-d843ae899220"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "dataRecords": {
+                      "properties": {
+                        "data": {
+                          "description": "Filas del consumo; las columnas dependen de p_type",
+                          "type": "array",
+                          "items": {
+                            "type": "object"
+                          }
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "consumed": null,
+                    "limit": null,
+                    "remaining": null
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "p_type, p_year o _dni inválidos (p_type=6 sin _dni)"
+          }
+        }
+      }
+    },
+    "/api/ubl2.1/documents/{id}": {
+      "delete": {
+        "description": "Solo elimina documentos que la DIAN no tiene: sin validar (0) o no encontrados/rechazados en la revalidación (3), sin clave transmitida o con un rechazo de la DIAN guardado para esa misma clave. Un 98 (en validación), la regla 90 o una clave sin respuesta definitiva no se eliminan.",
+        "responses": {
+          "400": {
+            "description": "El documento está validado o la DIAN podría tenerlo; no se eliminó"
+          },
+          "409": {
+            "description": "code DOCUMENT_IN_TRANSMISSION: el número se está transmitiendo a la DIAN, o el documento cambió mientras se eliminaba"
+          }
+        }
+      }
+    },
+    "/api/ubl2.1/memberships/quotas": {
+      "post": {
+        "description": "Asigna a una sub-cuenta una cuota de documentos de la bolsa de la Casa de Software. Si el cliente ya tiene cuota en la suscripción activa, la actualiza. Solo para tokens de Casa de Software con plan de pago; en planes limitados valida que haya documentos disponibles. Quien actúa es siempre la Casa de Software del token: no envíe client_uuid. Si lo envía, la API toma esa empresa como la que actúa: con el UUID de una sub-cuenta propia la operación falla (por lo general, 422 «Esta compañía no es un cliente válido para el desarrollador.»), con un UUID ajeno o de una relación inactiva responde 403 y con un ID numérico en lugar del UUID responde 500 («Debe enviar el UUID del cliente, no el ID.»).",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "client_company_id": {
+                    "description": "ID de la sub-cuenta (no su UUID). Mensajes: «El ID de la compañía cliente es obligatorio.», «La compañía cliente no existe.»"
+                  },
+                  "assigned_documents": {
+                    "description": "Documentos a asignar (entero ≥ 0). Mensajes: «El número de documentos asignados es obligatorio.», «El número de documentos asignados debe ser al menos 0.»"
+                  },
+                  "start_date": {
+                    "description": "Inicio de vigencia. Mensaje: «La fecha de inicio es obligatoria.»"
+                  },
+                  "end_date": {
+                    "description": "Fin de vigencia, igual o posterior a start_date. Mensajes: «La fecha de finalización es obligatoria.», «La fecha de finalización debe ser igual o posterior a la fecha de inicio.»"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "quota": {
+                      "properties": {
+                        "uuid": {
+                          "type": "string",
+                          "format": "uuid",
+                          "example": "6f1c2b9e-3d4a-4e8b-9a71-2c5d8e0f4b13"
+                        },
+                        "consumed_documents": {
+                          "description": "Solo cuando la llamada actualiza una cuota existente; en la creación no aparece"
+                        },
+                        "start_date": {
+                          "format": "date-time",
+                          "example": "2026-01-01T05:00:00.000000Z",
+                          "description": "Medianoche de Bogotá de la fecha enviada, en UTC (ISO 8601)"
+                        },
+                        "end_date": {
+                          "format": "date-time",
+                          "example": "2026-12-31T05:00:00.000000Z",
+                          "description": "Medianoche de Bogotá de la fecha enviada, en UTC (ISO 8601)"
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2026-10-14T15:20:11.000000Z"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2026-10-14T15:20:11.000000Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El token no es de una Casa de Software",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Solo los usuarios DESARROLLADORES pueden asignar cuotas a clientes."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Plan FREE o Casa de Software sin suscripción activa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "example": "El plan FREE no permite asignar cuotas a clientes. Actualice su plan para acceder a esta funcionalidad."
+                    }
+                  }
+                },
+                "examples": {
+                  "plan_free": {
+                    "summary": "Plan FREE",
+                    "value": {
+                      "success": false,
+                      "message": "El plan FREE no permite asignar cuotas a clientes. Actualice su plan para acceder a esta funcionalidad."
+                    }
+                  },
+                  "sin_suscripcion": {
+                    "summary": "Sin suscripción activa",
+                    "value": {
+                      "success": false,
+                      "message": "El desarrollador no tiene una suscripción activa."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Se envió un client_uuid ajeno o de una relación inactiva",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Acceso no autorizado. Acceso denegado: No tiene permisos para operar sobre esta empresa o la relación no está activa."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "No hay suficientes documentos disponibles para asignar. Hay dos formatos: el control previo trae el desglose en campos; la validación final de la suscripción solo trae success y message, con el desglose en el texto.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "available_documents": {
+                      "description": "Solo en el control previo"
+                    },
+                    "requested_documents": {
+                      "description": "Solo en el control previo"
+                    },
+                    "total_documents": {
+                      "description": "Solo en el control previo"
+                    },
+                    "consumed_documents": {
+                      "description": "Solo en el control previo"
+                    },
+                    "already_assigned": {
+                      "description": "Solo en el control previo"
+                    }
+                  }
+                },
+                "examples": {
+                  "control_previo": {
+                    "summary": "Control previo",
+                    "value": {
+                      "message": "No tiene suficientes documentos disponibles para asignar. Disponibles: 500, Solicitados: 1000",
+                      "available_documents": 500,
+                      "requested_documents": 1000,
+                      "total_documents": 5000,
+                      "consumed_documents": 2000,
+                      "already_assigned": 2500,
+                      "success": false
+                    }
+                  },
+                  "validacion_final": {
+                    "summary": "Validación final",
+                    "value": {
+                      "success": false,
+                      "message": "No tienes suficientes documentos disponibles para asignar. Disponibles: 500 (Bolsa: 5000, Asignados: 4500, Consumidos: 2000)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos inválidos ({message, errors}, message es el primer error y, con varios, añade « (and N more errors)») o la compañía no es una sub-cuenta de la Casa de Software ({success:false, message}).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "example": "El ID de la compañía cliente es obligatorio."
+                    },
+                    "errors": {
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "Solo en el error de negocio",
+                      "example": false
+                    }
+                  }
+                },
+                "examples": {
+                  "validacion": {
+                    "summary": "Validación de datos",
+                    "value": {
+                      "message": "La fecha de finalización debe ser igual o posterior a la fecha de inicio.",
+                      "errors": {
+                        "end_date": [
+                          "La fecha de finalización debe ser igual o posterior a la fecha de inicio."
+                        ]
+                      }
+                    }
+                  },
+                  "no_es_cliente": {
+                    "summary": "No es sub-cuenta de la Casa de Software",
+                    "value": {
+                      "success": false,
+                      "message": "Esta compañía no es un cliente válido para el desarrollador."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ubl2.1/memberships/quotas/{clientCompanyId}": {
+      "delete": {
+        "description": "Elimina la cuota asignada a una sub-cuenta; desde ese momento el cliente consume de la bolsa general de la Casa de Software (o sin límite si el plan es ilimitado). Es idempotente: si el cliente no tenía cuota responde 200 igual. Quien actúa es siempre la Casa de Software del token: no envíe client_uuid. Si lo envía, la API toma esa empresa como la que actúa: con el UUID de una sub-cuenta propia la operación falla (422), con un UUID ajeno o de una relación inactiva responde 403 y con un ID numérico en lugar del UUID responde 500 («Debe enviar el UUID del cliente, no el ID.»).",
+        "parameters": [
+          {
+            "name": "clientCompanyId",
+            "in": "path",
+            "description": "ID de la compañía cliente a la que se eliminará la cuota",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 123
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cuota eliminada, o el cliente no tenía cuota (misma forma de respuesta)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "properties": {
+                        "consumption_mode": {
+                          "enum": [
+                            "shared_pool",
+                            "unlimited"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "eliminada": {
+                    "summary": "Tenía cuota",
+                    "value": {
+                      "message": "Cuota eliminada correctamente. El cliente ahora consume de la bolsa general.",
+                      "data": {
+                        "client_company_id": 123,
+                        "consumption_mode": "shared_pool"
+                      },
+                      "success": true
+                    }
+                  },
+                  "sin_cuota": {
+                    "summary": "No tenía cuota",
+                    "value": {
+                      "message": "El cliente no tenía cuota asignada. Ya consume de la bolsa general.",
+                      "data": {
+                        "client_company_id": 123,
+                        "consumption_mode": "shared_pool"
+                      },
+                      "success": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "El usuario no puede gestionar cuotas o la Casa de Software no tiene suscripción activa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "example": "No tienes permisos para eliminar cuotas de clientes."
+                    }
+                  }
+                },
+                "examples": {
+                  "sin_permiso": {
+                    "summary": "Sin permiso",
+                    "value": {
+                      "message": "No tienes permisos para eliminar cuotas de clientes.",
+                      "success": false
+                    }
+                  },
+                  "sin_suscripcion": {
+                    "summary": "Sin suscripción activa",
+                    "value": {
+                      "success": false,
+                      "message": "El desarrollador no tiene una suscripción activa."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Se envió un client_uuid ajeno o de una relación inactiva",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Acceso no autorizado. Acceso denegado: No tiene permisos para operar sobre esta empresa o la relación no está activa."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ubl2.1/memberships/summary": {
+      "get": {
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "description": "Filtra assigned_quotas por razón social del cliente (coincidencia parcial). Solo en type developer.",
+            "schema": {
+              "type": "string",
+              "example": "COMERCIAL"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Página de assigned_quotas (15 por página)",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "example": 1
+            }
+          },
+          {
+            "name": "client_uuid",
+            "in": "query",
+            "description": "UUID del cliente asociado a una cuenta principal (opcional). Permite realizar procesos en nombre de cada cliente usando el token de la cuenta principal/casa de software.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "f0456784-69c4-11f1-abf9-d843ae899220"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resumen de membresía",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "type",
+                        "plan_name",
+                        "is_unlimited"
+                      ],
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "developer",
+                            "client_quota",
+                            "client_shared"
+                          ],
+                          "example": "developer"
+                        },
+                        "plan_name": {
+                          "type": "string",
+                          "description": "Nombre del plan. En sub-cuentas: «Cuota de <Casa de Software>» o «Plan <plan> (Compartido)»",
+                          "example": "PREMIUM"
+                        },
+                        "is_unlimited": {
+                          "type": "boolean",
+                          "description": "false cuando no aplica (client_quota)",
+                          "example": false
+                        },
+                        "valid_until": {
+                          "type": "string",
+                          "format": "date",
+                          "example": "2026-12-31",
+                          "description": "YYYY-MM-DD"
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "description": "Documentos de la bolsa (suma de las suscripciones activas) o de la cuota",
+                          "example": 5000
+                        },
+                        "consumed": {
+                          "type": "integer",
+                          "description": "Documentos consumidos. En client_shared, el consumo total de la Casa de Software",
+                          "example": 2500
+                        },
+                        "assigned_quotas": {
+                          "type": "object",
+                          "description": "Solo en type developer. Cuotas asignadas a sub-cuentas, paginadas de 15 en 15 (current_page, data, per_page, total, last_page y enlaces de paginación)",
+                          "properties": {
+                            "current_page": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "data": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                  },
+                                  "uuid": {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "example": "6f1c2b9e-3d4a-4e8b-9a71-2c5d8e0f4b13"
+                                  },
+                                  "subscription_id": {
+                                    "type": "integer",
+                                    "example": 5
+                                  },
+                                  "client_company_id": {
+                                    "type": "integer",
+                                    "example": 123
+                                  },
+                                  "assigned_documents": {
+                                    "type": "integer",
+                                    "example": 1000
+                                  },
+                                  "consumed_documents": {
+                                    "type": "integer",
+                                    "example": 120
+                                  },
+                                  "start_date": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "example": "2026-01-01T05:00:00.000000Z",
+                                    "description": "Medianoche de Bogotá de la fecha enviada, en UTC (ISO 8601)"
+                                  },
+                                  "end_date": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "example": "2026-12-31T05:00:00.000000Z",
+                                    "description": "Medianoche de Bogotá de la fecha enviada, en UTC (ISO 8601)"
+                                  },
+                                  "created_at": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "example": "2026-10-14T15:20:11.000000Z"
+                                  },
+                                  "updated_at": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "example": "2026-10-14T15:20:11.000000Z"
+                                  },
+                                  "client": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer",
+                                        "example": 123
+                                      },
+                                      "company_name": {
+                                        "type": "string",
+                                        "example": "COMERCIAL EJEMPLO SAS"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "per_page": {
+                              "type": "integer",
+                              "example": 15
+                            },
+                            "total": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "last_page": {
+                              "type": "integer",
+                              "example": 1
+                            }
+                          }
+                        },
+                        "daily_limit": {
+                          "type": "object",
+                          "description": "Solo en type developer con plan FREE",
+                          "properties": {
+                            "limit": {
+                              "type": "integer",
+                              "example": 10
+                            },
+                            "consumed": {
+                              "type": "integer",
+                              "example": 3
+                            },
+                            "remaining": {
+                              "type": "integer",
+                              "example": 7
+                            },
+                            "next_reset": {
+                              "type": "string",
+                              "format": "date-time",
+                              "example": "2026-10-22T00:00:00-05:00",
+                              "description": "ISO 8601"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "plan_name": null,
+                    "documents_limit": null,
+                    "documents_consumed": null,
+                    "documents_remaining": null,
+                    "percentage_consumed": null,
+                    "expires_at": null,
+                    "is_active": null
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "La cuenta no tiene membresía activa (o la Casa de Software de la sub-cuenta no la tiene)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "No se encontró una membresía activa o legada para esta cuenta."
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Resumen del plan y del consumo de la empresa (o de la sub-cuenta indicada con client_uuid). type indica el caso: developer (cuenta principal o Casa de Software), client_quota (sub-cuenta con cuota propia) o client_shared (sub-cuenta que consume de la bolsa de su Casa de Software). La respuesta va envuelta en data, sin success."
+      }
+    },
+    "/api/ubl2.1/resolutions": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "records": {
+                    "description": "JSON serializado con los datos de la resolución. Si falta o no es JSON: 422 «El campo records es requerido» / «El campo records debe ser un JSON válido».",
+                    "example": "{\"type_document_id\":7,\"resolution_number\":\"18760000001\",\"prefix\":\"SETP\",\"invoice_name\":\"FACTURA ELECTRÓNICA DE VENTA\",\"range_from\":990000000,\"range_up\":995000000,\"date_from\":\"2026-01-01\",\"date_up\":\"2027-12-31\",\"initial_number\":990000000,\"active\":1,\"technical_key\":\"fc8eac422eba16e22ffd8c6f94b3f40a6e38162c\",\"headerline1\":\"\",\"headerline2\":\"\",\"footline1\":\"\",\"footline2\":\"\",\"footline3\":\"\",\"footline4\":\"\"}"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resolución creada (HTTP 200, no 201). record es la fila creada, con su id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Registro creado correctamente."
+                    },
+                    "record": {
+                      "type": "object",
+                      "example": {
+                        "id": 15,
+                        "company_id": 3,
+                        "type_document_id": 7,
+                        "resolution_number": "18760000001",
+                        "prefix": "SETP",
+                        "invoice_name": "FACTURA ELECTRÓNICA DE VENTA",
+                        "range_from": 990000000,
+                        "range_up": 995000000,
+                        "date_from": "2026-01-01",
+                        "date_up": "2027-12-31",
+                        "initial_number": 990000000,
+                        "active": 1,
+                        "technical_key": "fc8eac422eba16e22ffd8c6f94b3f40a6e38162c",
+                        "headerline1": "",
+                        "headerline2": "",
+                        "footline1": "",
+                        "footline2": "",
+                        "footline3": "",
+                        "footline4": ""
+                      }
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": null,
+          "400": {
+            "description": "Ya existe una resolución con el mismo tipo de documento, número y prefijo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "example": "Ya existe una resolución con el mismo número(18760000001) y\n                prefijo(SETP). Por favor verifique"
+                    },
+                    "errors": null
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Fallo de validación. Con varios errores, message añade « (and N more errors)»",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "example": "Validación fallida"
+                    },
+                    "errors": {
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "Solo en la validación de los campos de records",
+                      "example": false
+                    }
+                  }
+                },
+                "examples": {
+                  "records_invalido": {
+                    "summary": "records ausente o no es JSON",
+                    "value": {
+                      "message": "El campo records es requerido",
+                      "errors": {
+                        "records": [
+                          "El campo records es requerido"
+                        ]
+                      }
+                    }
+                  },
+                  "campos": {
+                    "summary": "Campos de records",
+                    "value": {
+                      "message": "Validación fallida",
+                      "errors": {
+                        "resolution_number": [
+                          "El campo resolution_number es requerido"
+                        ]
+                      },
+                      "success": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Crea una resolución de numeración. records es un JSON serializado (string). Obligatorios dentro de records: type_document_id, invoice_name (máx. 120), range_from, range_up, date_from, date_up, resolution_number (máx. 20), initial_number y active. prefix es opcional (máx. 20; vacío si se omite). No se admiten dos resoluciones con la misma empresa, tipo de documento, número y prefijo."
+      }
+    },
+    "/api/ubl2.1/resolutions/{id}": {
+      "put": {
+        "requestBody": {
+          "description": "records: JSON serializado con la resolución completa",
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "records": {
+                    "description": "JSON serializado con la resolución completa (no es parcial). Si falta o no es JSON: 422 «El campo records es requerido» / «El campo records debe ser un JSON válido».",
+                    "example": "{\"type_document_id\":7,\"resolution_number\":\"18760000001\",\"prefix\":\"SETP\",\"invoice_name\":\"FACTURA ELECTRÓNICA DE VENTA ACTUALIZADA\",\"range_from\":990000000,\"range_up\":995000000,\"date_from\":\"2026-01-01\",\"date_up\":\"2027-12-31\",\"initial_number\":990000000,\"active\":1,\"technical_key\":\"fc8eac422eba16e22ffd8c6f94b3f40a6e38162c\",\"headerline1\":\"\",\"headerline2\":\"\",\"footline1\":\"\",\"footline2\":\"\",\"footline3\":\"\",\"footline4\":\"\"}"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resolución actualizada. Sin message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": null
+                  }
+                },
+                "example": {
+                  "success": true
+                }
+              }
+            }
+          },
+          "404": null,
+          "422": {
+            "description": "Fallo de validación: invoice_name o resolution_number vacíos o demasiado largos (120 / 20), o prefix de más de 20 caracteres",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "example": "Validación fallida"
+                    },
+                    "errors": {
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "Solo en la validación de los campos de records",
+                      "example": false
+                    }
+                  }
+                },
+                "examples": {
+                  "records_invalido": {
+                    "summary": "records ausente o no es JSON",
+                    "value": {
+                      "message": "El campo records es requerido",
+                      "errors": {
+                        "records": [
+                          "El campo records es requerido"
+                        ]
+                      }
+                    }
+                  },
+                  "campos": {
+                    "summary": "Campos de records",
+                    "value": {
+                      "message": "Validación fallida",
+                      "errors": {
+                        "invoice_name": [
+                          "El campo invoice_name no debe exceder 120 caracteres"
+                        ]
+                      },
+                      "success": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Falta un campo obligatorio de records o el id no existe"
+          }
+        },
+        "description": "Reemplaza los datos de la resolución: no es una actualización parcial. Dentro de records deben venir siempre type_document_id, invoice_name, range_from, range_up, date_from y date_up (si falta alguno responde 500). Los campos omitidos toman su valor por defecto: prefix, resolution_number, technical_key, encabezados y pies vacíos, initial_number 1 y active 1. type_document_id no se puede cambiar (se ignora). Un id inexistente responde 500."
+      }
+    }
+  }
+}

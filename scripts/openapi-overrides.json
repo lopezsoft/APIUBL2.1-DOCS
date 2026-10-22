@@ -431,356 +431,6 @@
         }
       }
     },
-    "/api/ubl2.1/memberships/quotas": {
-      "post": {
-        "description": "Asigna a una sub-cuenta una cuota de documentos de la bolsa de la Casa de Software. Si el cliente ya tiene cuota en la suscripción activa, la actualiza. Solo para tokens de Casa de Software con plan de pago; en planes limitados valida que haya documentos disponibles. Quien actúa es siempre la Casa de Software del token: no envíe client_uuid. Si lo envía, la API toma esa empresa como la que actúa: con el UUID de una sub-cuenta propia la operación falla (por lo general, 422 «Esta compañía no es un cliente válido para el desarrollador.»), con un UUID ajeno o de una relación inactiva responde 403 y con un ID numérico en lugar del UUID responde 500 («Debe enviar el UUID del cliente, no el ID.»).",
-        "parameters": [],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "client_company_id": {
-                    "description": "ID de la sub-cuenta (no su UUID). Mensajes: «El ID de la compañía cliente es obligatorio.», «La compañía cliente no existe.»"
-                  },
-                  "assigned_documents": {
-                    "description": "Documentos a asignar (entero ≥ 0). Mensajes: «El número de documentos asignados es obligatorio.», «El número de documentos asignados debe ser al menos 0.»"
-                  },
-                  "start_date": {
-                    "description": "Inicio de vigencia. Mensaje: «La fecha de inicio es obligatoria.»"
-                  },
-                  "end_date": {
-                    "description": "Fin de vigencia, igual o posterior a start_date. Mensajes: «La fecha de finalización es obligatoria.», «La fecha de finalización debe ser igual o posterior a la fecha de inicio.»"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "quota": {
-                      "properties": {
-                        "uuid": {
-                          "type": "string",
-                          "format": "uuid",
-                          "example": "6f1c2b9e-3d4a-4e8b-9a71-2c5d8e0f4b13"
-                        },
-                        "consumed_documents": {
-                          "description": "Solo cuando la llamada actualiza una cuota existente; en la creación no aparece"
-                        },
-                        "start_date": {
-                          "format": "date-time",
-                          "example": "2026-01-01T05:00:00.000000Z",
-                          "description": "Medianoche de Bogotá de la fecha enviada, en UTC (ISO 8601)"
-                        },
-                        "end_date": {
-                          "format": "date-time",
-                          "example": "2026-12-31T05:00:00.000000Z",
-                          "description": "Medianoche de Bogotá de la fecha enviada, en UTC (ISO 8601)"
-                        },
-                        "created_at": {
-                          "type": "string",
-                          "format": "date-time",
-                          "example": "2026-10-14T15:20:11.000000Z"
-                        },
-                        "updated_at": {
-                          "type": "string",
-                          "format": "date-time",
-                          "example": "2026-10-14T15:20:11.000000Z"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "El token no es de una Casa de Software",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Solo los usuarios DESARROLLADORES pueden asignar cuotas a clientes."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "402": {
-            "description": "Plan FREE o Casa de Software sin suscripción activa",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "message": {
-                      "example": "El plan FREE no permite asignar cuotas a clientes. Actualice su plan para acceder a esta funcionalidad."
-                    }
-                  }
-                },
-                "examples": {
-                  "plan_free": {
-                    "summary": "Plan FREE",
-                    "value": {
-                      "success": false,
-                      "message": "El plan FREE no permite asignar cuotas a clientes. Actualice su plan para acceder a esta funcionalidad."
-                    }
-                  },
-                  "sin_suscripcion": {
-                    "summary": "Sin suscripción activa",
-                    "value": {
-                      "success": false,
-                      "message": "El desarrollador no tiene una suscripción activa."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Se envió un client_uuid ajeno o de una relación inactiva",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Acceso no autorizado. Acceso denegado: No tiene permisos para operar sobre esta empresa o la relación no está activa."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "No hay suficientes documentos disponibles para asignar. Hay dos formatos: el control previo trae el desglose en campos; la validación final de la suscripción solo trae success y message, con el desglose en el texto.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "available_documents": {
-                      "description": "Solo en el control previo"
-                    },
-                    "requested_documents": {
-                      "description": "Solo en el control previo"
-                    },
-                    "total_documents": {
-                      "description": "Solo en el control previo"
-                    },
-                    "consumed_documents": {
-                      "description": "Solo en el control previo"
-                    },
-                    "already_assigned": {
-                      "description": "Solo en el control previo"
-                    }
-                  }
-                },
-                "examples": {
-                  "control_previo": {
-                    "summary": "Control previo",
-                    "value": {
-                      "message": "No tiene suficientes documentos disponibles para asignar. Disponibles: 500, Solicitados: 1000",
-                      "available_documents": 500,
-                      "requested_documents": 1000,
-                      "total_documents": 5000,
-                      "consumed_documents": 2000,
-                      "already_assigned": 2500,
-                      "success": false
-                    }
-                  },
-                  "validacion_final": {
-                    "summary": "Validación final",
-                    "value": {
-                      "success": false,
-                      "message": "No tienes suficientes documentos disponibles para asignar. Disponibles: 500 (Bolsa: 5000, Asignados: 4500, Consumidos: 2000)"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Datos inválidos ({message, errors}, message es el primer error y, con varios, añade « (and N more errors)») o la compañía no es una sub-cuenta de la Casa de Software ({success:false, message}).",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "message": {
-                      "example": "El ID de la compañía cliente es obligatorio."
-                    },
-                    "errors": {
-                      "additionalProperties": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "success": {
-                      "type": "boolean",
-                      "description": "Solo en el error de negocio",
-                      "example": false
-                    }
-                  }
-                },
-                "examples": {
-                  "validacion": {
-                    "summary": "Validación de datos",
-                    "value": {
-                      "message": "La fecha de finalización debe ser igual o posterior a la fecha de inicio.",
-                      "errors": {
-                        "end_date": [
-                          "La fecha de finalización debe ser igual o posterior a la fecha de inicio."
-                        ]
-                      }
-                    }
-                  },
-                  "no_es_cliente": {
-                    "summary": "No es sub-cuenta de la Casa de Software",
-                    "value": {
-                      "success": false,
-                      "message": "Esta compañía no es un cliente válido para el desarrollador."
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/ubl2.1/memberships/quotas/{clientCompanyId}": {
-      "delete": {
-        "description": "Elimina la cuota asignada a una sub-cuenta; desde ese momento el cliente consume de la bolsa general de la Casa de Software (o sin límite si el plan es ilimitado). Es idempotente: si el cliente no tenía cuota responde 200 igual. Quien actúa es siempre la Casa de Software del token: no envíe client_uuid. Si lo envía, la API toma esa empresa como la que actúa: con el UUID de una sub-cuenta propia la operación falla (422), con un UUID ajeno o de una relación inactiva responde 403 y con un ID numérico en lugar del UUID responde 500 («Debe enviar el UUID del cliente, no el ID.»).",
-        "parameters": [
-          {
-            "name": "clientCompanyId",
-            "in": "path",
-            "description": "ID de la compañía cliente a la que se eliminará la cuota",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "example": 123
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Cuota eliminada, o el cliente no tenía cuota (misma forma de respuesta)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "data": {
-                      "properties": {
-                        "consumption_mode": {
-                          "enum": [
-                            "shared_pool",
-                            "unlimited"
-                          ]
-                        }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "eliminada": {
-                    "summary": "Tenía cuota",
-                    "value": {
-                      "message": "Cuota eliminada correctamente. El cliente ahora consume de la bolsa general.",
-                      "data": {
-                        "client_company_id": 123,
-                        "consumption_mode": "shared_pool"
-                      },
-                      "success": true
-                    }
-                  },
-                  "sin_cuota": {
-                    "summary": "No tenía cuota",
-                    "value": {
-                      "message": "El cliente no tenía cuota asignada. Ya consume de la bolsa general.",
-                      "data": {
-                        "client_company_id": 123,
-                        "consumption_mode": "shared_pool"
-                      },
-                      "success": true
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "402": {
-            "description": "El usuario no puede gestionar cuotas o la Casa de Software no tiene suscripción activa",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "message": {
-                      "example": "No tienes permisos para eliminar cuotas de clientes."
-                    }
-                  }
-                },
-                "examples": {
-                  "sin_permiso": {
-                    "summary": "Sin permiso",
-                    "value": {
-                      "message": "No tienes permisos para eliminar cuotas de clientes.",
-                      "success": false
-                    }
-                  },
-                  "sin_suscripcion": {
-                    "summary": "Sin suscripción activa",
-                    "value": {
-                      "success": false,
-                      "message": "El desarrollador no tiene una suscripción activa."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Se envió un client_uuid ajeno o de una relación inactiva",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Acceso no autorizado. Acceso denegado: No tiene permisos para operar sobre esta empresa o la relación no está activa."
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/ubl2.1/memberships/summary": {
       "get": {
         "parameters": [
@@ -1252,6 +902,38 @@
           }
         },
         "description": "Reemplaza los datos de la resolución: no es una actualización parcial. Dentro de records deben venir siempre type_document_id, invoice_name, range_from, range_up, date_from y date_up (si falta alguno responde 500). Los campos omitidos toman su valor por defecto: prefix, resolution_number, technical_key, encabezados y pies vacíos, initial_number 1 y active 1. type_document_id no se puede cambiar (se ignora). Un id inexistente responde 500."
+      }
+    },
+    "/api/ubl2.1/memberships/quotas": {
+      "post": {
+        "parameters": [
+          {
+            "name": "client_uuid",
+            "in": "query",
+            "required": false,
+            "description": "UUID del cliente (sub-cuenta) que recibe la cuota. Alternativa a enviarlo en el body. La Casa de Software que asigna es siempre la empresa del token.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/ubl2.1/memberships/quotas/{client}": {
+      "delete": {
+        "parameters": [
+          {
+            "name": "client",
+            "in": "path",
+            "description": "client_uuid del cliente. Obsoleto: un valor numérico se toma como el id interno (client_company_id).",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1f3a0b11-b698-11f1-a6c7-d843ae899220"
+            }
+          }
+        ]
       }
     }
   }

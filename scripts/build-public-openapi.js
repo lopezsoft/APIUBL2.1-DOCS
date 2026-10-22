@@ -37,6 +37,7 @@ const EXCLUDED_PATHS = [
   /\/admin(\/|$)/,
   /\/analytics(\/|$)/,
   /\/sns-notifications$/,
+  /\/campaigns(\/|$)/, // callbacks de n8n (firma HMAC) y panel de campañas: no son del integrador
   /\/webhooks\/wompi/,
   /\/internal(\/|$)/,
 ];

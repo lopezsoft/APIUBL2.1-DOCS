@@ -4,6 +4,18 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.9.1] - 2026-10-22
+
+### Modificado
+* **Cuotas de clientes (`09-memberships-health`):** `POST /memberships/quotas` identifica al cliente con `client_uuid` (body o query) y `DELETE /memberships/quotas/{client_uuid}` lo recibe en la ruta. La Casa de Software es siempre la empresa del token; un cliente ajeno o inexistente responde `404 El cliente no existe.`; pueden gestionar cuotas los usuarios Administrador y Desarrollador. La respuesta trae `client_uuid`. Se retiraron de la página los errores `403` y `422` que ya no ocurren.
+* **Empresa (`11-company`):** el `uuid` del cliente es el identificador de las cuotas.
+* **OpenAPI:** contrato nuevo de cuotas desde el Swagger del backend, con los parámetros `client_uuid` corregidos; se excluyen los callbacks de campañas (`/campaigns/*`).
+
+### Obsoleto
+* `client_company_id` en `POST /memberships/quotas` y el `id` numérico en la ruta del `DELETE`: siguen funcionando, pero se retirarán. Migra a `client_uuid`.
+
+---
+
 ## [3.9.0] - 2026-10-21
 
 ### Añadido

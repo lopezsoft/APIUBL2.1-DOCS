@@ -534,8 +534,8 @@ Cada elemento de `data` es la empresa cliente:
 
 | Campo | Contenido |
 |-------|-----------|
-| `id` | `id` numérico del cliente. Es el `client_company_id` de las cuotas (`POST /memberships/quotas`). |
-| `uuid` | Identificador del cliente para `/company/customers/{uuid}...` y para `client_uuid` en el resto de la API. |
+| `id` | `id` numérico interno del cliente. |
+| `uuid` | Identificador del cliente para `/company/customers/{uuid}...` y para `client_uuid` en el resto de la API, incluidas las cuotas (`POST /memberships/quotas`). |
 | `software`, `certificate`, `resolutions` | Software, certificado y resoluciones activas del cliente. `certificate` no incluye la contraseña, la ruta del archivo, el contenido del certificado ni `company_id`. |
 | `country`, `city`, `identity_document`, `type_organization` | Catálogos asociados. |
 | `quotas` | Cuotas del cliente agrupadas por suscripción, de la más reciente a la más antigua. Cada elemento trae `subscription_id`, y en `assigned_documents` y `consumed_documents` la suma de las cuotas de esa suscripción. Los demás campos (`id`, `uuid`, `start_date`, `end_date`) son los de una de las cuotas del grupo. |
@@ -651,10 +651,7 @@ Esa suscripción FREE no limita la emisión del cliente mientras está vinculado
 }
 ```
 
-La respuesta es `200`, no `201`. Guarda los dos identificadores:
-
-- `dataRecords.uuid`: para `/company/customers/{uuid}...` y como `client_uuid` en el resto de la API.
-- `dataRecords.id`: el `client_company_id` de las cuotas.
+La respuesta es `200`, no `201`. Guarda `dataRecords.uuid`: es el identificador del cliente para `/company/customers/{uuid}...` y el `client_uuid` del resto de la API, incluidas las [cuotas](./09-memberships-health.md#guia-cuotas). `dataRecords.id` es el `id` interno.
 
 </details>
 

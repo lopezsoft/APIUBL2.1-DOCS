@@ -23,7 +23,7 @@ GET {{url}}/company/customers
 Authorization: Bearer {token}
 ```
 
-Los endpoints de **cuotas** (`POST /memberships/quotas` y `DELETE /memberships/quotas/{clientCompanyId}`) son la excepción: **no** se envía `client_uuid`, porque quien actúa es siempre la Casa de Software.
+En los endpoints de **cuotas** (`POST /memberships/quotas` y `DELETE /memberships/quotas/{client_uuid}`) el `client_uuid` identifica **al cliente que recibe la cuota**. Quien actúa es siempre la Casa de Software dueña del token.
 :::
 
 ---
@@ -351,16 +351,21 @@ En el ejemplo, de los 500 documentos de la recarga `TRANSFERRED` quedaron 200 si
 
 ### 🆕 Guía rápida: cuotas para clientes {#guia-cuotas}
 
-Usa siempre el token de la Casa de Software.
+Usa siempre el token de la Casa de Software (usuario Administrador o Desarrollador).
 
-1. **Resuelve el ID del cliente:** `GET /company/customers?uuid={client_uuid}` y toma `dataRecords.data[0].id`, que también está en `dataRecords.data[0].company.customer_id`. No uses `company.id`: es el ID de la relación, no el del cliente (ver [Gestión de Clientes](./11-company.md#clientes-casa-software)).
-2. **Verifica la disponibilidad (opcional):** `GET /memberships/summary`, **sin** `client_uuid`.
-3. **Asigna la cuota:** `POST /memberships/quotas`, **sin** `client_uuid` y con el body en `snake_case`.
+1. **Obtén el `client_uuid` del cliente:** es el `uuid` de cada cliente en [`GET /company/customers`](./11-company.md#clientes-casa-software), el mismo que usa el resto de la API.
+2. **Verifica la disponibilidad (opcional):** `GET /memberships/summary`, **sin** `client_uuid` (así ves la bolsa de la Casa de Software).
+3. **Asigna la cuota:** `POST /memberships/quotas` con `client_uuid` en el body (o en la query) y los campos en `snake_case`.
 4. **Para ajustarla**, vuelve a llamar al `POST` con el nuevo total: reemplaza la cuota anterior, no se suma.
-5. **Para liberarla**, `DELETE /memberships/quotas/{clientCompanyId}`, con el mismo `client_company_id` usado al asignar.
+5. **Para liberarla**, `DELETE /memberships/quotas/{client_uuid}`.
 
-:::tip Guarda el ID del cliente
-El `id` numérico de la empresa cliente es su identificador permanente. Guárdalo junto al `uuid` en tu sistema y no tendrás que consultar `/company/customers` antes de cada asignación.
+:::caution 🆕 Cambio del 2026-10-21: `client_uuid` reemplaza a `client_company_id`
+Antes el cliente se identificaba con su `id` numérico (`client_company_id`) y enviar `client_uuid` hacía que la API tomara al cliente como quien actúa, con un error. Ahora:
+
+- `client_uuid` es el identificador del cliente en el `POST` y en la ruta del `DELETE`.
+- La Casa de Software es siempre la empresa del token: un `client_uuid` ya no la reemplaza.
+- `client_company_id` en el `POST` (solo si no envías `client_uuid`) y el `id` numérico en la ruta del `DELETE` siguen funcionando, con la misma validación de pertenencia, pero están **obsoletos** y se retirarán. Migra a `client_uuid`.
+- Pueden gestionar cuotas los usuarios **Administrador** y **Desarrollador** (antes, asignar era solo para Desarrollador).
 :::
 
 <details>
@@ -374,26 +379,25 @@ Content-Type: application/json
 
 Permite a una Casa de Software reservar una parte de la bolsa de documentos de su plan para una empresa cliente. Un cliente con cuota consume de su cuota; un cliente sin cuota consume de la bolsa compartida de la Casa de Software.
 
-:::danger No envíes `client_uuid`
-Usa el token de la **Casa de Software** y no agregues `client_uuid`: el cliente se identifica solo con `client_company_id`. Con el `client_uuid` de una sub-cuenta propia, la sub-cuenta pasa a ser quien actúa y la API rechaza la petición (por lo general con `422`); con un `client_uuid` ajeno, `403`.
-:::
+Usa el token de la **Casa de Software** (usuario Administrador o Desarrollador). El cliente se identifica con `client_uuid`, en el body o en la query (`?client_uuid=...`); la Casa de Software que asigna es siempre la del token.
 
 **Parámetros del Body** (JSON plano, en `snake_case`):
 
 :::note Nombres de campos
-Los campos van en **snake_case**. Nombres en otro formato (`clientCompanyId`, `startDate`, `endDate`, `folios`) no se reconocen: se ignoran y la API responde `422` por los campos requeridos que faltan.
+Los campos van en **snake_case**. Nombres en otro formato (`clientUuid`, `startDate`, `endDate`, `folios`) no se reconocen: se ignoran y la API responde `422` por los campos requeridos que faltan.
 :::
 
 | Campo | Tipo | Requerido | Descripción |
 |---|---|---|---|
-| `client_company_id` | `integer` | ✅ Sí | `id` de la empresa cliente: el `id` de primer nivel de cada cliente en `GET /company/customers` (no el `id` del objeto `company` anidado). |
+| `client_uuid` | `string` (uuid) | ✅ Sí | 🆕 `uuid` del cliente (sub-cuenta) de la Casa de Software, tal como aparece en `GET /company/customers`. También se acepta en la query. |
+| `client_company_id` | `integer` | ⚠️ Obsoleto | `id` numérico del cliente. Solo se usa si no envías `client_uuid`. Se retirará: usa `client_uuid`. |
 | `assigned_documents` | `integer` | ✅ Sí | Documentos a reservar. Mínimo `0`. |
 | `start_date` | `string` | ✅ Sí | Inicio de vigencia de la cuota (`YYYY-MM-DD`). |
 | `end_date` | `string` | ✅ Sí | Fin de vigencia (`YYYY-MM-DD`). Debe ser igual o posterior a `start_date`. |
 
 ```json
 {
-  "client_company_id": 1262,
+  "client_uuid": "1f3a0b11-b698-11f1-a6c7-d843ae899220",
   "assigned_documents": 500,
   "start_date": "2026-10-14",
   "end_date": "2027-10-13"
@@ -403,7 +407,8 @@ Los campos van en **snake_case**. Nombres en otro formato (`clientCompanyId`, `s
 **Reglas de negocio:**
 
 - Es un **upsert**: si el cliente ya tiene cuota en la suscripción activa, la cuota se **reemplaza** con los nuevos valores; no se suma a la anterior.
-- La Casa de Software debe tener una suscripción activa que no sea el plan FREE, y la empresa cliente debe estar asociada a la Casa de Software.
+- El `client_uuid` debe ser de un cliente de la Casa de Software del token. Un cliente de otra cuenta, o un uuid que no existe, responde `404 El cliente no existe.` También se acepta un cliente **deshabilitado**: su `uuid` aparece en `GET /company/customers?is_active=0`, porque el listado por defecto solo trae los activos.
+- La Casa de Software debe tener una suscripción activa que no sea el plan FREE.
 - En planes con bolsa finita, `assigned_documents` no puede superar lo disponible: el menor entre (bolsa − asignado a otros clientes con fechas que se solapan) y (bolsa − consumido).
 - En planes ilimitados no se valida la bolsa: la cuota es opcional y funciona como límite de control para ese cliente.
 
@@ -422,11 +427,14 @@ Los campos van en **snake_case**. Nombres en otro formato (`clientCompanyId`, `s
     "start_date": "2026-10-14T05:00:00.000000Z",
     "end_date": "2027-10-13T05:00:00.000000Z",
     "created_at": "2026-10-14T20:15:03.000000Z",
-    "updated_at": "2026-10-14T20:15:03.000000Z"
+    "updated_at": "2026-10-14T20:15:03.000000Z",
+    "client_uuid": "1f3a0b11-b698-11f1-a6c7-d843ae899220"
   },
   "success": true
 }
 ```
+
+🆕 `quota.client_uuid` devuelve el `uuid` del cliente. `quota.client_company_id` es su `id` interno.
 
 </details>
 
@@ -468,13 +476,13 @@ La validación final de disponibilidad, que descuenta lo asignado a otros client
 }
 ```
 
-Con el body en `camelCase` (por ejemplo `clientCompanyId`, `startDate`, `endDate`) faltan los cuatro campos y `errors` los lista todos. El `message` es el primer error seguido del total restante, que la API devuelve en inglés:
+Con el body en `camelCase` (por ejemplo `clientUuid`, `startDate`, `endDate`) faltan los cuatro campos y `errors` los lista todos. El `message` es el primer error seguido del total restante, que la API devuelve en inglés:
 
 ```json
 {
-  "message": "El ID de la compañía cliente es obligatorio. (and 3 more errors)",
+  "message": "El UUID del cliente (client_uuid) es obligatorio. (and 3 more errors)",
   "errors": {
-    "client_company_id": ["El ID de la compañía cliente es obligatorio."],
+    "client_uuid": ["El UUID del cliente (client_uuid) es obligatorio."],
     "assigned_documents": ["El número de documentos asignados es obligatorio."],
     "start_date": ["La fecha de inicio es obligatoria."],
     "end_date": ["La fecha de finalización es obligatoria."]
@@ -489,33 +497,35 @@ Con el body en `camelCase` (por ejemplo `clientCompanyId`, `startDate`, `endDate
 
 | HTTP | Mensaje | Causa |
 |---|---|---|
-| `400` | `Solo los usuarios DESARROLLADORES pueden asignar cuotas a clientes.` | El token no pertenece a una Casa de Software. |
+| `400` | `No tienes permisos para asignar cuotas a clientes.` | El usuario del token no es Administrador ni Desarrollador. |
 | `402` | `El plan FREE no permite asignar cuotas a clientes. Actualice su plan para acceder a esta funcionalidad.` | La Casa de Software tiene plan FREE. |
 | `402` | `El desarrollador no tiene una suscripción activa.` | No hay suscripción vigente. |
-| `403` | `Acceso no autorizado. ...` | Se envió un `client_uuid` de una empresa sin relación activa. |
-| `422` | `Esta compañía no es un cliente válido para el desarrollador.` | La empresa existe pero no es cliente de la Casa de Software, o se envió `client_uuid`. |
-| `422` | `El ID de la compañía cliente es obligatorio.` / `La compañía cliente no existe.` | Falta `client_company_id`, el body no está en `snake_case` (por ejemplo `clientCompanyId`) o el ID no corresponde a ninguna empresa (puede pasar al enviar el `id` del objeto `company` anidado). |
+| `403` | `Usuario no asociado a ninguna empresa.` / `Acceso no autorizado. La empresa se encuentra inactiva.` | El usuario del token no tiene empresa, o la empresa del token está inactiva. |
+| `404` | `El cliente no existe.` | 🆕 El `client_uuid` (o el `client_company_id` obsoleto) no es de un cliente de la Casa de Software del token, o no existe. |
+| `422` | `El UUID del cliente (client_uuid) es obligatorio.` | Falta `client_uuid` (y tampoco se envió `client_company_id`), o el body no está en `snake_case`. |
 | `422` | `La fecha de inicio es obligatoria.` / `La fecha de finalización debe ser igual o posterior a la fecha de inicio.` | Fechas ausentes o fuera de orden. |
+
+Los controles se aplican en este orden: datos del body (`422`), tipo de usuario (`400`), empresa del token (`403`), cliente propio (`404`), plan FREE (`402`), disponibilidad (`409`) y suscripción activa (`402`).
 
 </details>
 
 </details>
 
 <details>
-<summary><span className="badge badge--danger margin-right--sm">DELETE</span> <b>/memberships/quotas/&#123;clientCompanyId&#125;</b> — Eliminar Cuota de un Cliente</summary>
+<summary><span className="badge badge--danger margin-right--sm">DELETE</span> <b>/memberships/quotas/&#123;client_uuid&#125;</b> — Eliminar Cuota de un Cliente</summary>
 
 ```http
-DELETE {{url}}/memberships/quotas/{clientCompanyId}
+DELETE {{url}}/memberships/quotas/{client_uuid}
 Authorization: Bearer {token}
 ```
 
-Elimina la cuota del cliente. Desde ese momento el cliente vuelve a consumir de la bolsa compartida de la Casa de Software, o de forma ilimitada si el plan es ilimitado. Usa el token de la Casa de Software y **no** envíes `client_uuid`.
+Elimina la cuota del cliente. Desde ese momento el cliente vuelve a consumir de la bolsa compartida de la Casa de Software, o de forma ilimitada si el plan es ilimitado. Usa el token de la Casa de Software (usuario Administrador o Desarrollador).
 
 **Parámetros:**
 
 | Nombre | Ubicación | Requerido | Descripción |
 |---|---|---|---|
-| `clientCompanyId` | path | ✅ Sí | `id` de la empresa cliente (el mismo `client_company_id` usado al asignar). |
+| `client_uuid` | path | ✅ Sí | 🆕 `uuid` del cliente de la Casa de Software. Un valor numérico se toma como el `id` interno del cliente: es la forma **obsoleta**, que se retirará. |
 
 | `consumption_mode` | Significado |
 |---|---|
@@ -529,6 +539,7 @@ Elimina la cuota del cliente. Desde ese momento el cliente vuelve a consumir de 
 {
   "message": "Cuota eliminada correctamente. El cliente ahora consume de la bolsa general.",
   "data": {
+    "client_uuid": "1f3a0b11-b698-11f1-a6c7-d843ae899220",
     "client_company_id": 1262,
     "consumption_mode": "shared_pool"
   },
@@ -545,11 +556,10 @@ Es **idempotente**: si el cliente no tenía cuota, la respuesta también es `200
 
 | HTTP | Mensaje | Causa |
 |---|---|---|
-| `402` | `No tienes permisos para eliminar cuotas de clientes.` | El token no pertenece a una cuenta con permiso para gestionar cuotas. |
+| `402` | `No tienes permisos para eliminar cuotas de clientes.` | El usuario del token no es Administrador ni Desarrollador. |
 | `402` | `El desarrollador no tiene una suscripción activa.` | No hay suscripción vigente. |
-| `403` | `Acceso no autorizado. ...` | Se envió un `client_uuid` de una empresa sin relación activa. |
-| `404` | `La compañía cliente no existe.` | El `clientCompanyId` no corresponde a ninguna empresa. |
-| `422` | `Esta compañía no es un cliente válido para el desarrollador.` | La empresa no es cliente de la Casa de Software, o se envió `client_uuid`. |
+| `403` | `Usuario no asociado a ninguna empresa.` / `Acceso no autorizado. La empresa se encuentra inactiva.` | El usuario del token no tiene empresa, o la empresa del token está inactiva. |
+| `404` | `El cliente no existe.` | 🆕 El `client_uuid` no es de un cliente de la Casa de Software del token, o no existe. Un cliente deshabilitado sí se acepta. Antes, un cliente ajeno respondía `422`. |
 
 </details>
 

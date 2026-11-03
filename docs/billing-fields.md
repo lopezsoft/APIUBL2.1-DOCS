@@ -80,6 +80,8 @@ sidebar_label: Campos del Request
 | `point_of_sale`                 |      🟢       |         🟢         |          🟢           |   🔴    |        🟢         |        🟢        |
 | `billing_reference`             |      🟢       |         🟢         |          🟢           |   🟢    |        🔴         |        🔴        |
 | `order_reference`               |      🟢       |         🟢         |          🟢           |   🟢    |        🟢         |        🟢        |
+| `notes`                         |      🟢       |         🟢         |          🟢           |   🟢    |        🟢         |        🟢        |
+| `shareholders`                  |      🟢       |         🟢         |          🟢           |   🟢    |        🟢         |        🟢        |
 
 <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.75rem', margin: '1.5rem 0'}}>
   <div style={{padding: '0.75rem', backgroundColor: '#f8d7da', borderRadius: '6px', border: '1px solid #dc3545'}}>
@@ -123,7 +125,7 @@ Hora de emisión del documento. _Este campo es opcional_. Si no se envía, la AP
 
 ### `notes` 🟢
 
-Notas u observaciones adicionales del documento. Se imprime en la representación gráfica (PDF). _Este campo es opcional_ y debe ser un string. Acepta texto libre de cualquier longitud.
+Notas u observaciones adicionales a nivel de encabezado del documento. Se incluye en el XML como `cbc:Note` (en facturas, documento soporte, POS y **notas crédito y débito, incluidas las de POS**) y se imprime en la representación gráfica (PDF). _Este campo es opcional_ y debe ser un string. Acepta texto libre de cualquier longitud.
 
 ### `document_number` 🔴
 
@@ -1120,6 +1122,58 @@ Si el dato es sobre la **operación** (centro de costo, orden de servicio), usa 
 
 </details>
 
+### `shareholders` 🟢 **NEW** {#shareholders}
+
+Participantes o consorciados cuando el documento es emitido por un **Consorcio o Unión Temporal**. _Este campo es opcional_ y debe ser un arreglo de objetos.
+
+Genera un bloque `cac:ShareholderParty` por cada partícipe dentro del nodo del **emisor** (`cac:AccountingSupplierParty / cac:Party`), sin alterar la estructura ni los datos del adquiriente (`customer`). Además, los consorciados asociados al documento **se conservan automáticamente en los reenvíos** (`POST /documents/{uuid}/resend`).
+
+<details>
+<summary>📦 <strong>Ejemplo JSON</strong></summary>
+
+```json
+"shareholders": [
+  {
+    "dni": "1063279307",
+    "company_name": "LEWIS LOPEZ A S.A.S.",
+    "tax_level_id": 5,
+    "tax_regime_id": 2,
+    "participation_percent": 60
+  },
+  {
+    "dni": "900123456",
+    "company_name": "INGENIERIA Y PROYECTOS S.A.S.",
+    "tax_level_id": 5,
+    "tax_regime_id": 1,
+    "participation_percent": 40
+  }
+]
+```
+
+</details>
+
+<details open>
+<summary>🤝 <strong>Campos de cada consorciado</strong></summary>
+
+| Campo | Tipo | Requerido | Descripción |
+|-------|:----:|:---------:|-------------|
+| `dni` | string | **Sí** | NIT del consorciado o partícipe (sin dígito de verificación). No se permiten NITs duplicados en el arreglo |
+| `dv` | string / int | Opcional | Dígito de verificación del NIT. Si se envía, se valida contra el cálculo módulo 11 de la DIAN; si se omite, el sistema lo calcula a partir del `dni` |
+| `company_name` | string | **Sí** | Razón social o nombre completo del consorciado |
+| `tax_level_id` | int | **Sí** | Responsabilidad fiscal del consorciado (`1`: `O-13`, `2`: `O-15`, `3`: `O-23`, `4`: `O-47`, `5`: `R-99-PN`). **Endpoint:** `{{url}}/tax-level` |
+| `tax_regime_id` | int | **Sí** | Régimen tributario (`1`: Responsable de IVA `48`, `2`: No responsable de IVA `49`). **Endpoint:** `{{url}}/tax-regime` |
+| `participation_percent` | number | **Sí** | Porcentaje de participación del consorciado en la operación (ej. `60`, `40`, `100`) |
+
+</details>
+
+:::warning Validaciones de `shareholders` (HTTP 422)
+- **Dígito de verificación (`dv`):** si se informa `dv`, debe coincidir con el dígito de verificación módulo 11 correspondiente al `dni`.
+- **Sin NITs repetidos:** no puede haber dos consorciados con el mismo `dni` dentro del arreglo `shareholders`.
+- **Suma de porcentajes igual a 100:** la suma de `participation_percent` de todos los elementos de `shareholders` debe ser exactamente **`100`** (si hay un único consorciado registrado en el arreglo, su `participation_percent` debe ser `100`).
+:::
+
+📦 [Ver ejemplo completo de Factura con Consorciados](/docs/jsons-billing/shareholders-invoice)
+
 ### `discrepancy_response` 🟢
 
 Respuesta a discrepancias. _Este campo es obligatorio_ solo para las notas de crédito, débito y de ajustes de todos los documentos y debe ser un objeto.
@@ -1286,12 +1340,11 @@ Líneas de detalle del documento. Cada elemento del arreglo representa un ítem 
 
 | Campo | Tipo | Descripción |
 |-------|:----:|-------------|
-| `note` | string | Nota adicional. **Obligatorio para AIU**, debe iniciar con: `"Contrato de servicios AIU por concepto de:"` |
+| `notes` | string | Nota adicional a nivel de línea (`cbc:Note` en el XML para facturas, documento soporte y **notas crédito y débito, incluidas las de POS**). **Obligatorio en la línea de Administración para AIU** (`operation_type_id: 2`), donde debe iniciar con: `"Contrato de servicios AIU por concepto de:"` |
 | `brand_name` | string | Marca del producto. Se muestra en la representación gráfica |
 | `model_name` | string | Modelo del producto |
 | `sellers_item_identification` | string | Código interno alterno del vendedor |
 | `pack_size_numeric` | string | Unidades por paquete o empaque |
-| `notes` | string / array | Notas adicionales a nivel de línea |
 | `um` / `mu` / `unit_measure_code` | string | Unidad de medida alternativa para la representación gráfica |
 
 </details>

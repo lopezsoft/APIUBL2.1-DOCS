@@ -118,7 +118,7 @@ $response = $client->post("{$url}/ep/payroll", [
 </details>
 
 :::info Habilitación y errores
-- **Habilitación:** mientras el software de nómina está en pruebas, la respuesta tiene otra forma (incluye `XmlDocumentKey`, `ZipKey` y la respuesta del set de pruebas) y no trae `uuid` ni `warnings`.
+- **Habilitación:** tanto en nómina individual (`/ep/payroll`) como en nota de eliminación (`/ep/payroll/delete`), la respuesta en ambiente de habilitación (pruebas) tiene **exactamente la misma estructura que en producción** (incluye `uuid`, `message`, `send_to_queue`, `XmlDocumentKey`, `response`, `XmlBase64Bytes`, `AttachedDocument`, `qr`, `pdf`, `warnings` y `success`).
 - **Documento ya validado:** si el número ya está validado ante la DIAN se responde HTTP `400` con el mensaje `El documento (...) con numero ... ya se encuentra validado.` y el registro del envío en `data`.
 - **Errores `5xx`:** incluyen un campo `reference` para que soporte ubique el caso.
 

@@ -331,7 +331,7 @@ A continuación se describen los campos que componen la nómina electrónica.
 - `departure_date`: DATE. Fecha de salida, puede ser nula.
 - `settlement_start_date`: DATE. Inicio del período de liquidación.
 - `settlement_end_date`: DATE. Fin del período de liquidación.
-- `time_worked`: STRING. Tiempo trabajado (días).
+- `time_worked`: STRING / INTEGER. Tiempo laborado por el trabajador en la empresa (en días). Validación: mínimo `1` (`min:1`), **sin tope máximo**.
 - `generation_date`: DATE. Fecha de generación del documento.
 
 ## Información General

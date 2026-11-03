@@ -375,8 +375,8 @@ El reenvío pasa por el mismo flujo de emisión que `POST /invoice`, con su mism
 El documento reconstruido no conserva la fecha y la hora originales. Si el reenvío llega a transmitirse a la DIAN, el documento tiene un CUFE/CUDE distinto al del intento anterior.
 :::
 
-:::caution Datos que el reenvío no reconstruye
-El documento reconstruido no incluye el bloque `health` del sector salud ni los datos adicionales (`additional_data`, `customer.extra_data` y `lines[].extra_data`). Si el documento los lleva, no uses este endpoint: envía de nuevo el JSON completo con el mismo número o, en numeración automática, corrígelo con `PATCH /auto-increment/*/{uuid}`.
+:::caution Datos que el reenvío reconstruye y excluye
+El documento reconstruido **sí conserva** los consorciados (`shareholders`). En cambio, no incluye el bloque `health` del sector salud ni los datos adicionales (`additional_data`, `customer.extra_data` y `lines[].extra_data`). Si el documento lleva estos últimos, no uses este endpoint: envía de nuevo el JSON completo con el mismo número o, en numeración automática, corrígelo con `PATCH /auto-increment/*/{uuid}`.
 :::
 
 <details>

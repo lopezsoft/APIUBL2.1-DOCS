@@ -7,7 +7,7 @@ const config: Config = {
   tagline: 'Integración fácil y rápida',
   favicon: 'img/favicon.ico',
   customFields: {
-    version: '3.9.1',
+    version: '3.9.2',
   },
 
   // Set the production url of your site here
@@ -282,7 +282,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} LOPEZSOFT SAS - Todos los derechos reservados. | MATIAS API v3.9.1 🤖 Documentación para IA (llms.txt + OpenAPI) + Recepción RADIAN + Sector Salud (Res. 000948 de 2026) + Bulk`,
+      copyright: `Copyright © ${new Date().getFullYear()} LOPEZSOFT SAS - Todos los derechos reservados. | MATIAS API v3.9.2 🤖 Documentación para IA (llms.txt + OpenAPI) + Recepción RADIAN + Sector Salud (Res. 000948 de 2026) + Bulk`,
     },
     prism: {
       theme: prismThemes.github,

@@ -55,7 +55,7 @@ Content-Type: application/json
 
 **Ejemplos de Casos Soportados:**
 - Factura Básica, Decimales, Ajustes.
-- Factura Sector Salud, Mandatos, Compra y Venta de Divisas.
+- Factura Sector Salud, Mandatos, Consorciados (`shareholders`), Compra y Venta de Divisas.
 - Factura con Propina, Obsequio (Regalos), Descuentos, Retenciones y Cargos.
 - Facturas en Moneda Extranjera (Euro, USD) y Exportación.
 - Factura con Impuestos (Licores AD VALOREM / ICL, ICUI, Bolsas, Varios impuestos).

@@ -14665,6 +14665,14 @@
           "customer": {
             "$ref": "#/components/schemas/Customer"
           },
+          "shareholders": {
+            "description": "Consorciados o partícipes del emisor (Consorcio o Unión Temporal). Genera el grupo ShareholderParty en el bloque del emisor sin modificar el adquiriente. La suma de participation_percent debe ser 100 y no se permiten NITs (dni) repetidos.",
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/Shareholder"
+            }
+          },
           "lines": {
             "type": "array",
             "items": {
@@ -14939,6 +14947,51 @@
         },
         "type": "object"
       },
+      "Shareholder": {
+        "title": "Consorciado o Partícipe",
+        "required": [
+          "dni",
+          "company_name",
+          "tax_level_id",
+          "tax_regime_id",
+          "participation_percent"
+        ],
+        "properties": {
+          "dni": {
+            "description": "NIT del consorciado sin dígito de verificación (sin duplicados en el arreglo).",
+            "type": "string",
+            "example": "900123456"
+          },
+          "dv": {
+            "description": "Dígito de verificación del NIT (módulo 11 DIAN). Opcional; si se envía se valida frente a dni.",
+            "type": "string",
+            "nullable": true,
+            "example": "8"
+          },
+          "company_name": {
+            "description": "Razón social o nombre del consorciado.",
+            "type": "string",
+            "example": "CONSORCIADO EJEMPLO S.A.S."
+          },
+          "tax_level_id": {
+            "description": "ID de responsabilidad fiscal (1: O-13, 2: O-15, 3: O-23, 4: O-47, 5: R-99-PN).",
+            "type": "integer",
+            "example": 5
+          },
+          "tax_regime_id": {
+            "description": "ID de régimen tributario (1: Responsable de IVA 48, 2: No responsable de IVA 49).",
+            "type": "integer",
+            "example": 2
+          },
+          "participation_percent": {
+            "description": "Porcentaje de participación en el consorcio. La suma total del arreglo debe ser igual a 100.",
+            "type": "number",
+            "format": "float",
+            "example": 60
+          }
+        },
+        "type": "object"
+      },
       "InvoiceLine": {
         "title": "Línea de la Factura",
         "properties": {
@@ -14963,6 +15016,12 @@
           "description": {
             "type": "string",
             "example": "TIJERA NECROPSIA AVES"
+          },
+          "notes": {
+            "description": "Nota adicional a nivel de línea (cbc:Note en facturas, documento soporte y notas crédito/débito incluidas POS). Obligatorio en la línea de Administración para AIU.",
+            "type": "string",
+            "nullable": true,
+            "example": "Nota de detalle de la línea"
           },
           "code": {
             "type": "string",

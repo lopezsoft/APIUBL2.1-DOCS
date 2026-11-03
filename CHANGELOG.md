@@ -4,6 +4,18 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.9.2] - 2026-11-03
+
+### Añadido
+* **Consorciados (`shareholders`):** nuevo arreglo opcional en la raíz del JSON de emisión para reportar los partícipes de un Consorcio o Unión Temporal (`cac:ShareholderParty` en el bloque del emisor sin tocar `customer`). Incluye validaciones HTTP `422` (dígito de verificación módulo 11, sin NITs repetidos y suma de `participation_percent` igual a `100`), preservación en `POST /documents/{uuid}/resend`, ejemplo completo en `docs/jsons-billing/shareholders-invoice.md` y esquema `Shareholder` en OpenAPI (`/openapi.json`).
+
+### Modificado
+* **Notas crédito y débito (`cbc:Note`):** `notes` a nivel de encabezado y `lines[].notes` a nivel de línea se incluyen como `cbc:Note` en el XML de las notas crédito y débito, incluidas las de POS (`type_document_id: 5, 4, 94, 93`). Se unificó la referencia del campo de línea en `notes` (retirando el `note` singular erróneo en `billing-fields.md`).
+* **Nómina electrónica (`05-payroll`):** en `POST /ep/payroll/delete` y `POST /ep/payroll` la respuesta en ambiente de habilitación tiene la misma estructura que en producción (`uuid`, `response`, `qr`, `warnings`, `success`).
+* **Periodo de nómina (`time_worked`) y reemplazo (`payroll-replace`):** `period.time_worked` valida mínimo `1` (`min:1`) sin tope superior. Se corrigieron la descripción introductoria y el campo `deductions_total` en `docs/payroll/payroll-replace.md`.
+
+---
+
 ## [3.9.1] - 2026-10-22
 
 ### Modificado

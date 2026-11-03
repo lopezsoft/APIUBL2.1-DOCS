@@ -8,6 +8,7 @@ A continuación se muestra un ejemplo de un JSON que representa una nota débito
 ```json title="pos-debit-note.json"
 {
 	"resolution_number": "18760000001",
+	"notes": "Nota del documento",
 	"date": "2024-01-24",
 	"time": "14:49:36",
     "document_number": "1",
@@ -41,6 +42,7 @@ A continuación se muestra un ejemplo de un JSON que representa una nota débito
 			"line_extension_amount":  79831.93,
 			"free_of_charge_indicator": false,
 			"description": "STILOGRAFOLAMYALSTAR025M",
+			"notes": "Nota de detalle de la línea",
 			"code": "4014519428527",
 			"type_item_identifications_id": "4",
 			"reference_price_id": "1",

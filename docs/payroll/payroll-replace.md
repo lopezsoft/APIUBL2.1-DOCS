@@ -3,11 +3,9 @@ sidebar_position: 2
 ---
 # Campos de la nómina de reemplazo
 
-Los campos de la nómina de reemplazo son los campos que se utilizan para calcular la nómina de un empleado que ha sido reemplazado 
-por otro empleado. Estos campos se utilizan para calcular la nómina de un empleado que ha sido reemplazado por otro empleado. 
-Los campos de la nómina de reemplazo son los siguientes:
+La nota de ajuste de nómina de tipo **reemplazo** (`POST /ep/payroll/replace`) permite corregir o sustituir un Documento Soporte de Pago de Nómina Electrónica previamente emitido y validado ante la DIAN, referenciando el documento original mediante el objeto `replacing_predecessor` (`number`, `cune` y `generation_date`).
 
-A continuación se describen los campos que componen la nómina electrónica.
+A continuación se describen los campos que componen la nómina de reemplazo.
 
 ## JSON de ejemplo
 
@@ -311,7 +309,7 @@ A continuación se describen los campos que componen la nómina electrónica.
   },
   "rounding": "46",
   "total_earned": "1200000",
-  "deductiones_total": "87400",
+  "deductions_total": "87400",
   "total_voucher": "1219100"
 }
 ```
@@ -344,7 +342,7 @@ A continuación se describen los campos que componen la nómina electrónica.
 - `departure_date`: DATE. Fecha de salida, puede ser nula.
 - `settlement_start_date`: DATE. Inicio del período de liquidación.
 - `settlement_end_date`: DATE. Fin del período de liquidación.
-- `time_worked`: STRING. Tiempo trabajado (días).
+- `time_worked`: STRING / INTEGER. Tiempo laborado por el trabajador en la empresa (en días). Validación: mínimo `1` (`min:1`), **sin tope máximo**.
 - `generation_date`: DATE. Fecha de generación del documento.
 
 ## Información General

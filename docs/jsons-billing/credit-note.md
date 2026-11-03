@@ -50,6 +50,7 @@ A continuación se muestra un ejemplo de un JSON que representa una nota crédit
       "line_extension_amount": "100.00",
       "free_of_charge_indicator": false,
       "description": "TIJERA NECROPSIA AVES",
+      "notes": "Nota de detalle de la línea",
       "code": "HMT83",
       "type_item_identifications_id": "4",
       "reference_price_id": "1",

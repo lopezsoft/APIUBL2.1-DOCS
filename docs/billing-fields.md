@@ -887,7 +887,7 @@ Referencia de la orden de compra. _Este campo es opcional_ y debe ser usado de a
   - #### `reference_date`
     Fecha de referencia. _Este campo es opcional_ debe ser usado de acuerdo al giro del documento y debe ser un string.
 
-### `health` 🟢
+### `health` 🟢 {#health}
 
 Información específica y obligatoria para documentos electrónicos del **Sector Salud** (reglamentada por la **Resolución 000948 de 2026** [14 de mayo de 2026] del Ministerio de Salud y Protección Social —que deroga expresamente las Resoluciones 2275 de 2023, 558 y 1884 de 2024—, Resolución 866 de 2021 y el **Documento Técnico 2 versión 001 - FEV Sector Salud** del MinSalud / DIAN). _Este campo es requerido_ cuando el emisor sea un prestador de servicios de salud (IPS, profesional independiente, transporte asistencial) o proveedor de tecnologías en salud que facture a EPS, entidades territoriales, ADRES, aseguradoras SOAT o planes voluntarios de salud. Debe ser un objeto.
 

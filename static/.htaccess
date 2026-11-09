@@ -15,7 +15,7 @@ ErrorDocument 404 /404.html
 
 # Tipos y charset de los recursos para agentes de IA.
 AddType "text/markdown; charset=utf-8" .md
-AddType "text/plain; charset=utf-8" .txt
+AddType "text/plain; charset=utf-8" .txt .cursorrules .sh .ps1
 AddCharset utf-8 .json .html .xml
 
 <IfModule mod_rewrite.c>
@@ -55,7 +55,7 @@ AddCharset utf-8 .json .html .xml
   Header add Link "</llms.txt>; rel=\"describedby\"; type=\"text/plain\""
 
   # Recursos para IA y herramientas: lectura cruzada y caché corta.
-  <FilesMatch "\.(md|txt|json)$">
+  <FilesMatch "\.(md|txt|json|cursorrules|sh|ps1)$">
     Header set Access-Control-Allow-Origin "*"
     Header set Cache-Control "public, max-age=3600"
   </FilesMatch>

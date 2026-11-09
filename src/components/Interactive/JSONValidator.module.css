@@ -1,136 +1,130 @@
 .container {
   width: 100%;
-  padding: 20px 0;
+  padding: 12px 0;
 }
 
 .card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 30px;
-  margin: 20px 0;
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 14px;
+  padding: 24px;
+  margin: 16px 0;
 }
 
 .card h2 {
   margin-top: 0;
-  color: #2c3e50;
-  border-bottom: 3px solid #28a745;
-  padding-bottom: 15px;
+  color: var(--ifm-heading-color);
+  border-bottom: 2px solid #10b981;
+  padding-bottom: 12px;
+  font-size: 1.35rem;
 }
 
 .controls {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   flex-wrap: wrap;
 }
 
 .buttonPrimary {
-  background-color: #007bff;
-  color: white;
-  padding: 12px 24px;
+  background-color: var(--ifm-color-primary);
+  color: #ffffff;
+  padding: 11px 22px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.3s;
-}
-
-.buttonPrimary:hover {
-  background-color: #0056b3;
+  font-weight: 700;
 }
 
 .buttonSecondary {
-  background-color: #6c757d;
-  color: white;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 4px;
+  background-color: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
+  padding: 11px 20px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.3s;
-}
-
-.buttonSecondary:hover {
-  background-color: #5a6268;
+  font-weight: 600;
 }
 
 .editorSection {
-  margin: 20px 0;
+  margin: 18px 0;
 }
 
 .editorSection label {
   display: block;
-  margin-bottom: 10px;
-  font-weight: 500;
-  color: #2c3e50;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: var(--ifm-font-color-base);
 }
 
 .textarea {
   width: 100%;
   height: 300px;
-  padding: 15px;
-  border: 2px solid #ddd;
-  border-radius: 4px;
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
+  padding: 14px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  background: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
+  border-radius: 10px;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 12.5px;
   resize: vertical;
-  transition: border-color 0.3s;
 }
 
 .textarea:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .resultSection {
-  margin-top: 20px;
+  margin-top: 18px;
 }
 
 .resultHeader {
-  padding: 15px;
-  border-radius: 4px;
-  margin-bottom: 15px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 14px;
 }
 
 .resultHeader h3 {
   margin: 0;
-  color: white;
+  color: #ffffff;
+  font-size: 1.05rem;
 }
 
 .resultHeader.success {
-  background-color: #28a745;
+  background-color: #059669;
 }
 
 .resultHeader.error {
-  background-color: #dc3545;
+  background-color: #dc2626;
 }
 
 .errorBox {
-  background-color: #fef3f4;
-  color: #842029;
-  border: 1px solid #f5c6cb;
-  padding: 15px;
-  border-radius: 4px;
-  margin-bottom: 15px;
-  font-family: 'Courier New', monospace;
+  background-color: rgba(239, 68, 68, 0.12);
+  color: var(--ifm-font-color-base);
+  border: 1px solid #ef4444;
+  padding: 14px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  font-family: var(--ifm-font-family-monospace);
 }
 
 .validationsList {
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  background-color: var(--ifm-background-color);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 15px;
+  margin-bottom: 14px;
 }
 
 .validationItem {
   display: flex;
   align-items: center;
-  padding: 15px;
-  border-bottom: 1px solid #eee;
-  gap: 15px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .validationItem:last-child {
@@ -138,66 +132,65 @@
 }
 
 .validationItem.pass {
-  background-color: #f0f8f4;
-  border-left: 4px solid #28a745;
+  border-left: 4px solid #10b981;
 }
 
 .validationItem.fail {
-  background-color: #fef3f4;
-  border-left: 4px solid #dc3545;
+  border-left: 4px solid #ef4444;
 }
 
 .validationName {
-  font-weight: 600;
+  font-weight: 700;
   min-width: 150px;
-  color: #2c3e50;
+  color: var(--ifm-font-color-base);
 }
 
 .validationMessage {
   flex: 1;
-  font-family: 'Courier New', monospace;
+  font-family: var(--ifm-font-family-monospace);
   font-size: 13px;
-  color: #495057;
+  color: var(--ifm-color-emphasis-700);
 }
 
 .successBox {
-  background-color: #f0f8f4;
-  border: 1px solid #28a745;
-  border-radius: 4px;
-  padding: 15px;
-  color: #155724;
-  margin-top: 15px;
+  background-color: rgba(16, 185, 129, 0.12);
+  border: 1px solid #10b981;
+  border-radius: 8px;
+  padding: 14px;
+  color: var(--ifm-font-color-base);
+  margin-top: 14px;
 }
 
 .successBox p {
-  margin: 5px 0;
+  margin: 4px 0;
 }
 
 .disclaimer {
   font-size: 12px;
-  color: #666;
-  margin-top: 10px;
+  color: var(--ifm-color-emphasis-600);
+  margin-top: 8px;
 }
 
 .infoBox {
-  background-color: #e7f3ff;
-  border: 2px solid #007bff;
-  border-radius: 4px;
-  padding: 15px;
-  margin-top: 20px;
-  color: #004085;
+  background-color: var(--ifm-background-color);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-left: 4px solid var(--ifm-color-primary);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-top: 18px;
+  color: var(--ifm-font-color-base);
 }
 
 .infoBox h4 {
   margin-top: 0;
-  color: #004085;
+  color: var(--ifm-heading-color);
 }
 
 .infoBox ul {
-  margin: 10px 0;
+  margin: 8px 0;
   padding-left: 20px;
 }
 
 .infoBox li {
-  margin: 5px 0;
+  margin: 4px 0;
 }

@@ -1,147 +1,138 @@
 .container {
   width: 100%;
-  padding: 20px 0;
+  padding: 12px 0;
 }
 
 .card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 30px;
-  margin: 20px 0;
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 14px;
+  padding: 24px;
+  margin: 16px 0;
 }
 
 .card h2 {
   margin-top: 0;
-  color: #2c3e50;
-  border-bottom: 3px solid #007bff;
-  padding-bottom: 15px;
+  color: var(--ifm-heading-color);
+  border-bottom: 2px solid var(--ifm-color-primary);
+  padding-bottom: 12px;
+  font-size: 1.35rem;
 }
 
 .inputGroup {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   flex-wrap: wrap;
 }
 
 .input {
   flex: 1;
   min-width: 200px;
-  padding: 12px;
-  border: 2px solid #ddd;
-  border-radius: 4px;
+  padding: 11px 14px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  background: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
+  border-radius: 8px;
   font-size: 14px;
-  font-family: 'Courier New', monospace;
-  transition: border-color 0.3s;
+  font-family: var(--ifm-font-family-monospace);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .input:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .buttonPrimary {
-  background-color: #007bff;
-  color: white;
-  padding: 12px 24px;
+  background-color: var(--ifm-color-primary);
+  color: #ffffff;
+  padding: 11px 22px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.3s;
+  font-weight: 700;
+  transition: opacity 0.2s ease;
 }
 
 .buttonPrimary:hover {
-  background-color: #0056b3;
+  opacity: 0.92;
 }
 
 .buttonPrimary:disabled {
-  background-color: #ccc;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .buttonSecondary {
-  background-color: #6c757d;
-  color: white;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 4px;
+  background-color: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
+  padding: 11px 20px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.3s;
+  font-weight: 600;
+  transition: border-color 0.2s ease;
 }
 
 .buttonSecondary:hover {
-  background-color: #5a6268;
+  border-color: var(--ifm-color-primary);
 }
 
 .buttonDetails {
-  background-color: #17a2b8;
-  color: white;
-  padding: 10px 20px;
+  background-color: var(--ifm-color-primary-dark);
+  color: #ffffff;
+  padding: 10px 18px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  margin-top: 15px;
+  margin-top: 14px;
   width: 100%;
-  font-weight: 500;
-  transition: background-color 0.3s;
-}
-
-.buttonDetails:hover {
-  background-color: #138496;
+  font-weight: 600;
 }
 
 .buttonCopy {
-  background-color: #28a745;
-  color: white;
-  padding: 10px 20px;
+  background-color: #059669;
+  color: #ffffff;
+  padding: 10px 18px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   margin-top: 10px;
-  font-weight: 500;
-  transition: background-color 0.3s;
-}
-
-.buttonCopy:hover {
-  background-color: #218838;
+  font-weight: 600;
 }
 
 .resultSection {
-  margin-top: 20px;
+  margin-top: 18px;
 }
 
 .resultBox {
-  border-left: 4px solid #ddd;
-  padding: 20px;
-  border-radius: 4px;
-  background-color: #f8f9fa;
-  margin: 15px 0;
+  border-left: 4px solid var(--ifm-color-emphasis-300);
+  padding: 18px;
+  border-radius: 10px;
+  background-color: var(--ifm-background-color);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  margin: 14px 0;
 }
 
 .resultBox h3 {
   margin-top: 0;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
 
 .resultBox.success {
-  border-left-color: #28a745;
-  background-color: #f0f8f4;
+  border-left: 4px solid #10b981;
 }
 
 .resultBox.error {
-  border-left-color: #dc3545;
-  background-color: #fef3f4;
-  color: #842029;
+  border-left: 4px solid #ef4444;
 }
 
 .resultContent {
-  background-color: white;
-  padding: 15px;
-  border-radius: 4px;
+  background-color: var(--ifm-background-surface-color);
+  padding: 14px;
+  border-radius: 8px;
   margin: 10px 0;
 }
 
@@ -150,7 +141,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 0;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .resultItem:last-child {
@@ -158,52 +151,52 @@
 }
 
 .resultItem strong {
-  color: #2c3e50;
-  min-width: 180px;
+  color: var(--ifm-font-color-base);
+  min-width: 160px;
 }
 
 .resultItem code {
-  background-color: #f1f3f5;
+  background-color: var(--ifm-background-color);
   padding: 5px 10px;
-  border-radius: 4px;
-  font-family: 'Courier New', monospace;
-  color: #e83e8c;
-  font-weight: 600;
+  border-radius: 6px;
+  font-family: var(--ifm-font-family-monospace);
+  color: var(--ifm-color-primary);
+  font-weight: 700;
 }
 
 .highlightDigit {
-  background-color: #ffc107 !important;
-  color: black !important;
-  font-size: 18px;
-  font-weight: bold;
-  padding: 8px 12px !important;
+  background-color: #f59e0b !important;
+  color: #0f172a !important;
+  font-size: 17px;
+  font-weight: 800;
+  padding: 6px 12px !important;
 }
 
 .fullNIT {
-  font-size: 18px;
-  font-weight: bold;
-  letter-spacing: 2px;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
 }
 
 .copySection {
-  margin: 15px 0;
+  margin: 12px 0;
 }
 
 .stepsContainer {
-  margin-top: 20px;
-  background-color: white;
-  padding: 15px;
-  border-radius: 4px;
+  margin-top: 16px;
+  background-color: var(--ifm-background-surface-color);
+  padding: 14px;
+  border-radius: 8px;
 }
 
 .stepsContainer h4 {
   margin-top: 0;
-  color: #2c3e50;
+  color: var(--ifm-heading-color);
 }
 
 .stepsTable {
   overflow-x: auto;
-  margin: 15px 0;
+  margin: 12px 0;
 }
 
 .stepsTable table {
@@ -216,56 +209,52 @@
 .stepsTable td {
   padding: 8px;
   text-align: right;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
 }
 
 .stepsTable th {
-  background-color: #f1f3f5;
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-.stepsTable tr:hover {
-  background-color: #f9f9f9;
+  background-color: var(--ifm-background-color);
+  font-weight: 700;
 }
 
 .calculationSteps {
-  background-color: white;
-  padding: 15px;
-  border-left: 3px solid #007bff;
-  border-radius: 4px;
-  margin-top: 15px;
+  background-color: var(--ifm-background-color);
+  padding: 14px;
+  border-left: 3px solid var(--ifm-color-primary);
+  border-radius: 6px;
+  margin-top: 12px;
 }
 
 .step {
-  padding: 8px 0;
-  font-family: 'Courier New', monospace;
-  color: #2c3e50;
+  padding: 6px 0;
+  font-family: var(--ifm-font-family-monospace);
+  color: var(--ifm-font-color-base);
 }
 
 .step strong {
-  color: #007bff;
+  color: var(--ifm-color-primary);
 }
 
 .infoBox {
-  background-color: #e7f3ff;
-  border: 2px solid #007bff;
-  border-radius: 4px;
-  padding: 15px;
-  margin-top: 20px;
-  color: #004085;
+  background-color: var(--ifm-background-color);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-left: 4px solid var(--ifm-color-primary);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-top: 18px;
+  color: var(--ifm-font-color-base);
 }
 
 .infoBox h4 {
   margin-top: 0;
-  color: #004085;
+  color: var(--ifm-heading-color);
 }
 
 .infoBox ul {
-  margin: 10px 0;
+  margin: 8px 0;
   padding-left: 20px;
 }
 
 .infoBox li {
-  margin: 5px 0;
+  margin: 4px 0;
 }

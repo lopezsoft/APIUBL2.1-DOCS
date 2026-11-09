@@ -1,374 +1,418 @@
 /**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
+ * Sistema de Diseño Global — MATIAS API Documentation (Estilo Starlight / Mintlify)
+ * Adaptado 100% a Modo Claro y Modo Oscuro mediante variables CSS de Infima.
  */
 
-/* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #3c6ab2; /* Nuevo color primario */
-  --ifm-color-primary-dark: #2556a3; /* Basado en tu segunda sugerencia para oscuro */
-  --ifm-color-primary-darker: #204892; /* Un poco más oscuro que primary-dark */
-  --ifm-color-primary-darkest: #1a3d82; /* El más oscuro basado en primary-dark */
-  --ifm-color-primary-light: #507cc2; /* Más claro que primary */
-  --ifm-color-primary-lighter: #6589c2; /* Un poco más claro que primary-light */
-  --ifm-color-primary-lightest: #7a96d2; /* El más claro, basado en primary */
-  --ifm-code-font-size: 95%; /* Sin cambio */
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1); /* Sin cambio */
+  --ifm-color-primary: #2563eb;
+  --ifm-color-primary-dark: #1d4ed8;
+  --ifm-color-primary-darker: #1e40af;
+  --ifm-color-primary-darkest: #1e3a8a;
+  --ifm-color-primary-light: #3b82f6;
+  --ifm-color-primary-lighter: #60a5fa;
+  --ifm-color-primary-lightest: #93c5fd;
+
+  --ifm-background-color: #ffffff;
+  --ifm-background-surface-color: #f8fafc;
+  --ifm-toc-border-color: #e2e8f0;
+  --ifm-color-emphasis-200: #e2e8f0;
+  --ifm-color-emphasis-300: #cbd5e1;
+
+  --ifm-code-font-size: 90%;
+  --ifm-code-border-radius: 6px;
+  --ifm-code-padding-vertical: 0.15rem;
+  --ifm-code-padding-horizontal: 0.38rem;
+  --ifm-pre-border-radius: 12px;
+  --ifm-global-radius: 10px;
+  --ifm-font-family-base: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+  --ifm-heading-font-weight: 700;
+  --ifm-line-height-base: 1.68;
+  --docusaurus-highlighted-code-line-bg: rgba(37, 99, 235, 0.1);
 }
 
-
-/* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #3c6ab2; /* Nuevo color primario para el tema oscuro */
-  --ifm-color-primary-dark: #2556a3; /* Más oscuro que el color primario */
-  --ifm-color-primary-darker: #204892; /* Un poco más oscuro que primary-dark */
-  --ifm-color-primary-darkest: #1a3d82; /* El más oscuro, basado en primary-dark */
-  --ifm-color-primary-light: #507cc2; /* Más claro que primary */
-  --ifm-color-primary-lighter: #6589c2; /* Un poco más claro que primary-light */
-  --ifm-color-primary-lightest: #7a96d2; /* El más claro, basado en primary */
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3); /* Ajustado para el tema oscuro */
+  --ifm-color-primary: #60a5fa;
+  --ifm-color-primary-dark: #3b82f6;
+  --ifm-color-primary-darker: #2563eb;
+  --ifm-color-primary-darkest: #1d4ed8;
+  --ifm-color-primary-light: #93c5fd;
+  --ifm-color-primary-lighter: #bfdbfe;
+  --ifm-color-primary-lightest: #dbeafe;
+
+  --ifm-background-color: #0b1120;
+  --ifm-background-surface-color: #111827;
+  --ifm-toc-border-color: #1e293b;
+  --ifm-color-emphasis-200: #1e293b;
+  --ifm-color-emphasis-300: #334155;
+  --docusaurus-highlighted-code-line-bg: rgba(96, 165, 250, 0.18);
 }
 
 /* ============================================
-   REDOCUSAURUS - MEJORAS DE UI/UX
+   NAVBAR SUPERIOR — ESTILO STARLIGHT / MINTLIFY
    ============================================ */
 
-/* Estilos para el contenedor principal de Redoc */
-.redocusaurus-container {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+.navbar {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+  box-shadow: none;
+  padding: 0.45rem 1.25rem;
 }
 
-/* Mejora del sidebar de Redoc */
-.redoc-sidebar {
-  background-color: #ffffff;
-  border-right: 1px solid #e0e6ed;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+[data-theme='dark'] .navbar {
+  background: rgba(11, 17, 32, 0.86);
 }
 
-/* Estilos para los grupos de tags (x-tagGroups) */
-.redoc-sidebar-section {
-  margin-bottom: 24px;
-  padding: 0 16px;
+.navbar__title {
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  font-size: 1.05rem;
 }
 
-.redoc-sidebar-section-title {
-  font-size: 12px;
+.navbar__link {
+  font-size: 0.86rem;
+  font-weight: 600;
+  padding: 0.38rem 0.68rem;
+  border-radius: 8px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.navbar__link:hover,
+.navbar__link--active {
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--ifm-color-primary);
+}
+
+[data-theme='dark'] .navbar__link:hover,
+[data-theme='dark'] .navbar__link--active {
+  background: rgba(96, 165, 250, 0.14);
+}
+
+/* ============================================
+   SIDEBAR IZQUIERDO — ARQUITECTURA DE LECTURA
+   ============================================ */
+
+.theme-doc-sidebar-container {
+  border-right: 1px solid var(--ifm-toc-border-color) !important;
+  background: var(--ifm-background-surface-color);
+}
+
+.menu {
+  padding: 1rem 0.75rem 2rem !important;
+  font-size: 0.875rem;
+}
+
+.menu__list {
+  margin-top: 0.15rem;
+}
+
+.menu__link {
+  font-size: 0.86rem;
+  line-height: 1.4;
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  color: var(--ifm-color-emphasis-700);
+  transition: all 0.14s ease;
+}
+
+.menu__link:hover {
+  background: rgba(37, 99, 235, 0.07);
+  color: var(--ifm-font-color-base);
+}
+
+.menu__link--active:not(.menu__link--sublist) {
+  background: rgba(37, 99, 235, 0.11);
+  color: var(--ifm-color-primary);
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #3c6ab2;
-  margin-bottom: 12px;
-  padding-top: 16px;
-  border-top: 2px solid #e8f0ff;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  border-left: 3px solid var(--ifm-color-primary);
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
 }
 
-/* Items dentro de cada grupo */
-.redoc-sidebar-item {
-  padding: 8px 12px;
-  margin-bottom: 4px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-  font-size: 13px;
-  color: #333333;
+[data-theme='dark'] .menu__link--active:not(.menu__link--sublist) {
+  background: rgba(96, 165, 250, 0.16);
 }
 
-.redoc-sidebar-item:hover {
-  background-color: #f0f4f8;
-  color: #3c6ab2;
-  padding-left: 16px;
-}
-
-.redoc-sidebar-item.active {
-  background-color: #e8f0ff;
-  color: #3c6ab2;
-  font-weight: 600;
-  border-left: 3px solid #3c6ab2;
-  padding-left: 9px;
-}
-
-/* Mejora de la tipografía en el panel derecho */
-.redoc-right-panel {
-  background-color: #ffffff;
-}
-
-.redoc-right-panel h1,
-.redoc-right-panel h2,
-.redoc-right-panel h3 {
-  color: #1a3d82;
-  font-weight: 600;
-  margin-top: 24px;
-  margin-bottom: 12px;
-}
-
-.redoc-right-panel h1 {
-  font-size: 28px;
-  border-bottom: 2px solid #e8f0ff;
-  padding-bottom: 12px;
-}
-
-.redoc-right-panel h2 {
-  font-size: 20px;
-}
-
-.redoc-right-panel h3 {
-  font-size: 16px;
-}
-
-/* Mejora de los bloques de código */
-.redoc-code-block {
-  background-color: #f5f7fa;
-  border: 1px solid #e0e6ed;
-  border-radius: 6px;
-  padding: 12px;
-  font-size: 13px;
-  line-height: 1.5;
-  overflow-x: auto;
-}
-
-.redoc-code-block code {
-  color: #333333;
-  font-family: 'Courier New', monospace;
-}
-
-/* Mejora de las tablas de parámetros */
-.redoc-table {
-  border-collapse: collapse;
-  width: 100%;
-  margin: 16px 0;
-}
-
-.redoc-table th {
-  background-color: #e8f0ff;
-  color: #1a3d82;
-  font-weight: 600;
-  padding: 12px;
-  text-align: left;
-  border-bottom: 2px solid #3c6ab2;
-}
-
-.redoc-table td {
-  padding: 12px;
-  border-bottom: 1px solid #e0e6ed;
-}
-
-.redoc-table tr:hover {
-  background-color: #f5f7fa;
-}
-
-/* Mejora de los badges de método HTTP */
-.redoc-method-badge {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-weight: 600;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.redoc-method-badge.get {
-  background-color: #e3f2fd;
-  color: #1976d2;
-}
-
-.redoc-method-badge.post {
-  background-color: #f3e5f5;
-  color: #7b1fa2;
-}
-
-.redoc-method-badge.put {
-  background-color: #fff3e0;
-  color: #e65100;
-}
-
-.redoc-method-badge.delete {
-  background-color: #ffebee;
-  color: #c62828;
-}
-
-.redoc-method-badge.patch {
-  background-color: #e0f2f1;
-  color: #00695c;
-}
-
-/* Mejora de los enlaces */
-.redoc-link {
-  color: #3c6ab2;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.redoc-link:hover {
-  color: #2556a3;
-  text-decoration: underline;
-}
-
-/* Mejora de la búsqueda */
-.redoc-search-input {
-  border: 1px solid #e0e6ed;
-  border-radius: 4px;
-  padding: 8px 12px;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-.redoc-search-input:focus {
-  border-color: #3c6ab2;
-  box-shadow: 0 0 0 3px rgba(60, 106, 178, 0.1);
-  outline: none;
-}
-
-/* Mejora de los botones */
-.redoc-button {
-  background-color: #3c6ab2;
-  color: #ffffff;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.redoc-button:hover {
-  background-color: #2556a3;
-  box-shadow: 0 4px 12px rgba(60, 106, 178, 0.3);
-}
-
-.redoc-button:active {
-  background-color: #1a3d82;
-}
-
-/* Mejora de las respuestas de éxito */
-.redoc-response-success {
-  border-left: 4px solid #4caf50;
-  background-color: #f1f8f4;
-  padding: 12px;
-  border-radius: 4px;
-  margin: 12px 0;
-}
-
-/* Mejora de las respuestas de error */
-.redoc-response-error {
-  border-left: 4px solid #f44336;
-  background-color: #fef5f5;
-  padding: 12px;
-  border-radius: 4px;
-  margin: 12px 0;
-}
-
-/* Mejora de las respuestas de advertencia */
-.redoc-response-warning {
-  border-left: 4px solid #ff9800;
-  background-color: #fff8f0;
-  padding: 12px;
-  border-radius: 4px;
-  margin: 12px 0;
-}
-
-/* Responsive - Mejoras para móvil */
-@media (max-width: 768px) {
-  .redoc-sidebar {
-    width: 100% !important;
-    max-width: 100%;
-  }
-
-  .redoc-sidebar-section-title {
-    font-size: 11px;
-    padding-top: 12px;
-  }
-
-  .redoc-sidebar-item {
-    padding: 6px 10px;
-    font-size: 12px;
-  }
-
-  .redoc-right-panel h1 {
-    font-size: 24px;
-  }
-
-  .redoc-right-panel h2 {
-    font-size: 18px;
-  }
-
-  .redoc-right-panel h3 {
-    font-size: 14px;
-  }
-}
-
-/* Animaciones suaves */
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.redoc-sidebar-item {
-  animation: slideIn 0.3s ease;
-}
-
-/* Mejora de accesibilidad */
-.redoc-sidebar-item:focus {
-  outline: 2px solid #3c6ab2;
-  outline-offset: 2px;
-}
-
-.redoc-button:focus {
-  outline: 2px solid #3c6ab2;
-  outline-offset: 2px;
+.menu__list-item-collapsible > .menu__link {
+  font-weight: 700;
+  color: var(--ifm-font-color-base);
+  letter-spacing: -0.01em;
 }
 
 /* ============================================
-   OCULTAR LOGO Y BRANDING DE REDOCLY
+   CONTENIDO DE PÁGINAS INTERNAS (.markdown)
    ============================================ */
 
-/* Ocultar el logo de Redocly en el footer */
+.theme-doc-markdown {
+  max-width: 860px;
+}
+
+.markdown h1:first-child {
+  font-size: 2.15rem;
+  font-weight: 800;
+  letter-spacing: -0.028em;
+  line-height: 1.2;
+  padding-bottom: 0.85rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+.markdown h2 {
+  font-size: 1.48rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  margin-top: 2.5rem;
+  margin-bottom: 0.9rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--ifm-toc-border-color);
+}
+
+.markdown h1 + h2 {
+  border-top: none;
+  padding-top: 0;
+}
+
+.markdown h3 {
+  font-size: 1.16rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-top: 1.65rem;
+  margin-bottom: 0.65rem;
+}
+
+/* Código inline tipo Starlight */
+.markdown :not(pre) > code {
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  color: var(--ifm-color-primary-darker);
+  font-weight: 500;
+  border-radius: 6px;
+  padding: 0.12rem 0.4rem;
+}
+
+[data-theme='dark'] .markdown :not(pre) > code {
+  background: rgba(96, 165, 250, 0.13);
+  border-color: rgba(96, 165, 250, 0.25);
+  color: var(--ifm-color-primary-lightest);
+}
+
+/* Bloques de código (Prism) */
+div[class*='codeBlockContainer'] {
+  border-radius: 12px !important;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+/* Pestañas <Tabs> estilo Segmented Control (Stripe / Starlight) */
+.tabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.35rem;
+  border-radius: 10px;
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  margin-bottom: 0.85rem;
+}
+
+.tabs__item {
+  border-radius: 7px !important;
+  border: none !important;
+  padding: 0.4rem 0.9rem !important;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ifm-color-emphasis-700);
+  transition: all 0.15s ease;
+}
+
+.tabs__item:hover {
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--ifm-color-primary);
+}
+
+.tabs__item--active {
+  background: var(--ifm-color-primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+
+[data-theme='dark'] .tabs__item--active {
+  background: var(--ifm-color-primary-darker) !important;
+  color: #ffffff !important;
+}
+
+/* Acordeones <details> */
+details {
+  border-radius: 12px !important;
+  border: 1px solid var(--ifm-color-emphasis-300) !important;
+  background: var(--ifm-background-surface-color) !important;
+  box-shadow: none !important;
+  padding: 0.85rem 1.1rem !important;
+  margin-bottom: 1rem !important;
+  transition: border-color 0.18s ease;
+}
+
+details:hover {
+  border-color: var(--ifm-color-primary-light) !important;
+}
+
+details > summary {
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.94rem;
+}
+
+/* Admonitions (:::tip, :::info, :::warning, :::danger) */
+.theme-admonition {
+  border-radius: 12px !important;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-left-width: 4px !important;
+  box-shadow: none !important;
+}
+
+/* Tablas técnicas estilo Starlight */
+.markdown table {
+  display: table;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 0.88rem;
+  margin: 1.25rem 0;
+}
+
+.markdown table th {
+  background-color: var(--ifm-background-surface-color);
+  font-weight: 700;
+  text-align: left;
+  padding: 0.75rem 0.9rem;
+  border-bottom: 1px solid var(--ifm-color-emphasis-300);
+}
+
+.markdown table td {
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+.markdown table tr:last-child td {
+  border-bottom: none;
+}
+
+.markdown table tr {
+  background-color: var(--ifm-background-color) !important;
+}
+
+.markdown table tr:hover td {
+  background-color: var(--ifm-background-surface-color);
+}
+
+/* Tabla de Contenidos Derecha (TOC) */
+.table-of-contents {
+  border-left: 1px solid var(--ifm-toc-border-color);
+  font-size: 0.8rem;
+}
+
+.table-of-contents__link--active {
+  font-weight: 700;
+  color: var(--ifm-color-primary);
+}
+
+/* Paginación inferior (Anterior / Siguiente) */
+.pagination-nav__link {
+  border-radius: 12px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  background: var(--ifm-background-surface-color);
+  padding: 1rem 1.25rem;
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.pagination-nav__link:hover {
+  transform: translateY(-2px);
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.1);
+}
+
+/* Footer global de Docusaurus */
+.footer--dark {
+  --ifm-footer-background-color: #091020;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================
+   TARJETAS Y CALLOUTS ADAPTATIVOS (DARK MODE)
+   ============================================ */
+
+.doc-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.doc-status-card {
+  padding: 1.1rem 1.2rem;
+  border-radius: 12px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  background: var(--ifm-background-surface-color);
+  transition: transform 0.16s ease, border-color 0.16s ease;
+}
+
+.doc-status-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--ifm-color-primary);
+}
+
+.doc-status-card--warning {
+  border-left: 4px solid #f59e0b;
+}
+
+.doc-status-card--danger {
+  border-left: 4px solid #ef4444;
+}
+
+.doc-status-card--info {
+  border-left: 4px solid #0ea5e9;
+}
+
+.doc-status-card--success {
+  border-left: 4px solid #10b981;
+}
+
+.doc-formula-box {
+  padding: 1.15rem 1.35rem;
+  border-radius: 10px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  background: var(--ifm-background-surface-color);
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.88rem;
+  margin: 1rem 0;
+  line-height: 1.65;
+}
+
+/* ============================================
+   REDOCUSAURUS — MEJORAS DE UI/UX
+   ============================================ */
+
+.redocusaurus-container {
+  font-family: var(--ifm-font-family-base);
+}
+
+.redoc-sidebar {
+  background-color: var(--ifm-background-surface-color);
+  border-right: 1px solid var(--ifm-color-emphasis-200);
+}
+
 .redoc-footer-logo,
 .redoc-footer-branding,
-[class*="redocly"],
-[class*="Redocly"],
 .redoc-powered-by,
-.powered-by-redocly {
-  display: none !important;
-  visibility: hidden !important;
-}
-
-/* Ocultar el texto "API docs by Redocly" */
-.redoc-footer-text,
-.redoc-footer-content,
-footer [class*="redoc"],
-footer [class*="Redoc"],
-footer a[href*="redocly"],
-footer a[href*="redoc"] {
-  display: none !important;
-}
-
-/* Ocultar cualquier elemento que contenga "Redocly" o "API docs" */
-*:has-text("Redocly"),
-*:has-text("API docs by") {
-  display: none !important;
-}
-
-/* Alternativa: Ocultar el footer completo si es necesario */
-.redoc-footer {
-  display: none !important;
-}
-
-/* Si el footer tiene un contenedor específico */
-[class*="footer"] {
-  visibility: hidden;
-}
-
-/* Ocultar cualquier enlace a redocly.com */
+.powered-by-redocly,
+.redoc-footer,
 a[href*="redocly.com"],
 a[href*="redoc.ly"] {
   display: none !important;

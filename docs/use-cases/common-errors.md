@@ -10,26 +10,26 @@ sidebar_label: Errores Comunes
 
 Esta guía enumera los errores más frecuentes al trabajar con la API MATIAS de facturación electrónica y cómo solucionarlos. Los ejemplos están basados en estructuras reales del API.
 
-<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', margin: '1.5rem 0'}}>
-  <div style={{padding: '1rem', backgroundColor: '#fff3cd', borderRadius: '8px', border: '2px solid #ffc107'}}>
-    <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>🔐</div>
+<div className="doc-status-grid">
+  <div className="doc-status-card doc-status-card--warning">
+    <div style={{fontSize: '1.75rem', marginBottom: '0.4rem'}}>🔐</div>
     <strong>Autenticación</strong><br/>
-    <small>Tokens, credenciales, permisos</small>
+    <small>Tokens, verificación de correo (404), Sandbox vs Producción</small>
   </div>
-  <div style={{padding: '1rem', backgroundColor: '#f8d7da', borderRadius: '8px', border: '2px solid #dc3545'}}>
-    <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>🧮</div>
-    <strong>Cálculos</strong><br/>
-    <small>Totales, impuestos, descuentos</small>
+  <div className="doc-status-card doc-status-card--danger">
+    <div style={{fontSize: '1.75rem', marginBottom: '0.4rem'}}>🧮</div>
+    <strong>Cálculos UBL 2.1</strong><br/>
+    <small>Totales, impuestos, descuentos y retenciones</small>
   </div>
-  <div style={{padding: '1rem', backgroundColor: '#d1ecf1', borderRadius: '8px', border: '2px solid #17a2b8'}}>
-    <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>👥</div>
-    <strong>Clientes</strong><br/>
-    <small>NIT, datos obligatorios</small>
+  <div className="doc-status-card doc-status-card--info">
+    <div style={{fontSize: '1.75rem', marginBottom: '0.4rem'}}>🚦</div>
+    <strong>Concurrencia DIAN</strong><br/>
+    <small>Errores 409, 503, Regla 90 y DOCUMENT_POSSIBLY_SENT</small>
   </div>
-  <div style={{padding: '1rem', backgroundColor: '#e2e3e5', borderRadius: '8px', border: '2px solid #6c757d'}}>
-    <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📝</div>
-    <strong>Estructura JSON</strong><br/>
-    <small>Validación, campos requeridos</small>
+  <div className="doc-status-card doc-status-card--success">
+    <div style={{fontSize: '1.75rem', marginBottom: '0.4rem'}}>📝</div>
+    <strong>Estructura y Clientes</strong><br/>
+    <small>NIT sin DV, campos requeridos y ?client_uuid</small>
   </div>
 </div>
 
@@ -39,9 +39,9 @@ Esta guía enumera los errores más frecuentes al trabajar con la API MATIAS de 
 
 ### ❌ "Unauthorized" / "invalid_token"
 
-<div style={{backgroundColor: '#fff3cd', padding: '1rem', borderRadius: '8px', border: '1px solid #ffc107', marginBottom: '1rem'}}>
-  <strong>⚠️ Error Común:</strong> Este es uno de los errores más frecuentes. Generalmente el token ha expirado.
-</div>
+:::warning ⚠️ Error Común
+Este es uno de los errores más frecuentes. Generalmente el token ha expirado o falta el encabezado `Authorization: Bearer {token}`.
+:::
 
 **Respuesta del API:**
 ```json
@@ -185,37 +185,32 @@ Verifica que el JSON incluya **todos estos campos** con valores válidos antes d
 
 **🧮 Algoritmo Colombiano Correcto:**
 
-<div style={{backgroundColor: '#f8f9fa', padding: '1.5rem', borderRadius: '8px', border: '1px solid #dee2e6', fontFamily: 'monospace', margin: '1rem 0'}}>
+<div className="doc-formula-box">
   <strong>Posición:</strong> 1  2  3  4  5  6  7  8  9<br/>
   <strong>Dígito:</strong>   8  0  0  1  2  3  4  5  6<br/>
   <strong>Peso:</strong>     3  7  13 17 19 23 29 37 41<br/><br/>
-  
-  <div style={{backgroundColor: '#e7f3ff', padding: '0.75rem', borderRadius: '4px', marginTop: '0.5rem'}}>
+  <div>
     8×3 + 0×7 + 0×13 + 1×17 + 2×19 + 3×23 + 4×29 + 5×37 + 6×41<br/>
-    = 24 + 0 + 0 + 17 + 38 + 69 + 116 + 185 + 246<br/>
-    = <strong>695</strong>
+    = 24 + 0 + 0 + 17 + 38 + 69 + 116 + 185 + 246 = <strong>695</strong>
   </div>
-  
-  <div style={{backgroundColor: '#fff3cd', padding: '0.75rem', borderRadius: '4px', marginTop: '0.5rem'}}>
-    695 ÷ 11 = 63 resto <strong>2</strong><br/>
-    Dígito verificador = 11 - 2 = <strong style={{color: '#28a745'}}>9</strong>
+  <div style={{marginTop: '0.5rem'}}>
+    695 ÷ 11 = 63 resto <strong>2</strong> → Dígito verificador = 11 - 2 = <strong>9</strong>
   </div>
-  
-  <div style={{backgroundColor: '#d4edda', padding: '0.75rem', borderRadius: '4px', marginTop: '0.5rem', color: '#155724'}}>
-    ✓ <strong>NIT correcto: 800123456-9</strong>
+  <div style={{marginTop: '0.5rem', color: 'var(--ifm-color-primary)'}}>
+    ✓ <strong>NIT correcto: 800123456 (DV 9) — en el campo dni envía solo &quot;800123456&quot;</strong>
   </div>
 </div>
 
 **💡 Solución:**
 
-<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', margin: '1rem 0'}}>
-  <div style={{padding: '1rem', backgroundColor: '#d4edda', borderRadius: '8px', border: '1px solid #28a745'}}>
+<div className="doc-status-grid">
+  <div className="doc-status-card doc-status-card--success">
     🔍 <strong>NITValidator</strong><br/>
-    <small><a href="/docs/interactive-tools">Herramientas Interactivas</a></small>
+    <small><a href="/docs/interactive-tools">Abrir Herramientas Interactivas</a></small>
   </div>
-  <div style={{padding: '1rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '1px solid #0066cc'}}>
-    🧮 <strong>Cálculo Manual</strong><br/>
-    <small>Usa el algoritmo anterior</small>
+  <div className="doc-status-card doc-status-card--info">
+    🧮 <strong>Regla para el JSON</strong><br/>
+    <small>Envía solo dígitos en <code>dni</code>, sin guiones ni DV</small>
   </div>
 </div>
 
@@ -225,9 +220,9 @@ Verifica que el JSON incluya **todos estos campos** con valores válidos antes d
 
 ### ❌ "Total no coincide"
 
-<div style={{backgroundColor: '#f8d7da', padding: '1rem', borderRadius: '8px', border: '1px solid #dc3545', marginBottom: '1rem'}}>
-  <strong>❌ Error Crítico:</strong> Uno de los errores más comunes al crear facturas. Revisa los cálculos cuidadosamente.
-</div>
+:::danger ❌ Error Crítico
+Uno de los errores más comunes al crear facturas. Revisa las sumatorias de `legal_monetary_totals` cuidadosamente.
+:::
 
 **Respuesta del API:**
 ```json
@@ -291,7 +286,7 @@ Verifica que el JSON incluya **todos estos campos** con valores válidos antes d
 
 **🎯 Fórmula Correcta:**
 
-<div style={{backgroundColor: '#d4edda', padding: '1rem', borderRadius: '8px', border: '1px solid #28a745', fontFamily: 'monospace', margin: '1rem 0'}}>
+<div className="doc-formula-box">
   <strong>tax_inclusive_amount</strong> = tax_exclusive_amount + SUMA(tax_totals[*].tax_amount)<br/>
   <strong>payable_amount</strong> = tax_inclusive_amount
 </div>
@@ -349,7 +344,7 @@ Verifica que el JSON incluya **todos estos campos** con valores válidos antes d
 
 **🎯 Fórmula:**
 
-<div style={{backgroundColor: '#e7f3ff', padding: '1rem', borderRadius: '8px', border: '1px solid #0066cc', fontFamily: 'monospace', margin: '1rem 0'}}>
+<div className="doc-formula-box">
   <strong>tax_amount</strong> = taxable_amount × (percent / 100)
 </div>
 
@@ -460,9 +455,9 @@ El monto debe ser ≤ al monto base **(50 ≤ 100)** ✓
 
 ### ❌ "Documento duplicado"
 
-<div style={{backgroundColor: '#fff3cd', padding: '1rem', borderRadius: '8px', border: '1px solid #ffc107', marginBottom: '1rem'}}>
-  <strong>⚠️ Atención:</strong> Intentas crear un documento con un número que ya existe en el sistema.
-</div>
+:::warning ⚠️ Atención
+Intentas crear un documento con un número que ya fue validado previamente por la DIAN.
+:::
 
 **Respuesta del API:**
 ```json
@@ -484,17 +479,14 @@ El monto debe ser ≤ al monto base **(50 ≤ 100)** ✓
 
 **💡 Soluciones:**
 
-<div style={{display: 'grid', gap: '1rem', margin: '1rem 0'}}>
-  <div style={{padding: '1rem', backgroundColor: '#d4edda', borderRadius: '8px', border: '1px solid #28a745'}}>
+<div className="doc-status-grid">
+  <div className="doc-status-card doc-status-card--success">
     <strong>✅ Opción 1: Incrementar número secuencial</strong><br/>
-    <code style={{backgroundColor: '#f8d7da', padding: '0.25rem 0.5rem', borderRadius: '4px'}}>Actual: LZT-2002 ❌ Ya existe</code><br/>
-    <code style={{backgroundColor: '#d4edda', padding: '0.25rem 0.5rem', borderRadius: '4px', marginTop: '0.5rem', display: 'inline-block'}}>Nuevo: LZT-2003 ✓ Use este</code>
+    <small>Actual: <code>LZT-2002</code> (Ya existe) → Nuevo: <code>LZT-2003</code></small>
   </div>
-  
-  <div style={{padding: '1rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '1px solid #0066cc'}}>
-    <strong>✅ Opción 2: Usar diferente prefijo</strong><br/>
-    <code style={{backgroundColor: '#f8d7da', padding: '0.25rem 0.5rem', borderRadius: '4px'}}>Actual: LZT-2002 ❌ Ya existe</code><br/>
-    <code style={{backgroundColor: '#d4edda', padding: '0.25rem 0.5rem', borderRadius: '4px', marginTop: '0.5rem', display: 'inline-block'}}>Nuevo: LZX-2002 ✓ Prefijo diferente</code>
+  <div className="doc-status-card doc-status-card--info">
+    <strong>✅ Opción 2: Usar diferente prefijo autorizado</strong><br/>
+    <small>Actual: <code>LZT-2002</code> → Nuevo: <code>LZX-2002</code></small>
   </div>
 </div>
 
@@ -742,10 +734,9 @@ Más detalles en [Envío Masivo de Documentos](/docs/bulk-documents).
 
 ## 🎯 Matriz de Solución Rápida
 
-<div style={{backgroundColor: '#e7f3ff', padding: '1.5rem', borderRadius: '8px', border: '2px solid #0066cc', margin: '1.5rem 0'}}>
-  <h3 style={{marginTop: 0}}>⚡ Referencia Rápida de Errores</h3>
-  <p>Encuentra rápidamente la solución al error que estás experimentando:</p>
-</div>
+:::info ⚡ Referencia Rápida de Errores
+Encuentra rápidamente la causa probable y la solución recomendada para el código o mensaje recibido:
+:::
 
 <div style={{overflowX: 'auto'}}>
 
@@ -775,38 +766,30 @@ Más detalles en [Envío Masivo de Documentos](/docs/bulk-documents).
 
 ## 🛠️ Herramientas Disponibles
 
-<div style={{backgroundColor: '#d4edda', padding: '1.5rem', borderRadius: '8px', border: '2px solid #28a745', margin: '1.5rem 0'}}>
-  <h3 style={{marginTop: 0}}>💡 Prevención de Errores</h3>
-  <p>Para evitar errores, usa nuestras herramientas interactivas:</p>
-  
-  <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem'}}>
-    <div style={{padding: '1rem', backgroundColor: 'white', borderRadius: '6px'}}>
-      🔍 <strong>NITValidator</strong><br/>
-      <small>Valida y calcula dígito verificador</small>
-    </div>
-    <div style={{padding: '1rem', backgroundColor: 'white', borderRadius: '6px'}}>
-      ✅ <strong>JSONValidator</strong><br/>
-      <small>Valida estructura completa</small>
-    </div>
-    <div style={{padding: '1rem', backgroundColor: 'white', borderRadius: '6px'}}>
-      🧮 <strong>TotalCalculator</strong><br/>
-      <small>Calcula totales automáticamente</small>
-    </div>
+<div className="doc-status-grid">
+  <div className="doc-status-card doc-status-card--success">
+    🔍 <strong>NITValidator</strong><br/>
+    <small>Valida y calcula dígito verificador Módulo 11</small>
   </div>
-  
-  <div style={{marginTop: '1rem', textAlign: 'center'}}>
-    <a href="/docs/interactive-tools" style={{color: '#155724', fontWeight: 'bold'}}>📱 Acceder a Herramientas →</a>
+  <div className="doc-status-card doc-status-card--info">
+    ✅ <strong>JSONValidator</strong><br/>
+    <small>Valida estructura completa de la factura</small>
+  </div>
+  <div className="doc-status-card doc-status-card--warning">
+    🧮 <strong>TotalCalculator</strong><br/>
+    <small>Calcula bases e impuestos automáticamente</small>
   </div>
 </div>
+
+👉 **[Abrir Herramientas Interactivas en el Navegador →](/docs/interactive-tools)**
 
 ---
 
 ## 🔬 Debugging
 
-<div style={{backgroundColor: '#f8f9fa', padding: '1.5rem', borderRadius: '8px', border: '1px solid #dee2e6', margin: '1.5rem 0'}}>
-  <strong>🎯 Guía de Depuración Paso a Paso</strong><br/>
-  Sigue estos pasos para identificar y resolver problemas:
-</div>
+:::tip 🎯 Guía de Depuración Paso a Paso
+Sigue estos pasos para aislar y resolver rechazos de validación o comunicación:
+:::
 
 ### 📡 Paso 1: Verificar Respuesta Completa
 
@@ -831,23 +814,23 @@ cat factura.json | jq empty
 
 ### 📚 Paso 3: Comparar con Ejemplo Real
 
-<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', margin: '1rem 0'}}>
+<div className="doc-status-grid">
   <a href="/docs/jsons-billing/invoice" style={{textDecoration: 'none', color: 'inherit'}}>
-    <div style={{padding: '1rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '1px solid #0066cc', cursor: 'pointer'}}>
+    <div className="doc-status-card doc-status-card--info">
       📄 <strong>Factura Simple</strong><br/>
-      <small>Ejemplo básico</small>
+      <small>Ejemplo básico nacional</small>
     </div>
   </a>
   <a href="/docs/jsons-billing/invoice-with-discount" style={{textDecoration: 'none', color: 'inherit'}}>
-    <div style={{padding: '1rem', backgroundColor: '#fff3cd', borderRadius: '8px', border: '1px solid #ffc107', cursor: 'pointer'}}>
+    <div className="doc-status-card doc-status-card--warning">
       🏷️ <strong>Con Descuento</strong><br/>
-      <small>Ejemplo con descuentos</small>
+      <small>Ejemplo con descuentos comerciales</small>
     </div>
   </a>
   <a href="/docs/jsons-billing/USD-invoice-exportation" style={{textDecoration: 'none', color: 'inherit'}}>
-    <div style={{padding: '1rem', backgroundColor: '#d4edda', borderRadius: '8px', border: '1px solid #28a745', cursor: 'pointer'}}>
+    <div className="doc-status-card doc-status-card--success">
       🌎 <strong>Exportación</strong><br/>
-      <small>Ejemplo internacional</small>
+      <small>Ejemplo internacional en USD</small>
     </div>
   </a>
 </div>
@@ -856,43 +839,33 @@ cat factura.json | jq empty
 
 ## 🎯 Próximos Pasos
 
-<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', margin: '2rem 0'}}>
+<div className="doc-status-grid">
   <a href="/docs/use-cases/simple-invoice" style={{textDecoration: 'none', color: 'inherit'}}>
-    <div style={{padding: '1.5rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '2px solid #0066cc', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
-      <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📄</div>
+    <div className="doc-status-card doc-status-card--info">
+      <div style={{fontSize: '1.75rem', marginBottom: '0.4rem'}}>📄</div>
       <strong>Factura Simple</strong><br/>
       <small>Guía básica paso a paso</small>
     </div>
   </a>
   <a href="/docs/use-cases/invoice-with-discounts" style={{textDecoration: 'none', color: 'inherit'}}>
-    <div style={{padding: '1.5rem', backgroundColor: '#e7f3ff', borderRadius: '8px', border: '2px solid #0066cc', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
-      <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>🏷️</div>
+    <div className="doc-status-card doc-status-card--info">
+      <div style={{fontSize: '1.75rem', marginBottom: '0.4rem'}}>🏷️</div>
       <strong>Factura con Descuentos</strong><br/>
-      <small>Descuentos comerciales</small>
+      <small>Descuentos por línea y globales</small>
     </div>
   </a>
   <a href="/docs/use-cases/export-scenarios" style={{textDecoration: 'none', color: 'inherit'}}>
-    <div style={{padding: '1.5rem', backgroundColor: '#d4edda', borderRadius: '8px', border: '2px solid #28a745', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
-      <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>🌎</div>
+    <div className="doc-status-card doc-status-card--success">
+      <div style={{fontSize: '1.75rem', marginBottom: '0.4rem'}}>🌎</div>
       <strong>Exportaciones</strong><br/>
-      <small>Facturas internacionales</small>
+      <small>Facturas internacionales multimoneda</small>
     </div>
   </a>
   <a href="/docs/interactive-tools" style={{textDecoration: 'none', color: 'inherit'}}>
-    <div style={{padding: '1.5rem', backgroundColor: '#fff3cd', borderRadius: '8px', border: '2px solid #ffc107', cursor: 'pointer', transition: 'transform 0.2s'}} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
-      <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>🛠️</div>
-      <strong>Herramientas</strong><br/>
-      <small>Validadores y calculadoras</small>
+    <div className="doc-status-card doc-status-card--warning">
+      <div style={{fontSize: '1.75rem', marginBottom: '0.4rem'}}>🛠️</div>
+      <strong>Herramientas Interactivas</strong><br/>
+      <small>Validadores y calculadoras en vivo</small>
     </div>
   </a>
-</div>
-
----
-
-<div style={{backgroundColor: '#f8f9fa', padding: '1rem', borderRadius: '8px', textAlign: 'center', marginTop: '2rem'}}>
-  <small>
-    📅 <strong>Última actualización:</strong> Febrero 2026 • 
-    ⏱️ <strong>Tiempo estimado:</strong> 30 minutos • 
-    🎯 <strong>Nivel:</strong> ⭐⭐ Intermedio
-  </small>
 </div>

@@ -4,6 +4,29 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.10.0] - 2026-11-09
+
+### Añadido
+* **Developer Hub (`src/pages/index.tsx`):** Rediseño integral de la página de inicio con buscador instantáneo integrado en el Hero, chips de preguntas frecuentes de soporte, Ruta de Integración en 4 pasos, matriz de capacidades UBL 2.1 con doble enlace (`Endpoint API` + `Ver JSON`), Centro de Autogestión Top Soporte interactivo por pestañas y sección de integración con IA.
+* **Buscador Global Instantáneo `Ctrl+K` (`src/theme/SearchBar/`):** Modal nativo de búsqueda instantánea indexado por páginas y encabezados `H2`/`H3`, filtros por categoría (`Todos`, `Inicio & Sandbox`, `Endpoints API`, `Ejemplos JSON`, `Nómina`, `Soporte & Casos`) y atajos directos a las dudas más frecuentes de soporte.
+* **AI & Skills Hub (`src/components/AiHub/` y `/docs/ai-ready`):**
+  * **Skill oficial (`SKILL.md`):** Generación automática de `/ai/matias-api-skill/SKILL.md` y `/SKILL.md` con reglas críticas de negocio, arquitectura UBL 2.1, tabla de códigos de estado y checklist de integración.
+  * **Instaladores CLI de 1 paso:** Scripts `/ai/install-skill.sh` (Bash) y `/ai/install-skill.ps1` (PowerShell) para instalar el Skill y reglas en proyectos locales.
+  * **Reglas para IDEs y Agentes:** Generación automática de `/ai/AGENTS.md`, `/ai/CLAUDE.md`, `/ai/matias-api.cursorrules` y `/ai/copilot-instructions.md`.
+  * **6 Context Packs Modulares (`/ai/packs/*.md`):** Paquetes temáticos (`quickstart-auth-sandbox.md`, `invoicing-pos-notes.md`, `health-sector-rips.md`, `payroll-support-doc.md`, `radian-bulk-webhooks.md`, `troubleshooting-errors.md`) y manifiesto `/ai/manifest.json`.
+  * **Generador Interactivo de Prompts:** Constructor de prompts por lenguaje (`PHP / Laravel`, `Node.js / TypeScript`, `Python`, `C# / .NET`, `Java / Spring Boot`, `Go`) y caso de uso.
+
+### Modificado
+* **Sistema de Diseño Estilo Starlight / Mintlify (`src/css/custom.css`):** Renovación visual de páginas internas con navbar translúcido, sidebar con jerarquía tipográfica clara, pestañas tipo *Segmented Control*, tablas estilizadas, bloques de código de alto contraste y soporte completo para Modo Oscuro en herramientas interactivas (`NITValidator`, `JSONValidator`, `TotalCalculator`) y `docs/use-cases/common-errors.md`.
+* **Arquitectura de Navegación (`sidebars.ts` y `docusaurus.config.ts`):** Reorganización del sidebar en 7 bloques orientados al flujo del desarrollador manteniendo intactos todos los slugs existentes, adición de accesos directos en el navbar (`Errores Comunes`, `AI & Skills Hub`, `OpenAPI`) y corrección de visibilidad del Footer global.
+* **Barra «Usar con IA» (`src/components/AiPageActions/`):** Nuevos botones para descargar directamente el archivo `.md` de la página actual y el `SKILL.md` oficial.
+* **Puerto por defecto y apertura inmediata (`package.json`):** Configuración de `npm start` y `npm run serve` con `--port 3080` para evitar colisiones con el puerto `3000` y abrir el navegador de inmediato.
+
+### Eliminado
+* **Chat flotante legacy y servidor Express/Bedrock (`AIAssistant.tsx`, `AIChat.tsx`, `server.ts`, `bedrock-server.js`, `src/config/api.ts`, `static/config.js`, `docs/support/ai-assistant.md`):** Retirados del proyecto de documentación estática junto con el script bloqueante `/config.js`.
+
+---
+
 ## [3.9.2] - 2026-11-03
 
 ### Añadido

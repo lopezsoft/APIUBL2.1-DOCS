@@ -15,11 +15,37 @@ Con Matias, los desarrolladores pueden integrar la funcionalidad de facturación
 
 ## 🛠️ Herramientas de Desarrollo {#herramientas-de-desarrollo}
 
-Antes de leer la documentación completa, ten a mano las dos herramientas que más vas a usar durante tu integración:
+Antes de leer la documentación completa, ten a mano las tres herramientas que más vas a usar durante tu integración:
 
 <div style={{display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '24px'}}>
 
-<div style={{flex: '1', minWidth: '260px', border: '2px solid #FF6C37', borderRadius: '10px', padding: '20px', background: 'var(--ifm-card-background-color)'}}>
+<div style={{flex: '1', minWidth: '250px', border: '1px solid var(--ifm-color-emphasis-300)', borderTop: '4px solid #2563eb', borderRadius: '12px', padding: '20px', background: 'var(--ifm-background-surface-color)'}}>
+
+### 🤖 AI Hub & Skills Oficiales
+
+Descarga `SKILL.md`, `AGENTS.md`, `.cursorrules` y paquetes de contexto modulares para integrar con **Antigravity, Claude Code, Cursor o Copilot**.
+
+<a
+  href="/docs/ai-ready/"
+  style={{
+    display: 'inline-block',
+    backgroundColor: '#2563eb',
+    color: 'white',
+    padding: '10px 20px',
+    borderRadius: '8px',
+    fontWeight: 'bold',
+    textDecoration: 'none',
+    marginTop: '8px'
+  }}
+>
+  ⚡ Descargar Skill & Kit IA
+</a>
+
+<br/><small style={{color: 'var(--ifm-color-emphasis-600)', marginTop: '8px', display: 'block'}}>Incluye instalador en 1 comando (cURL / PowerShell) y 6 packs modulares.</small>
+
+</div>
+
+<div style={{flex: '1', minWidth: '250px', border: '1px solid var(--ifm-color-emphasis-300)', borderTop: '4px solid #FF6C37', borderRadius: '12px', padding: '20px', background: 'var(--ifm-background-surface-color)'}}>
 
 ### 📮 Colección Postman
 
@@ -34,7 +60,7 @@ Importa todos los endpoints con payloads de ejemplo listos para ejecutar. La for
     backgroundColor: '#FF6C37',
     color: 'white',
     padding: '10px 20px',
-    borderRadius: '6px',
+    borderRadius: '8px',
     fontWeight: 'bold',
     textDecoration: 'none',
     marginTop: '8px'
@@ -47,7 +73,7 @@ Importa todos los endpoints con payloads de ejemplo listos para ejecutar. La for
 
 </div>
 
-<div style={{flex: '1', minWidth: '260px', border: '2px solid #4CAF50', borderRadius: '10px', padding: '20px', background: 'var(--ifm-card-background-color)'}}>
+<div style={{flex: '1', minWidth: '250px', border: '1px solid var(--ifm-color-emphasis-300)', borderTop: '4px solid #10b981', borderRadius: '12px', padding: '20px', background: 'var(--ifm-background-surface-color)'}}>
 
 ### 📘 Swagger UI
 
@@ -56,11 +82,11 @@ Explora y prueba los endpoints interactivamente desde el navegador. Requiere tu 
 <button
   onClick={() => window.open(atob('aHR0cHM6Ly9hcGktdjIubWF0aWFzLWFwaS5jb20vYXBpL2RvY3M='), '_blank')}
   style={{
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#10b981',
     border: 'none',
     color: 'white',
     padding: '10px 20px',
-    borderRadius: '6px',
+    borderRadius: '8px',
     fontWeight: 'bold',
     cursor: 'pointer',
     marginTop: '8px',

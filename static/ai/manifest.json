@@ -1,0 +1,67 @@
+{
+  "name": "MATIAS API UBL 2.1 — AI & Developer Context Kit",
+  "version": "3.10.0",
+  "generatedAt": "2026-11-09T04:41:57.248Z",
+  "resources": {
+    "llmsIndex": "https://docs.matias-api.com/llms.txt",
+    "llmsFull": "https://docs.matias-api.com/llms-full.txt",
+    "openApiSpec": "https://docs.matias-api.com/openapi.json",
+    "officialSkill": "https://docs.matias-api.com/ai/matias-api-skill/SKILL.md",
+    "agentsMd": "https://docs.matias-api.com/ai/AGENTS.md",
+    "claudeMd": "https://docs.matias-api.com/ai/CLAUDE.md",
+    "cursorRules": "https://docs.matias-api.com/ai/matias-api.cursorrules",
+    "copilotInstructions": "https://docs.matias-api.com/ai/copilot-instructions.md",
+    "installBash": "https://docs.matias-api.com/ai/install-skill.sh",
+    "installPowerShell": "https://docs.matias-api.com/ai/install-skill.ps1"
+  },
+  "packs": [
+    {
+      "id": "quickstart-auth-sandbox",
+      "title": "Inicio Rápido, Autenticación y Sandbox",
+      "category": "Fundamentos",
+      "description": "Flujos OAuth2 y Personal Access Tokens (PAT), separación de cuentas Sandbox vs Producción, verificación de correo y Magic Values.",
+      "url": "https://docs.matias-api.com/ai/packs/quickstart-auth-sandbox.md",
+      "docCount": 6
+    },
+    {
+      "id": "invoicing-pos-notes",
+      "title": "Facturación Electrónica, POS y Notas Crédito/Débito",
+      "category": "Emisión",
+      "description": "Endpoints de emisión FEV, Documento Equivalente POS, Notas Crédito/Débito, diccionario completo de campos UBL 2.1 y payloads JSON.",
+      "url": "https://docs.matias-api.com/ai/packs/invoicing-pos-notes.md",
+      "docCount": 45
+    },
+    {
+      "id": "health-sector-rips",
+      "title": "Sector Salud y RIPS (Resolución 000948 de 2026)",
+      "category": "Especializado",
+      "description": "Campos obligatorios del Sector Salud, interoperabilidad RIPS, facturación de servicios médicos, copagos y notas crédito de salud.",
+      "url": "https://docs.matias-api.com/ai/packs/health-sector-rips.md",
+      "docCount": 5
+    },
+    {
+      "id": "payroll-support-doc",
+      "title": "Nómina Electrónica y Documento Soporte",
+      "category": "Emisión",
+      "description": "Nómina individual, notas de ajuste (reemplazo y eliminación), Documento Soporte en adquisiciones a no obligados (residentes y no residentes).",
+      "url": "https://docs.matias-api.com/ai/packs/payroll-support-doc.md",
+      "docCount": 9
+    },
+    {
+      "id": "radian-bulk-webhooks",
+      "title": "Eventos RADIAN, API Bulk y Webhooks",
+      "category": "Escala y Eventos",
+      "description": "Acuse de recibo, recibo del bien, aceptación expresa/tácita, rechazo, envío masivo asíncrono (API Bulk), Webhooks HMAC y consultas DIAN.",
+      "url": "https://docs.matias-api.com/ai/packs/radian-bulk-webhooks.md",
+      "docCount": 6
+    },
+    {
+      "id": "troubleshooting-errors",
+      "title": "Solución de Errores, Concurrencia DIAN y Catálogos",
+      "category": "Soporte Técnico",
+      "description": "Guía de errores 401/404/409/422/503, manejo de concurrencia (Regla 90, DOCUMENT_POSSIBLY_SENT), configuración DIAN, Casas de Software y Glosario.",
+      "url": "https://docs.matias-api.com/ai/packs/troubleshooting-errors.md",
+      "docCount": 9
+    }
+  ]
+}

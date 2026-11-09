@@ -1,26 +1,58 @@
-/* Barra «Usar con IA»: solo variables de Infima, se adapta a claro/oscuro. */
+/* Barra «Usar con IA»: adaptada a modo claro y oscuro usando variables Infima. */
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.55rem 0.85rem;
+  margin-bottom: 1.25rem;
+  border-radius: 10px;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  background: var(--ifm-background-surface-color);
+}
+
+.barLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ifm-color-primary);
+}
+
+[data-theme='dark'] .barLabel {
+  color: var(--ifm-color-primary-lightest);
+}
+
+.barLabelIcon {
+  font-size: 0.8rem;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: var(--ifm-spacing-horizontal);
-  margin-bottom: var(--ifm-spacing-vertical);
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .action {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.3rem 0.7rem;
+  gap: 0.38rem;
+  padding: 0.28rem 0.65rem;
   border: 1px solid var(--ifm-color-emphasis-300);
-  border-radius: var(--ifm-button-border-radius);
-  background: var(--ifm-background-surface-color);
+  border-radius: 7px;
+  background: var(--ifm-background-color);
   color: var(--ifm-font-color-base);
-  font-size: 0.8rem;
-  line-height: 1.4;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.35;
   cursor: pointer;
   text-decoration: none;
-  transition: border-color var(--ifm-transition-fast), color var(--ifm-transition-fast);
+  transition: border-color var(--ifm-transition-fast), color var(--ifm-transition-fast), background var(--ifm-transition-fast);
 }
 
 .action:hover,
@@ -33,6 +65,28 @@
 .action:focus-visible {
   outline: 2px solid var(--ifm-color-primary);
   outline-offset: 2px;
+}
+
+.actionSuccess {
+  border-color: #10b981 !important;
+  color: #059669 !important;
+}
+
+[data-theme='dark'] .actionSuccess {
+  color: #34d399 !important;
+}
+
+.actionHighlight {
+  background: rgba(60, 106, 178, 0.1);
+  border-color: var(--ifm-color-primary);
+  color: var(--ifm-color-primary);
+  font-weight: 600;
+}
+
+[data-theme='dark'] .actionHighlight {
+  background: rgba(122, 150, 210, 0.16);
+  border-color: var(--ifm-color-primary-lighter);
+  color: var(--ifm-color-primary-lightest);
 }
 
 /* En oscuro el primario del sitio no llega a 4,5:1 sobre la superficie:
